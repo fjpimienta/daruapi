@@ -1,0 +1,17 @@
+type Country {
+  id: ID
+  c_pais: String!
+  d_pais: String!
+  estados: [Estado]
+}
+
+type Estado {
+  c_estado: String
+  d_estado: String
+  municipios: [Municipio]
+}
+
+type Municipio {
+  c_mnpio: String
+  D_mnpio: String
+}

@@ -1,0 +1,59 @@
+"Input para insertar los datos del proveedor en el registro"
+input SupplierInput {
+  id: ID
+  name: String!
+  slug: String!
+  description: String
+  large_description: String
+  addres: String
+  contact: String
+  phone: String
+  web: String
+  url_base_api: String
+  token: TokenInput
+  apis: [ApisInput]
+  active: Boolean
+  catalogs: [CatalogsInput]
+}
+
+input CatalogsInput {
+  name: String
+  catalog: [CatalogInput]
+}
+
+input TokenInput {
+  type: String                # JWT, OAuth, OpenID
+  method: String              # get, post
+  url_base_token: String
+  body_parameters: [BodyParametersInput]
+  response_token: [ResponsetokenInput]
+}
+
+input BodyParametersInput {
+  name: String
+  value: String
+  secuence: Int
+  onlyUrl: Boolean
+}
+
+input ResponsetokenInput {
+  name: String
+  es_token: Boolean
+}
+
+input ApisInput {
+  type: String
+  name: String
+  method: String
+  operation: String
+  suboperation: String
+  use: String
+  return: String
+  headers: HeadersInput
+  parameters: [BodyParametersInput]
+  requires_token: Boolean
+}
+
+input HeadersInput {
+  authorization: Boolean
+}

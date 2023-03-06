@@ -1,0 +1,6 @@
+interface Config {
+  id: ID!
+  message: String!
+  exchange_rate: Float!
+  offer: Int!
+}

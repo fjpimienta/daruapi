@@ -1,0 +1,91 @@
+input CartItemInput {
+  id: ID
+  name: String
+  slug: String
+  short_desc: String
+  price: Float
+  sale_price: Float
+  review: Int
+  ratings: Int
+  until: String
+  stock: Int
+  top: Boolean
+  featured: Boolean
+  new: Boolean
+  author: String
+  sold: String
+  category: [CategorysInput]
+  brands: [BrandsInput]
+  pictures: [PictureInput]
+  sm_pictures: [PictureInput]
+  variants: [VariantInput]
+  active: Boolean
+  qty: Int
+  sum: Float
+}
+
+input CategorysInput {
+  name: String
+  slug: String
+  pivot: PivotCategoryInput
+}
+
+input PivotCategoryInput {
+  product_id: String
+  product_category_id: String
+}
+
+input BrandsInput {
+  name: String
+  slug: String
+  pivot: PivotBrandInput
+}
+
+input PivotBrandInput {
+  product_id: String
+  brand_id: String
+}
+
+input PictureInput {
+  width: String
+  height: String
+  url: String
+  pivot: PivotePictureInput
+}
+
+input PivotePictureInput {
+  related_id: String
+  upload_file_id: String
+}
+
+input VariantInput {
+  id: Int
+  color: String
+  color_name: String
+  price: Float
+  pivot: PivoteVariantInput
+  size: [SizeInput]
+}
+
+input PivoteVariantInput {
+  product_id: String
+  component_id: String
+}
+
+input SizeInput {
+  id: Int
+  name: String
+  slug: String
+  pivot: PivoteSizeInput
+}
+
+input PivoteSizeInput {
+  components_variants_variant_id: String
+  component_id: String
+}
+
+input File {
+  filename: String!
+  mimetype: String!
+  encoding: String!
+}

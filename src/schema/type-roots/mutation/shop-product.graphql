@@ -1,0 +1,10 @@
+"Definiciones de ShopProduct"
+type Mutation {
+   "Para actualizar la informacion del Stock. Se puede acutalizar un producto o mas"
+   updateStock(update: [ShopProductStockInput!]!): Boolean
+   "Para actualizar la informacion de ShopProduct"
+   addShopProduct(shopProduct: ShopProductInput!): ResultShopProduct
+   updateShopProduct(shopProduct: ShopProductInput!): ResultShopProduct
+   deleteShopProduct(id: ID!): ResultShopProduct
+   blockShopProduct(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultShopProduct
+}

@@ -1,0 +1,17 @@
+input CountryInput {
+  id: ID!
+  c_pais: String!
+  d_pais: String!
+  estados: [EstadoInput]
+}
+
+input EstadoInput {
+  c_estado: String
+  d_estado: String
+  municipios: [MunicipioInput]
+}
+
+input MunicipioInput {
+  c_mnpio: String
+  D_mnpio: String
+}

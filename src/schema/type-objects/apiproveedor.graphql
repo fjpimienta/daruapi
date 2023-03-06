@@ -1,0 +1,33 @@
+"Tipo de objeto para almacenar la informacion de las Apis de los Proveedores"
+type Apiproveedor {
+  id: ID!
+  name: String!
+  slug: String!
+  uri_base: String!
+  token: Token!
+  catalogos: [Catalogos]
+}
+
+type Token {
+  verbo: String
+  uri: String
+  body: Body
+  requiere_token: Boolean
+  tipo_token: String
+}
+
+type Body {
+  client_id: String
+  client_secret: String
+  grant_type: String
+}
+
+type Catalogos {
+  name: String
+  uri: String
+  headers: Header
+}
+
+type Header {
+  authorization: String
+}

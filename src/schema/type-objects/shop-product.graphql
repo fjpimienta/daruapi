@@ -1,0 +1,13 @@
+"Tipo de objeto para almacenar la informacion de los productos"
+
+type ShopProduct {
+   id: ID!
+   productId:ID!
+   product: Product!
+   # branchOfficeId: ID!
+   # branchOffice: BranchOffice!
+   active: Boolean!
+   price: Float!
+   stock: Int!
+   relationalProducts: [ShopProduct]
+}

@@ -1,0 +1,40 @@
+"Input para insertar los datos del usuario en el registro"
+input UserInput {
+   id: ID
+   name: String!
+   lastname: String!
+   email: String!
+   password: String
+   role: Role=CLIENT
+   active: Boolean
+   phone: String
+   addresses: [AddressInput]
+   stripeCustomer: String
+}
+
+input AddressInput {
+  c_pais: String!
+  d_pais: String!
+  c_estado: String!
+  d_estado: String!
+  c_mnpio: String!
+  d_mnpio: String!
+  c_ciudad: String
+  d_ciudad: String
+  d_asenta: String!
+  directions: String!
+  phone: String
+  references: String
+  d_codigo: String!
+  dir_invoice: Boolean
+  dir_delivery: Boolean
+  dir_delivery_main: Boolean
+}
+
+# input UserView {
+#    id: ID
+#    name: String!
+#    lastname: String!
+#    email: String!
+#    role: Role=CLIENT
+# }

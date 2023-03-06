@@ -1,0 +1,62 @@
+"""
+   Se especifican la información detallada del proveedor.
+"""
+
+type Supplier {
+   id: ID
+   name: String!
+   slug: String!
+   description: String!
+   large_description: String
+   addres: String
+   contact: String
+   phone: String
+   web: String
+   url_base_api: String
+   token: Token
+   apis: [Apis]
+   active: Boolean
+   catalogs: [Catalogs]
+}
+
+type Catalogs {
+  name: String
+  catalog: [Catalog]
+}
+
+type Token {
+  type: String                # JWT, OAuth2, OpenID
+  method: String              # get, post
+  url_base_token: String
+  body_parameters: [BodyParameters]
+  response_token: [ResponseToken]
+}
+
+type BodyParameters {
+  name: String
+  value: String
+  secuence: Int
+  onlyUrl: Boolean
+}
+
+type ResponseToken {
+  name: String
+  es_token: Boolean
+}
+
+type Apis {
+  type: String                        #Catalogo, Productos, Facturas, Utilidades, etc
+  name: String
+  method: String
+  operation: String
+  suboperation: String
+  use: String
+  return: String
+  headers: Headers
+  parameters: [BodyParameters]
+  requires_token: Boolean
+}
+
+type Headers {
+  authorization: Boolean
+}

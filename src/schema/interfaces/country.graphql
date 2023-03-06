@@ -1,0 +1,17 @@
+interface Country {
+  id: ID!
+  c_pais: String!
+  d_pais: String!
+  estados: [Estado]
+}
+
+interface Estado {
+  c_estado: String
+  d_estado: String
+  municipios: [Municipio]
+}
+
+interface Municipio {
+  c_mnpio: String
+  D_mnpio: String
+}

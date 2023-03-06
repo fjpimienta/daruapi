@@ -1,0 +1,12 @@
+input CodigopostalInput {
+  c_pais: String!
+  d_pais: String!
+  c_estado: String!
+  d_estado: String!
+  c_mnpio: String!
+  D_mnpio: String!
+  c_cve_ciudad: String
+  d_ciudad: String
+  d_asenta: String!
+  d_codigo: String!
+}

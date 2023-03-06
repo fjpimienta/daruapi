@@ -1,0 +1,17 @@
+"Definiciones de los tipos de raíz"
+type Query {
+   "Mostrar lista de grupos"
+   groups (
+      "Pagina seleccionada para acceder a ella"
+      page: Int=1, 
+      "Grupos por pagina que se obtendran por pagina"
+      itemsPage: Int=10,
+      "Especificar el estado de los grupos que queremos mostrar"
+      active: ActiveFilterEnum = ACTIVE
+      "Especificar el filtro por el name"
+      filterName: String=""
+   ): ResultGroup
+   "Item del grupo seleccionado"
+   group(id: ID!): ResultGroup
+   groupId: ResultGroup
+}

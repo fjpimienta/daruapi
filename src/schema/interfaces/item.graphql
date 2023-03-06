@@ -1,0 +1,14 @@
+"Item basico para definir las propiedades basicas de los elementos de la API Store"
+interface Item {
+  id: ID!
+  description: String!
+  slug: String!
+  active: Boolean
+  suppliersCat: [SupplierCat]
+}
+
+interface SupplierCat {
+  idProveedor: ID
+  name: String
+  slug: String
+}

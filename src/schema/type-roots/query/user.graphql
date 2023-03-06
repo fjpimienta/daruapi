@@ -1,0 +1,19 @@
+"Definiciones de los tipos de raíz"
+type Query {
+   "Lista de usuarios registrados en la Base de Datos (Clientes/Admins)"
+   users (
+      "Pagina seleccionada para acceder a ella"
+      page: Int=1, 
+      "Marcas por pagina que se obtendran por pagina"
+      itemsPage: Int=10,
+      "Especificar el estado de las marcas que queremos mostrar"
+      active: ActiveFilterEnum = ACTIVE
+      "Especificar el filtro por el name"
+      filterName: String=""
+   ): ResultUsers
+   "Para iniciar sesion de usuario"
+   login(email: String!, password: String!, include: Boolean!): ResultLogin
+   "Autenticarnos mediante token"
+   me: ResultUser
+   userId: ResultUser
+}

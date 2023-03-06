@@ -1,0 +1,10 @@
+"Tipo de objeto para almacenar la informacion de las Tags de los Productos"
+type Order {
+  id: ID!
+  name: String
+  registerDate: String
+  user: User!
+  charge: StripeCharge
+  cartitems: [Cartitem]
+}
+

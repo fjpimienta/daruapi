@@ -1,0 +1,9 @@
+"Definiciones de los tipos de raíz"
+type Mutation {
+   "Grupos"
+   addGroup(group: CatalogInput!): ResultGroup
+   addGroups(groups: [CatalogInput!]!, supplier: SupplierInput): ResultGroup
+   updateGroup(group: CatalogInput!): ResultGroup
+   deleteGroup(id: ID!): ResultGroup
+   blockGroup(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultGroup
+}

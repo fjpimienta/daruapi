@@ -1,0 +1,11 @@
+type ResultApiproveedor implements Result{
+  "Mostrar Informacion del Sistema de Paginacion"
+  info: ResultInfo
+  "Estado de la operacion"
+  status: Boolean!
+  "Mensaje de la operacion para dar feedback"
+  message: String!
+  apiproveedor: Apiproveedor
+  apiproveedores: [Apiproveedor!]!
+  apiproveedorId: String
+}

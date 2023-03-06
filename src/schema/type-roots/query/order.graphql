@@ -1,0 +1,17 @@
+"Definiciones de los tipos de raíz"
+type Query {
+   "Mostrar lista de ordenes"
+   orders (
+      "Pagina seleccionada para acceder a ella"
+      page: Int=1, 
+      "Etiquetas por pagina que se obtendran por pagina"
+      itemsPage: Int=10,
+      "Especificar el estado de las ordenes que queremos mostrar"
+      active: ActiveFilterEnum = ACTIVE
+      "Especificar el filtro por el name"
+      filterName: String=""
+   ): ResultOrder
+   "Item del pedido seleccionado"
+   order(id: ID!): ResultOrder
+   orderId: ResultOrder
+}

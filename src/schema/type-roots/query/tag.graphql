@@ -1,0 +1,17 @@
+"Definiciones de los tipos de raíz"
+type Query {
+   "Mostrar lista de etiquetas"
+   tags (
+      "Pagina seleccionada para acceder a ella"
+      page: Int=1, 
+      "Etiquetas por pagina que se obtendran por pagina"
+      itemsPage: Int=10,
+      "Especificar el estado de las etiquetas que queremos mostrar"
+      active: ActiveFilterEnum = ACTIVE
+      "Especificar el filtro por el name"
+      filterName: String=""
+   ): ResultTag
+   "Item de la etiqueta seleccionada"
+   tag(id: ID!): ResultTag
+   tagId: ResultTag
+}

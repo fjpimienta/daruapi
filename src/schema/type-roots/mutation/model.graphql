@@ -1,0 +1,8 @@
+"Definiciones de los tipos de raíz"
+type Mutation {
+   "Modelos"
+   addModel(model: CatalogInput!): ResultModel
+   updateModel(model: CatalogInput!): ResultModel
+   deleteModel(id: ID!): ResultModel
+   blockModel(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultModel
+}

@@ -1,0 +1,8 @@
+"Definiciones de los tipos de raíz"
+type Mutation {
+   "Etiquetas"
+   addTag(tag: CatalogInput!): ResultTag
+   updateTag(tag: CatalogInput!): ResultTag
+   deleteTag(id: ID!): ResultTag
+   blockTag(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultTag
+}

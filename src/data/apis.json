@@ -1,0 +1,39 @@
+{
+  "apiprovedores": [{
+    "id": 1,
+    "name": "Syscom",
+    "slug": "syscom",
+    "uri_base": "https://developers.syscom.mx/api/v1/",
+    "token": {
+      "verbo": "post",
+      "uri": "cliente/token",
+      "body": {
+        "client_id": "EI20OXsIzHJUkJdWK1ekemWqc3rCtqNX",
+        "client_secret":"5wwq695ERsumcKdazCR04LhTxQVsPE8NlcZSvg78",
+        "grant_type": "client_credentials"
+      },
+      "requiere_token": true,
+      "tipo_token": "Bearer"
+    },
+    "catalogos": [{
+      "name": "Marcas",
+      "uri": "marcas",
+      "headers": {
+        "authorization": ""
+      }
+    },{
+      "name": "Categorias",
+      "uri": "categorias",
+      "headers": {
+        "authorization": ""
+      }
+    }]
+  },{
+    "id": 2,
+    "name": "CT",
+    "slug": "ct",
+    "uri_base": "http://connect.ctonline.mx:3001/",
+    "token": "",
+    "catalogos": []
+  }]
+}

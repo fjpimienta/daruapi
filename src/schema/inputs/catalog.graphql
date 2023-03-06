@@ -1,0 +1,19 @@
+"Input para insertar los datos del usuario en el registro"
+input CatalogInput {
+  "Identificador único, en este caso no obligatorio"
+  id: ID
+  "Descripción del catálogo"
+  description: String!
+  "Slug de la descripción"
+  slug: String
+  "Activo o no activo"
+  active: Boolean
+  "Proveedor Relacionado"
+  suppliersCat: [SupplierCatInput]
+}
+
+input SupplierCatInput {
+  idProveedor: ID
+  name: String
+  slug: String
+}

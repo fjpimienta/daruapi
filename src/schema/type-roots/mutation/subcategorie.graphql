@@ -1,0 +1,8 @@
+"Definiciones de los tipos de raíz"
+type Mutation {
+   "SubCategorias"
+   addSubcategorie(subcategorie: CatalogInput!): ResultSubcategorie
+   updateSubcategorie(subcategorie: CatalogInput!): ResultSubcategorie
+   deleteSubcategorie(id: ID!): ResultSubcategorie
+   blockSubcategorie(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultSubcategorie
+}

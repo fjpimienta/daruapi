@@ -1,0 +1,8 @@
+"Definiciones de los tipos de raíz"
+type Mutation {
+   "Ordenes"
+   addOrder(order: OrderInput!): ResultOrder
+   updateOrder(order: OrderInput): ResultOrder
+   deleteOrder(id: ID!): ResultOrder
+   blockOrder(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultOrder
+}

@@ -1,0 +1,17 @@
+"Definiciones de los tipos de raíz"
+type Query {
+   "Mostrar lista de marcas"
+   brands (
+      "Pagina seleccionada para acceder a ella"
+      page: Int=1, 
+      "Marcas por pagina que se obtendran por pagina"
+      itemsPage: Int=10,
+      "Especificar el estado de las marcas que queremos mostrar"
+      active: ActiveFilterEnum = ACTIVE
+      "Especificar el filtro por el name"
+      filterName: String=""
+   ): ResultBrand
+   "Item del brand seleccionado"
+   brand(id: ID!): ResultBrand
+   brandId: ResultBrand
+}

@@ -1,0 +1,18 @@
+input ShopProductInput {
+  "Identificador único"
+  id: ID
+  "Identificador del Producto"
+  product_id: ID
+  productId: ID
+  "Identificador de la sucursal"
+  branch_office_id: ID
+  branchOfficeId: ID
+  "Precio"
+  price: Float!
+  "Stock"
+  stock: Int
+  "Activo o no activo"
+  active: Boolean
+  "Fecha de alta"
+  registerDate: String
+}

@@ -1,0 +1,11 @@
+type ResultProduct implements Result{
+  "Mostrar Informacion del Sistema de Paginacion"
+  info: ResultInfo
+  "Estado de la operacion"
+  status: Boolean!
+  "Mensaje de la operacion para dar feedback"
+  message: String!
+  product: Product
+  products: [Product!]!
+  productId: String
+}

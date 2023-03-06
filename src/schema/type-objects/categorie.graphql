@@ -1,0 +1,14 @@
+"Tipo de objeto para almacenar la informacion de las Categorías de los Productos"
+type Categorie implements Item {
+  id: ID!
+  description: String!
+  slug: String!
+  active: Boolean
+  suppliersCat: [SupplierCat]
+}
+
+type SupplierCat {
+  idProveedor: ID
+  name: String
+  slug: String
+}

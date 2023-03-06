@@ -1,0 +1,25 @@
+type StripeCharge {
+   "ID del pago"
+   id: ID!
+   "Cantidad que hemos pagado en pesos mexicanos"
+   amount: Float!
+   "Estatus"
+   status: String!
+   "Email donde se va a enviar la factura"
+   receipt_email: String!
+   "Factura con la URL asociada del pedido"
+   receipt_url: String!
+   "Pagado o no"
+   paid: Boolean!
+   payment_method: String!
+   "Fecha de operacion"
+   created: String
+   "Operacion que se realiza - Pago o suscripcion"
+   typeOrder: String!
+   "Descripcion"
+   description: String!
+   "Numero de tarjeta"
+   card: ID!
+   "Cliente"
+   customer: ID!
+}

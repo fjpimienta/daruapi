@@ -1,0 +1,5 @@
+"Definiciones de los tipos de raíz"
+type Query {
+   "Item del config seleccionado"
+   config(id: ID!): ResultConfig
+}

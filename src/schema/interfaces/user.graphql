@@ -1,0 +1,32 @@
+"User basico para definir las propiedades basicas de los elementos de la API Store"
+interface User {
+  id: ID!
+  name: String!
+  lastname: String!
+  email: String!
+  password: String!
+  role: Role
+  registerdate: String!
+  active: Boolean
+  phone: String
+  addresses: [Address]
+}
+
+interface Address {
+  c_pais: String!
+  d_pais: String!
+  c_estado: String!
+  d_estado: String!
+  c_mnpio: String!
+  d_mnpio: String!
+  c_ciudad: String
+  d_ciudad: String
+  d_asenta: String!
+  directions: String!
+  phone: String
+  references: String
+  d_codigo: String!
+  dir_invoice: Boolean
+  dir_delivery: Boolean
+  dir_delivery_main: Boolean
+}

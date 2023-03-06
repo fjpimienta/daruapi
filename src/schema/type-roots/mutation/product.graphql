@@ -1,0 +1,9 @@
+"Definiciones de los tipos de raíz"
+type Mutation {
+   "Productos"
+   addProduct(product: ProductInput!): ResultProduct
+   addProducts(products: [ProductInput!]!): ResultProduct
+   updateProduct(product: ProductInput): ResultProduct
+   deleteProduct(id: ID!): ResultProduct
+   blockProduct(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultProduct
+}

@@ -1,0 +1,17 @@
+"Definiciones de los tipos de raíz"
+type Query {
+   "Mostrar lista de modelos"
+   models (
+      "Pagina seleccionada para acceder a ella"
+      page: Int=1, 
+      "Modelos por pagina que se obtendran por pagina"
+      itemsPage: Int=10,
+      "Especificar el estado de los modelos que queremos mostrar"
+      active: ActiveFilterEnum = ACTIVE
+      "Especificar el filtro por el name"
+      filterName: String=""
+   ): ResultModel
+   "Item del modelo seleccionado"
+   model(id: ID!): ResultModel
+   modelId: ResultModel
+}

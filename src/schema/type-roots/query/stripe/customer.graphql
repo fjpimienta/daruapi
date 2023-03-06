@@ -1,0 +1,19 @@
+"Definiciones de los tipos de raíz"
+type Query {
+  customers(
+    "Para limitar los resultados de 1 a 100 (incluido)"
+    limit: Int = 5,
+    "Para especificar la primera posicion posterior a la seleccion del usuario"
+    startingAfter: ID = "",
+    "Terminar antes de este usuario (para mostrar los anteriores)"
+    endingBefore: ID = ""
+  ): ResultStripeCustomer
+  "Obtener detalles de cliente seleccionado"
+  customer(
+    "Id del cliente de Stripe"
+    id: ID!
+  ): ResultStripeCustomer
+  customerByEmail(
+    email:String!
+  ): ResultStripeCustomer
+}

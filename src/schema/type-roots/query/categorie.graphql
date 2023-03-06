@@ -1,0 +1,17 @@
+"Definiciones de los tipos de raíz"
+type Query {
+   "Mostrar lista de categorias"
+   categories (
+      "Pagina seleccionada para acceder a ella"
+      page: Int=1, 
+      "Categorias por pagina que se obtendran por pagina"
+      itemsPage: Int=10,
+      "Especificar el estado de las categorías que queremos mostrar"
+      active: ActiveFilterEnum = ACTIVE
+      "Especificar el filtro por el name"
+      filterName: String=""
+   ): ResultCategorie
+   "Item de la categoria seleccionada"
+   categorie(id: ID!): ResultCategorie
+   categorieId: ResultCategorie
+}

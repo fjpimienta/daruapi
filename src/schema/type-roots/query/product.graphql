@@ -1,0 +1,19 @@
+"Definiciones de los tipos de raíz"
+type Query {
+   "Mostrar lista de productos"
+   products (
+      "Pagina seleccionada para acceder a ella"
+      page: Int=1, 
+      "Etiquetas por pagina que se obtendran por pagina"
+      itemsPage: Int=10,
+      "Especificar el estado de las productos que queremos mostrar"
+      active: ActiveFilterEnum = ACTIVE
+      "Especificar el filtro por el name"
+      filterName: String=""
+      "Especificar si se filtra por ofertas"
+      offer: Int=0
+   ): ResultProduct
+   "Item del producto seleccionado"
+   product(id: ID!): ResultProduct
+   productId: ResultProduct
+}

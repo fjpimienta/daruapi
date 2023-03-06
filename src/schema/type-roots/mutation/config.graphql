@@ -1,0 +1,8 @@
+"Definiciones de los tipos de raíz"
+type Mutation {
+   "Config"
+   addConfig(config: ConfigInput!): ResultConfig
+   updateConfig(config: ConfigInput!): ResultConfig
+   deleteConfig(id: ID!): ResultConfig
+   blockConfig(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultConfig
+}

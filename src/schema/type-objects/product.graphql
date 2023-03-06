@@ -1,0 +1,131 @@
+"Tipo de objeto para almacenar la informacion de las Products de los Productos"
+
+type Product {
+  id: ID
+  name: String!
+  slug: String!
+  short_desc: String!
+  price: Float!
+  sale_price: Float
+  review: Int
+  ratings: Int
+  until: String
+  stock: Int
+  top: Boolean
+  featured: Boolean
+  new: Boolean
+  author: String
+  sold: String
+  partnumber: String
+  sku: String
+  upc: String
+  category: [Categorys]
+  brand: String
+  brands: [Brands]
+  pictures: [Picture]
+  sm_pictures: [Picture]
+  variants: [Variant]
+  unidadDeMedida: UnidadDeMedida
+  active: Boolean
+  suppliersProd: SupplierProd
+  descuentos: Descuentos
+  promociones: Promociones
+}
+
+type Categorys {
+  name: String
+  slug: String
+  pivot: PivotCategory
+}
+
+type PivotCategory {
+  product_id: String
+  product_category_id: String
+}
+
+type Brands {
+  name: String
+  slug: String
+  pivot: PivotBrand
+}
+
+type PivotBrand {
+  product_id: String
+  brand_id: String
+}
+
+type Picture {
+  width: String
+  height: String
+  url: String
+  pivot: PivotePicture
+}
+
+type PivotePicture {
+  related_id: String
+  upload_file_id: String
+}
+
+type Variant {
+  id: Int
+  color: String
+  color_name: String
+  price: Float
+  pivot: PivoteVariant
+  size: [Size]
+}
+
+type PivoteVariant {
+  product_id: String
+  component_id: String
+}
+
+type Size {
+  id: Int
+  name: String
+  slug: String
+  pivot: PivoteSize
+}
+
+type PivoteSize {
+  components_variants_variant_id: String
+  component_id: String
+}
+
+type UnidadDeMedida {
+  id: String
+  name: String
+  slug: String
+}
+
+type SupplierProd {
+  idProveedor: ID
+  codigo: String
+  price: String
+  moneda: String
+  branchOffices: [BranchOffices]
+}
+
+type BranchOffices {
+  name: String
+  cantidad: Int
+}
+
+type Descuentos {
+  total_descuento: Float
+  moneda_descuento: String
+  precio_descuento: Float
+}
+
+type Promociones {
+  clave_promocion: String
+  descripcion_promocion: String
+  vencimiento_promocion: String
+  disponible_en_promocion: Float
+}
+
+type File {
+  filename: String!
+  mimetype: String!
+  encoding: String!
+}

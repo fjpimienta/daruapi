@@ -107,6 +107,17 @@ interface SupplierProd {
 interface BranchOffices {
   name: String
   cantidad: Int
+  promocionBranchOffice: PromocionBranchOffice
+}
+
+interface PromocionBranchOffice {
+  price: Float
+  vigente: Vigente
+}
+
+interface Vigente {
+  ini: String
+  fin: String
 }
 
 interface Descuentos {
@@ -118,6 +129,7 @@ interface Descuentos {
 interface Promociones {
   clave_promocion: String
   descripcion_promocion: String
+  inicio_promocion: String
   vencimiento_promocion: String
   disponible_en_promocion: Float
 }

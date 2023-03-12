@@ -107,6 +107,17 @@ input SupplierProdInput {
 input BranchOfficesInput {
   name: String
   cantidad: Int
+  promocionBranchOffice: PromocionBranchOfficeInput
+}
+
+input PromocionBranchOfficeInput {
+  price: Float
+  vigente: VigenteInput
+}
+
+input VigenteInput {
+  ini: String
+  fin: String
 }
 
 input DescuentosInput {
@@ -118,6 +129,7 @@ input DescuentosInput {
 input PromocionesInput {
   clave_promocion: String
   descripcion_promocion: String
+  inicio_promocion: String
   vencimiento_promocion: String
   disponible_en_promocion: Float
 }

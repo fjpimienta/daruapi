@@ -109,6 +109,17 @@ type SupplierProd {
 type BranchOffices {
   name: String
   cantidad: Int
+  promocionBranchOffice: PromocionBranchOffice
+}
+
+type PromocionBranchOffice {
+  price: Float
+  vigente: Vigente
+}
+
+type Vigente {
+  ini: String
+  fin: String
 }
 
 type Descuentos {
@@ -120,6 +131,7 @@ type Descuentos {
 type Promociones {
   clave_promocion: String
   descripcion_promocion: String
+  inicio_promocion: String
   vencimiento_promocion: String
   disponible_en_promocion: Float
 }

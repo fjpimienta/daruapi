@@ -108,6 +108,7 @@ type SupplierProd {
 
 type BranchOffices {
   name: String
+  estado: String
   cantidad: Int
   promocionBranchOffice: PromocionBranchOffice
 }

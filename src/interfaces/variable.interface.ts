@@ -8,6 +8,7 @@ import { ICountry } from './country.interface';
 import { IOrder } from './order.interface';
 import { IShopProduct } from './shop-product.interface';
 import { IConfig } from './config.interface';
+import { IWarehouse } from './warehouses.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -39,4 +40,6 @@ export interface IVariables {
   order?: IOrder;
   orders?: IOrder[];
   config?: IConfig;
+  warehouse?: IWarehouse;
+  warehouses?: IWarehouse[];
 }

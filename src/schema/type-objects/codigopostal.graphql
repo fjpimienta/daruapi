@@ -9,4 +9,6 @@ type Codigopostal {
   d_ciudad: String
   d_asenta: String!
   d_codigo: String!
+  latitud: String!
+  longitud: String!
 }

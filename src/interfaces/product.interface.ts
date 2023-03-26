@@ -109,6 +109,8 @@ export interface IBranchOffices {
   name: string;
   slug: string;
   cantidad: number;
+  latitud: string;
+  longitud: string;
 }
 
 export interface IDescuentos {

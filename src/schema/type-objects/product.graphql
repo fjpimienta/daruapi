@@ -110,6 +110,7 @@ type BranchOffices {
   name: String
   estado: String
   cantidad: Int
+  cp: String
   latitud: String
   longitud: String
   promocionBranchOffice: PromocionBranchOffice

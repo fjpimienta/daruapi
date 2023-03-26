@@ -109,6 +109,7 @@ export interface IBranchOffices {
   name: string;
   slug: string;
   cantidad: number;
+  cp: string;
   latitud: string;
   longitud: string;
 }

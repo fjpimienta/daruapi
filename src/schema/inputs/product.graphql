@@ -108,6 +108,7 @@ input BranchOfficesInput {
   name: String
   estado: String
   cantidad: Int
+  cp: String
   latitud: String
   longitud: String
   promocionBranchOffice: PromocionBranchOfficeInput

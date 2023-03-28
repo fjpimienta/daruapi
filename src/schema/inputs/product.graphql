@@ -105,6 +105,7 @@ input SupplierProdInput {
 }
 
 input BranchOfficesInput {
+  id: String
   name: String
   estado: String
   cantidad: Int

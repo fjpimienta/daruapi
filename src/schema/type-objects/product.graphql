@@ -107,6 +107,7 @@ type SupplierProd {
 }
 
 type BranchOffices {
+  id: String
   name: String
   estado: String
   cantidad: Int

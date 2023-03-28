@@ -105,7 +105,7 @@ export interface ISupplierProd {
 }
 
 export interface IBranchOffices {
-  idAlmacen: string;
+  id: string;
   name: string;
   slug: string;
   cantidad: number;

@@ -29,7 +29,8 @@ export enum COLLECTIONS {
   VIEW_BUDGET_PRODUCTS = 'view_budgets_products',
   ORDERS = 'orders',
   CONFIG = 'config',
-  WAREHOUSES = 'warehouses'
+  WAREHOUSES = 'warehouses',
+  SHIPPINGS = 'shippings',
 }
 
 export enum MESSAGES {

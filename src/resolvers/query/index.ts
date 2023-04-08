@@ -9,6 +9,7 @@ import resolversGroupsQuery from './groups';
 import resolversModelsQuery from './models';
 import resolversOrdersQuery from './orders';
 import resolversProductsQuery from './products';
+import resolversShippingsQuery from './shippings';
 import resolversStripeCardQuery from './stripe/card';
 import resolversStripeChargeQuery from './stripe/charge';
 import resolversStripeCustomerQuery from './stripe/customer';
@@ -36,7 +37,8 @@ const queryResolvers = GMR.merge([
   resolversOrdersQuery,
   resolversStripeChargeQuery,
   resolversConfigsQuery,
-  resolversWarehousesQuery
+  resolversWarehousesQuery,
+  resolversShippingsQuery
 ]);
 
 export default queryResolvers;

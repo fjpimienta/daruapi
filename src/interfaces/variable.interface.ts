@@ -9,6 +9,7 @@ import { IOrder } from './order.interface';
 import { IShopProduct } from './shop-product.interface';
 import { IConfig } from './config.interface';
 import { IWarehouse } from './warehouses.interface';
+import { IShipping } from './shipping.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -42,4 +43,6 @@ export interface IVariables {
   config?: IConfig;
   warehouse?: IWarehouse;
   warehouses?: IWarehouse[];
+  shipping?: IShipping;
+  shippings?: IShipping[];
 }

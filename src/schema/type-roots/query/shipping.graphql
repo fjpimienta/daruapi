@@ -1,17 +1,17 @@
 "Definiciones de los tipos de raíz"
 type Query {
-   "Mostrar lista de proveedores"
-   suppliers (
+   "Mostrar lista de paqueterias"
+   shippings (
       "Pagina seleccionada para acceder a ella"
       page: Int=1, 
       "Marcas por pagina que se obtendran por pagina"
       itemsPage: Int=10,
-      "Especificar el estado de los proveedores que queremos mostrar"
+      "Especificar el estado de las paqueterias que queremos mostrar"
       active: ActiveFilterEnum = ACTIVE
       "Especificar el filtro por el name"
       filterName: String=""
-   ): ResultSupplier
-   "Item del supplier seleccionado"
-   supplier(id: ID!): ResultSupplier
-   supplierId: ResultSupplier
+   ): ResultShipping
+   "Item del shipping seleccionado"
+   shipping(id: ID!): ResultShipping
+   shippingId: ResultShipping
 }

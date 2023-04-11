@@ -1,7 +1,9 @@
 import GMR from 'graphql-merge-resolvers'; // Import module
 import resolversApiproveedoresQuery from './apiproveedores';
 import resolversBrandsQuery from './brands';
+import resolversBrandsGroupsQuery from './brandsgroups';
 import resolversCategoriesQuery from './categories';
+import resolversCategorysGroupsQuery from './categorysgroups';
 import resolversCodigopostalsQuery from './codigopostals';
 import resolversConfigsQuery from './configs';
 import resolversCountrysQuery from './countrys';
@@ -38,7 +40,9 @@ const queryResolvers = GMR.merge([
   resolversStripeChargeQuery,
   resolversConfigsQuery,
   resolversWarehousesQuery,
-  resolversShippingsQuery
+  resolversShippingsQuery,
+  resolversBrandsGroupsQuery,
+  resolversCategorysGroupsQuery
 ]);
 
 export default queryResolvers;

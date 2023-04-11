@@ -1,0 +1,10 @@
+"Tipo de objeto para almacenar la informacion de las Marcas de los Productos"
+type CategoryGroup {
+  _id: [CategoryProduct]
+  total: Int
+}
+
+type CategoryProduct {
+  name: String
+  slug: String
+}

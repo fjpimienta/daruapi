@@ -226,3 +226,41 @@ export const manageStockUpdate = async (
     { $inc: updateObject }
   );
 };
+
+/**
+ * @param database Base de datos con la que estamos trabajando
+ * @param collection Coleccion deonde queremos buscar el ultimo elemento
+ * @returns Lista de Objetos de la colección encontrados
+ */
+export const findElementsBrandsGroup = async (
+  database: Db,
+  collection: string,
+): Promise<Array<object>> => {
+  return new Promise(async (resolve) => {
+    const pipeline = [
+      { $group: { _id: '$brands', total: { $sum: 1 } } }
+    ];
+    resolve(await database.collection(collection).aggregate(
+      pipeline
+    ).toArray());
+  });
+};
+
+/**
+ * @param database Base de datos con la que estamos trabajando
+ * @param collection Coleccion deonde queremos buscar el ultimo elemento
+ * @returns Lista de Objetos de la colección encontrados
+ */
+ export const findElementsCategorysGroup = async (
+  database: Db,
+  collection: string,
+): Promise<Array<object>> => {
+  return new Promise(async (resolve) => {
+    const pipeline = [
+      { $group: { _id: '$category', total: { $sum: 1 } } }
+    ];
+    resolve(await database.collection(collection).aggregate(
+      pipeline
+    ).toArray());
+  });
+};

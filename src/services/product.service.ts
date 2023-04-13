@@ -21,6 +21,8 @@ class ProductsService extends ResolversOperationsService {
     const active = variables.active;
     const filterName = variables.filterName;
     const offer = variables.offer;
+    const brands = variables.brands;
+    const categories = variables.categories;
     let filter: object;
     const regExp = new RegExp('.*' + filterName + '.*');
     if (filterName === '' || filterName === undefined) {
@@ -41,6 +43,13 @@ class ProductsService extends ResolversOperationsService {
     if (offer! > 0) {
       filter = { ...filter, ...{ 'promociones.disponible_en_promocion': { $gt: 100 } } };
     }
+    if (brands) {
+      filter = { ...{ 'brands.slug': { $in : brands }} };
+    }
+    if (categories) {
+      filter = { ...{ 'category.slug': { $in : categories }} };
+    }
+
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
     const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter);

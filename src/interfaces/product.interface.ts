@@ -20,6 +20,8 @@ export interface IProduct {
   category: ICategorys[];
   brand: string;
   brands: IBrands[];
+  model: string;
+  peso: number;
   pictures: IPicture[];
   sm_pictures: IPicture[];
   variants: IVariant[];

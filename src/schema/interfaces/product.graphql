@@ -20,6 +20,8 @@ interface Product {
   category: [Categorys]
   brand: String
   brands: [Brands]
+  model: String
+  peso: Float
   pictures: [Picture]
   sm_pictures: [Picture]
   variants: [Variant]

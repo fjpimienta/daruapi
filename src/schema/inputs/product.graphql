@@ -20,6 +20,8 @@ input ProductInput {
   category: [CategorysInput]
   brand: String
   brands: [BrandsInput]
+  model: String
+  peso: Float
   pictures: [PictureInput]
   sm_pictures: [PictureInput]
   variants: [VariantInput]

@@ -16,6 +16,8 @@ input CartItemInput {
   sold: String
   category: [CategorysInput]
   brands: [BrandsInput]
+  model: String
+  peso: Float
   pictures: [PictureInput]
   sm_pictures: [PictureInput]
   variants: [VariantInput]

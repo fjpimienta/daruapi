@@ -103,7 +103,7 @@ type UnidadDeMedida {
 type SupplierProd {
   idProveedor: ID
   codigo: String
-  price: String
+  price: Float
   moneda: String
   branchOffices: [BranchOffices]
 }

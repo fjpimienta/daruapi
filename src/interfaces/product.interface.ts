@@ -101,7 +101,7 @@ export interface IUnidadDeMedida {
 export interface ISupplierProd {
   idProveedor: string;
   codigo: string;
-  price: string;
+  price: number;
   moneda: string;
   branchOffices: IBranchOffices[];
 }

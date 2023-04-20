@@ -40,16 +40,15 @@ class ProductsService extends ResolversOperationsService {
         filter = { active: { $eq: false }, 'slug': regExp };
       }
     }
-    if (offer! > 0) {
-      filter = { ...filter, ...{ 'promociones.disponible_en_promocion': { $gt: 100 } } };
+    if (offer) {
+      filter = { ...filter, ...{ 'promociones.disponible_en_promocion': { $gt: 10 } } };
     }
     if (brands) {
-      filter = { ...{ 'brands.slug': { $in : brands }} };
+      filter = { ...filter, ...{ 'brands.slug': { $in: brands } } };
     }
     if (categories) {
-      filter = { ...{ 'category.slug': { $in : categories }} };
+      filter = { ...filter, ...{ 'category.slug': { $in: categories } } };
     }
-
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
     const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter);

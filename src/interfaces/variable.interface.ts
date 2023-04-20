@@ -15,7 +15,7 @@ export interface IVariables {
   id?: string | number;
   active?: string;
   filterName?: string;
-  offer?: number;
+  offer?: boolean;
   filterBranch?: string;
   slug?: string;
   pagination?: IPaginationOptions;

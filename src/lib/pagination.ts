@@ -10,7 +10,13 @@ export async function pagination(
 ) {
   // Comprobar el numero de items por pagina
   if (itemsPage < 1 || itemsPage > 20) {
-    itemsPage = 20;
+    if(itemsPage === -1) {
+      itemsPage = 1000;                 // Ofertas
+    } else if (itemsPage = 48) {        // Ofertas
+      itemsPage = 48;
+    } else {
+      itemsPage = 20;
+    }
   }
   if (page < 1) {
     page = 1;

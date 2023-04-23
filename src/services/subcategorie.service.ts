@@ -98,6 +98,7 @@ class SubcategoriesService extends ResolversOperationsService {
       id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),
       description: subcategorie?.description,
       slug: slugify(subcategorie?.description || '', { lower: true }),
+      order: subcategorie?.order,
       active: true,
       registerDate: new Date().toISOString()//,
       // suppliersCat
@@ -133,7 +134,8 @@ class SubcategoriesService extends ResolversOperationsService {
     }
     const objectUpdate = {
       description: subcategorie?.description,
-      slug: slugify(subcategorie?.description || '', { lower: true })
+      slug: slugify(subcategorie?.description || '', { lower: true }),
+      order: subcategorie?.order
     };
     // Conocer el id de la marca
     const filter = { id: subcategorie?.id };

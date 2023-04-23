@@ -101,6 +101,7 @@ class BrandsService extends ResolversOperationsService {
       id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),
       description: brand?.description,
       slug: slugify(brand?.description || '', { lower: true }),
+      order: brand?.order,
       active: true,
       registerDate: new Date().toISOString()//,
       // suppliersCat
@@ -248,7 +249,8 @@ class BrandsService extends ResolversOperationsService {
     }
     const objectUpdate = {
       description: brand?.description,
-      slug: slugify(brand?.description || '', { lower: true })
+      slug: slugify(brand?.description || '', { lower: true }),
+      order: brand?.order
     };
     // Conocer el id de la marca
     const filter = { id: brand?.id };

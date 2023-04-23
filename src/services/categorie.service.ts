@@ -101,6 +101,7 @@ class CategoriesService extends ResolversOperationsService {
       id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),
       description: categorie?.description,
       slug: slugify(categorie?.description || '', { lower: true }),
+      order: categorie?.order,
       active: true,
       registerDate: new Date().toISOString()//,
       // suppliersCat
@@ -170,6 +171,7 @@ class CategoriesService extends ResolversOperationsService {
         // Elemento que no existe se agrega
         categorie.id = i.toString();
         categorie.slug = slugify(categorie?.description || '', { lower: true });
+        categorie.order = categorie?.order,
         categorie.active = true;
         i += 1;
         categoriesAdd?.push(categorie);
@@ -249,7 +251,8 @@ class CategoriesService extends ResolversOperationsService {
     }
     const objectUpdate = {
       description: categorie?.description,
-      slug: slugify(categorie?.description || '', { lower: true })
+      slug: slugify(categorie?.description || '', { lower: true }),
+      order: categorie?.order
     };
     // Conocer el id de la categoria
     const filter = { id: categorie?.id };

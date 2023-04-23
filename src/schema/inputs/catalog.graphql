@@ -6,6 +6,7 @@ input CatalogInput {
   description: String!
   "Slug de la descripción"
   slug: String
+  order: Int
   "Activo o no activo"
   active: Boolean
   "Proveedor Relacionado"

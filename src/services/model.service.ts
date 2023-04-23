@@ -98,6 +98,7 @@ class ModelsService extends ResolversOperationsService {
       id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),
       description: model?.description,
       slug: slugify(model?.description || '', { lower: true }),
+      order: model?.order,
       active: true,
       registerDate: new Date().toISOString()//,
       // suppliersCat
@@ -132,7 +133,8 @@ class ModelsService extends ResolversOperationsService {
     }
     const objectUpdate = {
       description: model?.description,
-      slug: slugify(model?.description || '', { lower: true })
+      slug: slugify(model?.description || '', { lower: true }),
+      order: model?.order
     };
     // Conocer el id de la marca
     const filter = { id: model?.id };

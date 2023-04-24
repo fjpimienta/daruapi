@@ -63,7 +63,7 @@ export const findElements = async (
     skip: 0,
     total: -1
   },
-  sort: object = { id: 1 }
+  sort: object = {}
 ) => {
   if (paginationOptions.total === -1) {
     return await database
@@ -159,7 +159,7 @@ export const deleteOneElement = async (
  * @param filter Filtro para la búsqueda de la colección
  * @returns Objeto de la colección eliminados
  */
- export const deleteManyElements = async (
+export const deleteManyElements = async (
   database: Db,
   collection: string,
   filter: object = {}
@@ -251,7 +251,7 @@ export const findElementsBrandsGroup = async (
  * @param collection Coleccion deonde queremos buscar el ultimo elemento
  * @returns Lista de Objetos de la colección encontrados
  */
- export const findElementsCategorysGroup = async (
+export const findElementsCategorysGroup = async (
   database: Db,
   collection: string,
 ): Promise<Array<object>> => {

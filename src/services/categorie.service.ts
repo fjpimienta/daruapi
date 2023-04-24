@@ -39,7 +39,8 @@ class CategoriesService extends ResolversOperationsService {
     }
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
-    const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter);
+    const sort = { order: 1 };
+    const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter, sort);
     return {
       info: result.info,
       status: result.status,

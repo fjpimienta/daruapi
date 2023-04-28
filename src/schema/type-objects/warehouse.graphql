@@ -1,0 +1,20 @@
+type Warehouse {
+  id: ID!
+  homoclave: String!
+  active: Boolean
+  almacen: String!
+  cp: String!
+  calle: String
+  ciudad: String
+  colonia: String
+  estado: String
+  telefono: String
+  numero: String
+  suppliersCat: [SupplierCat]
+}
+
+type SupplierCat {
+  idProveedor: ID
+  name: String
+  slug: String
+}

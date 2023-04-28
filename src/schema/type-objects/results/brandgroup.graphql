@@ -1,0 +1,5 @@
+type ResultBrandGroup implements Result{
+  status: Boolean!
+  message: String!
+  brandsgroups: [BrandGroup!]!
+}

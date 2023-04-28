@@ -17,7 +17,8 @@ type User {
   phone: String
   addresses: [Address]
    "Cliente de Stripe"
-   stripeCustomer: String
+  stripeCustomer: String
+  policy: Boolean
 }
 
 type Address {

@@ -22,6 +22,8 @@ type Product {
   category: [Categorys]
   brand: String
   brands: [Brands]
+  model: String
+  peso: Float
   pictures: [Picture]
   sm_pictures: [Picture]
   variants: [Variant]
@@ -101,15 +103,19 @@ type UnidadDeMedida {
 type SupplierProd {
   idProveedor: ID
   codigo: String
-  price: String
+  price: Float
   moneda: String
   branchOffices: [BranchOffices]
 }
 
 type BranchOffices {
+  id: String
   name: String
   estado: String
   cantidad: Int
+  cp: String
+  latitud: String
+  longitud: String
   promocionBranchOffice: PromocionBranchOffice
 }
 

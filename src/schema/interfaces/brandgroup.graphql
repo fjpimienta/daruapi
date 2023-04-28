@@ -1,0 +1,9 @@
+interface BrandGroup {
+  _id: [BrandProduct]
+  total: Int
+}
+
+interface BrandProduct {
+  name: String
+  slug: String
+}

@@ -36,7 +36,8 @@ class SubcategoriesService extends ResolversOperationsService {
     }
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
-    const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter);
+    const sort = { order: 1 };
+    const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter, sort);
     return {
       info: result.info,
       status: result.status,
@@ -98,6 +99,7 @@ class SubcategoriesService extends ResolversOperationsService {
       id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),
       description: subcategorie?.description,
       slug: slugify(subcategorie?.description || '', { lower: true }),
+      order: subcategorie?.order,
       active: true,
       registerDate: new Date().toISOString()//,
       // suppliersCat
@@ -133,7 +135,8 @@ class SubcategoriesService extends ResolversOperationsService {
     }
     const objectUpdate = {
       description: subcategorie?.description,
-      slug: slugify(subcategorie?.description || '', { lower: true })
+      slug: slugify(subcategorie?.description || '', { lower: true }),
+      order: subcategorie?.order
     };
     // Conocer el id de la marca
     const filter = { id: subcategorie?.id };

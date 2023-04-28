@@ -11,7 +11,9 @@ type Query {
       "Especificar el filtro por el name"
       filterName: String=""
       "Especificar si se filtra por ofertas"
-      offer: Int=0
+      offer: Boolean=false
+      brands: [String]
+      categories: [String]
    ): ResultProduct
    "Item del producto seleccionado"
    product(id: ID!): ResultProduct

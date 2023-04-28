@@ -6,7 +6,7 @@ type Query {
       page: Int=1, 
       "Marcas por pagina que se obtendran por pagina"
       itemsPage: Int=10,
-      "Especificar el estado de las proveedores que queremos mostrar"
+      "Especificar el estado de los proveedores que queremos mostrar"
       active: ActiveFilterEnum = ACTIVE
       "Especificar el filtro por el name"
       filterName: String=""

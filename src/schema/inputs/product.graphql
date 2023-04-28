@@ -20,6 +20,8 @@ input ProductInput {
   category: [CategorysInput]
   brand: String
   brands: [BrandsInput]
+  model: String
+  peso: Float
   pictures: [PictureInput]
   sm_pictures: [PictureInput]
   variants: [VariantInput]
@@ -105,9 +107,13 @@ input SupplierProdInput {
 }
 
 input BranchOfficesInput {
+  id: String
   name: String
   estado: String
   cantidad: Int
+  cp: String
+  latitud: String
+  longitud: String
   promocionBranchOffice: PromocionBranchOfficeInput
 }
 

@@ -21,7 +21,7 @@
     "netlify",
     "zeitnow"
   ],
-  "author": "Francisco Jesus Perez Pimienta <fjpimienta@hosting3m.com>",
+  "author": "Francisco Jesus Perez Pimienta <francisco.pimienta@daru.mx>",
   "license": "MIT",
   "engines": {
     "node": "14.21.3",

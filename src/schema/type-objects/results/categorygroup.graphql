@@ -1,0 +1,5 @@
+type ResultCategoryGroup implements Result{
+  status: Boolean!
+  message: String!
+  categorysgroups: [CategoryGroup!]!
+}

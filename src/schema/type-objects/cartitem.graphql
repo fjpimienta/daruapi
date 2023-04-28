@@ -16,6 +16,8 @@ type Cartitem {
   sold: String
   category: [Categorys]
   brands: [Brands]
+  model: String
+  peso: Float
   pictures: [Picture]
   sm_pictures: [Picture]
   variants: [Variant]

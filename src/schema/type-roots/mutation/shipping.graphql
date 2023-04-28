@@ -1,0 +1,9 @@
+"Definiciones de los tipos de raíz"
+type Mutation {
+   "Paqueterias"
+   addShipping(shipping: ShippingInput!): ResultShipping
+   addShippings(shippings: [ShippingInput!]!): ResultShipping
+   updateShipping(shipping: ShippingInput): ResultShipping
+   deleteShipping(id: ID!): ResultShipping
+   blockShipping(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultShipping
+}

@@ -1,0 +1,9 @@
+interface CategoryGroup {
+  _id: [CategoryProduct]
+  total: Int
+}
+
+interface CategoryProduct {
+  name: String
+  slug: String
+}

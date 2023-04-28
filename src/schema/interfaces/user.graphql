@@ -10,6 +10,7 @@ interface User {
   active: Boolean
   phone: String
   addresses: [Address]
+  policy: Boolean
 }
 
 interface Address {

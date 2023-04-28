@@ -20,6 +20,8 @@ export interface IProduct {
   category: ICategorys[];
   brand: string;
   brands: IBrands[];
+  model: string;
+  peso: number;
   pictures: IPicture[];
   sm_pictures: IPicture[];
   variants: IVariant[];
@@ -99,16 +101,19 @@ export interface IUnidadDeMedida {
 export interface ISupplierProd {
   idProveedor: string;
   codigo: string;
-  price: string;
+  price: number;
   moneda: string;
   branchOffices: IBranchOffices[];
 }
 
 export interface IBranchOffices {
-  idAlmacen: string;
+  id: string;
   name: string;
   slug: string;
   cantidad: number;
+  cp: string;
+  latitud: string;
+  longitud: string;
 }
 
 export interface IDescuentos {

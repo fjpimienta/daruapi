@@ -36,7 +36,8 @@ class TagsService extends ResolversOperationsService {
     }
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
-    const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter);
+    const sort = { order: 1 };
+    const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter, sort);
     return {
       info: result.info,
       status: result.status,
@@ -98,6 +99,7 @@ class TagsService extends ResolversOperationsService {
       id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),
       description: tag?.description,
       slug: slugify(tag?.description || '', { lower: true }),
+      order: tag?.order,
       active: true,
       registerDate: new Date().toISOString()//,
       // suppliersCat
@@ -132,7 +134,8 @@ class TagsService extends ResolversOperationsService {
     }
     const objectUpdate = {
       description: tag?.description,
-      slug: slugify(tag?.description || '', { lower: true })
+      slug: slugify(tag?.description || '', { lower: true }),
+      order: tag?.order
     };
     // Conocer el id de la marcar
     const filter = { id: tag?.id };

@@ -3,6 +3,7 @@ type Model implements Item {
   id: ID!
   description: String!
   slug: String!
+  order: Int!
   active: Boolean
   suppliersCat: [SupplierCat]
 }

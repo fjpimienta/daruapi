@@ -36,7 +36,8 @@ class ModelsService extends ResolversOperationsService {
     }
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
-    const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter);
+    const sort = { order: 1 };
+    const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter, sort);
     return {
       info: result.info,
       status: result.status,
@@ -98,6 +99,7 @@ class ModelsService extends ResolversOperationsService {
       id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),
       description: model?.description,
       slug: slugify(model?.description || '', { lower: true }),
+      order: model?.order,
       active: true,
       registerDate: new Date().toISOString()//,
       // suppliersCat
@@ -132,7 +134,8 @@ class ModelsService extends ResolversOperationsService {
     }
     const objectUpdate = {
       description: model?.description,
-      slug: slugify(model?.description || '', { lower: true })
+      slug: slugify(model?.description || '', { lower: true }),
+      order: model?.order
     };
     // Conocer el id de la marca
     const filter = { id: model?.id };

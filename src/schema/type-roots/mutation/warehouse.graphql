@@ -1,0 +1,8 @@
+type Mutation {
+  "Warehouses"
+   addWarehouse(warehouse: WarehouseInput!): ResultWarehouse
+   addWarehouses(warehouses: [WarehouseInput!]!, supplier: SupplierInput): ResultWarehouse
+   updateWarehouse(warehouse: WarehouseInput!): ResultWarehouse
+   deleteWarehouse(id: ID!): ResultWarehouse
+   blockWarehouse(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultWarehouse
+}

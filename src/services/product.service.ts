@@ -21,6 +21,8 @@ class ProductsService extends ResolversOperationsService {
     const active = variables.active;
     const filterName = variables.filterName;
     const offer = variables.offer;
+    const brands = variables.brands;
+    const categories = variables.categories;
     let filter: object;
     const regExp = new RegExp('.*' + filterName + '.*');
     if (filterName === '' || filterName === undefined) {
@@ -38,8 +40,14 @@ class ProductsService extends ResolversOperationsService {
         filter = { active: { $eq: false }, 'slug': regExp };
       }
     }
-    if (offer! > 0) {
-      filter = { ...filter, ...{ 'promociones.disponible_en_promocion': { $gt: 100 } } };
+    if (offer) {
+      filter = { ...filter, ...{ 'promociones.disponible_en_promocion': { $gt: 10 } } };
+    }
+    if (brands) {
+      filter = { ...filter, ...{ 'brands.slug': { $in: brands } } };
+    }
+    if (categories) {
+      filter = { ...filter, ...{ 'category.slug': { $in: categories } } };
     }
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
@@ -116,6 +124,8 @@ class ProductsService extends ResolversOperationsService {
       category: product?.category,
       brand: product?.brand,
       brands: product?.brands,
+      model: product?.model,
+      peso: product?.peso,
       pictures: product?.pictures,
       sm_pictures: product?.sm_pictures,
       variants: product?.variants,
@@ -295,6 +305,8 @@ class ProductsService extends ResolversOperationsService {
       category: product?.category,
       brand: product?.brand,
       brands: product?.brands,
+      model: product?.model,
+      peso: product?.peso,
       pictures: product?.pictures,
       sm_pictures: product?.sm_pictures,
       variants: product?.variants,

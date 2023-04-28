@@ -39,7 +39,8 @@ class GroupsService extends ResolversOperationsService {
     }
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
-    const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter);
+    const sort = { order: 1 };
+    const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter, sort);
     return {
       info: result.info,
       status: result.status,
@@ -101,6 +102,7 @@ class GroupsService extends ResolversOperationsService {
       id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),
       description: group?.description,
       slug: slugify(group?.description || '', { lower: true }),
+      order: group?.order,
       active: true,
       registerDate: new Date().toISOString()//,
       // suppliersCat
@@ -248,7 +250,8 @@ class GroupsService extends ResolversOperationsService {
     }
     const objectUpdate = {
       description: group?.description,
-      slug: slugify(group?.description || '', { lower: true })
+      slug: slugify(group?.description || '', { lower: true }),
+      order: group?.order
     };
     // Conocer el id del grupo
     const filter = { id: group?.id };

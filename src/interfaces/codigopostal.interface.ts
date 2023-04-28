@@ -9,4 +9,6 @@ export interface ICodigopostal {
   d_ciudad: string;
   d_asenta?: string;
   d_codigo?: string;
+  latitud?: string;
+  longitud?: string;
 }

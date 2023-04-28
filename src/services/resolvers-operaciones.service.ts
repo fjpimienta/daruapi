@@ -35,9 +35,11 @@ class ResolversOperationsService {
     listElement: string,
     page: number = 1,
     itemsPage: number = 10,
-    filter: object = { active: { $ne: false } }
+    filter: object = { active: { $ne: false } },
+    sort: object = {}
   ) {
     try {
+      sort = { ...sort, ...{ id: 1 } };
       const paginationData = await pagination(this.getDB(), collection, page, itemsPage, filter);
       return {
         info: {
@@ -48,7 +50,7 @@ class ResolversOperationsService {
         },
         status: true,
         message: `Lista de ${listElement} cargada correctamente`,
-        items: findElements(this.getDB(), collection, filter, paginationData)
+        items: findElements(this.getDB(), collection, filter, paginationData, sort)
       };
     } catch (error) {
       return {

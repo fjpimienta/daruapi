@@ -8,12 +8,14 @@ import { ICountry } from './country.interface';
 import { IOrder } from './order.interface';
 import { IShopProduct } from './shop-product.interface';
 import { IConfig } from './config.interface';
+import { IWarehouse } from './warehouses.interface';
+import { IShipping } from './shipping.interface';
 
 export interface IVariables {
   id?: string | number;
   active?: string;
   filterName?: string;
-  offer?: number;
+  offer?: boolean;
   filterBranch?: string;
   slug?: string;
   pagination?: IPaginationOptions;
@@ -39,4 +41,8 @@ export interface IVariables {
   order?: IOrder;
   orders?: IOrder[];
   config?: IConfig;
+  warehouse?: IWarehouse;
+  warehouses?: IWarehouse[];
+  shipping?: IShipping;
+  shippings?: IShipping[];
 }

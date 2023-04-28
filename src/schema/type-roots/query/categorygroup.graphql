@@ -1,0 +1,5 @@
+"Definiciones de los tipos de raíz"
+type Query {
+   "Mostrar lista de categorias agrupadas"
+   categorysgroups: ResultCategoryGroup
+}

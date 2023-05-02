@@ -1,0 +1,21 @@
+type OrderCva {
+  NumOC: String!
+  Paqueteria: String!
+  CodigoSucursal: String!
+  PedidoBO: String
+  Observaciones: String!
+  productos: [ProductoCva]!
+  TipoFlete: String!
+  Calle: String!
+  Numero: String!
+  NumeroInt: String
+  Colonia: String!
+  Estado: String!
+  Ciudad: String!
+  Atencion: String!
+}
+
+type ProductoCva {
+  clave: String
+  cantidad: String
+}

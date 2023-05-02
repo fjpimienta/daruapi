@@ -10,6 +10,8 @@ import { IShopProduct } from './shop-product.interface';
 import { IConfig } from './config.interface';
 import { IWarehouse } from './warehouses.interface';
 import { IShipping } from './shipping.interface';
+import { IOrderCt } from './suppliers/order-ct.interface';
+import { IOrderCva } from './suppliers/order-cva.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -45,4 +47,8 @@ export interface IVariables {
   warehouses?: IWarehouse[];
   shipping?: IShipping;
   shippings?: IShipping[];
+  orderCt?: IOrderCt;
+  ordersCt?: IOrderCt[];
+  orderCva?: IOrderCva;
+  ordersCva?: IOrderCva[];
 }

@@ -31,6 +31,9 @@ export enum COLLECTIONS {
   CONFIG = 'config',
   WAREHOUSES = 'warehouses',
   SHIPPINGS = 'shippings',
+  ORDERS_CT = 'orders_ct',
+  ORDERS_CVA = 'orders_cva',
+  ORDERS_INGRAM = 'orders_ingram',
 }
 
 export enum MESSAGES {
@@ -60,4 +63,11 @@ export enum ACTIVE_VALUES_FILTER {
 
 export enum SUBSCRIPTIONS_EVENT {
   UPDATE_STOCK_PRODUCT = 'UPDATE_STOCK_PRODUCT'
+}
+
+export enum TIPO_PAGOS_CT {
+  TIPO_01 = 'Efectivo',
+  TIPO_02 = 'Cheque',
+  TIPO_03 = 'Transferencia',
+  TIPO_04 = 'Tarjeta de Credito',
 }

@@ -1,0 +1,21 @@
+input OrderCvaInput {
+  NumOC: String!
+  Paqueteria: String!
+  CodigoSucursal: String!
+  PedidoBO: String
+  Observaciones: String!
+  productos: [ProductoCvaInput]
+  TipoFlete: String!
+  Calle: String!
+  Numero: String!
+  NumeroInt: String
+  Colonia: String!
+  Estado: String!
+  Ciudad: String!
+  Atencion: String!
+}
+
+input ProductoCvaInput {
+  clave: String
+  cantidad: String
+}

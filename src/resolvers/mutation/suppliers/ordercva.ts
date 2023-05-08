@@ -3,7 +3,7 @@ import OrdersCvaService from '../../../services/suppliers/ordercva.service';
 
 const resolversOrderCvasMutation: IResolvers = {
   Mutation: {
-    async addOrderCt(_, variables, context) {
+    async addOrderCva(_, variables, context) {
       return new OrdersCvaService(_, variables, context).insert();
     }
   },

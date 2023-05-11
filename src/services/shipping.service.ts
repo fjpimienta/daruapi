@@ -98,6 +98,8 @@ class ShippingsService extends ResolversOperationsService {
       phone: shipping?.phone,
       web: shipping?.web,
       url_base_api: shipping?.url_base_api,
+      url_base_api_order: shipping?.url_base_api_order,
+      url_base_api_shipments: shipping?.url_base_api_shipments,
       token: shipping?.token,
       apis: shipping?.apis,
       active: true,

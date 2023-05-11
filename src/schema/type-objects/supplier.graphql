@@ -13,6 +13,8 @@ type Supplier {
    phone: String
    web: String
    url_base_api: String
+   url_base_api_order: String
+   url_base_api_shipments: String
    token: Token
    apis: [Apis]
    active: Boolean

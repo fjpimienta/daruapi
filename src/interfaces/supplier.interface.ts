@@ -11,6 +11,8 @@ export interface ISupplier {
   phone: string;
   web: string;
   url_base_api: string;
+  url_base_api_order: string;
+  url_base_api_shipments: string;
   token: IToken;
   apis: IApis[];
   active: boolean;

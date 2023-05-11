@@ -98,6 +98,8 @@ class SuppliersService extends ResolversOperationsService {
       phone: supplier?.phone,
       web: supplier?.web,
       url_base_api: supplier?.url_base_api,
+      url_base_api_order: supplier?.url_base_api_order,
+      url_base_api_shipments: supplier?.url_base_api_shipments,
       token: supplier?.token,
       apis: supplier?.apis,
       active: true,
@@ -141,6 +143,8 @@ class SuppliersService extends ResolversOperationsService {
       phone: supplier?.phone,
       web: supplier?.web,
       url_base_api: supplier?.url_base_api,
+      url_base_api_order: supplier?.url_base_api_order,
+      url_base_api_shipments: supplier?.url_base_api_shipments,
       token: supplier?.token,
       apis: supplier?.apis,
     };

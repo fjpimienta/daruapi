@@ -16,7 +16,7 @@ import resolversStripeCardQuery from './stripe/card';
 import resolversStripeChargeQuery from './stripe/charge';
 import resolversStripeCustomerQuery from './stripe/customer';
 import resolversSubcategoriesQuery from './subcategories';
-import resolversSuppliersQuery from './suppliers';
+import resolversSuppliersQuery from './suppliers/suppliers';
 import resolversOrderCtsQuery from './suppliers/orderct';
 import resolversOrderCvasQuery from './suppliers/ordercva';
 import resolversTagsQuery from './tags';

@@ -1,4 +1,4 @@
-import { ICatalog } from './catalog.interface';
+import { ICatalog } from '../catalog.interface';
 
 export interface ISupplier {
   id?: string;
@@ -14,7 +14,7 @@ export interface ISupplier {
   url_base_api_order: string;
   url_base_api_shipments: string;
   token: IToken;
-  apis: IApis[];
+  apis: IApisupplier[];
   active: boolean;
   catalogs: ICatalogs[];
 }
@@ -44,7 +44,7 @@ export interface IResponsetoken {
   es_token: boolean;
 }
 
-export interface IApis {
+export interface IApisupplier {
   type: string;
   name: string;
   method: string;

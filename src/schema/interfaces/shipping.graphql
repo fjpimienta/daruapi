@@ -13,7 +13,7 @@ interface Shipping {
   url_base_api_order: String
   url_base_api_shipments: String
   token: Token
-  apis: [Apis]
+  apis: [ApiShip]
   active: Boolean
 }
 
@@ -37,7 +37,7 @@ input ResponseToken {
   es_token: Boolean
 }
 
-input Apis {
+input ApiShip {
   type: String                        #Catalogo, Productos, Facturas, Utilidades, etc
   name: String
   method: String

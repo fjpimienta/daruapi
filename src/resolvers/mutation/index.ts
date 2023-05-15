@@ -10,7 +10,7 @@ import resolversProductMutation from './product';
 import resolversShippingMutation from './shipping';
 import mutationStripeResolvers from './stripe';
 import resolversSubcategorieMutation from './subcategorie';
-import resolversSupplierMutation from './supplier';
+import resolversSupplierMutation from './suppliers/supplier';
 import resolversOrderCtsMutation from './suppliers/orderct';
 import resolversOrderCvasMutation from './suppliers/ordercva';
 import resolversTagMutation from './tag';

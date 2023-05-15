@@ -13,7 +13,7 @@ interface Supplier {
   url_base_api_order: String
   url_base_api_shipments: String
   token: Token
-  apis: [Apis]
+  apis: [Apisupplier]
   active: Boolean
   catalogs: [Catalogs]
 }
@@ -43,7 +43,7 @@ input ResponseToken {
   es_token: Boolean
 }
 
-input Apis {
+input Apisupplier {
   type: String                        #Catalogo, Productos, Facturas, Utilidades, etc
   name: String
   method: String

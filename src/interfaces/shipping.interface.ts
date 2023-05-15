@@ -12,7 +12,7 @@ export interface IShipping {
   url_base_api_order: string;
   url_base_api_shipments: string;
   token: IToken;
-  apis: IApis[];
+  apis: IApiShip[];
   active: boolean;
 }
 
@@ -36,7 +36,7 @@ export interface IResponsetoken {
   es_token: boolean;
 }
 
-export interface IApis {
+export interface IApiShip {
   type: string;
   name: string;
   method: string;

@@ -6,6 +6,7 @@ type ResultSupplier implements Result{
   "Mensaje de la operacion para dar feedback"
   message: String!
   supplier: Supplier
+  apiSupplier: Apisupplier
   suppliers: [Supplier!]!
   supplierId: String
 }

@@ -1,5 +1,5 @@
 import { IResolvers } from '@graphql-tools/utils';
-import SuppliersService from '../../services/supplier.service';
+import SuppliersService from '../../../services/suppliers/supplier.service';
 
 const resolversSuppliersQuery: IResolvers = {
   Query: {
@@ -11,6 +11,9 @@ const resolversSuppliersQuery: IResolvers = {
     },
     async supplierId(_, __, context) {
       return new SuppliersService(_, __, context).next();
+    },
+    async apiSupplier(_, variables, context) {
+      return new SuppliersService(_, variables, context).api();
     }
   },
 };

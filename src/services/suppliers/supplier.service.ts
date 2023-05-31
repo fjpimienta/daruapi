@@ -76,6 +76,24 @@ class SuppliersService extends ResolversOperationsService {
     }
   }
 
+  // Obtener la API filtrada por supplier, tipo y nombre.
+  async supplierName() {
+    const name = this.getVariables().name;
+    if (name) {
+      const result = await this.getByName(this.collection);
+      return await {
+        status: result.status,
+        message: result.message,
+        supplierName: result.item
+      };
+    }
+    return await {
+      status: false,
+      message: 'No hay nombre para buscar',
+      supplierName: null
+    };
+  }
+
   // Obtener el siguiente elemento
   async next() {
     const result = await this.nextId(this.collection);

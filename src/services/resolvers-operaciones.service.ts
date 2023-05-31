@@ -119,6 +119,38 @@ class ResolversOperationsService {
   }
 
   // Obtener detalles del item
+  protected async getByName(collection: string) {
+    const collectionLabel = collection.toLowerCase();
+    const name = this.getVariables().name;
+    try {
+      return await findOneElement(this.getDB(), collection,
+        { 'slug': name }
+      )
+        .then(result => {
+          if (result) {
+            return {
+              status: true,
+              message: `${collectionLabel} ha sido cargada correctamente con su detalle`,
+              item: result
+            };
+          }
+          return {
+            status: false,
+            message: `${collectionLabel} no ha obtenido detalles por que no existe`,
+            item: null
+          };
+        });
+    } catch (error) {
+      return {
+        status: false,
+        message: `Error inesperado al querer cargar los detalles de ${collectionLabel}`,
+        item: null
+      };
+    }
+  }
+
+
+  // Obtener detalles del item
   protected async getByFilters(collection: string) {
     const collectionLabel = collection.toLowerCase();
     const name = this.getVariables().name;

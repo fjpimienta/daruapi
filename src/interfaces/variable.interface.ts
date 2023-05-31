@@ -54,5 +54,6 @@ export interface IVariables {
   name?: string;
   typeApi?: string;
   nameApi?: string;
-  apiSupplier?: IApisupplier;
+  // apiSupplier?: IApisupplier;
+  // supplierName?: ISupplier;
 }

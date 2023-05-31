@@ -14,6 +14,9 @@ const resolversSuppliersQuery: IResolvers = {
     },
     async apiSupplier(_, variables, context) {
       return new SuppliersService(_, variables, context).api();
+    },
+    async supplierName(_, variables, context) {
+      return new SuppliersService(_, variables, context).supplierName();
     }
   },
 };

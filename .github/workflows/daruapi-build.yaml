@@ -14,7 +14,7 @@ on:
         type: string
 
 env:
-  DEPLOYMENT_FOLDER: graphiql
+  DEPLOYMENT_FOLDER: build/schema
 
 jobs:
 # Please do not rename this job
@@ -42,9 +42,11 @@ jobs:
           STRIPE_API_KEY: sk_test_51LcAKpKmpYSfXVu37hEWbmCaZ1VOfKGMQk9ZGjScEMtKm9c8yS3ENv695dGVK5522QyjQhoXw9rBUnUvUfgvYsuq004bHP5rZn
           STRIPE_API_VERSION: 2022-08-01
           UPLOAD_URL: https://api.daru.mx/uploads
-          USER_EMAIL: francisco.pimienta@daru.mx
+          USER_EMAIL: fjpimienta@hosting3m.com
           USER_PASSWORD: 09Fj1973!!
-        run: npm run build
+        run: |
+          npm ci
+          npm run start
 
 # Please do not touch the following action
       - name: Store deployment content
@@ -52,7 +54,7 @@ jobs:
         with:
           api-key: ${{ secrets.IONOS_API_KEY }}
           service-host: api-us.ionos.space
-          project-id: 774d77f1-5356-495b-bcac-f26283b50afd
+          project-id: 5d9d8edc-857a-4290-99d0-fe73ed8e3f1d
           branch-id: ${{ inputs.branch-id }}
           version: ${{ github.sha }}
           folder: ${{ env.DEPLOYMENT_FOLDER }}

@@ -28,11 +28,12 @@ export interface IToken {
   type: string;
   method: string;
   url_base_token: string;
-  body_parameters: IBodyParameters[];
+  header_parameters: IParameters[];
+  body_parameters: IParameters[];
   response_token: IResponsetoken[];
 }
 
-export interface IBodyParameters {
+export interface IParameters {
   name: string;
   value: string;
   secuence: number;
@@ -53,7 +54,7 @@ export interface IApisupplier {
   use: string;
   return: string;
   headers: IHeaders;
-  parameters: IBodyParameters[];
+  parameters: IParameters[];
   requires_token: boolean;
 }
 

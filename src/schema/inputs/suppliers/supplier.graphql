@@ -27,6 +27,8 @@ input TokenInput {
   type: String                # JWT, OAuth, OpenID
   method: String              # get, post
   url_base_token: String
+  basic_auth_username: String
+  basic_auth_password: String
   header_parameters: [ParametersInput]
   body_parameters: [ParametersInput]
   response_token: [ResponsetokenInput]

@@ -20,6 +20,8 @@ export interface IToken {
   type: string;
   method: string;
   url_base_token: string;
+  basic_auth_username: string;
+  basic_auth_password: string;
   header_parameters: IParameters[];
   body_parameters: IParameters[];
   response_token: IResponsetoken[];

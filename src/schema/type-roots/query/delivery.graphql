@@ -1,0 +1,16 @@
+type Query {
+  "Mostrar lista de Almacenes"
+   deliverys (
+      "Pagina seleccionada para acceder a ella"
+      page: Int=1, 
+      "Almacenes por pagina que se obtendran por pagina"
+      itemsPage: Int=10,
+      "Especificar el estado de los Almacenes que queremos mostrar"
+      active: ActiveFilterEnum = ACTIVE
+      "Especificar el filtro por el name"
+      filterName: String=""
+   ): ResultDelivery
+   "Item del deliverys seleccionado"
+   delivery(id: ID!): ResultDelivery
+   deliveryId: ResultDelivery
+}

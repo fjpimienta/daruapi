@@ -12,6 +12,7 @@ import { IWarehouse } from './warehouses.interface';
 import { IApiShip, IShipping } from './shipping.interface';
 import { IOrderCt } from './suppliers/order-ct.interface';
 import { IOrderCva } from './suppliers/order-cva.interface';
+import { IDelivery } from './delivery.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -54,6 +55,6 @@ export interface IVariables {
   name?: string;
   typeApi?: string;
   nameApi?: string;
-  // apiSupplier?: IApisupplier;
-  // supplierName?: ISupplier;
+  delivery?: IDelivery;
+  deliverys?: IDelivery[];
 }

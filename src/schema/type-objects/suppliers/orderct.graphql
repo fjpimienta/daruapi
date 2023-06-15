@@ -4,7 +4,7 @@ type OrderCt {
   tipoPago: String!
   envio: [EnvioCt]
   producto: [ProductoCt]
-  respuestaCT: RespuestaCT
+  respuestaCT: RespuestaCt
 }
 
 type EnvioCt {

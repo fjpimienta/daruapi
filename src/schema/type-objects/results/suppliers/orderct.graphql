@@ -5,5 +5,5 @@ type ResultOrderCt implements Result {
   orderCt: OrderCt
   ordersCt: [OrderCt!]!
   orderCtId: String
-  respuestaCT: RespuestaCT
+  respuestaCT: RespuestaCt
 }

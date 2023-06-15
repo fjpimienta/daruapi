@@ -34,6 +34,7 @@ export enum COLLECTIONS {
   ORDERS_CT = 'orders_ct',
   ORDERS_CVA = 'orders_cva',
   ORDERS_INGRAM = 'orders_ingram',
+  DELIVERYS = 'deliverys',
 }
 
 export enum MESSAGES {

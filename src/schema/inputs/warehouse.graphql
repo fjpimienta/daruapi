@@ -1,13 +1,12 @@
 input WarehouseInput {
   id: ID
-  homoclave: String!
-  active: Boolean
-  almacen: String!
   cp: String!
-  calle: String
-  ciudad: String
-  colonia: String
+  name: String
   estado: String
-  telefono: String
-  numero: String
+  latitud: String
+  longitud: String
+  suppliersProd: [SupplierProdInput]
+  products: [ProductInput]
+  productShipments: [ProductShipmentInput]
+  shipments: [ShipmentInput]
 }

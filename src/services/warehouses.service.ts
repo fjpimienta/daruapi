@@ -70,7 +70,7 @@ class WarehousesService extends ResolversOperationsService {
   async insert() {
     const warehouse = this.getVariables().warehouse;
     // Comprobar que no esta en blanco ni es indefinido
-    if (!this.checkData(warehouse?.almacen || '')) {
+    if (!this.checkData(warehouse?.name || '')) {
       return {
         status: false,
         message: `El almacen no se ha especificado correctamente`,
@@ -79,7 +79,7 @@ class WarehousesService extends ResolversOperationsService {
     }
 
     // Comprobar que no existe
-    if (await this.checkInDatabase(warehouse?.almacen || '')) {
+    if (await this.checkInDatabase(warehouse?.name || '')) {
       return {
         status: false,
         message: `El Almacen ya existe en la base de datos, intenta con otro almacen`,
@@ -89,18 +89,16 @@ class WarehousesService extends ResolversOperationsService {
 
     const warehouseObject = {
       id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),
-      homoclave: warehouse?.homoclave,
-      almacen: warehouse?.almacen,
       cp: warehouse?.cp,
-      calle: warehouse?.calle,
-      colonia: warehouse?.colonia,
-      ciudad: warehouse?.ciudad,
+      name: warehouse?.name,
       estado: warehouse?.estado,
-      telefono: warehouse?.telefono,
-      numero: warehouse?.numero,
-      active: true,
-      registerDate: new Date().toISOString()//,
-      // suppliersCat
+      latitud: warehouse?.latitud,
+      longitud: warehouse?.longitud,
+      suppliersProd: warehouse?.suppliersProd,
+      products: warehouse?.products,
+      productShipments: warehouse?.productShipments,
+      shipments: warehouse?.shipments,
+      registerDate: new Date().toISOString()
     };
     const result = await this.add(this.collection, warehouseObject, 'almace');
     return {
@@ -162,40 +160,39 @@ class WarehousesService extends ResolversOperationsService {
 
     // Registra cada almacen
     warehouses?.forEach(warehouse => {
-      const item = warehousesDB.find(item => item.almacen === warehouse.almacen);
+      const item = warehousesDB.find(item => item.name === warehouse.name);
       if (item === undefined) {                       // Elemento que no existe se agrega
         warehouse.id = i.toString();
-        warehouse.homoclave = warehouse?.homoclave;
-        warehouse.almacen = warehouse?.almacen;
         warehouse.cp = warehouse?.cp;
-        warehouse.calle = warehouse?.calle;
-        warehouse.colonia = warehouse?.colonia;
-        warehouse.ciudad = warehouse?.ciudad;
+        warehouse.name = warehouse?.name;
         warehouse.estado = warehouse?.estado;
-        warehouse.telefono = warehouse?.telefono;
-        warehouse.numero = warehouse?.numero;
-        warehouse.active = true;
+        warehouse.latitud = warehouse?.latitud;
+        warehouse.longitud = warehouse?.longitud;
+        warehouse.suppliersProd = warehouse?.suppliersProd;
+        warehouse.products = warehouse?.products;
+        warehouse.productShipments = warehouse?.productShipments;
+        warehouse.shipments = warehouse?.shipments;
         i += 1;
         warehousesAdd?.push(warehouse);
       } else {                                        // Elementos que ya exsiten, se agrega en otra data.
         const filter = { id: warehouse?.id };             // Conocer el id del almacen
-        // Localizar el supplier
-        if (item.suppliersCat) {                      // Si existen guardados suppliers a ese elemento.
-          let existeSupplicerCat = false;
-          if (item.suppliersCat.length > 0) {         // Si existen mas de un suppliers en ese elemento.
-            item.suppliersCat.forEach(supplierCat => {  // Buscar el supplier para actualizar.
-              if (supplierCat.idProveedor === warehouse.suppliersCat[0].idProveedor) {
-                supplierCat = warehouse.suppliersCat[0];
-                existeSupplicerCat = true;
-              }
-            });
-          }
-          if (!existeSupplicerCat && warehouse.suppliersCat[0].idProveedor !== '') {
-            item.suppliersCat.push(warehouse.suppliersCat[0]);
-          }
-        } else {
-          item.suppliersCat = warehouse.suppliersCat;
-        }
+        // // Localizar el supplier
+        // if (item.suppliersProd) {                      // Si existen guardados suppliers a ese elemento.
+        //   let existeSupplicerCat = false;
+        //   if (item.suppliersProd.length > 0) {         // Si existen mas de un suppliers en ese elemento.
+        //     item.suppliersCat.forEach(supplierCat => {  // Buscar el supplier para actualizar.
+        //       if (supplierCat.idProveedor === warehouse.suppliersCat[0].idProveedor) {
+        //         supplierCat = warehouse.suppliersCat[0];
+        //         existeSupplicerCat = true;
+        //       }
+        //     });
+        //   }
+        //   if (!existeSupplicerCat && warehouse.suppliersCat[0].idProveedor !== '') {
+        //     item.suppliersCat.push(warehouse.suppliersCat[0]);
+        //   }
+        // } else {
+        //   item.suppliersCat = warehouse.suppliersCat;
+        // }
         // item.suppliersCat = [];
 
         // Ejecutar actualización
@@ -244,7 +241,7 @@ class WarehousesService extends ResolversOperationsService {
       };
     }
     // Comprobar que no existe
-    if (!this.checkData(warehouse?.almacen || '')) {
+    if (!this.checkData(warehouse?.name || '')) {
       return {
         status: false,
         message: `El Almacen no se ha especificado correctamente`,
@@ -252,7 +249,7 @@ class WarehousesService extends ResolversOperationsService {
       };
     }
     const objectUpdate = {
-      almacen: warehouse?.almacen,
+      name: warehouse?.name,
     };
     // Conocer el id del almacen
     const filter = { id: warehouse?.id };

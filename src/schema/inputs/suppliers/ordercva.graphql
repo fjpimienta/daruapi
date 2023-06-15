@@ -17,5 +17,5 @@ input OrderCvaInput {
 
 input ProductoCvaInput {
   clave: String
-  cantidad: String
+  cantidad: Float
 }

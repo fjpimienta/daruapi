@@ -1,0 +1,7 @@
+input ProductShipmentInput {
+  producto: String
+  cantidad: Float
+  precio: Float
+  moneda: String
+  almacen: String
+}

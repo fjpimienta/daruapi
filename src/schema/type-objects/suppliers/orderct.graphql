@@ -20,7 +20,7 @@ type EnvioCt {
 }
 
 type ProductoCt {
-  cantidad: Int
+  cantidad: Float
   clave: String
   precio: Float
   moneda: String

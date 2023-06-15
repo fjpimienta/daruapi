@@ -88,18 +88,20 @@ class DeliverysService extends ResolversOperationsService {
 
     const deliveryObject = {
       id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),
-      // homoclave: delivery?.homoclave,
-      // almacen: delivery?.deliveryId,
-      // cp: delivery?.cp,
-      // calle: delivery?.calle,
-      // colonia: delivery?.colonia,
-      // ciudad: delivery?.ciudad,
-      // estado: delivery?.estado,
-      // telefono: delivery?.telefono,
-      // numero: delivery?.numero,
-      // active: true,
-      registerDate: new Date().toISOString()//,
-      // suppliersCat
+      deliveryId: delivery?.deliveryId,
+      user: delivery?.user,
+      warehouses: delivery?.warehouses,
+      ordersCt: delivery?.ordersCt,
+      ordersCva: delivery?.ordersCva,
+      orderCtResponse: delivery?.orderCtResponse,
+      orderCvaResponse: delivery?.orderCvaResponse,
+      registerDate: new Date().toISOString()
+    };
+    console.log('deliveryObject: ', deliveryObject);
+    return {
+      status: true,
+      message: 'Objeto recibido',
+      delivery: deliveryObject
     };
     const result = await this.add(this.collection, deliveryObject, 'almace');
     return {

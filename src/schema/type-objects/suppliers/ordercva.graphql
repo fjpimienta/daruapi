@@ -17,5 +17,5 @@ type OrderCva {
 
 type ProductoCva {
   clave: String
-  cantidad: String
+  cantidad: Float
 }

@@ -18,5 +18,5 @@ export interface IOrderCva {
 
 export interface IProductoCva {
   clave: string;                                    // Clave del producto
-  cantidad: string;                                 // La cantidad del producto
+  cantidad: number;                                 // La cantidad del producto
 }

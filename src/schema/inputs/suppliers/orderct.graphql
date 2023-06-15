@@ -19,7 +19,7 @@ input EnvioCtInput {
 }
 
 input ProductoCtInput {
-  cantidad: Int
+  cantidad: Float
   clave: String
   precio: Float
   moneda: String

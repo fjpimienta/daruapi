@@ -38,4 +38,6 @@ type Address {
   dir_invoice: Boolean
   dir_delivery: Boolean
   dir_delivery_main: Boolean
+  outdoorNumber: String
+  interiorNumber: String
 }

@@ -1,11 +1,14 @@
-export interface IUser {
+export interface IUser extends IUserBasic {
+  password?: string;
+  registerdate?: string;
+  role?: string;
+}
+
+export interface IUserBasic {
   id?: string;
   name?: string;
   lastname?: string;
   email: string;
-  password?: string;
-  registerdate?: string;
-  role?: string;
   phone?: string;
   stripeCustomer?: string;
   addresses?: IAddress[];

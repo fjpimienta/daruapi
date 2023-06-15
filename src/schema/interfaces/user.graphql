@@ -1,12 +1,16 @@
 "User basico para definir las propiedades basicas de los elementos de la API Store"
 interface User {
+  password: String!
+  role: Role
+  registerdate: String!
+  userBasic: UserBasic!
+}
+
+interface UserBasic {
   id: ID!
   name: String!
   lastname: String!
   email: String!
-  password: String!
-  role: Role
-  registerdate: String!
   active: Boolean
   phone: String
   addresses: [Address]

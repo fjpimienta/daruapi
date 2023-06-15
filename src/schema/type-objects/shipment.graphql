@@ -2,6 +2,6 @@
 
 type Shipment {
   empresa: String!
-  metodoShipping: Float!
-  costo: String!
+  metodoShipping: String!
+  costo: Float!
 }

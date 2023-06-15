@@ -3,7 +3,7 @@
 type Delivery {
   id: ID
   deliveryId: ID
-  user: User
+  user: UserBasic
   warehouses: [Warehouse]
   ordersCt: [OrderCt]!
   ordersCva: [OrderCva]!

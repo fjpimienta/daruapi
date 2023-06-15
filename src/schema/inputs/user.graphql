@@ -1,11 +1,15 @@
 "Input para insertar los datos del usuario en el registro"
 input UserInput {
+   password: String
+   role: Role=CLIENT
+   basicInfo: UserBasicInput!
+}
+
+input UserBasicInput {
    id: ID
    name: String!
    lastname: String!
    email: String!
-   password: String
-   role: Role=CLIENT
    active: Boolean
    phone: String
    addresses: [AddressInput]

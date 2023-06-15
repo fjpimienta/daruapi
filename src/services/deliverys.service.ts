@@ -97,13 +97,8 @@ class DeliverysService extends ResolversOperationsService {
       orderCvaResponse: delivery?.orderCvaResponse,
       registerDate: new Date().toISOString()
     };
-    console.log('deliveryObject: ', deliveryObject);
-    return {
-      status: true,
-      message: 'Objeto recibido',
-      delivery: deliveryObject
-    };
-    const result = await this.add(this.collection, deliveryObject, 'almace');
+    console.log('insert/deliveryObject: ', deliveryObject);
+    const result = await this.add(this.collection, deliveryObject, 'delivery');
     return {
       status: result.status,
       message: result.message,

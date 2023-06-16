@@ -1,11 +1,11 @@
 "Item basico para definir las propiedades basicas de los elementos de la API Store"
 interface Delivery {
   id: ID
-  deliveryId: ID
-  user: UserBasic
-  warehouses: [Warehouse]
-  ordersCt: [OrderCt]!
-  ordersCva: [OrderCva]!
-  orderCtResponse: RespuestaCt!
-  orderCvaResponse: RespuestaCva!
+  deliveryId: String
+  user: UserBasic!
+  warehouses: [Warehouse]!
+  ordersCt: [OrderCt]
+  ordersCva: [OrderCva]
+  orderCtResponse: RespuestaCt
+  orderCvaResponse: RespuestaCva
 }

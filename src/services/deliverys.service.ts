@@ -72,7 +72,7 @@ class DeliverysService extends ResolversOperationsService {
     if (!this.checkData(delivery?.deliveryId || '')) {
       return {
         status: false,
-        message: `El delivery no se ha especificado correctamente`,
+        message: `El Delivery no se ha especificado correctamente`,
         delivery: null
       };
     }

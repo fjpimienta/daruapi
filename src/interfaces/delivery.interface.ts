@@ -11,8 +11,8 @@ export interface IDelivery {
   registerDate?: string;
   user: IUserBasic;
   warehouses: IWarehouse[];
-  ordersCt: IOrderCt[];
-  ordersCva: IOrderCva[];
-  orderCtResponse: IOrderCtResponse;
-  orderCvaResponse: IOrderCvaResponse;
+  ordersCt?: IOrderCt[];
+  ordersCva?: IOrderCva[];
+  orderCtResponse?: IOrderCtResponse;
+  orderCvaResponse?: IOrderCvaResponse;
 }

@@ -1,10 +1,10 @@
 input DeliveryInput {
   id: ID
-  deliveryId: ID
-  user: UserBasicInput
-  warehouses: [WarehouseInput]
-  ordersCt: [OrderCtInput]!
-  ordersCva: [OrderCvaInput]!
-  orderCtResponse: OrderCtResponseInput!
-  orderCvaResponse: OrderCvaResponseInput!
+  deliveryId: String
+  user: UserBasicInput!
+  warehouses: [WarehouseInput]!
+  ordersCt: [OrderCtInput]
+  ordersCva: [OrderCvaInput]
+  orderCtResponse: OrderCtResponseInput
+  orderCvaResponse: OrderCvaResponseInput
 }

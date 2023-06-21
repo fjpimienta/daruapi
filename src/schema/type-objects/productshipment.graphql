@@ -6,6 +6,7 @@ type ProductShipment {
   precio: String!
   moneda: String!
   almacen: String!
+  cp: String!
   name: String!
   total: Float!
 }

@@ -4,6 +4,7 @@ input ProductShipmentInput {
   precio: Float
   moneda: String
   almacen: String
+  cp: String
   name: String
   total: Float
 }

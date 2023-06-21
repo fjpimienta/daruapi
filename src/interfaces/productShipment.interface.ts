@@ -4,4 +4,7 @@ export interface IProductShipment {
   precio?: number;
   moneda?: string;
   almacen: string;
+  cp: string;
+  name: string;
+  total: number;
 }

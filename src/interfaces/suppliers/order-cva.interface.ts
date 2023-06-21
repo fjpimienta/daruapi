@@ -10,6 +10,7 @@ export interface IOrderCva {
   Calle?: string;                                   // Calle de envio
   Numero?: string;                                  // Numero
   NumeroInt: string;                                // Numero interior
+  CP: string;                                       // Codigo Postal de Envio
   Colonia?: string;                                 // Colonia de envio
   Estado?: string;                                  // Colonia de envio
   Ciudad?: string;                                  // Clave de Ciudad (Véase Catalogo de Ciudades )

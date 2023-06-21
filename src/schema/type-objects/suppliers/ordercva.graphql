@@ -9,6 +9,7 @@ type OrderCva {
   Calle: String!
   Numero: String!
   NumeroInt: String
+  CP: String
   Colonia: String!
   Estado: String!
   Ciudad: String!

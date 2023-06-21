@@ -101,6 +101,7 @@ class OrdersCvaService extends ResolversOperationsService {
       Calle: orderCva?.Calle,
       Numero: orderCva?.Numero,
       NumeroInt: orderCva?.NumeroInt,
+      CP: orderCva?.CP,
       Colonia: orderCva?.Colonia,
       Estado: orderCva?.Estado,
       Ciudad: orderCva?.Ciudad,

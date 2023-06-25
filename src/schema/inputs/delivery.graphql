@@ -7,4 +7,6 @@ input DeliveryInput {
   ordersCva: [OrderCvaInput]
   orderCtResponse: OrderCtResponseInput
   orderCvaResponse: OrderCvaResponseInput
+  statusError: Boolean
+  messageError: String
 }

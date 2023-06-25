@@ -95,6 +95,8 @@ class DeliverysService extends ResolversOperationsService {
       ordersCva: delivery?.ordersCva,
       orderCtResponse: delivery?.orderCtResponse,
       orderCvaResponse: delivery?.orderCvaResponse,
+      statusError: delivery?.statusError,
+      messageError: delivery?.messageError,
       registerDate: new Date().toISOString()
     };
     console.log('insert/deliveryObject: ', deliveryObject);

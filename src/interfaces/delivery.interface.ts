@@ -15,4 +15,6 @@ export interface IDelivery {
   ordersCva?: IOrderCva[];
   orderCtResponse?: IOrderCtResponse;
   orderCvaResponse?: IOrderCvaResponse;
+  statusError: boolean;
+  messageError: string;
 }

@@ -8,4 +8,6 @@ interface Delivery {
   ordersCva: [OrderCva]
   orderCtResponse: RespuestaCt
   orderCvaResponse: RespuestaCva
+  statusError: Boolean
+  messageError: String
 }

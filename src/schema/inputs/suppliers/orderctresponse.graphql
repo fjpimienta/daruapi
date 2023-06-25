@@ -1,5 +1,6 @@
 input OrderCtResponseInput {
   pedidoWeb: String!
+  fecha: String!
   tipoDeCambio: Float!
   estatus: String!
   errores: [ErroresCTInput!]!

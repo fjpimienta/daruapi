@@ -3,6 +3,6 @@ input OrderCvaResponseInput {
   estado: String
   pedido: String
   total: String
-  agentemail: String!
-  almacenmail: String!
+  agentemail: String
+  almacenmail: String
 }

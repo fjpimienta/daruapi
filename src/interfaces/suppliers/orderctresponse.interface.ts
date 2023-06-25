@@ -1,5 +1,6 @@
 export interface IOrderCtResponse {
   pedidoWeb: string;
+  fecha: string;
   tipoDeCambio: number;
   estatus: string;
   errores: IErroresCT[];

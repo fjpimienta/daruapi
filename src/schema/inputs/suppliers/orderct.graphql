@@ -11,6 +11,7 @@ input EnvioCtInput {
   direccion: String
   entreCalles: String
   noExterior: String
+  noInterior: String
   colonia: String
   estado: String
   ciudad: String

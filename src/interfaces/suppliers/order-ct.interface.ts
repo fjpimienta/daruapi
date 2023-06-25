@@ -11,6 +11,7 @@ export interface IEnvioCt {
   direccion: string;
   entreCalles: string;
   noExterior: string;
+  noInterior: string;
   colonia: string;
   estado: string;
   ciudad: string;

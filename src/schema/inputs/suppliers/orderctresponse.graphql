@@ -6,7 +6,7 @@ input OrderCtResponseInput {
 }
 
 input ErroresCTInput {
-  errorCode: Int!
+  errorCode: String!
   errorMessage: String!
   errorReference: String!
 }

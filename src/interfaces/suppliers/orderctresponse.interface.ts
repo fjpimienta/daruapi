@@ -6,7 +6,7 @@ export interface IOrderCtResponse {
 }
 
 export interface IErroresCT {
-  errorCode: number;
+  errorCode: string;
   errorMessage: string;
   errorReference: string;
 }

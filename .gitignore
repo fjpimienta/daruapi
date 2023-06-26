@@ -10,6 +10,9 @@
 /build
 /uploads
 
+# logs
+/src/logs
+
 # dependencies
 /node_modules
 

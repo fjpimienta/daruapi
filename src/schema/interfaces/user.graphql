@@ -3,10 +3,6 @@ interface User {
   password: String!
   role: Role
   registerdate: String!
-  userBasic: UserBasic!
-}
-
-interface UserBasic {
   id: ID!
   name: String!
   lastname: String!

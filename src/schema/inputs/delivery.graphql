@@ -1,7 +1,7 @@
 input DeliveryInput {
   id: ID
   deliveryId: String
-  user: UserBasicInput!
+  user: UserInput!
   warehouses: [WarehouseInput]!
   ordersCt: [OrderCtInput]
   ordersCva: [OrderCvaInput]

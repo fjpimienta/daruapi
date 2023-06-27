@@ -2,7 +2,7 @@
 interface Delivery {
   id: ID
   deliveryId: String
-  user: UserBasic!
+  user: User!
   warehouses: [Warehouse]!
   ordersCt: [OrderCt]
   ordersCva: [OrderCva]

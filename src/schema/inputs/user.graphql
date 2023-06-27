@@ -2,10 +2,6 @@
 input UserInput {
    password: String
    role: Role=CLIENT
-   basicInfo: UserBasicInput!
-}
-
-input UserBasicInput {
    id: ID
    name: String!
    lastname: String!

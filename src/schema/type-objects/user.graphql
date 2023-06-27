@@ -9,10 +9,6 @@ type User  {
   password: String!
   role: Role!
   registerdate: String!
-  userBasic: UserBasic
-}
-
-type UserBasic  {
   id: ID!
   name: String!
   lastname: String!

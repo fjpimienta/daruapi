@@ -1,0 +1,8 @@
+"Definiciones de los tipos de raíz"
+type Mutation {
+   "Ordenes CVA"
+   addOrderCva(orderCva: OrderCvaInput!): ResultOrderCva
+  #  updateOrderCva(orderCva: OrderCvaInput): ResultOrderCva
+  #  deleteOrderCva(id: ID!): ResultOrderCva
+  #  blockOrderCva(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultOrderCva
+}

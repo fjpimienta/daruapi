@@ -3,13 +3,16 @@ import { IUser } from './user.interface';
 import { ICatalog } from './catalog.interface';
 import { IProduct } from './product.interface';
 import { IApiproveedor } from './apiproveedor.interface';
-import { ISupplier } from './supplier.interface';
+import { IApisupplier, ISupplier } from './suppliers/supplier.interface';
 import { ICountry } from './country.interface';
 import { IOrder } from './order.interface';
 import { IShopProduct } from './shop-product.interface';
 import { IConfig } from './config.interface';
 import { IWarehouse } from './warehouses.interface';
-import { IShipping } from './shipping.interface';
+import { IApiShip, IShipping } from './shipping.interface';
+import { IOrderCt } from './suppliers/order-ct.interface';
+import { IOrderCva } from './suppliers/order-cva.interface';
+import { IDelivery } from './delivery.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -45,4 +48,13 @@ export interface IVariables {
   warehouses?: IWarehouse[];
   shipping?: IShipping;
   shippings?: IShipping[];
+  orderCt?: IOrderCt;
+  ordersCt?: IOrderCt[];
+  orderCva?: IOrderCva;
+  ordersCva?: IOrderCva[];
+  name?: string;
+  typeApi?: string;
+  nameApi?: string;
+  delivery?: IDelivery;
+  deliverys?: IDelivery[];
 }

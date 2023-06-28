@@ -1,0 +1,12 @@
+input DeliveryInput {
+  id: ID
+  deliveryId: String
+  user: UserInput!
+  warehouses: [WarehouseInput]!
+  ordersCt: [OrderCtInput]
+  ordersCva: [OrderCvaInput]
+  orderCtResponse: OrderCtResponseInput
+  orderCvaResponse: OrderCvaResponseInput
+  statusError: Boolean
+  messageError: String
+}

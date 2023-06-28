@@ -112,7 +112,7 @@ type BranchOffices {
   id: String
   name: String
   estado: String
-  cantidad: Int
+  cantidad: Float
   cp: String
   latitud: String
   longitud: String

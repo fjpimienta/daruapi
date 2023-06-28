@@ -1,11 +1,11 @@
 "Input para insertar los datos del usuario en el registro"
 input UserInput {
+   password: String
+   role: Role=CLIENT
    id: ID
    name: String!
    lastname: String!
    email: String!
-   password: String
-   role: Role=CLIENT
    active: Boolean
    phone: String
    addresses: [AddressInput]
@@ -30,6 +30,8 @@ input AddressInput {
   dir_invoice: Boolean
   dir_delivery: Boolean
   dir_delivery_main: Boolean
+  outdoorNumber: String
+  interiorNumber: String
 }
 
 # input UserView {

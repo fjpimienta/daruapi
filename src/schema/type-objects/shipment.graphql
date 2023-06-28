@@ -1,0 +1,7 @@
+"Tipo de objeto para almacenar la informacion de las Products de los Productos"
+
+type Shipment {
+  empresa: String!
+  metodoShipping: String!
+  costo: Float!
+}

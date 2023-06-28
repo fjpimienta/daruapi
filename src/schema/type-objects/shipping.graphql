@@ -13,8 +13,10 @@ type Shipping {
    phone: String
    web: String
    url_base_api: String
+   url_base_api_order: String
+   url_base_api_shipments: String
    token: Token
-   apis: [Apis]
+   apis: [ApiShip]
    active: Boolean
 }
 
@@ -22,11 +24,14 @@ type Token {
   type: String                # JWT, OAuth2, OpenID
   method: String              # get, post
   url_base_token: String
-  body_parameters: [BodyParameters]
+  basic_auth_username: String
+  basic_auth_password: String
+  header_parameters: [Parameters]
+  body_parameters: [Parameters]
   response_token: [ResponseToken]
 }
 
-type BodyParameters {
+type Parameters {
   name: String
   value: String
   secuence: Int
@@ -38,7 +43,7 @@ type ResponseToken {
   es_token: Boolean
 }
 
-type Apis {
+type ApiShip {
   type: String                        #Catalogo, Productos, Facturas, Utilidades, etc
   name: String
   method: String
@@ -47,7 +52,7 @@ type Apis {
   use: String
   return: String
   headers: Headers
-  parameters: [BodyParameters]
+  parameters: [Parameters]
   requires_token: Boolean
 }
 

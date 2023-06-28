@@ -1,0 +1,13 @@
+type RespuestaCt {
+  pedidoWeb: String!
+  fecha: String!
+  tipoDeCambio: Float!
+  estatus: String!
+  errores: [ErroresCT]
+}
+
+type ErroresCT {
+  errorCode: String!
+  errorMessage: String!
+  errorReference: String!
+}

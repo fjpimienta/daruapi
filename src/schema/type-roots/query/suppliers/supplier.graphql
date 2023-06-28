@@ -1,7 +1,7 @@
 "Definiciones de los tipos de raíz"
 type Query {
    "Mostrar lista de proveedores"
-   suppliers (
+  suppliers (
       "Pagina seleccionada para acceder a ella"
       page: Int=1, 
       "Marcas por pagina que se obtendran por pagina"
@@ -10,8 +10,16 @@ type Query {
       active: ActiveFilterEnum = ACTIVE
       "Especificar el filtro por el name"
       filterName: String=""
-   ): ResultSupplier
-   "Item del supplier seleccionado"
+  ): ResultSupplier
+  "Item del supplier seleccionado"
    supplier(id: ID!): ResultSupplier
    supplierId: ResultSupplier
+   apiSupplier(
+    name: String="",
+    typeApi: String="",
+    nameApi: String=""
+  ): ResultSupplier
+  supplierName(
+    name: String=""
+  ): ResultSupplier
 }

@@ -1,0 +1,13 @@
+input OrderCtResponseInput {
+  pedidoWeb: String!
+  fecha: String!
+  tipoDeCambio: Float!
+  estatus: String!
+  errores: [ErroresCTInput!]!
+}
+
+input ErroresCTInput {
+  errorCode: String!
+  errorMessage: String!
+  errorReference: String!
+}

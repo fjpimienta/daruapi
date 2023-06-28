@@ -1,0 +1,9 @@
+type ResultOrderCva implements Result {
+  info: ResultInfo
+  status: Boolean!
+  message: String!
+  orderCva: OrderCva
+  ordersCva: [OrderCva!]!
+  orderCvaId: String
+  respuestaCva: RespuestaCva
+}

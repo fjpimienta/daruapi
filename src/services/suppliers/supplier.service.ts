@@ -1,10 +1,11 @@
 import slugify from 'slugify';
-import { ACTIVE_VALUES_FILTER, COLLECTIONS } from '../config/constants';
-import { IContextData } from '../interfaces/context-data.interface';
-import { IVariables } from '../interfaces/variable.interface';
-import { findOneElement } from '../lib/db-operations';
-import { asignDocumentId } from '../lib/db-operations';
-import ResolversOperationsService from './resolvers-operaciones.service';
+import { ACTIVE_VALUES_FILTER, COLLECTIONS } from '../../config/constants';
+import { IContextData } from '../../interfaces/context-data.interface';
+import { IApisupplier } from '../../interfaces/suppliers/supplier.interface';
+import { IVariables } from '../../interfaces/variable.interface';
+import { findOneElement } from '../../lib/db-operations';
+import { asignDocumentId } from '../../lib/db-operations';
+import ResolversOperationsService from '../resolvers-operaciones.service';
 
 class SuppliersService extends ResolversOperationsService {
   collection = COLLECTIONS.SUPPLIERS;
@@ -55,6 +56,44 @@ class SuppliersService extends ResolversOperationsService {
     };
   }
 
+  // Obtener la API filtrada por supplier, tipo y nombre.
+  async api() {
+    const name = this.getVariables().name;
+    if (name) {
+      const result = await this.getByFilters(this.collection);
+      return await {
+        status: result.status,
+        message: result.message,
+        apiSupplier: result.item
+      };
+    } else {
+      const result = await this.get(this.collection);
+      return {
+        status: result.status,
+        message: result.message,
+        apiSupplier: result.item
+      };
+    }
+  }
+
+  // Obtener la API filtrada por supplier, tipo y nombre.
+  async supplierName() {
+    const name = this.getVariables().name;
+    if (name) {
+      const result = await this.getByName(this.collection);
+      return await {
+        status: result.status,
+        message: result.message,
+        supplierName: result.item
+      };
+    }
+    return await {
+      status: false,
+      message: 'No hay nombre para buscar',
+      supplierName: null
+    };
+  }
+
   // Obtener el siguiente elemento
   async next() {
     const result = await this.nextId(this.collection);
@@ -98,6 +137,8 @@ class SuppliersService extends ResolversOperationsService {
       phone: supplier?.phone,
       web: supplier?.web,
       url_base_api: supplier?.url_base_api,
+      url_base_api_order: supplier?.url_base_api_order,
+      url_base_api_shipments: supplier?.url_base_api_shipments,
       token: supplier?.token,
       apis: supplier?.apis,
       active: true,
@@ -141,6 +182,8 @@ class SuppliersService extends ResolversOperationsService {
       phone: supplier?.phone,
       web: supplier?.web,
       url_base_api: supplier?.url_base_api,
+      url_base_api_order: supplier?.url_base_api_order,
+      url_base_api_shipments: supplier?.url_base_api_shipments,
       token: supplier?.token,
       apis: supplier?.apis,
     };

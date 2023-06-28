@@ -1,20 +1,16 @@
+import { IProduct, ISupplierProd } from './product.interface';
+import { IProductShipment } from './productShipment.interface';
+import { IShipment } from './shippment.interface';
+
 export interface IWarehouse {
   id: string;
-  homoclave: string;
-  active: boolean;
-  almacen: string;
   cp: string;
-  calle: string;
-  colonia: string;
-  ciudad: string;
-  estado: string;
-  telefono: string;
-  numero: string;
-  suppliersCat: ISupplierCat[];
-}
-
-export interface ISupplierCat {
-  idProveedor: string;
   name: string;
-  slug: string;
+  estado: string;
+  latitud: string;
+  longitud: string;
+  suppliersProd: ISupplierProd;
+  products: IProduct[];
+  productShipments: IProductShipment[];
+  shipments: IShipment[];
 }

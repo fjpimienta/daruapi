@@ -191,7 +191,7 @@ class ResolversOperationsService {
   protected async nextId(collection: string) {
     const collectionLabel = collection.toLowerCase();
     try {
-      return await asignDocumentId(this.getDB(), collection, { registerDate: -1 }).then(result => {
+      return await asignDocumentId(this.getDB(), collection, { registerDate: -1, id: -1 }).then(result => {
         if (result) {
           return {
             status: true,

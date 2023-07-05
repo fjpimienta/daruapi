@@ -6,6 +6,7 @@ import {
   deleteOneElement, findElements, findOneElement, insertOneElement,
   updateOneElement, asignDocumentId, insertManyElements, deleteManyElements
 } from '../lib/db-operations';
+import { IApisupplier } from '../interfaces/suppliers/supplier.interface';
 
 class ResolversOperationsService {
   private root: object;
@@ -117,11 +118,80 @@ class ResolversOperationsService {
     }
   }
 
+  // Obtener detalles del item
+  protected async getByName(collection: string) {
+    const collectionLabel = collection.toLowerCase();
+    const name = this.getVariables().name;
+    try {
+      return await findOneElement(this.getDB(), collection,
+        { 'slug': name }
+      )
+        .then(result => {
+          if (result) {
+            return {
+              status: true,
+              message: `${collectionLabel} ha sido cargada correctamente con su detalle`,
+              item: result
+            };
+          }
+          return {
+            status: false,
+            message: `${collectionLabel} no ha obtenido detalles por que no existe`,
+            item: null
+          };
+        });
+    } catch (error) {
+      return {
+        status: false,
+        message: `Error inesperado al querer cargar los detalles de ${collectionLabel}`,
+        item: null
+      };
+    }
+  }
+
+
+  // Obtener detalles del item
+  protected async getByFilters(collection: string) {
+    const collectionLabel = collection.toLowerCase();
+    const name = this.getVariables().name;
+    const typeApi = this.getVariables().typeApi;
+    const nameApi = this.getVariables().nameApi;
+    try {
+      return await findOneElement(this.getDB(), collection,
+        { 'slug': name, 'apis.type': typeApi, 'apis.name': nameApi }
+      )
+        .then(result => {
+          if (result) {
+            for (let i = 0; i < result.apis.length; i++) {
+              if (result.apis[i].type === typeApi && result.apis[i].name === nameApi) {
+                return {
+                  status: true,
+                  message: `${collectionLabel} ha sido cargada correctamente con su detalle`,
+                  item: result.apis[i]
+                };
+              }
+            }
+          }
+          return {
+            status: false,
+            message: `${collectionLabel} no ha obtenido detalles por que no existe`,
+            item: null
+          };
+        });
+    } catch (error) {
+      return {
+        status: false,
+        message: `Error inesperado al querer cargar los detalles de ${collectionLabel}`,
+        item: null
+      };
+    }
+  }
+
   // Siguiente elemento
   protected async nextId(collection: string) {
     const collectionLabel = collection.toLowerCase();
     try {
-      return await asignDocumentId(this.getDB(), collection, { registerDate: -1 }).then(result => {
+      return await asignDocumentId(this.getDB(), collection, { registerDate: -1, id: -1 }).then(result => {
         if (result) {
           return {
             status: true,

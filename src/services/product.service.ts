@@ -176,6 +176,7 @@ class ProductsService extends ResolversOperationsService {
       product.slug = slugify(product?.name || '', { lower: true });
       product.active = true;
       i += 1;
+      product.registerDate = new Date().toISOString();
       productsAdd?.push(product);
     });
     // Guardar los elementos nuevos

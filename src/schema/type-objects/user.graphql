@@ -5,14 +5,14 @@
       fecha de nacimiento y registro en formado ISO.
 """
 
-type User {
+type User  {
+  password: String!
+  role: Role!
+  registerdate: String!
   id: ID!
   name: String!
   lastname: String!
   email: String!
-  password: String!
-  role: Role!
-  registerdate: String!
   active:Boolean
   phone: String
   addresses: [Address]
@@ -38,4 +38,6 @@ type Address {
   dir_invoice: Boolean
   dir_delivery: Boolean
   dir_delivery_main: Boolean
+  outdoorNumber: String
+  interiorNumber: String
 }

@@ -30,6 +30,7 @@ export interface IProduct {
   suppliersProd: ISupplierProd;
   descuentos: IDescuentos;
   promociones: IPromociones;
+  registerDate?: String;
 }
 
 export interface ICategorys {

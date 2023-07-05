@@ -1,0 +1,6 @@
+enum TipoPagoCtEnum {
+  TIPO_01
+  TIPO_02
+  TIPO_03
+  TIPO_04
+}

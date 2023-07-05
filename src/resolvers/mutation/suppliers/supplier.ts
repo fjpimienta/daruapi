@@ -1,5 +1,5 @@
 import { IResolvers } from '@graphql-tools/utils';
-import SuppliersService from '../../services/supplier.service';
+import SuppliersService from '../../../services/suppliers/supplier.service';
 
 const resolversSupplierMutation: IResolvers = {
   Mutation: {

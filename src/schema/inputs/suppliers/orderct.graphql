@@ -1,0 +1,28 @@
+input OrderCtInput {
+  idPedido: Int!
+  almacen: String!
+  tipoPago: String!
+  envio: [EnvioCtInput]
+  producto: [ProductoCtInput]
+  cfdi: String
+}
+
+input EnvioCtInput {
+  nombre: String
+  direccion: String
+  entreCalles: String
+  noExterior: String
+  noInterior: String
+  colonia: String
+  estado: String
+  ciudad: String
+  codigoPostal: Int
+  telefono: String
+}
+
+input ProductoCtInput {
+  cantidad: Float
+  clave: String
+  precio: Float
+  moneda: String
+}

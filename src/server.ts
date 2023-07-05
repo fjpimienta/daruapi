@@ -9,7 +9,8 @@ import expressPlayground from 'graphql-playground-middleware-express';
 import Database from './lib/database';
 import { IContext } from './interfaces/context.interface';
 import chalk from 'chalk';
-
+import logger from './utils/logger';
+import loggerMiddleware from './utils/loggerMiddleware';
 const uploadFile = require('./middleware/multer');
 
 // Configuración de las variables de entorno (lectura)
@@ -27,6 +28,8 @@ async function init() {
   app.use(compression());
 
   app.use(express.json({ limit: '50mb' }));
+
+  app.use(loggerMiddleware(logger));
 
   const database = new Database();
 
@@ -61,11 +64,11 @@ async function init() {
       port: PORT
     },
     () => {
-      console.log('=================SERVER API GRAPHQL=====================');
-      console.log(`STATUS: ${chalk.greenBright('ONLINE')}`);
-      console.log(`MESSAGE: ${chalk.greenBright('API DARU - MarketPlace !!!')}`);
-      console.log(`GraphQL Server => @: http://localhost:${PORT}/graphql`);
-      console.log(`WS Connection => @: ws://localhost:${PORT}/graphql`);
+      logger.info('=================SERVER API GRAPHQL=====================');
+      logger.info(`STATUS: ${chalk.greenBright('ONLINE')}`);
+      logger.info(`MESSAGE: ${chalk.greenBright('API DARU - MarketPlace !!!')}`);
+      logger.info(`GraphQL Server => @: http://localhost:${PORT}/graphql`);
+      logger.info(`WS Connection => @: ws://localhost:${PORT}/graphql`);
     }
   );
 

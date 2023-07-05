@@ -1,0 +1,9 @@
+type ResultOrderCt implements Result {
+  info: ResultInfo
+  status: Boolean!
+  message: String!
+  orderCt: OrderCt
+  ordersCt: [OrderCt!]!
+  orderCtId: String
+  respuestaCT: RespuestaCt
+}

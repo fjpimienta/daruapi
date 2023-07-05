@@ -1,0 +1,8 @@
+input OrderCvaResponseInput {
+  error: String
+  estado: String
+  pedido: String
+  total: String
+  agentemail: String
+  almacenmail: String
+}

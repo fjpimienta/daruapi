@@ -1,0 +1,29 @@
+type OrderCt {
+  idPedido: Int!
+  almacen: String!
+  tipoPago: String!
+  envio: [EnvioCt]
+  producto: [ProductoCt]
+  cfdi: String
+  respuestaCT: RespuestaCt
+}
+
+type EnvioCt {
+  nombre: String
+  direccion: String
+  entreCalles: String
+  noExterior: String
+  noInterior: String
+  colonia: String
+  estado: String
+  ciudad: String
+  codigoPostal: Int
+  telefono: String
+}
+
+type ProductoCt {
+  cantidad: Float
+  clave: String
+  precio: Float
+  moneda: String
+}

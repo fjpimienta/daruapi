@@ -1,0 +1,7 @@
+type Mutation {
+  "Deliverys"
+   addDelivery(delivery: DeliveryInput!): ResultDelivery
+   updateDelivery(delivery: DeliveryInput!): ResultDelivery
+   deleteDelivery(id: ID!): ResultDelivery
+   blockDelivery(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultDelivery
+}

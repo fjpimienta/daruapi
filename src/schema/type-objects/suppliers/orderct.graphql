@@ -4,6 +4,7 @@ type OrderCt {
   tipoPago: String!
   envio: [EnvioCt]
   producto: [ProductoCt]
+  cfdi: String
   respuestaCT: RespuestaCt
 }
 

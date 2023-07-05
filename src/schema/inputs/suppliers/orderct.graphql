@@ -4,6 +4,7 @@ input OrderCtInput {
   tipoPago: String!
   envio: [EnvioCtInput]
   producto: [ProductoCtInput]
+  cfdi: String
 }
 
 input EnvioCtInput {

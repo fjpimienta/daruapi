@@ -94,6 +94,7 @@ class OrdersCtService extends ResolversOperationsService {
       idPedido: orderCt?.idPedido,
       almacen: orderCt?.almacen,
       tipoPago: orderCt?.tipoPago,
+      guiaConnect: orderCt?.guiaConnect,
       envio: orderCt?.envio,
       producto: orderCt?.producto,
       registerDate: new Date().toISOString()

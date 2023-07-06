@@ -6,6 +6,7 @@ input DeliveryInput {
   ordersCt: [OrderCtInput]
   ordersCva: [OrderCvaInput]
   orderCtResponse: OrderCtResponseInput
+  orderCtConfirmResponse: OrderCtConfirmResponseInput
   orderCvaResponse: OrderCvaResponseInput
   statusError: Boolean
   messageError: String

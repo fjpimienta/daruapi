@@ -11,3 +11,9 @@ export interface IErroresCT {
   errorMessage: string;
   errorReference: string;
 }
+
+export interface IOrderCtConfirmResponse {
+  okCode: string;
+  okMessage: string;
+  okReference: string;
+}

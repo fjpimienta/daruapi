@@ -8,6 +8,7 @@ type Delivery {
   ordersCt: [OrderCt]
   ordersCva: [OrderCva]
   orderCtResponse: RespuestaCt
+  orderCtConfirmResponse: RespuestaConfirmCt
   orderCvaResponse: RespuestaCva
   statusError: Boolean
   messageError: String

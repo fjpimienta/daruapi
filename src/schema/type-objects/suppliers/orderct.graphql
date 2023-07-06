@@ -27,3 +27,9 @@ type ProductoCt {
   precio: Float
   moneda: String
 }
+
+type RespuestaConfirmCt {
+  okCode: String
+  okMessage: String
+  okReference: String
+}

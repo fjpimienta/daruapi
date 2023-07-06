@@ -94,6 +94,7 @@ class DeliverysService extends ResolversOperationsService {
       ordersCt: delivery?.ordersCt,
       ordersCva: delivery?.ordersCva,
       orderCtResponse: delivery?.orderCtResponse,
+      orderCtConfirmResponse: delivery?.orderCtConfirmResponse,
       orderCvaResponse: delivery?.orderCvaResponse,
       statusError: delivery?.statusError,
       messageError: delivery?.messageError,

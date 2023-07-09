@@ -24,7 +24,7 @@ class ProductsService extends ResolversOperationsService {
     const brands = variables.brands;
     const categories = variables.categories;
     let filter: object;
-    const regExp = new RegExp('.*' + filterName + '.*');
+    const regExp = new RegExp('.*' + filterName + '.*', 'i');
     if (filterName === '' || filterName === undefined) {
       filter = { active: { $ne: false } };
       if (active === ACTIVE_VALUES_FILTER.ALL) {

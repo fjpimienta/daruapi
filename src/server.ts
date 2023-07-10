@@ -12,12 +12,21 @@ import chalk from 'chalk';
 import logger from './utils/logger';
 import loggerMiddleware from './utils/loggerMiddleware';
 const uploadFile = require('./middleware/multer');
+import https from 'https';
+import fs from 'fs';
+
 
 // Configuración de las variables de entorno (lectura)
 if (process.env.NODE_ENV !== 'production') {
   const env = environments;
   console.log(env);
 }
+
+const httpsOptions = {
+  key: fs.readFileSync('src/daru.key'),
+  cert: fs.readFileSync('src/daru.crt'),
+};
+
 
 async function init() {
 
@@ -57,9 +66,10 @@ async function init() {
   });
 
   const httpServer = createServer(app);
+  const httpsServer = https.createServer(httpsOptions, app);
   const PORT = process.env.PORT || 3000;
 
-  httpServer.listen(
+  httpsServer.listen(
     {
       port: PORT
     },
@@ -67,8 +77,8 @@ async function init() {
       logger.info('=================SERVER API GRAPHQL=====================');
       logger.info(`STATUS: ${chalk.greenBright('ONLINE')}`);
       logger.info(`MESSAGE: ${chalk.greenBright('API DARU - MarketPlace !!!')}`);
-      logger.info(`GraphQL Server => @: http://localhost:${PORT}/graphql`);
-      logger.info(`WS Connection => @: ws://localhost:${PORT}/graphql`);
+      logger.info(`GraphQL Server => @: https://localhost:${PORT}/graphql`);
+      logger.info(`WS Connection => @: wss://localhost:${PORT}/graphql`);
     }
   );
 

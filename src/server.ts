@@ -1,7 +1,7 @@
-import express from 'express';
+import express, { Express } from 'express';
 import cors from 'cors';
 import compression from 'compression';
-import { createServer } from 'http';
+import { createServer, Server } from 'http';
 import environments from './config/environments';
 import { ApolloServer } from 'apollo-server-express';
 import schema from './schema';
@@ -15,7 +15,6 @@ const uploadFile = require('./middleware/multer');
 import https from 'https';
 import fs from 'fs';
 
-
 // Configuración de las variables de entorno (lectura)
 if (process.env.NODE_ENV !== 'production') {
   const env = environments;
@@ -27,61 +26,52 @@ const httpsOptions = {
   cert: fs.readFileSync('src/daru.crt'),
 };
 
-
-async function init() {
-
-  const app = express();
+async function init(): Promise<void> {
+  const app: Express = express();
 
   app.use(cors());
 
   app.use(compression());
 
   app.use(express.json({ limit: '50mb' }));
-
+  
   app.use(loggerMiddleware(logger));
 
   const database = new Database();
 
   const db = await database.init();
 
-  const context = async ({ req, connection }: IContext) => {
-    const token = (req) ? req.headers.authorization : connection.authorization;
-    return { db, token };
-  };
-
-  const server = new ApolloServer({
+  const server: ApolloServer = new ApolloServer({
     schema,
     introspection: true,
-    context
+    context: async ({ req, connection }: IContext) => {
+      const token = (req) ? req.headers.authorization : connection.authorization;
+      return { db, token };
+    },
   });
 
-  await server.applyMiddleware({ app });
+  await server.start();
+  server.applyMiddleware({ app });
 
   app.get('/graphiql', cors(), expressPlayground({
-    endpoint: '/graphql'
+    endpoint: '/graphql',
   }));
 
   app.post('/uploadFile', uploadFile(), (req, res) => {
-    res.send({ 'status': 'Ok' });
+    res.send({ status: 'Ok' });
   });
 
-  const httpServer = createServer(app);
-  const httpsServer = https.createServer(httpsOptions, app);
-  const PORT = process.env.PORT || 3000;
+  const httpServer: Server = createServer(app);
+  const httpsServer: https.Server = https.createServer(httpsOptions, app);
+  const PORT: number | string = process.env.PORT || 443;
 
-  httpsServer.listen(
-    {
-      port: PORT
-    },
-    () => {
-      logger.info('=================SERVER API GRAPHQL=====================');
-      logger.info(`STATUS: ${chalk.greenBright('ONLINE')}`);
-      logger.info(`MESSAGE: ${chalk.greenBright('API DARU - MarketPlace !!!')}`);
-      logger.info(`GraphQL Server => @: https://localhost:${PORT}/graphql`);
-      logger.info(`WS Connection => @: wss://localhost:${PORT}/graphql`);
-    }
-  );
-
+  httpsServer.listen(PORT, () => {
+    logger.info('=================SERVER API GRAPHQL=====================');
+    logger.info(`STATUS: ${chalk.greenBright('ONLINE')}`);
+    logger.info(`MESSAGE: ${chalk.greenBright('API DARU - MarketPlace !!!')}`);
+    logger.info(`GraphQL Server => @: https://localhost:${PORT}/graphql`);
+    logger.info(`WS Connection => @: wss://localhost:${PORT}/graphql`);
+  });
 }
 
 init();

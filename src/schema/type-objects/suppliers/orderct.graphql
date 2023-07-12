@@ -2,10 +2,16 @@ type OrderCt {
   idPedido: Int!
   almacen: String!
   tipoPago: String!
+  guiaConnect: GuiaConnect
   envio: [EnvioCt]
   producto: [ProductoCt]
   cfdi: String
   respuestaCT: RespuestaCt
+}
+
+type GuiaConnect {
+  generarGuia: Boolean
+  paqueteria: String
 }
 
 type EnvioCt {
@@ -26,4 +32,10 @@ type ProductoCt {
   clave: String
   precio: Float
   moneda: String
+}
+
+type RespuestaConfirmCt {
+  okCode: String
+  okMessage: String
+  okReference: String
 }

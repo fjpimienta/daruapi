@@ -2,9 +2,15 @@ input OrderCtInput {
   idPedido: Int!
   almacen: String!
   tipoPago: String!
+  guiaConnect: GuiaConnectInput
   envio: [EnvioCtInput]
   producto: [ProductoCtInput]
   cfdi: String
+}
+
+input GuiaConnectInput {
+  generarGuia: Boolean
+  paqueteria: String
 }
 
 input EnvioCtInput {

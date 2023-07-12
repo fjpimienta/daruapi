@@ -15,7 +15,7 @@ class ShopProductsService extends ResolversOperationsService {
   // Listar informacion de vista
   async itemsView(active: string = ACTIVE_VALUES_FILTER.ACTIVE, filterBranch: string = '', filterName: string = '') {
     let filter: object;
-    const regExp = new RegExp('.*' + filterName + '.*');
+    const regExp = new RegExp('.*' + filterName + '.*', 'i');
     if (filterBranch === '' || filterBranch === undefined) {
       if (filterName === '' || filterName === undefined) {
         filter = { active: { $ne: false } };

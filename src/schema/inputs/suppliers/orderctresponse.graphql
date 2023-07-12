@@ -11,3 +11,9 @@ input ErroresCTInput {
   errorMessage: String!
   errorReference: String!
 }
+
+input OrderCtConfirmResponseInput {
+  okCode: String!
+  okMessage: String!
+  okReference: String!
+}

@@ -20,7 +20,7 @@ class OrdersCtService extends ResolversOperationsService {
     const active = variables.active;
     const filterName = variables.filterName;
     let filter: object;
-    const regExp = new RegExp('.*' + filterName + '.*');
+    const regExp = new RegExp('.*' + filterName + '.*', 'i');
     if (filterName === '' || filterName === undefined) {
       filter = { active: { $ne: false } };
       if (active === ACTIVE_VALUES_FILTER.ALL) {
@@ -94,6 +94,7 @@ class OrdersCtService extends ResolversOperationsService {
       idPedido: orderCt?.idPedido,
       almacen: orderCt?.almacen,
       tipoPago: orderCt?.tipoPago,
+      guiaConnect: orderCt?.guiaConnect,
       envio: orderCt?.envio,
       producto: orderCt?.producto,
       registerDate: new Date().toISOString()

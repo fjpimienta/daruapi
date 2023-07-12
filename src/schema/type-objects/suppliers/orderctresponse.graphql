@@ -11,3 +11,9 @@ type ErroresCT {
   errorMessage: String!
   errorReference: String!
 }
+
+type RespuestaConfirmCt {
+  okCode: String!
+  okMessage: String!
+  okReference: String!
+}

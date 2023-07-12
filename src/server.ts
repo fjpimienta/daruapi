@@ -63,7 +63,7 @@ async function init(): Promise<void> {
 
   const httpServer: Server = createServer(app);
   const httpsServer: https.Server = https.createServer(httpsOptions, app);
-  const PORT: number | string = process.env.PORT || 443;
+  const PORT: number | string = process.env.PORT || 3000;
 
   httpsServer.listen(PORT, () => {
     logger.info('=================SERVER API GRAPHQL=====================');

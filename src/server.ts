@@ -11,7 +11,6 @@ import { IContext } from './interfaces/context.interface';
 import chalk from 'chalk';
 import logger from './utils/logger';
 import loggerMiddleware from './utils/loggerMiddleware';
-const uploadFile = require('./middleware/multer');
 import https from 'https';
 import fs from 'fs';
 
@@ -56,10 +55,6 @@ async function init(): Promise<void> {
   app.get('/graphiql', cors(), expressPlayground({
     endpoint: '/graphql',
   }));
-
-  app.post('/uploadFile', uploadFile(), (req, res) => {
-    res.send({ status: 'Ok' });
-  });
 
   const httpServer: Server = createServer(app);
   const httpsServer: https.Server = https.createServer(httpsOptions, app);

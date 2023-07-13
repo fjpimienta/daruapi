@@ -21,8 +21,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const httpsOptions = {
-  key: fs.readFileSync('src/daru.key'),
-  cert: fs.readFileSync('src/daru.crt'),
+  key: fs.readFileSync('src/_.daru.mx_private_key.key'),
+  cert: fs.readFileSync('src/daru.mx_ssl_certificate.cer'),
 };
 
 async function init(): Promise<void> {

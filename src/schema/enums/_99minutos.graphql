@@ -1,8 +1,20 @@
-enum deliveryType {
+enum DeliveryType {
   SMD
   NXT
   NAL
   RET
   _99M
   CO2F
+}
+
+enum Size99minutos {
+  XS
+  S
+  M
+  L
+  XL
+}
+
+enum Country99minutos {
+  MEX
 }

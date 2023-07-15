@@ -3,6 +3,14 @@ type Query {
   coverage(
     origin: String="",
     destination: String="",
-    deliveryType: deliveryType=RET,
+    deliveryType: DeliveryType=RET,
+  ): Result99minutos
+  shippingRates(
+    deliveryType: DeliveryType=RET,
+    size: Size99minutos=L,
+    originCountry: Country99minutos=MEX,
+    originZipcode: String="",
+    destinationCountry: Country99minutos=MEX,
+    destinationZipcode: String=""
   ): Result99minutos
 }

@@ -8,6 +8,9 @@ const resolvers99minutosQuery: IResolvers = {
     },
     async coverage(_, variables, context) {
       return new External99minutosService(_, variables, context).getCoverage(variables);
+    },
+    async shippingRates(_, variables, context) {
+      return new External99minutosService(_, variables, context).getShippingRates(variables);
     }
   },
 };

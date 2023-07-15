@@ -1,0 +1,8 @@
+enum deliveryType {
+  SMD
+  NXT
+  NAL
+  RET
+  _99M
+  CO2F
+}

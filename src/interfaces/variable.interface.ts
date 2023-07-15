@@ -57,4 +57,8 @@ export interface IVariables {
   nameApi?: string;
   delivery?: IDelivery;
   deliverys?: IDelivery[];
+  // Token99
+  origin?: string;
+  destination?: string;
+  deliveryType?: string;
 }

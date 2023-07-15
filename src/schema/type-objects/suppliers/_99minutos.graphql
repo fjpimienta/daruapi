@@ -1,6 +1,23 @@
 type Token99 {
-  access_token: String!
-  expires_in: Int!
-  token_type: String!
-  traceId: String!
+  access_token: String
+  expires_in: Int
+  token_type: String
+  traceId: String
+}
+
+interface Response99minutos {
+  traceId: String
+  message: String
+  errors: [String]
+}
+
+type Response99minutosCoverage implements Response99minutos {
+  traceId: String
+  message: String
+  errors: [String]
+  data: ReponseCoverage
+}
+
+type ReponseCoverage {
+  hasCoverage: Boolean
 }

@@ -1,4 +1,5 @@
 import { IContextData } from '../interfaces/context-data.interface';
+import { IVariables } from '../interfaces/variable.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import fetch from 'node-fetch';
 
@@ -8,6 +9,10 @@ class External99minutosService extends ResolversOperationsService {
     super(root, variables, context);
   }
 
+  /**
+   * 
+   * @returns Token99: Objeto enviado por 99 minutos.
+   */
   async getToken99() {
     const options = {
       method: 'POST',
@@ -22,19 +27,65 @@ class External99minutosService extends ResolversOperationsService {
     };
     const result = await fetch('https://sandbox.99minutos.com/api/v3/oauth/token', options);
     if (result.ok) {
-      const data = await result.json(); // Obtener el cuerpo de la respuesta como JSON
+      const data = await result.json();
+      return {
+        status: true,
+        message: 'El token se ha generado correctamente.',
+        token99: data
+      };
+    }
+    const data = await result.json();
+    return {
+      status: false,
+      message: 'Error en el servicio. ' + JSON.stringify(data),
+      token99: null
+    };
+  }
+
+  /**
+   * 
+   * @param origin 
+   * @param destination 
+   * @param deliveryType 
+   * @returns Response99minutos: Objeto de respuesta de la covertura.
+   */
+  async getCoverage(variables: IVariables) {
+    const origin = variables.origin;
+    const destination = variables.destination;
+    const deliveryType = variables.deliveryType;
+    const token = await this.getToken99();
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token.token99.access_token
+      },
+      body: JSON.stringify({
+        "origin": { "zipcode": origin},
+        "destination": { "zipcode": destination },
+        "deliveryType": deliveryType
+      })
+    };
+    const result = await fetch('https://sandbox.99minutos.com/api/v3/coverage/zipcode', options);
+    const data = await result.json();
+    if (result.ok) {
       return {
         status: true,
         message: 'La información que hemos pedido se ha cargado correctamente',
-        token99: data
-      };
-    } else {
-      return {
-        status: false,
-        message: 'La información que hemos pedido no se ha obtenido tal y como se esperaba',
-        token99: []
+        coverage: {
+          traceId: data.traceId,
+          message: data.message,
+          data: data.data,
+          errors: data.errors ? [JSON.stringify(data.errors)] : []
+        }
       };
     }
+    return {
+      status: false,
+      message: 'Error en el servicio. ' + data.code + ': ' + data.message,
+      coverage: null
+    };
   }
 }
 

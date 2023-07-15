@@ -1,0 +1,7 @@
+type ResultCts implements Result {
+  status: Boolean!
+  message: String!
+  tokenCt: TokenCt
+  # coverage: ResponseCtsCoverage
+  # shippingRates: ResponseCtsShipping
+}

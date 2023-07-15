@@ -1,0 +1,4 @@
+# Token Ct
+type TokenCt {
+  token: String
+}

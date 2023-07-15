@@ -1,0 +1,5 @@
+type Result99minutos implements Result {
+  status: Boolean!
+  message: String!
+  token99: Token99
+}

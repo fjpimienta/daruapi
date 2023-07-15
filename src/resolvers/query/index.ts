@@ -23,6 +23,7 @@ import resolversTagsQuery from './tags';
 import resolversUsersQuery from './users';
 import resolversWarehousesQuery from './warehouses';
 import resolversDeliverysQuery from './deliverys';
+import resolvers99minutosQuery from './suppliers/_99minutos';
 
 const queryResolvers = GMR.merge([
   resolversUsersQuery,
@@ -48,7 +49,8 @@ const queryResolvers = GMR.merge([
   resolversCategorysGroupsQuery,
   resolversOrderCtsQuery,
   resolversOrderCvasQuery,
-  resolversDeliverysQuery
+  resolversDeliverysQuery,
+  resolvers99minutosQuery
 ]);
 
 export default queryResolvers;

@@ -1,0 +1,6 @@
+type Token99 {
+  access_token: String!
+  expires_in: Int!
+  token_type: String!
+  traceId: String!
+}

@@ -26,7 +26,7 @@ class ExternalCtsService extends ResolversOperationsService {
         rfc: 'DIN2206222D3'
       })
     };
-    const result = await fetch('https://connect.ctonline.mx:3001/cliente/token', options);
+    const result = await fetch('http://connect.ctonline.mx:3001/cliente/token', options);
     if (result.ok) {
       const data = await result.json();
       return {

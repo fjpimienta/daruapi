@@ -28,14 +28,15 @@ class ExternalCtsService extends ResolversOperationsService {
     };
     const result = await fetch('http://connect.ctonline.mx:3001/cliente/token', options);
     if (result.ok) {
-      const data = await result.json();
       return {
         status: true,
         message: 'El token se ha generado correctamente.',
-        tokenCt: JSON.stringify(data)
+        tokenCt: JSON.stringify(result)
       };
     }
     const data = await result.json();
+    console.log('data: ', data);
+    console.log('result: ', result);
     return {
       status: false,
       message: 'Error en el servicio. ' + JSON.stringify(data),

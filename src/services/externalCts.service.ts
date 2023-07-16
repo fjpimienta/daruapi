@@ -31,7 +31,7 @@ class ExternalCtsService extends ResolversOperationsService {
     if (result.ok) {
       return {
         status: true,
-        message: 'El token se ha generado correctamente. data:' + JSON.stringify(data),
+        message: 'El token se ha generado correctamente. data:',
         tokenCt: data
       };
     }

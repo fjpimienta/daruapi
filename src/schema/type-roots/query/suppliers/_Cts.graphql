@@ -2,6 +2,6 @@ type Query {
   tokenCt: ResultCts
   shippingCtRates(
     destinoCt: String="",
-    productosCt: [ProductShipmentCT]=[]
+    productosCt: [ProductShipmentCtInput]
   ): ResultCts
 }

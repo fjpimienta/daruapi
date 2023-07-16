@@ -74,7 +74,7 @@ class ExternalCtsService extends ResolversOperationsService {
     return {
       status: false,
       message: 'Error en el servicio. ' + data.code + ': ' + data.message,
-      coverage: null
+      shippingCtRates: null
     };
   }
 

@@ -13,7 +13,7 @@ import { IShipping } from './shipping.interface';
 import { IOrderCt } from './suppliers/order-ct.interface';
 import { IOrderCva } from './suppliers/order-cva.interface';
 import { IDelivery } from './delivery.interface';
-import { IProduCt } from './suppliers/_CtsProduct.interface';
+import { IProduCtShippment } from './suppliers/_CtsShippments.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -70,5 +70,5 @@ export interface IVariables {
   destinationCountry?: string;
   // Ct Shipping
   destinoCt?: string;
-  productosCt?: IProduCt[];
+  productosCt?: IProduCtShippment[];
 }

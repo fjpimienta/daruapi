@@ -42,6 +42,42 @@ class ExternalCtsService extends ResolversOperationsService {
     };
   }
 
+  /**
+  * 
+  * @param variables 
+  * @returns ResponseCts: Objeto de respuesta de la covertura.
+  */
+  async getShippingCtRates(variables: IVariables) {
+    const destinoCt = variables.destinoCt;
+    const productosCt = variables.productosCt;
+    const token = await this.getTokenCt();
+    const options = {
+      method: 'GET',
+      headers: {
+        'x-auth': 'Bearer ' + token.tokenCt.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'destino': destinoCt,
+        'productos': productosCt
+      })
+    };
+    const result = await fetch('http://connect.ctonline.mx:3001/paqueteria/cotizacion', options);
+    const data = await result.json();
+    if (result.ok) {
+      return {
+        status: true,
+        message: 'La información que hemos pedido se ha cargado correctamente',
+        shippingCtRates: 'options: ' + JSON.stringify(options) + '. data: ' + JSON.stringify(data)
+      }
+    };
+    return {
+      status: false,
+      message: 'Error en el servicio. ' + data.code + ': ' + data.message,
+      coverage: null
+    };
+  }
+
 }
 
 export default ExternalCtsService;

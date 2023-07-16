@@ -5,6 +5,9 @@ const resolversCtsQuery: IResolvers = {
   Query: {
     async tokenCt(_, __, context) {
       return new ExternalCtsService(_, __, context).getTokenCt();
+    },
+    async shippingCtRates(_, variables, context) {
+      return new ExternalCtsService(_, variables, context).getShippingCtRates(variables);
     }
   },
 };

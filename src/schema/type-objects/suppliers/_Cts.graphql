@@ -3,3 +3,22 @@ type TokenCt {
   token: String
   time: String
 }
+
+# Shipping CT
+type ProductShipmentCT {
+  producto: String
+  cantidad: Int
+  precio: Float
+  moneda: String
+  almacen: String
+}
+
+type ResponseCtsShipping { 
+  response: String
+}
+
+type ErroresCts {
+  errorCode: String
+  errorMessage: String
+  errorReference: String
+}

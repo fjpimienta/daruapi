@@ -3,16 +3,17 @@ import { IUser } from './user.interface';
 import { ICatalog } from './catalog.interface';
 import { IProduct } from './product.interface';
 import { IApiproveedor } from './apiproveedor.interface';
-import { IApisupplier, ISupplier } from './suppliers/supplier.interface';
+import { ISupplier } from './suppliers/supplier.interface';
 import { ICountry } from './country.interface';
 import { IOrder } from './order.interface';
 import { IShopProduct } from './shop-product.interface';
 import { IConfig } from './config.interface';
 import { IWarehouse } from './warehouses.interface';
-import { IApiShip, IShipping } from './shipping.interface';
+import { IShipping } from './shipping.interface';
 import { IOrderCt } from './suppliers/order-ct.interface';
 import { IOrderCva } from './suppliers/order-cva.interface';
 import { IDelivery } from './delivery.interface';
+import { IProduCt } from './suppliers/_CtsProduct.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -61,10 +62,13 @@ export interface IVariables {
   origin?: string;
   destination?: string;
   deliveryType?: string;
-  // 99minutos Rate
+  // 99minutos Shipping Rate
   size?: string;
   originZipcode?: string;
   originCountry?: string;
   destinationZipcode?: string;
   destinationCountry?: string;
+  // Ct Shipping
+  destinoCt?: string;
+  productosCt?: IProduCt[];
 }

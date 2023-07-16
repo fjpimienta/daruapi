@@ -2,4 +2,5 @@ type ResultCts implements Result {
   status: Boolean!
   message: String!
   tokenCt: TokenCt
+  shippingCtRates: ResponseCtsShipping
 }

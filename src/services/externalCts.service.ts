@@ -69,7 +69,10 @@ class ExternalCtsService extends ResolversOperationsService {
         status: true,
         message: 'La información que hemos pedido se ha cargado correctamente',
         shippingCtRates: {
-          response: JSON.stringify(data)
+          codigo: data.codigo,
+          mensaje: data.mensaje,
+          referecia: data.referecia,
+          respuesta: data.respuesta
         }
       }
     };

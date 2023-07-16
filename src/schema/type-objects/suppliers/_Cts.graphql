@@ -13,8 +13,28 @@ type ProductShipmentCT {
   almacen: String
 }
 
-type ResponseCtsShipping { 
-  response: String
+interface ResponseCt {
+  codigo: String
+  mensaje: String
+  referencia: String
+}
+
+type ResponseCtsShipping implements ResponseCt { 
+  codigo: String
+  mensaje: String
+  referencia: String
+  respuesta: ResponseCtShippments
+}
+
+type ResponseCtShippments {
+  cotizaciones: [CotizacionesCt]
+  errores: [ErroresCts]
+}
+
+type CotizacionesCt {
+  empresa: String
+  total: Float
+  metodo: String
 }
 
 type ErroresCts {

@@ -52,7 +52,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const productosCt = variables.productosCt;
     const token = await this.getTokenCt();
     const options = {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'x-auth': 'Bearer ' + token.tokenCt.token,
         'Content-Type': 'application/json'

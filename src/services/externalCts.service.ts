@@ -93,7 +93,7 @@ class ExternalCtsService extends ResolversOperationsService {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        'destino': orderCtInput
+        orderCtInput
       })
     };
     const result = await fetch('http://connect.ctonline.mx:3001/paqueteria/cotizacion', options);
@@ -102,7 +102,7 @@ class ExternalCtsService extends ResolversOperationsService {
       return {
         status: true,
         message: 'La información que hemos pedido se ha cargado correctamente',
-        orderCt: JSON.stringify(data)
+        orderCt: 'options: ' + JSON.stringify(options) + ', data: ' + JSON.stringify(data)
         // orderCt: {
         //   codigo: data.codigo,
         //   mensaje: data.mensaje,
@@ -113,7 +113,7 @@ class ExternalCtsService extends ResolversOperationsService {
     };
     return {
       status: false,
-      message: 'Error en el servicio. ' + JSON.stringify(data),
+      message: 'Error en el servicio. options: ' + JSON.stringify(options) + ', data: ' + JSON.stringify(data),
       orderCt: null
     };
   }

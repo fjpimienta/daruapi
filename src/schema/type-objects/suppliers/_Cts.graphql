@@ -4,6 +4,18 @@ type TokenCt {
   time: String
 }
 
+interface ResponseCt {
+  codigo: String
+  mensaje: String
+  referencia: String
+}
+
+type ErroresCts {
+  errorCode: String
+  errorMessage: String
+  errorReference: String
+}
+
 # Shipping CT
 type ProductShipmentCT {
   producto: String
@@ -11,12 +23,6 @@ type ProductShipmentCT {
   precio: Float
   moneda: String
   almacen: String
-}
-
-interface ResponseCt {
-  codigo: String
-  mensaje: String
-  referencia: String
 }
 
 type ResponseCtsShipping implements ResponseCt { 
@@ -37,13 +43,14 @@ type CotizacionesCt {
   metodo: String
 }
 
-type ErroresCts {
-  errorCode: String
-  errorMessage: String
-  errorReference: String
+# Orders CT
+type ResponseCtsOrders implements ResponseCt { 
+  codigo: String
+  mensaje: String
+  referencia: String
+  respuesta: ResponseCtOrder
 }
 
-# Orders CT
 type ResponseCtOrder {
   pedidoWeb: String
   fecha: String

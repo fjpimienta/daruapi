@@ -3,5 +3,6 @@ type ResultCts implements Result {
   message: String!
   tokenCt: TokenCt
   shippingCtRates: ResponseCtsShipping
-  orderCt: ResponseCtOrder
+  orderCt: String
+  # orderCt: ResponseCtOrder
 }

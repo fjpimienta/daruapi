@@ -102,18 +102,19 @@ class ExternalCtsService extends ResolversOperationsService {
       return {
         status: true,
         message: 'La información que hemos pedido se ha cargado correctamente',
-        shippingCtRates: {
-          codigo: data.codigo,
-          mensaje: data.mensaje,
-          referecia: data.referecia,
-          respuesta: data.respuesta
-        }
+        orderCt: JSON.stringify(data)
+        // orderCt: {
+        //   codigo: data.codigo,
+        //   mensaje: data.mensaje,
+        //   referecia: data.referecia,
+        //   respuesta: data.respuesta
+        // }
       }
     };
     return {
       status: false,
       message: 'Error en el servicio. ' + JSON.stringify(data),
-      shippingCtRates: null
+      orderCt: null
     };
   }
 }

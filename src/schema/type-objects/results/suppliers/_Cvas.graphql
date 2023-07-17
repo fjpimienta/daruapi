@@ -1,0 +1,7 @@
+type ResultCvas implements Result {
+  status: Boolean!
+  message: String!
+  tokenCva: TokenCva
+  shippingCvaRates: ResponseCvasShipping
+  orderCva: ResponseCvaOrders
+}

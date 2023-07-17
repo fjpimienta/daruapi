@@ -11,9 +11,10 @@ import { IConfig } from './config.interface';
 import { IWarehouse } from './warehouses.interface';
 import { IShipping } from './shipping.interface';
 import { IOrderCt } from './suppliers/order-ct.interface';
-import { IOrderCva } from './suppliers/order-cva.interface';
 import { IDelivery } from './delivery.interface';
-import { IProduCtShippment } from './suppliers/_CtsShippments.interface';
+import { IProductCtShippment } from './suppliers/_CtsShippments.interface';
+import { IOrderCva } from './suppliers/order-cva.interface';
+import { IProductCvaShippment } from './suppliers/_CvasShippments.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -70,5 +71,10 @@ export interface IVariables {
   destinationCountry?: string;
   // Ct Shipping
   destinoCt?: string;
-  productosCt?: IProduCtShippment[];
+  productosCt?: IProductCtShippment[];
+  // Cva Shipping
+  paqueteria?: number;
+  cp?: number;
+  cp_sucursal?: number;
+  productosCva?: IProductCvaShippment[];
 }

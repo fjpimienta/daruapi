@@ -1,4 +1,4 @@
-export interface IProduCtShippment {
+export interface IProductCtShippment {
   producto: string;
   cantidad: number;
   precio: number;

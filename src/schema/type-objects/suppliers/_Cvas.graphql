@@ -1,0 +1,33 @@
+# Token Cva
+type TokenCva {
+  token: String
+}
+
+interface ResponseCva {
+  error: String
+  estado: String
+}
+
+# Shipping Cva
+type ResponseCvasShipping { 
+  result: String
+  cotizacion: Cotizacion
+}
+
+type Cotizacion { 
+  cajas: Int
+  subtotal: Float
+  iva: Float
+  montoTotal: Float
+}
+
+# Orders Cva
+type ResponseCvaOrders implements ResponseCva { 
+  error: String
+  estado: String
+  respuesta: String
+}
+
+type ResponseCvaOrder {
+  response: String
+}

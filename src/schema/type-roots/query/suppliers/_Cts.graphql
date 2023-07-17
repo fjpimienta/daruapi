@@ -4,4 +4,7 @@ type Query {
     destinoCt: String="",
     productosCt: [ProductShipmentCtInput]
   ): ResultCts
+  orderCt(
+    orderCtInput: OrderCtInput
+  ): ResultCts
 }

@@ -83,6 +83,39 @@ class ExternalCtsService extends ResolversOperationsService {
     };
   }
 
+  async getOrderCt(variables: IVariables) {
+    const orderCtInput = variables.orderCt;
+    const token = await this.getTokenCt();
+    const options = {
+      method: 'POST',
+      headers: {
+        'x-auth': token.tokenCt.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'destino': orderCtInput
+      })
+    };
+    const result = await fetch('http://connect.ctonline.mx:3001/paqueteria/cotizacion', options);
+    const data = await result.json();
+    if (result.ok) {
+      return {
+        status: true,
+        message: 'La información que hemos pedido se ha cargado correctamente',
+        shippingCtRates: {
+          codigo: data.codigo,
+          mensaje: data.mensaje,
+          referecia: data.referecia,
+          respuesta: data.respuesta
+        }
+      }
+    };
+    return {
+      status: false,
+      message: 'Error en el servicio. ' + JSON.stringify(data),
+      shippingCtRates: null
+    };
+  }
 }
 
 export default ExternalCtsService;

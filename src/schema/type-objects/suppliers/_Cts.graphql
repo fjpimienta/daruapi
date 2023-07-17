@@ -42,3 +42,12 @@ type ErroresCts {
   errorMessage: String
   errorReference: String
 }
+
+# Orders CT
+type ResponseCtOrder {
+  pedidoWeb: String
+  fecha: String
+  tipoDeCambio: Float
+  estatus: String
+  errores: [ErroresCts]
+}

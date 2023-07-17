@@ -93,7 +93,11 @@ class ExternalCtsService extends ResolversOperationsService {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        orderCtInput
+        "idPedido": orderCtInput?.idPedido,
+        "almacen": orderCtInput?.almacen,
+        "tipoPago": orderCtInput?.tipoPago,
+        "envio": orderCtInput?.envio,
+        "producto": orderCtInput?.producto,
       })
     };
     const result = await fetch('http://connect.ctonline.mx:3001/paqueteria/cotizacion', options);

@@ -59,6 +59,13 @@ type ResponseCtOrder {
   errores: [ErroresCts]
 }
 
+# Confirm Order Ct
+type ResponseCtsConfirOrder {
+  okCode: Int,
+  okMessage: String,
+  okReference: String
+}
+
 # List Orders Ct
 type ResponseCtsListOrders {
   idPedido: String

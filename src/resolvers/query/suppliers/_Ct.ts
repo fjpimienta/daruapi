@@ -7,10 +7,13 @@ const resolversCtsQuery: IResolvers = {
       return new ExternalCtsService(_, __, context).getTokenCt();
     },
     async shippingCtRates(_, variables, context) {
-      return new ExternalCtsService(_, variables, context).getShippingCtRates(variables);
+      return new ExternalCtsService(_, variables, context).setShippingCtRates(variables);
     },
     async orderCt(_, variables, context) {
-      return new ExternalCtsService(_, variables, context).getOrderCt(variables);
+      return new ExternalCtsService(_, variables, context).setOrderCt(variables);
+    },
+    async confirmOrderCt(_, variables, context) {
+      return new ExternalCtsService(_, variables, context).setConfirmOrderCt(variables);
     },
     async listOrdersCt(_, __, context) {
       return new ExternalCtsService(_, __, context).getListOrderCt();

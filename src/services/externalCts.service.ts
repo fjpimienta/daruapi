@@ -44,7 +44,7 @@ class ExternalCtsService extends ResolversOperationsService {
   * @param variables 
   * @returns ResponseCts: Objeto de respuesta de la covertura.
   */
-  async getShippingCtRates(variables: IVariables) {
+  async setShippingCtRates(variables: IVariables) {
     const { destinoCt, productosCt } = variables;
     const token = await this.getTokenCt();
 
@@ -84,7 +84,7 @@ class ExternalCtsService extends ResolversOperationsService {
     };
   }
 
-  async getOrderCt(variables: IVariables) {
+  async setOrderCt(variables: IVariables) {
     const { idPedido, almacen, tipoPago, guiaConnect, envio, productoCt, cfdi } = variables;
     const token = await this.getTokenCt();
 
@@ -114,7 +114,7 @@ class ExternalCtsService extends ResolversOperationsService {
     if (result.ok) {
       return {
         status: true,
-        message: 'La información que hemos pedido se ha cargado correctamente',
+        message: 'La información que hemos enviado se ha cargado correctamente',
         orderCt: {
           codigo: data.codigo,
           mensaje: data.mensaje,
@@ -128,6 +128,41 @@ class ExternalCtsService extends ResolversOperationsService {
       status: false,
       message: 'Error en el servicio. options: ' + JSON.stringify(options) + ', data: ' + JSON.stringify(data),
       orderCt: null
+    };
+  }
+
+  async setConfirmOrderCt(variables: IVariables) {
+    const { folio } = variables;
+    const token = await this.getTokenCt();
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'x-auth': token.tokenCt.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        folio
+      })
+    };
+
+    const url = `http://connect.ctonline.mx:3001/pedido/confirmar`;
+    const result = await fetch(url, options);
+    const data = await result.json();
+
+    const status = result.ok;
+    const message = status ? 'La información que hemos enviado se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
+
+    console.log('data: ', data);
+    console.log('options: ', options);
+    return {
+      status,
+      message,
+      confirmOrderCt: status ? {
+        okCode: data.okCode,
+        okMessage: data.okMessage,
+        okReference: data.okReference
+      } : null
     };
   }
 

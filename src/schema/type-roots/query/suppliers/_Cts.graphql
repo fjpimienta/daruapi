@@ -23,4 +23,7 @@ type Query {
   volProductCt(
     codigo: String
   ): ResultCts
+  confirmOrderCt(
+    folio: String
+  ): ResultCts
 }

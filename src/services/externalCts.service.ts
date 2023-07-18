@@ -84,22 +84,26 @@ class ExternalCtsService extends ResolversOperationsService {
   }
 
   async getOrderCt(variables: IVariables) {
-    const orderCtInput = variables.orderCt;
+    const { idPedido, almacen, tipoPago, guiaConnect, envio, productoCt, cfdi } = variables;
     const token = await this.getTokenCt();
     const options = {
       method: 'POST',
       headers: {
         'x-auth': token.tokenCt.token,
+        'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        "idPedido": orderCtInput?.idPedido,
-        "almacen": orderCtInput?.almacen,
-        "tipoPago": orderCtInput?.tipoPago,
-        "envio": orderCtInput?.envio,
-        "producto": orderCtInput?.producto,
+        "idPedido": idPedido,
+        "almacen": almacen,
+        "tipoPago": tipoPago,
+        "guiaConnect": guiaConnect,
+        "envio": envio,
+        "producto": productoCt,
+        "cfdi": cfdi
       })
     };
+    console.log('options: ', options);
     const result = await fetch('http://connect.ctonline.mx:3001/paqueteria/cotizacion', options);
     const data = await result.json();
     if (result.ok) {
@@ -109,7 +113,7 @@ class ExternalCtsService extends ResolversOperationsService {
         orderCt: {
           codigo: data.codigo,
           mensaje: data.mensaje,
-          referecia: data.referecia,
+          referencia: data.referencia,
           respuesta: data.respuesta
         }
       }

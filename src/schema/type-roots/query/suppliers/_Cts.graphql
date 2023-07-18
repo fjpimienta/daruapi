@@ -5,6 +5,12 @@ type Query {
     productosCt: [ProductShipmentCtInput]
   ): ResultCts
   orderCt(
-    orderCtInput: OrderCtInput
+    idPedido: Int,
+    almacen: String="",
+    tipoPago: String="",
+    guiaConnect: GuiaConnectInput,
+    envio: [EnvioInput],
+    producto: [ProductoCtInput],
+    cfdi: String=""
   ): ResultCts
 }

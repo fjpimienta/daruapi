@@ -102,3 +102,9 @@ type ResponseListOrdersCt {
   estatus: String
   errores: [ErroresCts]
 }
+
+# Status Order Ct
+type ResponseCtsStatus {
+  status: String
+  folio: String
+}

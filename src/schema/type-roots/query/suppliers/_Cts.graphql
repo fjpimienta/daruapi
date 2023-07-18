@@ -14,4 +14,10 @@ type Query {
     cfdi: String=""
   ): ResultCts
   listOrdersCt: ResultCts
+  statusOrdersCt(
+    folio: String
+  ): ResultCts
+  detailOrdersCt(
+    folio: String
+  ): ResultCts
 }

@@ -14,6 +14,12 @@ const resolversCtsQuery: IResolvers = {
     },
     async listOrdersCt(_, __, context) {
       return new ExternalCtsService(_, __, context).getListOrderCt();
+    },
+    async statusOrdersCt(_, variables, context) {
+      return new ExternalCtsService(_, variables, context).getStatusOrderCt(variables);
+    },
+    async detailOrdersCt(_, variables, context) {
+      return new ExternalCtsService(_, variables, context).getDetailOrderCt(variables);
     }
   },
 };

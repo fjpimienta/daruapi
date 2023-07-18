@@ -80,6 +80,8 @@ export interface IVariables {
   envio?: IEnvioCt;
   productoCt?: IProductoCt;
   cfdi?: string;
+  // Ct Status
+  folio?: string;
   // Cva Shipping
   paqueteria?: number;
   cp?: number;

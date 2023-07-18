@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IOrderCt, IOrderCtResponse } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IOrderCtResponse } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import fetch from 'node-fetch';
 
@@ -17,7 +17,6 @@ class ExternalCtsService extends ResolversOperationsService {
     const options = {
       method: 'POST',
       headers: {
-        accept: 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -27,21 +26,16 @@ class ExternalCtsService extends ResolversOperationsService {
       })
     };
 
-    const result = await fetch('http://connect.ctonline.mx:3001/cliente/token', options);
-    const data = await result.json();
-
-    if (result.ok) {
-      return {
-        status: true,
-        message: 'El token se ha generado correctamente. data:',
-        tokenCt: data
-      };
-    }
+    const url = 'http://connect.ctonline.mx:3001/cliente/token';
+    const response = await fetch(url, options);
+    const data = await response.json();
+    const status = response.ok;
+    const message = status ? 'El token se ha generado correctamente. data:' : 'Error en el servicio. ' + JSON.stringify(data);
 
     return {
-      status: false,
-      message: 'Error en el servicio. ' + JSON.stringify(data),
-      tokenCt: null
+      status,
+      message,
+      tokenCt: status ? data : null
     };
   }
 
@@ -66,7 +60,8 @@ class ExternalCtsService extends ResolversOperationsService {
       })
     };
 
-    const result = await fetch('http://connect.ctonline.mx:3001/paqueteria/cotizacion', options);
+    const url = 'http://connect.ctonline.mx:3001/paqueteria/cotizacion';
+    const result = await fetch(url, options);
     const data = await result.json();
 
     if (result.ok) {
@@ -112,7 +107,8 @@ class ExternalCtsService extends ResolversOperationsService {
     };
 
     console.log('options: ', options);
-    const result = await fetch('http://connect.ctonline.mx:3001/paqueteria/cotizacion', options);
+    const url = 'http://connect.ctonline.mx:3001/paqueteria/cotizacion';
+    const result = await fetch(url, options);
     const data = await result.json();
 
     if (result.ok) {
@@ -146,21 +142,13 @@ class ExternalCtsService extends ResolversOperationsService {
       }
     };
 
-    const result = await fetch('http://connect.ctonline.mx:3001/pedido/listar', options);
-    const data = await result.json();
+    const url = 'http://connect.ctonline.mx:3001/pedido/listar';
+    const response = await fetch(url, options);
+    const data = await response.json();
 
-    if (result.ok) {
-      // Ordenar la lista según respuestaCT.fecha
-      data.sort((a: IOrderCtResponse, b: IOrderCtResponse) => {
-        const fechaA = a.respuestaCT && a.respuestaCT.length > 0 ? new Date(a.respuestaCT[0].fecha) : null;
-        const fechaB = b.respuestaCT && b.respuestaCT.length > 0 ? new Date(b.respuestaCT[0].fecha) : null;
-        return (fechaA?.getTime() ?? 0) - (fechaB?.getTime() ?? 0);
-      });
-
-      return {
-        status: true,
-        message: 'La información que hemos pedido se ha cargado correctamente',
-        listOrdersCt: data.map((order: IOrderCtResponse) => ({
+    if (response.ok) {
+      const listOrdersCt = data
+        .map((order: IOrderCtResponse) => ({
           idPedido: order.idPedido,
           almacen: order.almacen,
           tipoPago: order.tipoPago,
@@ -169,13 +157,87 @@ class ExternalCtsService extends ResolversOperationsService {
           producto: order.producto,
           respuestaCT: order.respuestaCT
         }))
-      }
+        .sort((a: IOrderCtResponse, b: IOrderCtResponse) => {
+          const fechaA = a.respuestaCT && a.respuestaCT.length > 0 ? new Date(a.respuestaCT[0].fecha) : null;
+          const fechaB = b.respuestaCT && b.respuestaCT.length > 0 ? new Date(b.respuestaCT[0].fecha) : null;
+          return (fechaA?.getTime() ?? 0) - (fechaB?.getTime() ?? 0);
+        });
+
+      return {
+        status: true,
+        message: 'La información que hemos pedido se ha cargado correctamente',
+        listOrdersCt
+      };
     }
 
     return {
       status: false,
       message: 'Error en el servicio. ' + JSON.stringify(data),
       listOrdersCt: null
+    };
+  }
+
+
+  async getStatusOrderCt(variables: IVariables) {
+    const { folio } = variables;
+    const token = await this.getTokenCt();
+
+    const options = {
+      method: 'GET',
+      headers: {
+        'x-auth': token.tokenCt.token,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    const url = `http://connect.ctonline.mx:3001/pedido/estatus/${folio}`;
+    const result = await fetch(url, options);
+    const data = await result.json();
+
+    const status = result.ok;
+    const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
+
+    return {
+      status,
+      message,
+      statusOrdersCt: status ? {
+        status: data.status,
+        folio: data.folio
+      } : null
+    };
+  }
+
+  async getDetailOrderCt(variables: IVariables) {
+    const { folio } = variables;
+    const token = await this.getTokenCt();
+
+    const options = {
+      method: 'GET',
+      headers: {
+        'x-auth': token.tokenCt.token,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    const url = `http://connect.ctonline.mx:3001/pedido/detalle/${folio}`;
+    const result = await fetch(url, options);
+    const data = await result.json();
+
+    const status = result.ok;
+    const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
+
+    return {
+      status,
+      message,
+      detailOrdersCt: status ? {
+        idPedido: data[0].idPedido,
+        almacen: data[0].almacen,
+        tipoPago: data[0].tipoPago,
+        guiaConnect: data[0].guiaConnect,
+        envio: data[0].envio,
+        producto: data[0].producto,
+        respuestaCT: data[0].respuestaCT
+      } : null
     };
   }
 }

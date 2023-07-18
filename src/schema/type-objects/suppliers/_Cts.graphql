@@ -58,3 +58,47 @@ type ResponseCtOrder {
   estatus: String
   errores: [ErroresCts]
 }
+
+# List Orders Ct
+type ResponseCtsListOrders {
+  idPedido: String
+  almacen: String
+  tipoPago: String
+  guiaConnect: GuiaConnect
+  envio: [EnvioCt]
+  producto: [ProductCt]
+  respuestaCT: ResponseListOrdersCt
+}
+
+type GuiaConnect {
+  generarGuia: Boolean
+  paqueteria: String
+}
+
+type EnvioCt {
+  nombre: String
+  direccion: String
+  entreCalles: String
+  noExterior: String
+  noInterior: String
+  colonia: String
+  estado: String
+  ciudad: String
+  codigoPostal: Int
+  telefono: Float
+}
+
+type ProductCt {
+  cantidad: String
+  clave: String
+  precio: Float
+  moneda: String
+}
+
+type ResponseListOrdersCt {
+  pedidoWeb: String
+  fecha: String
+  tipoDeCambio: Float
+  estatus: String
+  errores: [ErroresCts]
+}

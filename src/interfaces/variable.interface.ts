@@ -10,7 +10,7 @@ import { IShopProduct } from './shop-product.interface';
 import { IConfig } from './config.interface';
 import { IWarehouse } from './warehouses.interface';
 import { IShipping } from './shipping.interface';
-import { IEnvioCt, IGuiaConnect, IOrderCt, IProductoCt } from './suppliers/order-ct.interface';
+import { IEnvioCt, IGuiaConnect, IOrderCt, IProductoCt } from './suppliers/_CtsShippments.interface';
 import { IDelivery } from './delivery.interface';
 import { IProductCtShippment } from './suppliers/_CtsShippments.interface';
 import { IOrderCva } from './suppliers/order-cva.interface';

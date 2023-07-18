@@ -13,4 +13,5 @@ type Query {
     producto: [ProductoCtInput],
     cfdi: String=""
   ): ResultCts
+  listOrdersCt: ResultCts
 }

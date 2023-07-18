@@ -1,10 +1,10 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
+import { IOrderCt, IOrderCtResponse } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import fetch from 'node-fetch';
 
 class ExternalCtsService extends ResolversOperationsService {
-
   constructor(root: object, variables: object, context: IContextData) {
     super(root, variables, context);
   }
@@ -26,8 +26,10 @@ class ExternalCtsService extends ResolversOperationsService {
         rfc: 'DIN2206222D3'
       })
     };
+
     const result = await fetch('http://connect.ctonline.mx:3001/cliente/token', options);
     const data = await result.json();
+
     if (result.ok) {
       return {
         status: true,
@@ -35,6 +37,7 @@ class ExternalCtsService extends ResolversOperationsService {
         tokenCt: data
       };
     }
+
     return {
       status: false,
       message: 'Error en el servicio. ' + JSON.stringify(data),
@@ -48,9 +51,9 @@ class ExternalCtsService extends ResolversOperationsService {
   * @returns ResponseCts: Objeto de respuesta de la covertura.
   */
   async getShippingCtRates(variables: IVariables) {
-    const destinoCt = variables.destinoCt;
-    const productosCt = variables.productosCt;
+    const { destinoCt, productosCt } = variables;
     const token = await this.getTokenCt();
+
     const options = {
       method: 'POST',
       headers: {
@@ -58,12 +61,14 @@ class ExternalCtsService extends ResolversOperationsService {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        'destino': destinoCt,
-        'productos': productosCt
+        destino: destinoCt,
+        productos: productosCt
       })
     };
+
     const result = await fetch('http://connect.ctonline.mx:3001/paqueteria/cotizacion', options);
     const data = await result.json();
+
     if (result.ok) {
       return {
         status: true,
@@ -75,7 +80,8 @@ class ExternalCtsService extends ResolversOperationsService {
           respuesta: data.respuesta
         }
       }
-    };
+    }
+
     return {
       status: false,
       message: 'Error en el servicio. ' + JSON.stringify(data),
@@ -86,26 +92,29 @@ class ExternalCtsService extends ResolversOperationsService {
   async getOrderCt(variables: IVariables) {
     const { idPedido, almacen, tipoPago, guiaConnect, envio, productoCt, cfdi } = variables;
     const token = await this.getTokenCt();
+
     const options = {
       method: 'POST',
       headers: {
         'x-auth': token.tokenCt.token,
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        "idPedido": idPedido,
-        "almacen": almacen,
-        "tipoPago": tipoPago,
-        "guiaConnect": guiaConnect,
-        "envio": envio,
-        "producto": productoCt,
-        "cfdi": cfdi
+        idPedido,
+        almacen,
+        tipoPago,
+        guiaConnect,
+        envio,
+        producto: productoCt,
+        cfdi
       })
     };
+
     console.log('options: ', options);
     const result = await fetch('http://connect.ctonline.mx:3001/paqueteria/cotizacion', options);
     const data = await result.json();
+
     if (result.ok) {
       return {
         status: true,
@@ -117,13 +126,52 @@ class ExternalCtsService extends ResolversOperationsService {
           respuesta: data.respuesta
         }
       }
-    };
+    }
+
     return {
       status: false,
       message: 'Error en el servicio. options: ' + JSON.stringify(options) + ', data: ' + JSON.stringify(data),
       orderCt: null
     };
   }
+
+  async getListOrderCt() {
+    const token = await this.getTokenCt();
+
+    const options = {
+      method: 'GET',
+      headers: {
+        'x-auth': token.tokenCt.token,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    const result = await fetch('http://connect.ctonline.mx:3001/pedido/listar', options);
+    const data = await result.json();
+
+    if (result.ok) {
+      console.log('data: ', data);
+      return {
+        status: true,
+        message: 'La información que hemos pedido se ha cargado correctamente',
+        listOrdersCt: data.map((order: IOrderCtResponse) => ({
+          idPedido: order.idPedido,
+          almacen: order.almacen,
+          tipoPago: order.tipoPago,
+          guiaConnect: order.guiaConnect,
+          envio: order.envio,
+          producto: order.producto,
+          respuestaCT: order.respuestaCT
+        }))
+      }
+    }
+
+    return {
+      status: false,
+      message: 'Error en el servicio. ' + JSON.stringify(data),
+      listOrdersCt: null
+    };
+  }  
 }
 
 export default ExternalCtsService;

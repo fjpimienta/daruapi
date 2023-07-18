@@ -1,4 +1,4 @@
-import { IOrderCt } from './suppliers/order-ct.interface';
+import { IOrderCt } from './suppliers/_CtsShippments.interface';
 import { IOrderCva } from './suppliers/order-cva.interface';
 import { IOrderCtConfirmResponse, IOrderCtResponse } from './suppliers/orderctresponse.interface';
 import { IOrderCvaResponse } from './suppliers/ordercvaresponse.interface';

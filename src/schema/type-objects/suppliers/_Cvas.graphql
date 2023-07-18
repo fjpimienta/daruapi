@@ -21,6 +21,17 @@ type Cotizacion {
   montoTotal: Float
 }
 
+# Orders list Cva
+type ResponseCvaListsOrders {
+  Numero: String
+  Total: String
+  Moneda: String
+  NumOC: String
+  Almacen: String
+  Asignado: String
+  FechaAsignado: String
+}
+
 # Orders Cva
 type ResponseCvaOrders implements ResponseCva { 
   error: String

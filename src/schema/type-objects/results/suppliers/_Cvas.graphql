@@ -3,5 +3,5 @@ type ResultCvas implements Result {
   message: String!
   tokenCva: TokenCva
   shippingCvaRates: ResponseCvasShipping
-  orderCva: ResponseCvaOrders
+  listOrdersCva: [ResponseCvaListsOrders]
 }

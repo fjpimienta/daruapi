@@ -6,7 +6,5 @@ type Query {
     cp_sucursal: Int,
     productosCva: [ProductsShipmentCvaInput]
   ): ResultCvas
-  orderCva(
-    orderCvaInput: String
-  ): ResultCvas
+  listOrdersCva: ResultCvas
 }

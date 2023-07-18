@@ -20,4 +20,7 @@ type Query {
   detailOrdersCt(
     folio: String
   ): ResultCts
+  volProductCt(
+    codigo: String
+  ): ResultCts
 }

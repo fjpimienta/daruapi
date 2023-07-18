@@ -7,4 +7,5 @@ type ResultCts implements Result {
   listOrdersCt: [ResponseCtsListOrders]
   statusOrdersCt: ResponseCtsStatus
   detailOrdersCt: ResponseCtsListOrders
+  volProductCt: ResponseCtsVolProduct
 }

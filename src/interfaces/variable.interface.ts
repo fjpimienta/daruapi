@@ -82,6 +82,8 @@ export interface IVariables {
   cfdi?: string;
   // Ct Status
   folio?: string;
+  // Ct Volumen
+  codigo?: string;
   // Cva Shipping
   paqueteria?: number;
   cp?: number;

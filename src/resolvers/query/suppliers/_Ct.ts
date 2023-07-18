@@ -20,6 +20,9 @@ const resolversCtsQuery: IResolvers = {
     },
     async detailOrdersCt(_, variables, context) {
       return new ExternalCtsService(_, variables, context).getDetailOrderCt(variables);
+    },
+    async volProductCt(_, variables, context) {
+      return new ExternalCtsService(_, variables, context).getVolProductCt(variables);
     }
   },
 };

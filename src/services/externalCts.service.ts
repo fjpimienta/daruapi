@@ -177,7 +177,6 @@ class ExternalCtsService extends ResolversOperationsService {
     };
   }
 
-
   async getStatusOrderCt(variables: IVariables) {
     const { folio } = variables;
     const token = await this.getTokenCt();
@@ -237,6 +236,39 @@ class ExternalCtsService extends ResolversOperationsService {
         envio: data[0].envio,
         producto: data[0].producto,
         respuestaCT: data[0].respuestaCT
+      } : null
+    };
+  }
+
+  async getVolProductCt(variables: IVariables) {
+    const { codigo } = variables;
+    const token = await this.getTokenCt();
+
+    const options = {
+      method: 'GET',
+      headers: {
+        'x-auth': token.tokenCt.token,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    const url = `http://connect.ctonline.mx:3001/paqueteria/volumetria/${codigo}`;
+    const result = await fetch(url, options);
+    const data = await result.json();
+
+    const status = result.ok;
+    const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
+
+    return {
+      status,
+      message,
+      volProductCt: status ? {
+        peso: data[0].peso,
+        largo: data[0].largo,
+        alto: data[0].alto,
+        ancho: data[0].ancho,
+        UPC: data[0].UPC,
+        EAN: data[0].EAN
       } : null
     };
   }

@@ -108,3 +108,13 @@ type ResponseCtsStatus {
   status: String
   folio: String
 }
+
+# Volumen de Productos CT
+type ResponseCtsVolProduct {
+  peso: Float
+  largo: Float
+  alto: Float
+  ancho: Float
+  UPC: String
+  EAN: String
+}

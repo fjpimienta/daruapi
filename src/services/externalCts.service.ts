@@ -150,7 +150,13 @@ class ExternalCtsService extends ResolversOperationsService {
     const data = await result.json();
 
     if (result.ok) {
-      console.log('data: ', data);
+      // Ordenar la lista según respuestaCT.fecha
+      data.sort((a: IOrderCtResponse, b: IOrderCtResponse) => {
+        const fechaA = a.respuestaCT && a.respuestaCT.length > 0 ? new Date(a.respuestaCT[0].fecha) : null;
+        const fechaB = b.respuestaCT && b.respuestaCT.length > 0 ? new Date(b.respuestaCT[0].fecha) : null;
+        return (fechaA?.getTime() ?? 0) - (fechaB?.getTime() ?? 0);
+      });
+
       return {
         status: true,
         message: 'La información que hemos pedido se ha cargado correctamente',
@@ -171,7 +177,7 @@ class ExternalCtsService extends ResolversOperationsService {
       message: 'Error en el servicio. ' + JSON.stringify(data),
       listOrdersCt: null
     };
-  }  
+  }
 }
 
 export default ExternalCtsService;

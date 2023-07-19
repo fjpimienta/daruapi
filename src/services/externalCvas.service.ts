@@ -77,7 +77,6 @@ class ExternalCvasService {
     const response = await fetch(url, options);
     const content = await response.text();
     const data = await this.parseXmlToJson(content, wsdl);
-    console.log('data: ', data);
 
     if (response.ok) {
       return {
@@ -236,7 +235,6 @@ class ExternalCvasService {
 
   async parseXmlToJson(xml: string, catalog: string): Promise<any> {
     try {
-      console.log('xml: ', xml);
       let result;
       let pedidosXml;
       let pedidosXmlContent;
@@ -262,9 +260,7 @@ class ExternalCvasService {
             throw new Error('El contenido XML no es válido');
           }
         case 'PedidoWeb':
-          console.log('result: ', result);
           pedidosXmlContent = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:PedidoWebResponse'];
-          console.log('pedidosXmlContent: ', pedidosXmlContent);
 
           const error = pedidosXmlContent['error']?._ || null;
           const estado = pedidosXmlContent['estado']?._ || null;

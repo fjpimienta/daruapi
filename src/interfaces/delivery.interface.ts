@@ -1,5 +1,5 @@
 import { IOrderCt } from './suppliers/_CtsShippments.interface';
-import { IOrderCva } from './suppliers/order-cva.interface';
+import { IOrderCva } from './suppliers/_CvasShippments.interface';
 import { IOrderCtConfirmResponse, IOrderCtResponse } from './suppliers/orderctresponse.interface';
 import { IOrderCvaResponse } from './suppliers/ordercvaresponse.interface';
 import { IUser } from './user.interface';

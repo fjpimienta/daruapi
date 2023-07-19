@@ -10,4 +10,7 @@ type Query {
   consultaOrderCva(
     pedido: String
   ): ResultCvas
+  orderCva(
+    pedidoCva: OrderCvaInput
+  ): ResultCvas
 }

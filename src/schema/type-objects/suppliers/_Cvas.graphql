@@ -33,13 +33,13 @@ type ResponseCvaListsOrders {
 }
 
 # Orders Cva
-type ResponseCvaOrders implements ResponseCva { 
+type ResponseCvaOrderDetails implements ResponseCva { 
   error: String
   estado: String
   respuesta: String
 }
 
-type ResponseCvaOrder {
+type ResponseCvaOrderDetail {
   response: String
 }
 
@@ -68,10 +68,20 @@ type ResponseCvePedido {
   productos: Producto
 }
 
-type Producto{
+type Producto {
   clave: String
   fabricante: String
   cantidad: String
   precioSinIva: String
   Iva: String
+}
+
+#Order Cva
+type ResponseCvaOrder {
+  error: String
+  estado: String
+  pedido: String
+  total: String
+  agentemail: String
+  almacenmail: String
 }

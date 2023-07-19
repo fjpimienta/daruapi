@@ -89,4 +89,6 @@ export interface IVariables {
   cp?: number;
   cp_sucursal?: number;
   productosCva?: IProductCvaShippment[];
+  // CVa Pedido
+  pedido?: string;
 }

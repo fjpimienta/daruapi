@@ -11,6 +11,9 @@ const resolversCvasQuery: IResolvers = {
     },
     async listOrdersCva(_, __, context) {
       return new ExternalCvasService(_, __, context).getListOrdersCva();
+    },
+    async consultaOrderCva(_, variables, context) {
+      return new ExternalCvasService(_, variables, context).getConsultaOrderCva(variables);
     }
   },
 };

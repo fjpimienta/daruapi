@@ -4,4 +4,5 @@ type ResultCvas implements Result {
   tokenCva: TokenCva
   shippingCvaRates: ResponseCvasShipping
   listOrdersCva: [ResponseCvaListsOrders]
+  consultaOrderCva: ResponseCvePedido
 }

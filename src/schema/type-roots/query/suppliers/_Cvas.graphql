@@ -7,4 +7,7 @@ type Query {
     productosCva: [ProductsShipmentCvaInput]
   ): ResultCvas
   listOrdersCva: ResultCvas
+  consultaOrderCva(
+    pedido: String
+  ): ResultCvas
 }

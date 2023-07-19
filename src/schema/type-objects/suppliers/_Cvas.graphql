@@ -42,3 +42,36 @@ type ResponseCvaOrders implements ResponseCva {
 type ResponseCvaOrder {
   response: String
 }
+
+# Consulta Pedido CV
+type ResponseCvePedido {
+  Estatus: String
+  Factura: String
+  Total: String
+  Moneda: String
+  FechaPedido: String
+  NumOC: String
+  Almacen: String
+  Observaciones: String
+  CalleEnvio: String
+  NumeroEnvio: String
+  NumeroIntEnvio: String
+  ColoniaEnvio: String
+  CPEnvio: String
+  EstadoEnvio: String
+  CiudadEnvio: String
+  Atencion: String
+  Flete: String
+  TipoEnvio: String
+  Paqueteria: String
+  Guia: String
+  productos: Producto
+}
+
+type Producto{
+  clave: String
+  fabricante: String
+  cantidad: String
+  precioSinIva: String
+  Iva: String
+}

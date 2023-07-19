@@ -13,4 +13,5 @@ type Query {
   orderCva(
     pedidoCva: OrderCvaInput
   ): ResultCvas
+  listBrandsCva: ResultCvas
 }

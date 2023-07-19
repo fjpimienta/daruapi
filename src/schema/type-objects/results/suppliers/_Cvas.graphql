@@ -6,4 +6,5 @@ type ResultCvas implements Result {
   listOrdersCva: [ResponseCvaListsOrders]
   consultaOrderCva: ResponseCvePedido
   orderCva: ResponseCvaOrder
+  listBrandsCva: [ResponsebrandsCva]
 }

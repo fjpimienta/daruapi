@@ -17,6 +17,9 @@ const resolversCvasQuery: IResolvers = {
     },
     async orderCva(_, variables, context) {
       return new ExternalCvasService(_, variables, context).setOrderCva(variables);
+    },
+    async listBrandsCva(_, __, context) {
+      return new ExternalCvasService(_, __, context).getListBrandsCva();
     }
   },
 };

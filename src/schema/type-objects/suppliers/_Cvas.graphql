@@ -85,3 +85,9 @@ type ResponseCvaOrder {
   agentemail: String
   almacenmail: String
 }
+
+# Brands list Cva
+type ResponsebrandsCva {
+  clave: String
+  descripcion: String
+}

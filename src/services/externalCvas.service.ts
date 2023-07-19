@@ -233,14 +233,43 @@ class ExternalCvasService {
     };
   }
 
+  async getListBrandsCva() {
+    try {
+      const url = 'https://www.grupocva.com/catalogo_clientes_xml/marcas2.xml';
+      const response = await fetch(url);
+      const xml = await response.text();
+
+      return response.ok
+        ? {
+          status: true,
+          message: 'La información que hemos pedido se ha cargado correctamente',
+          listBrandsCva: await this.parseXmlToJson(xml, 'marcas2.xml')
+        }
+        : {
+          status: false,
+          message: 'Error en el servicio.',
+          listBrandsCva: null
+        };
+    } catch (error) {
+      return {
+        status: false,
+        message: 'Error en el servicio.',
+        listBrandsCva: null
+      };
+    }
+  }
+
   async parseXmlToJson(xml: string, catalog: string): Promise<any> {
     try {
-      let result;
       let pedidosXml;
       let pedidosXmlContent;
-      result = await xml2js.parseStringPromise(xml, { explicitArray: false });
+      const result = await xml2js.parseStringPromise(xml, { explicitArray: false });
 
       switch (catalog) {
+        case 'lista_precios.xml':
+          return result.articulos.item;
+        case 'marcas2.xml':
+          return result.marcas.marca;
         case 'ListaPedidos':
           pedidosXml = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:ListaPedidosResponse']['pedidos'];
           pedidosXmlContent = pedidosXml._;
@@ -261,23 +290,13 @@ class ExternalCvasService {
           }
         case 'PedidoWeb':
           pedidosXmlContent = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:PedidoWebResponse'];
-
           const error = pedidosXmlContent['error']?._ || null;
           const estado = pedidosXmlContent['estado']?._ || null;
           const pedido = pedidosXmlContent['pedido']?._ || null;
           const total = pedidosXmlContent['total']?._ || null;
           const agentemail = pedidosXmlContent['agentemail']?._ || null;
           const almacenmail = pedidosXmlContent['almacenmail']?._ || null;
-
-
-          return {
-            error,
-            estado,
-            pedido,
-            total,
-            agentemail,
-            almacenmail,
-          };
+          return { error, estado, pedido, total, agentemail, almacenmail };
 
         default:
           throw new Error('Catálogo no válido');

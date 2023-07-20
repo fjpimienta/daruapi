@@ -102,3 +102,10 @@ type ResponseSolucionesCva {
   clave: String
   descripcion: String
 }
+
+# Sucursales list Cva
+type ResponseSucursalesCva {
+  clave: String
+  nombre: String
+  cp: String
+}

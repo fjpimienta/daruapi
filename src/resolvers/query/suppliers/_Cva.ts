@@ -26,6 +26,9 @@ const resolversCvasQuery: IResolvers = {
     },
     async listSolucionesCva(_, __, context) {
       return new ExternalCvasService(_, __, context).getListSolucionesCva();
+    },
+    async listSucursalesCva(_, __, context) {
+      return new ExternalCvasService(_, __, context).getListSucursalesCva();
     }
   },
 };

@@ -109,3 +109,9 @@ type ResponseSucursalesCva {
   nombre: String
   cp: String
 }
+
+# Paqueterias list Cva
+type ResponsePaqueteriasCva {
+  clave: String
+  descripcion: String
+}

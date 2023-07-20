@@ -10,4 +10,5 @@ type ResultCvas implements Result {
   listGroupsCva: [ResponseGroupsCva]
   listSolucionesCva: [ResponseSolucionesCva]
   listSucursalesCva: [ResponseSucursalesCva]
+  listPaqueteriasCva: [ResponsePaqueteriasCva]
 }

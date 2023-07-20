@@ -25,3 +25,7 @@ export interface IProductoCva {
   clave: string;
   cantidad: number;
 }
+
+export interface IGroupCva {
+  grupo: string;
+}

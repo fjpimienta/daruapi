@@ -13,7 +13,7 @@ import { IShipping } from './shipping.interface';
 import { IEnvioCt, IGuiaConnect, IOrderCt, IProductoCt } from './suppliers/_CtsShippments.interface';
 import { IDelivery } from './delivery.interface';
 import { IProductCtShippment } from './suppliers/_CtsShippments.interface';
-import { IOrderCva } from './suppliers/_CvasShippments.interface';
+import { IGroupCva, IOrderCva } from './suppliers/_CvasShippments.interface';
 import { IProductCvaShippment } from './suppliers/_CvasShippments.interface';
 
 export interface IVariables {
@@ -93,4 +93,6 @@ export interface IVariables {
   pedido?: string;
   // CVa  Pedido Alta
   pedidoCva?: IOrderCva;
+  // CVA Grupos
+  gruposCva?: IGroupCva;
 }

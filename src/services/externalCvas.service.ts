@@ -1,4 +1,5 @@
 import { IContextData } from '../interfaces/context-data.interface';
+import { IGroupCva } from '../interfaces/suppliers/_CvasShippments.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import fetch, { Response } from 'node-fetch';
 const xml2js = require('xml2js');
@@ -259,6 +260,33 @@ class ExternalCvasService {
     }
   }
 
+  async getListGroupsCva() {
+    try {
+      const url = 'http://www.grupocva.com/catalogo_clientes_xml/grupos.xml';
+      const response = await fetch(url);
+      const xml = await response.text();
+      const groupList: IGroupCva[] = await this.parseXmlToJson(xml, 'grupos.xml');
+
+      return response.ok
+        ? {
+          status: true,
+          message: 'La información que hemos pedido se ha cargado correctamente',
+          listGroupsCva: groupList
+        }
+        : {
+          status: false,
+          message: 'Error en el servicio.',
+          listGroupsCva: null
+        };
+    } catch (error) {
+      return {
+        status: false,
+        message: 'Error en el servicio.',
+        listGroupsCva: null
+      };
+    }
+  }
+
   async parseXmlToJson(xml: string, catalog: string): Promise<any> {
     try {
       let pedidosXml;
@@ -266,10 +294,17 @@ class ExternalCvasService {
       const result = await xml2js.parseStringPromise(xml, { explicitArray: false });
 
       switch (catalog) {
-        case 'lista_precios.xml':
-          return result.articulos.item;
         case 'marcas2.xml':
           return result.marcas.marca;
+        case 'grupos.xml':
+          if (result && result.grupos && result.grupos.grupo) {
+            const grupos = Array.isArray(result.grupos.grupo)
+              ? result.grupos.grupo.map((item: any) => ({ grupo: item.trim() }))
+              : [{ grupo: result.grupos.grupo.trim() }];
+            return grupos;
+          } else {
+            return [];
+          }
         case 'ListaPedidos':
           pedidosXml = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:ListaPedidosResponse']['pedidos'];
           pedidosXmlContent = pedidosXml._;

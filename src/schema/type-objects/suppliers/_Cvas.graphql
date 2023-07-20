@@ -87,7 +87,12 @@ type ResponseCvaOrder {
 }
 
 # Brands list Cva
-type ResponsebrandsCva {
+type ResponseBrandsCva {
   clave: String
   descripcion: String
+}
+
+# Groups list Cva
+type ResponseGroupsCva {
+  grupo: String
 }

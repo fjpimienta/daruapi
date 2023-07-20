@@ -96,3 +96,9 @@ type ResponseBrandsCva {
 type ResponseGroupsCva {
   grupo: String
 }
+
+# Soluciones list Cva
+type ResponseSolucionesCva {
+  clave: String
+  descripcion: String
+}

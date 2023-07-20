@@ -15,4 +15,5 @@ type Query {
   ): ResultCvas
   listBrandsCva: ResultCvas
   listGroupsCva: ResultCvas
+  listSolucionesCva: ResultCvas
 }

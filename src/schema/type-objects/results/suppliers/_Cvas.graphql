@@ -8,4 +8,5 @@ type ResultCvas implements Result {
   orderCva: ResponseCvaOrder
   listBrandsCva: [ResponseBrandsCva]
   listGroupsCva: [ResponseGroupsCva]
+  listSolucionesCva: [ResponseSolucionesCva]
 }

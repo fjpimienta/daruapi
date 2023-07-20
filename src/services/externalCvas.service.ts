@@ -287,6 +287,32 @@ class ExternalCvasService {
     }
   }
 
+  async getListSolucionesCva() {
+    try {
+      const url = 'https://www.grupocva.com/catalogo_clientes_xml/soluciones.xml';
+      const response = await fetch(url);
+      const xml = await response.text();
+
+      return response.ok
+        ? {
+          status: true,
+          message: 'La información que hemos pedido se ha cargado correctamente',
+          listSolucionesCva: await this.parseXmlToJson(xml, 'soluciones.xml')
+        }
+        : {
+          status: false,
+          message: 'Error en el servicio.',
+          listSolucionesCva: null
+        };
+    } catch (error) {
+      return {
+        status: false,
+        message: 'Error en el servicio.',
+        listSolucionesCva: null
+      };
+    }
+  }
+
   async parseXmlToJson(xml: string, catalog: string): Promise<any> {
     try {
       let pedidosXml;
@@ -305,6 +331,8 @@ class ExternalCvasService {
           } else {
             return [];
           }
+        case 'soluciones.xml':
+          return result.soluciones.solucion;
         case 'ListaPedidos':
           pedidosXml = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:ListaPedidosResponse']['pedidos'];
           pedidosXmlContent = pedidosXml._;

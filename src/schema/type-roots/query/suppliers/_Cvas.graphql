@@ -18,4 +18,7 @@ type Query {
   listSolucionesCva: ResultCvas
   listSucursalesCva: ResultCvas
   listPaqueteriasCva: ResultCvas
+  listPricesCva(
+    brandName: String
+  ): ResultCvas
 }

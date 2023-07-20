@@ -353,14 +353,43 @@ class ExternalCvasService {
         }
         : {
           status: false,
-          message: 'Error en el servicio1.',
+          message: 'Error en el servicio.',
           listPaqueteriasCva: null
         };
     } catch (error) {
       return {
         status: false,
-        message: 'Error en el servicio2.',
+        message: 'Error en el servicio.',
         listPaqueteriasCva: null
+      };
+    }
+  }
+
+  async getListPricesCva(variables: IVariables) {
+    const cliente = '73766';
+    const { brandName } = variables;
+    try {
+      const url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&marca=${brandName}`;
+      const response = await fetch(url);
+      const xml = await response.text();
+      const data = await this.parseXmlToJson(xml, 'lista_precios.xml')
+
+      return response.ok
+        ? {
+          status: true,
+          message: 'La información que hemos pedido se ha cargado correctamente',
+          listPricesCva: data
+        }
+        : {
+          status: false,
+          message: 'Error en el servicio.',
+          listPricesCva: null
+        };
+    } catch (error) {
+      return {
+        status: false,
+        message: 'Error en el servicio.',
+        listPricesCva: null
       };
     }
   }
@@ -370,7 +399,6 @@ class ExternalCvasService {
       let pedidosXml;
       let pedidosXmlContent;
       const result = await xml2js.parseStringPromise(xml, { explicitArray: false });
-
       switch (catalog) {
         case 'marcas2.xml':
           return result.marcas.marca;
@@ -389,6 +417,8 @@ class ExternalCvasService {
           return result.sucursales.sucursal;
         case 'paqueteria.xml':
           return result.paqueterias.paqueteria;
+        case 'lista_precios.xml':
+          return result.articulos.item;
         case 'ListaPedidos':
           pedidosXml = result['SOAP-ENV:Envelope']['SOAP-ENV:Body']['ns1:ListaPedidosResponse']['pedidos'];
           pedidosXmlContent = pedidosXml._;

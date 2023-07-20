@@ -95,4 +95,6 @@ export interface IVariables {
   pedidoCva?: IOrderCva;
   // CVA Grupos
   gruposCva?: IGroupCva;
+  // CVA Precios
+  brandName?: string;
 }

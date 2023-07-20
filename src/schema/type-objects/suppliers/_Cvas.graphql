@@ -115,3 +115,21 @@ type ResponsePaqueteriasCva {
   clave: String
   descripcion: String
 }
+
+type ResponseProductCva {
+  clave: String
+  codigo_fabricante: String
+  descripcion: String
+  solucion: String
+  grupo: String
+  marca: String
+  garantia: String
+  clase: String
+  disponible: Int
+  precio: Float
+  moneda: String
+  ficha_tecnica: String
+  ficha_comercial: String
+  imagen: String
+  disponibleCD: Int
+}

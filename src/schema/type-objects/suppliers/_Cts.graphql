@@ -17,7 +17,12 @@ type Vigencia {
 
 type Almacen {
   promocion: Promocion
+  # Utilizamos el tipo JSON para representar propiedades dinámicas
+  infoExtra: JSON
 }
+
+# Definimos el tipo JSON como un tipo de escalar personalizado
+scalar JSON
 
 type ResponseCtsStockProducts {
   precio: Float

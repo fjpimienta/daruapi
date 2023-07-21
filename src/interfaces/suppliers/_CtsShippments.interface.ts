@@ -8,6 +8,8 @@ export interface IProductoCt {
 
 export interface IAlmacen {
   promocion: IPromocion;
+  // Utilizamos un tipo 'any' para representar el campo dinámico
+  infoExtra: any;
 }
 
 export interface IPromocion {

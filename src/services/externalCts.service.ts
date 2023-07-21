@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacen, IOrderCtResponse, IProductoCt, InfoExtraType } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IAlmacen, IOrderCtResponse, IProductoCt, InfoExtra } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import fetch from 'node-fetch';
 
@@ -140,22 +140,21 @@ class ExternalCtsService extends ResolversOperationsService {
     }
   }
 
-  getInfoExtraForAlmacen(almacen: IAlmacen): InfoExtraType | null {
+  getInfoExtraForAlmacen(almacen: IAlmacen): any | null {
     console.log('almacen: ', almacen);
 
     if (almacen.infoExtra) {
-      console.log('almacen.infoExtra: ', almacen.infoExtra);
-      const infoExtra: InfoExtraType = {
-        "14A": { campo1: "valor1", campo2: "valor2" },
-        "46A": { campo1: "valor3", campo2: "valor4" },
-        // Agrega aquí otros valores según sea necesario
+      const infoExtra: InfoExtra = {
+        campo1: almacen.infoExtra.campo1 || "",
+        campo2: almacen.infoExtra.campo2 || "",
+        // Agrega otros campos según sea necesario
       };
-
-      // Devolvemos el valor correspondiente al almacén o null si no hay coincidencia
-      return infoExtra[almacen.infoExtra] || null;
+  
+      return infoExtra;
     }
     return null;
   }
+
 
   async setOrderCt(variables: IVariables) {
     const { idPedido, almacen, tipoPago, guiaConnect, envio, productoCt, cfdi } = variables;

@@ -6,11 +6,14 @@ export interface IProductoCt {
   codigo: string;
 }
 
-export type InfoExtraType = { [key: string]: any };
-
 export interface IAlmacen {
   promocion: IPromocion;
-  infoExtra: string; // Usa el tipo string para las claves de almacen.infoExtra
+  infoExtra: InfoExtra | null;
+}
+
+export interface InfoExtra {
+  campo1: String
+  campo2: String
 }
 
 export interface IPromocion {

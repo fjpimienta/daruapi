@@ -24,8 +24,15 @@ type Vigencia {
 
 type Almacen {
   promocion: Promocion
-  infoExtra: JSON
+  infoExtra: InfoExtra
 }
+
+type InfoExtra {
+  campo1: String
+  campo2: String
+  # Agrega otros campos según sea necesario
+}
+
 
 # Fin Productos Ct
 

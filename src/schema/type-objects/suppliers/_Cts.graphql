@@ -5,6 +5,13 @@ type TokenCt {
 }
 
 # Definicion para el catalogo de productos CT
+type ResponseCtsStockProducts {
+  precio: Float
+  moneda: String
+  almacenes: [Almacen]
+  codigo: String
+}
+
 type Promocion {
   precio: Float
   vigente: Vigencia
@@ -18,18 +25,15 @@ type Vigencia {
 type Almacen {
   promocion: Promocion
   # Utilizamos el tipo JSON para representar propiedades dinámicas
-  infoExtra: JSON
+  infoExtra: InfoExtraType
 }
 
-# Definimos el tipo JSON como un tipo de escalar personalizado
-scalar JSON
+type InfoExtraType {
+  key: String
+  clave: String
+} 
 
-type ResponseCtsStockProducts {
-  precio: Float
-  moneda: String
-  almacenes: [Almacen]
-  codigo: String
-}
+# Fin Productos Ct
 
 interface ResponseCt {
   codigo: String

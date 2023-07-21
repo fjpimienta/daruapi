@@ -12,6 +12,14 @@ export interface IAlmacen {
   infoExtra: any;
 }
 
+export interface InfoExtraType {
+  [key: string]: {
+    campo1: string;
+    campo2: string;
+    // Agrega aquí otros campos que puedan variar
+  };
+};
+
 export interface IPromocion {
   precio: number;
   vigente: IVigencia;

@@ -10,7 +10,7 @@ export type InfoExtraType = { [key: string]: any };
 
 export interface IAlmacen {
   promocion: IPromocion;
-  infoExtra: InfoExtraType; // Usa el tipo InfoExtraType corregido aquí
+  infoExtra: string; // Usa el tipo string para las claves de almacen.infoExtra
 }
 
 export interface IPromocion {

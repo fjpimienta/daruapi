@@ -141,23 +141,19 @@ class ExternalCtsService extends ResolversOperationsService {
   }
 
   getInfoExtraForAlmacen(almacen: IAlmacen): InfoExtraType | null {
+    console.log('almacen: ', almacen);
+
     if (almacen.infoExtra) {
+      console.log('almacen.infoExtra: ', almacen.infoExtra);
       const infoExtra: InfoExtraType = {
         "14A": { campo1: "valor1", campo2: "valor2" },
-        "46A": { campo1: "valor3", campo2: "valor4" }
+        "46A": { campo1: "valor3", campo2: "valor4" },
         // Agrega aquí otros valores según sea necesario
       };
 
-      // Obtenemos las claves del objeto almacen.infoExtra
-      const infoExtraKeys = Object.keys(almacen.infoExtra);
-
-      // Buscamos la coincidencia en infoExtra con las claves de almacen.infoExtra
-      const matchingKey = infoExtraKeys.find((key) => infoExtra[key] !== undefined);
-
       // Devolvemos el valor correspondiente al almacén o null si no hay coincidencia
-      return matchingKey ? infoExtra[matchingKey] : null;
+      return infoExtra[almacen.infoExtra] || null;
     }
-
     return null;
   }
 

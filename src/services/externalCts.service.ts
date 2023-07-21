@@ -100,31 +100,10 @@ class ExternalCtsService extends ResolversOperationsService {
       const result = await fetch(url, options);
 
       if (result.ok) {
-        const data = await result.json();
-
-        const stockProductsCt = data.map((product: IProductoCt) => ({
-          precio: product.precio,
-          moneda: product.moneda,
-          almacenes: product.almacenes.map((almacen) => ({
-            stock: almacen.stock || 0,  // Asignar 0 si el valor es nulo o no está presente
-            promocion: almacen.promocion,
-          })),
-          codigo: product.codigo,
-        }));
-
-
-        // Modificar el nombre del tipo de respuesta para que coincida con el esquema GraphQL
-        return {
-          status: true,
-          message: 'La información que hemos pedido se ha cargado correctamente',
-          stockProductsCt
-        };
+        const data: IProductoCt[] = await result.json();
+        return data;
       } else {
-        return {
-          status: false,
-          message: 'Error en el servicio. ',
-          stockProductsCt: null
-        };
+        throw new Error('Error en el servicio.');
       }
     } catch (error: any) {
       return {

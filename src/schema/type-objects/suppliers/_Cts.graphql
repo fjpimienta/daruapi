@@ -8,64 +8,103 @@ type TokenCt {
 
 
 
-
-
-
-
-# Stock de Productos CT
-interface Promocion {
-  # Definición de los campos comunes para todos los tipos concretos de "Promocion"
-  precio: Float!
-  vigente: Vigente!
+# Definicion para el catalogo de productos CT
+type Existencia {
+  HMO: Int
+  OBR: Int
+  LMO: Int
+  CLN: Int
+  DGO: Int
+  TRN: Int
+  CHI: Int
+  AGS: Int
+  QRO: Int
+  SLP: Int
+  LEO: Int
+  GDL: Int
+  MOR: Int
+  SLT: Int
+  XLP: Int
+  VER: Int
+  COL: Int
+  CTZ: Int
+  TAM: Int
+  PUE: Int
+  VHA: Int
+  TXA: Int
+  MTY: Int
+  TPC: Int
+  MID: Int
+  OAX: Int
+  MAZ: Int
+  CUE: Int
+  TOL: Int
+  PAC: Int
+  CUN: Int
+  DFP: Int
+  DFA: Int
+  ZAC: Int
+  DFT: Int
+  ACA: Int
+  IRA: Int
+  DFC: Int
+  TXL: Int
+  CAM: Int
+  ACX: Int
+  URP: Int
+  CDV: Int
+  CEL: Int
+  D2A: Int
 }
 
-type PromocionA implements Promocion {
-  # Implementación de los campos específicos para el tipo "PromocionA"
-  precio: Float!
-  vigente: Vigente!
-  campoEspecificoA: String!
+type Especificacion {
+  tipo: String
+  valor: String
 }
 
-type PromocionB implements Promocion {
-  # Implementación de los campos específicos para el tipo "PromocionB"
-  precio: Float!
-  vigente: Vigente!
-  campoEspecificoB: Int!
+type Vigencia {
+  inicio: String
+  fin: String
 }
 
-type PromocionNull implements Promocion {
-  precio: Float!
-  vigente: Vigente!
-  # Otros campos específicos para el tipo "PromocionNull" si es necesario
-}
-
-type Vigente {
-  ini: String!
-  fin: String!
-}
-
-type Almacen {
-  stock: Int!
-  promocion: PromocionUnion
+type Promocion {
+  tipo: String
+  promocion: Float
+  vigencia: Vigencia
 }
 
 type ResponseCtsStockProducts {
-  precio: Float!
-  moneda: String!
-  almacenes: [AlmacenWithPromocion!]!
-  codigo: String!
+  idProducto: Int
+  clave: String
+  numParte: String
+  nombre: String
+  modelo: String
+  idMarca: Int
+  marca: String
+  idSubCategoria: Int
+  subcategoria: String
+  idCategoria: Int
+  categoria: String
+  descripcion_corta: String
+  ean: String
+  upc: String
+  sustituto: String
+  activo: Int
+  protegido: Int
+  existencia: Existencia
+  precio: Float
+  moneda: String
+  tipoCambio: Int
+  especificaciones: [Especificacion]
+  promociones: [Promocion]
+  imagen: String
 }
 
-# Nuevo tipo que extiende "Almacen" y agrega el campo "promocion" con la unión "PromocionUnion"
-type AlmacenWithPromocion {
-  stock: Int!
-  promocion: PromocionUnion
-}
 
-# Resolver la interfaz "Promocion" para devolver el tipo concreto correcto (PromocionA o PromocionB)
-# basado en el campo "campoEspecificoA" o "campoEspecificoB" presente en los datos
-# Puedes ajustar la lógica según tus necesidades
-union PromocionUnion = PromocionA | PromocionB
+
+
+
+
 
 
 

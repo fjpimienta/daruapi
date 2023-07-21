@@ -1,25 +1,43 @@
-// Promociones
-export interface IPromocion {
-  precio: number;
-  vigente: IVigente;
-}
-
-export interface IVigente {
-    ini: string;
-    fin: string;
-}
-
-export interface IAlmacen {
-  promocion: IPromocion;
-  [codigo: string]: number | IPromocion;
-}
-
+// Lista de Precios
 export interface IProductoCt {
+  idProducto: number;
+  clave: string;
+  numParte: string;
+  nombre: string;
+  modelo: string;
+  idMarca: number;
+  marca: string;
+  idSubCategoria: number;
+  subcategoria: string;
+  idCategoria: number;
+  categoria: string;
+  descripcion_corta: string;
+  ean: string | null;
+  upc: string | null;
+  sustituto: string;
+  activo: number;
+  protegido: number;
+  existencia: {
+    [key: string]: number;
+  };
   precio: number;
   moneda: string;
-  almacenes: IAlmacen[];
-  codigo: string;
+  tipoCambio: number;
+  especificaciones: {
+    tipo: string;
+    valor: string;
+  }[];
+  promociones: {
+    tipo: string;
+    promocion: number;
+    vigencia: {
+      inicio: string;
+      fin: string;
+    };
+  }[];
+  imagen: string;
 }
+
 
 export interface IProductCtShippment {
   producto: string;

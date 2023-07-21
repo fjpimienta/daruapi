@@ -1,11 +1,6 @@
 import { IResolvers } from '@graphql-tools/utils';
 import ExternalCtsService from '../../../services/externalCts.service';
 
-interface CommonFields {
-  campoEspecificoA?: string;
-  campoEspecificoB?: number;
-}
-
 const resolversCtsQuery: IResolvers = {
   Query: {
     async tokenCt(_, __, context) {
@@ -35,20 +30,7 @@ const resolversCtsQuery: IResolvers = {
     async volProductCt(_, variables, context) {
       return new ExternalCtsService(_, variables, context).getVolProductCt(variables);
     }
-  },
-  
-  PromocionUnion: {
-    __resolveType(obj: CommonFields) {
-      if ('campoEspecificoA' in obj) {
-        return 'PromocionA';
-      } else if ('campoEspecificoB' in obj) {
-        return 'PromocionB';
-      } else {
-        return 'PromocionNull';
-      }
-    },
-  },
-  
+  }
 };
 
 export default resolversCtsQuery;

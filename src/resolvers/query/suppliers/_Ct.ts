@@ -9,6 +9,9 @@ const resolversCtsQuery: IResolvers = {
     async shippingCtRates(_, variables, context) {
       return new ExternalCtsService(_, variables, context).setShippingCtRates(variables);
     },
+    async stockProductsCt(_, __, context) {
+      return new ExternalCtsService(_, __, context).getStockProductsCt();
+    },
     async orderCt(_, variables, context) {
       return new ExternalCtsService(_, variables, context).setOrderCt(variables);
     },

@@ -1,3 +1,26 @@
+// Promociones
+export interface IPromocion {
+  precio: number;
+  vigente: IVigente;
+}
+
+export interface IVigente {
+    ini: string;
+    fin: string;
+}
+
+export interface IAlmacen {
+  promocion: IPromocion;
+  [codigo: string]: number | IPromocion;
+}
+
+export interface IProductoCt {
+  precio: number;
+  moneda: string;
+  almacenes: IAlmacen[];
+  codigo: string;
+}
+
 export interface IProductCtShippment {
   producto: string;
   cantidad: number;
@@ -6,6 +29,7 @@ export interface IProductCtShippment {
   almacen: string;
 }
 
+// Ordenes
 export interface IOrderCtResponse extends IOrderCt {
   respuestaCT: IRespuestaCT[]
 }
@@ -30,7 +54,7 @@ export interface IOrderCt {
   tipoPago?: string;
   guiaConnect: IGuiaConnect;
   envio?: IEnvioCt[];
-  producto?: IProductoCt[];
+  producto?: IProductOrderCt[];
   cfdi: string;
 }
 
@@ -52,9 +76,9 @@ export interface IEnvioCt {
   telefono: number;
 }
 
-export interface IProductoCt {
-  cantidad: number;
-  clave: string;
+export interface IProductOrderCt {
   precio: number;
   moneda: string;
+  cantidad: number;
+  clave: string;
 }

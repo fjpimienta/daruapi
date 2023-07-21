@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IOrderCtResponse } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IOrderCtResponse, IProductoCt } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import fetch from 'node-fetch';
 
@@ -82,6 +82,57 @@ class ExternalCtsService extends ResolversOperationsService {
       message: 'Error en el servicio. ' + JSON.stringify(data),
       shippingCtRates: null
     };
+  }
+
+  async getStockProductsCt() {
+    try {
+      const token = await this.getTokenCt();
+
+      const options = {
+        method: 'GET',
+        headers: {
+          'x-auth': token.tokenCt.token,
+          'Content-Type': 'application/json'
+        }
+      };
+
+      const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
+      const result = await fetch(url, options);
+
+      if (result.ok) {
+        const data = await result.json();
+
+        const stockProductsCt = data.map((product: IProductoCt) => ({
+          precio: product.precio,
+          moneda: product.moneda,
+          almacenes: product.almacenes.map((almacen) => ({
+            stock: almacen.stock || 0,  // Asignar 0 si el valor es nulo o no está presente
+            promocion: almacen.promocion,
+          })),
+          codigo: product.codigo,
+        }));
+
+
+        // Modificar el nombre del tipo de respuesta para que coincida con el esquema GraphQL
+        return {
+          status: true,
+          message: 'La información que hemos pedido se ha cargado correctamente',
+          stockProductsCt
+        };
+      } else {
+        return {
+          status: false,
+          message: 'Error en el servicio. ',
+          stockProductsCt: null
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        stockProductsCt: null
+      };
+    }
   }
 
   async setOrderCt(variables: IVariables) {

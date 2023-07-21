@@ -4,6 +4,72 @@ type TokenCt {
   time: String
 }
 
+
+
+
+
+
+
+
+
+# Stock de Productos CT
+interface Promocion {
+  # Definición de los campos comunes para todos los tipos concretos de "Promocion"
+  precio: Float!
+  vigente: Vigente!
+}
+
+type PromocionA implements Promocion {
+  # Implementación de los campos específicos para el tipo "PromocionA"
+  precio: Float!
+  vigente: Vigente!
+  campoEspecificoA: String!
+}
+
+type PromocionB implements Promocion {
+  # Implementación de los campos específicos para el tipo "PromocionB"
+  precio: Float!
+  vigente: Vigente!
+  campoEspecificoB: Int!
+}
+
+type Vigente {
+  ini: String!
+  fin: String!
+}
+
+type Almacen {
+  stock: Int!
+  promocion: PromocionUnion
+}
+
+type ResponseCtsStockProducts {
+  precio: Float!
+  moneda: String!
+  almacenes: [AlmacenWithPromocion!]!
+  codigo: String!
+}
+
+# Nuevo tipo que extiende "Almacen" y agrega el campo "promocion" con la unión "PromocionUnion"
+type AlmacenWithPromocion {
+  stock: Int!
+  promocion: PromocionUnion
+}
+
+# Resolver la interfaz "Promocion" para devolver el tipo concreto correcto (PromocionA o PromocionB)
+# basado en el campo "campoEspecificoA" o "campoEspecificoB" presente en los datos
+# Puedes ajustar la lógica según tus necesidades
+union PromocionUnion = PromocionA | PromocionB
+
+
+
+
+
+
+
+
+
+
 interface ResponseCt {
   codigo: String
   mensaje: String

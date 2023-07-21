@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacen, IOrderCtResponse, IProductoCt } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IAlmacen, IOrderCtResponse, IProductoCt, InfoExtraType } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import fetch from 'node-fetch';
 
@@ -87,7 +87,7 @@ class ExternalCtsService extends ResolversOperationsService {
   async getStockProductsCt() {
     try {
       const token = await this.getTokenCt();
-  
+
       const options = {
         method: 'GET',
         headers: {
@@ -95,39 +95,22 @@ class ExternalCtsService extends ResolversOperationsService {
           'Content-Type': 'application/json'
         }
       };
-  
+
       const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
       const result = await fetch(url, options);
-  
+
       if (result.ok) {
         const data: IProductoCt[] = await result.json();
-  
-        // Definición del tipo InfoExtraType
-        type InfoExtraType = Record<string, string>;
-  
-        // Función para obtener la información adicional para un almacén específico
-        function getInfoExtraForAlmacen(almacen: IAlmacen): InfoExtraType | null {
-          if (almacen.infoExtra) {
-            // Aseguramos el tipo con "as InfoExtraType"
-            const infoExtra: InfoExtraType = {
-              "14A": '{"campo1": "valor1", "campo2": "valor2"}',
-              "46A": '{"campo1": "valor3", "campo2": "valor4"}'
-              // Agrega aquí otros valores según sea necesario
-            };
-            return JSON.parse(infoExtra[almacen.infoExtra]) || null;
-          }
-          return null;
-        }
-  
+
         const stockProductsCt = data.map((product: IProductoCt) => {
           const almacenes = product.almacenes.map((almacen: IAlmacen) => {
-            const infoExtra = getInfoExtraForAlmacen(almacen);
+            const infoExtra = this.getInfoExtraForAlmacen(almacen);
             return {
               ...almacen,
               infoExtra
             };
           });
-  
+
           return {
             precio: product.precio,
             moneda: product.moneda,
@@ -135,7 +118,7 @@ class ExternalCtsService extends ResolversOperationsService {
             codigo: product.codigo
           };
         });
-  
+
         return {
           status: true,
           message: 'La información que hemos pedido se ha cargado correctamente',
@@ -155,6 +138,27 @@ class ExternalCtsService extends ResolversOperationsService {
         stockProductsCt: null
       };
     }
+  }
+
+  getInfoExtraForAlmacen(almacen: IAlmacen): InfoExtraType | null {
+    if (almacen.infoExtra) {
+      const infoExtra: InfoExtraType = {
+        "14A": { campo1: "valor1", campo2: "valor2" },
+        "46A": { campo1: "valor3", campo2: "valor4" }
+        // Agrega aquí otros valores según sea necesario
+      };
+
+      // Obtenemos las claves del objeto almacen.infoExtra
+      const infoExtraKeys = Object.keys(almacen.infoExtra);
+
+      // Buscamos la coincidencia en infoExtra con las claves de almacen.infoExtra
+      const matchingKey = infoExtraKeys.find((key) => infoExtra[key] !== undefined);
+
+      // Devolvemos el valor correspondiente al almacén o null si no hay coincidencia
+      return matchingKey ? infoExtra[matchingKey] : null;
+    }
+
+    return null;
   }
 
   async setOrderCt(variables: IVariables) {

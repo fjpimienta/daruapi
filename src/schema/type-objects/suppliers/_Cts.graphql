@@ -24,14 +24,10 @@ type Vigencia {
 
 type Almacen {
   promocion: Promocion
-  # Utilizamos el tipo JSON para representar propiedades dinámicas
-  infoExtra: InfoExtraType
+  infoExtra: JSON
 }
 
-type InfoExtraType {
-  key: String
-  clave: String
-} 
+scalar JSON
 
 # Fin Productos Ct
 

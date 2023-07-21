@@ -6,19 +6,12 @@ export interface IProductoCt {
   codigo: string;
 }
 
+export type InfoExtraType = { [key: string]: any };
+
 export interface IAlmacen {
   promocion: IPromocion;
-  // Utilizamos un tipo 'any' para representar el campo dinámico
-  infoExtra: any;
+  infoExtra: InfoExtraType; // Usa el tipo InfoExtraType corregido aquí
 }
-
-export interface InfoExtraType {
-  [key: string]: {
-    campo1: string;
-    campo2: string;
-    // Agrega aquí otros campos que puedan variar
-  };
-};
 
 export interface IPromocion {
   precio: number;

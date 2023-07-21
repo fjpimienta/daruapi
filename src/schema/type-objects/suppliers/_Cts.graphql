@@ -25,6 +25,7 @@ type Vigencia {
 type Almacen {
   promocion: Promocion
   infoExtra: InfoExtra
+  almacen: String
 }
 
 type InfoExtra {

@@ -9,6 +9,7 @@ export interface IProductoCt {
 export interface IAlmacen {
   promocion: IPromocion;
   infoExtra: InfoExtra | null;
+  almacen: string;
 }
 
 export interface InfoExtra {

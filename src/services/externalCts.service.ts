@@ -105,6 +105,8 @@ class ExternalCtsService extends ResolversOperationsService {
         const stockProductsCt = data.map((product: IProductoCt) => {
           const almacenes = product.almacenes.map((almacen: IAlmacen) => {
             const infoExtra = this.getInfoExtraForAlmacen(almacen);
+            const almacenSalida = JSON.stringify(almacen);
+            almacen.almacen = almacenSalida;
             return {
               ...almacen,
               infoExtra
@@ -145,11 +147,10 @@ class ExternalCtsService extends ResolversOperationsService {
 
     if (almacen.infoExtra) {
       const infoExtra: InfoExtra = {
-        campo1: almacen.infoExtra.campo1 || "",
+        campo1: "HMO" || "",
         campo2: almacen.infoExtra.campo2 || "",
         // Agrega otros campos según sea necesario
       };
-  
       return infoExtra;
     }
     return null;

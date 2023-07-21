@@ -4,116 +4,27 @@ type TokenCt {
   time: String
 }
 
-
-
-
-
 # Definicion para el catalogo de productos CT
-type Existencia {
-  HMO: Int
-  OBR: Int
-  LMO: Int
-  CLN: Int
-  DGO: Int
-  TRN: Int
-  CHI: Int
-  AGS: Int
-  QRO: Int
-  SLP: Int
-  LEO: Int
-  GDL: Int
-  MOR: Int
-  SLT: Int
-  XLP: Int
-  VER: Int
-  COL: Int
-  CTZ: Int
-  TAM: Int
-  PUE: Int
-  VHA: Int
-  TXA: Int
-  MTY: Int
-  TPC: Int
-  MID: Int
-  OAX: Int
-  MAZ: Int
-  CUE: Int
-  TOL: Int
-  PAC: Int
-  CUN: Int
-  DFP: Int
-  DFA: Int
-  ZAC: Int
-  DFT: Int
-  ACA: Int
-  IRA: Int
-  DFC: Int
-  TXL: Int
-  CAM: Int
-  ACX: Int
-  URP: Int
-  CDV: Int
-  CEL: Int
-  D2A: Int
-}
-
-type Especificacion {
-  tipo: String
-  valor: String
+type Promocion {
+  precio: Float
+  vigente: Vigencia
 }
 
 type Vigencia {
-  inicio: String
+  ini: String
   fin: String
 }
 
-type Promocion {
-  tipo: String
-  promocion: Float
-  vigencia: Vigencia
+type Almacen {
+  promocion: Promocion
 }
 
 type ResponseCtsStockProducts {
-  idProducto: Int
-  clave: String
-  numParte: String
-  nombre: String
-  modelo: String
-  idMarca: Int
-  marca: String
-  idSubCategoria: Int
-  subcategoria: String
-  idCategoria: Int
-  categoria: String
-  descripcion_corta: String
-  ean: String
-  upc: String
-  sustituto: String
-  activo: Int
-  protegido: Int
-  existencia: Existencia
   precio: Float
   moneda: String
-  tipoCambio: Int
-  especificaciones: [Especificacion]
-  promociones: [Promocion]
-  imagen: String
+  almacenes: [Almacen]
+  codigo: String
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 interface ResponseCt {
   codigo: String

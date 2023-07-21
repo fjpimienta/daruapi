@@ -27,8 +27,6 @@ type Almacen {
   infoExtra: JSON
 }
 
-scalar JSON
-
 # Fin Productos Ct
 
 interface ResponseCt {

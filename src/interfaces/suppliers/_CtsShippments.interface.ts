@@ -17,9 +17,7 @@ export interface IProductoCt {
   sustituto: string;
   activo: number;
   protegido: number;
-  existencia: {
-    [key: string]: number;
-  };
+  existencia: IExistencia;
   precio: number;
   moneda: string;
   tipoCambio: number;
@@ -37,6 +35,55 @@ export interface IProductoCt {
   }[];
   imagen: string;
 }
+
+export interface IExistencia {
+  HMO: number;
+  OBR: number;
+  LMO: number;
+  CLN: number;
+  DGO: number;
+  TRN: number;
+  CHI: number;
+  AGS: number;
+  QRO: number;
+  SLP: number;
+  LEO: number;
+  GDL: number;
+  MOR: number;
+  SLT: number;
+  XLP: number;
+  VER: number;
+  COL: number;
+  CTZ: number;
+  TAM: number;
+  PUE: number;
+  VHA: number;
+  TXA: number;
+  MTY: number;
+  TPC: number;
+  MID: number;
+  OAX: number;
+  MAZ: number;
+  CUE: number;
+  TOL: number;
+  PAC: number;
+  CUN: number;
+  DFP: number;
+  DFA: number;
+  ZAC: number;
+  DFT: number;
+  ACA: number;
+  IRA: number;
+  DFC: number;
+  TXL: number;
+  CAM: number;
+  ACX: number;
+  URP: number;
+  CDV: number;
+  CEL: number;
+  D2A: number;
+}
+
 
 
 export interface IProductCtShippment {

@@ -84,72 +84,72 @@ class ExternalCtsService extends ResolversOperationsService {
     };
   }
 
-async getStockProductsCt() {
-  try {
-    const token = await this.getTokenCt();
+  async getStockProductsCt() {
+    try {
+      const token = await this.getTokenCt();
 
-    const options = {
-      method: 'GET',
-      headers: {
-        'x-auth': token.tokenCt.token,
-        'Content-Type': 'application/json'
-      }
-    };
-
-    const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
-    const result = await fetch(url, options);
-
-    if (result.ok) {
-      const data: IProductoCt[] = await result.json();
-
-      const stockProductsCt = data.map((product: IProductoCt) => ({
-        idProducto: product.idProducto,
-        clave: product.clave,
-        numParte: product.numParte,
-        nombre: product.nombre,
-        modelo: product.modelo,
-        idMarca: product.idMarca,
-        marca: product.marca,
-        idSubCategoria: product.idSubCategoria,
-        subcategoria: product.subcategoria,
-        idCategoria: product.idCategoria,
-        categoria: product.categoria,
-        descripcion_corta: product.descripcion_corta,
-        ean: product.ean,
-        upc: product.upc,
-        sustituto: product.sustituto,
-        activo: product.activo,
-        protegido: product.protegido,
-        existencia: product.existencia,
-        precio: product.precio,
-        moneda: product.moneda,
-        tipoCambio: product.tipoCambio,
-        especificaciones: product.especificaciones,
-        promociones: product.promociones,
-        imagen: product.imagen
-      }));
-
-      // Modificar el nombre del tipo de respuesta para que coincida con el esquema GraphQL
-      return {
-        status: true, // Asegurar que el valor del campo status sea verdadero (true)
-        message: 'La información que hemos pedido se ha cargado correctamente',
-        stockProductsCt
+      const options = {
+        method: 'GET',
+        headers: {
+          'x-auth': token.tokenCt.token,
+          'Content-Type': 'application/json'
+        }
       };
-    } else {
+
+      const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
+      const result = await fetch(url, options);
+
+      if (result.ok) {
+        const data: IProductoCt[] = await result.json();
+
+        const stockProductsCt = data.map((product: IProductoCt) => ({
+          idProducto: product.idProducto,
+          clave: product.clave,
+          numParte: product.numParte,
+          nombre: product.nombre,
+          modelo: product.modelo,
+          idMarca: product.idMarca,
+          marca: product.marca,
+          idSubCategoria: product.idSubCategoria,
+          subcategoria: product.subcategoria,
+          idCategoria: product.idCategoria,
+          categoria: product.categoria,
+          descripcion_corta: product.descripcion_corta,
+          ean: product.ean,
+          upc: product.upc,
+          sustituto: product.sustituto,
+          activo: product.activo,
+          protegido: product.protegido,
+          existencia: product.existencia,
+          precio: product.precio,
+          moneda: product.moneda,
+          tipoCambio: product.tipoCambio,
+          especificaciones: product.especificaciones,
+          promociones: product.promociones,
+          imagen: product.imagen
+        }));
+
+        // Modificar el nombre del tipo de respuesta para que coincida con el esquema GraphQL
+        return {
+          status: true, // Asegurar que el valor del campo status sea verdadero (true)
+          message: 'La información que hemos pedido se ha cargado correctamente',
+          stockProductsCt
+        };
+      } else {
+        return {
+          status: false,
+          message: 'Error en el servicio. ',
+          stockProductsCt: null
+        };
+      }
+    } catch (error: any) {
       return {
         status: false,
-        message: 'Error en el servicio. ',
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
         stockProductsCt: null
       };
     }
-  } catch (error: any) {
-    return {
-      status: false,
-      message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
-      stockProductsCt: null
-    };
   }
-}
 
 
   async setOrderCt(variables: IVariables) {

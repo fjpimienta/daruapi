@@ -33,6 +33,12 @@ type PromocionB implements Promocion {
   campoEspecificoB: Int!
 }
 
+type PromocionNull implements Promocion {
+  precio: Float!
+  vigente: Vigente!
+  # Otros campos específicos para el tipo "PromocionNull" si es necesario
+}
+
 type Vigente {
   ini: String!
   fin: String!

@@ -43,8 +43,9 @@ const resolversCtsQuery: IResolvers = {
         return 'PromocionA';
       } else if ('campoEspecificoB' in obj) {
         return 'PromocionB';
+      } else {
+        return 'PromocionNull';
       }
-      return null;
     },
   },
   

@@ -13,13 +13,11 @@ type ResponseCtsStockProducts {
 }
 
 type Almacenes {
-  promocion: Promocion
   almacenDinamico: [AlmacenDinamico!]!
 }
 
 type AlmacenDinamico {
   key: String!
-  text: String
   value: Int!
 }
 

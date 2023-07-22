@@ -16,9 +16,8 @@ export interface IAlmacen {
 }
 
 export interface IAlmacenDinamico {
-  key: string;
-  text: string;
-  value: number;
+  key: string
+  value: number
 }
 
 export interface IPromocion {

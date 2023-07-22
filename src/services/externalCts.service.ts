@@ -109,11 +109,12 @@ class ExternalCtsService extends ResolversOperationsService {
             for (const [key, value] of Object.entries(almacenItem)) {
               if (key !== 'almacenes') {
                 if (typeof value === 'string') {
-                  almacenDinamico.push({ key, value });
+                  almacenDinamico.push({ key, text: value, value: 0 }); // Aquí puedes asignar un valor predeterminado para value, ya que solo se utiliza para mostrar texto.
                 } else if (key === 'promocion' && value !== undefined) {
                   almacenDinamico.push({
                     key: 'promocion',
-                    value: this.formatPromocion(value as IPromocion),
+                    text: this.formatPromocion(value as IPromocion),
+                    value: 0, // Otra vez, este valor no se utiliza, pero es necesario para mantener la estructura del objeto.
                   });
                 }
               }
@@ -149,11 +150,9 @@ class ExternalCtsService extends ResolversOperationsService {
     }
   }
 
-
   formatPromocion(promocion: IPromocion): string {
     return `Precio: ${promocion.precio}, Vigencia: ${promocion.vigente.ini} a ${promocion.vigente.fin}`;
   }
-
 
   async setOrderCt(variables: IVariables) {
     const { idPedido, almacen, tipoPago, guiaConnect, envio, productoCt, cfdi } = variables;

@@ -115,8 +115,13 @@ class ExternalCtsService extends ResolversOperationsService {
                     value: valor,
                     promocionString: JSON.stringify(almacenItem)
                   });
+                } else if (key === 'promocion' && valor !== undefined) {
+                  almacenDinamico.push({
+                    key: 'promocion',
+                    value: 0,
+                    promocionString: JSON.stringify(valor),
+                  });
                 }
-                // Puedes manejar el caso de IPromocion si es necesario
               }
             }
 

@@ -110,7 +110,11 @@ class ExternalCtsService extends ResolversOperationsService {
               if (key !== 'almacenes') {
                 const valor = almacenItem[key as keyof IAlmacenes];
                 if (typeof valor === 'number') {
-                  almacenDinamico.push({ key, value: valor });
+                  almacenDinamico.push({
+                    key,
+                    value: valor,
+                    promocionString: JSON.stringify(almacenItem)
+                  });
                 }
                 // Puedes manejar el caso de IPromocion si es necesario
               }

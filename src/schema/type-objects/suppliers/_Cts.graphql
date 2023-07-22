@@ -20,6 +20,7 @@ type Almacenes {
 type AlmacenDinamico {
   key: String!
   value: Int!
+  promocionString: String
 }
 
 type Promocion {

@@ -10,10 +10,12 @@ export interface IAlmacenes {
   promocion: IPromocion;
   almacen: IAlmacen;
   cantidad: number;
+  almacenString: string;
 }
 
 export interface IAlmacen {
   [key: string]: string;
+  value: string;
 }
 
 export interface IPromocion {

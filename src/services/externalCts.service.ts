@@ -142,22 +142,25 @@ class ExternalCtsService extends ResolversOperationsService {
     }
   }
   
-
   addDynamicPropertiesToIdAlmacen(almacen: IAlmacenes): IAlmacen {
-    return Object.keys(almacen.almacen).length > 0 ? almacen.almacen : {};
+    const dynamicProperties: IAlmacen = {
+      value: ""
+    };
+    almacen.almacenString =  JSON.stringify(almacen);
+    if (almacen.almacen) {
+      const value = almacen.almacen.value; // Obtener el valor de 'value'
+      if (value) {
+        dynamicProperties.value = value.toString();
+      } else {
+        // Aquí puedes lanzar un error si 'value' es falso o indefinido
+        throw new Error("'value' es requerido pero no se ha proporcionado en el objeto almacen.almacen.");
+      }
+    } else {
+      // Aquí puedes lanzar un error si 'almacen.almacen' es falso o indefinido
+      throw new Error("El objeto almacen.almacen es requerido pero no se ha proporcionado.");
+    }
+    return dynamicProperties;
   }
-  
-
-  
-  // addDynamicPropertiesToIdAlmacen(almacen: IAlmacenes): IAlmacen {
-  //   const dynamicProperties: IAlmacen = {};
-  //   if (almacen.almacen) {
-  //     Object.entries(almacen.almacen).forEach(([key, value]) => {
-  //       dynamicProperties[key] = value.toString();
-  //     });
-  //   }
-  //   return dynamicProperties;
-  // }
 
   async setOrderCt(variables: IVariables) {
     const { idPedido, almacen, tipoPago, guiaConnect, envio, productoCt, cfdi } = variables;

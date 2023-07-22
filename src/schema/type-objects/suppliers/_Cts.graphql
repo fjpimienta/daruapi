@@ -12,6 +12,18 @@ type ResponseCtsStockProducts {
   codigo: String
 }
 
+type Almacenes {
+  promocion: Promocion
+  almacen: Almacen
+  cantidad: Int
+  almacenString: String
+}
+
+type Almacen {
+  key: String
+  value: String
+}
+
 type Promocion {
   precio: Float
   vigente: Vigencia
@@ -20,17 +32,6 @@ type Promocion {
 type Vigencia {
   ini: String
   fin: String
-}
-
-type Almacenes {
-  promocion: Promocion
-  almacen: Almacen
-  cantidad: Int
-}
-
-type Almacen {
-  key: String
-  value: String
 }
 # Fin Productos Ct
 

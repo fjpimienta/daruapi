@@ -138,8 +138,9 @@ class ExternalCtsService extends ResolversOperationsService {
   }
 
   addDynamicPropertiesToIdAlmacen(almacen: IAlmacenes): IAlmacen {
-    return almacen.almacen;
+    return Object.keys(almacen.almacen).length > 0 ? almacen.almacen : {};
   }
+  
 
   
   // addDynamicPropertiesToIdAlmacen(almacen: IAlmacenes): IAlmacen {

@@ -32,7 +32,6 @@ type IdAlmacenEntry {
   key: String
   value: String
 }
-
 # Fin Productos Ct
 
 interface ResponseCt {

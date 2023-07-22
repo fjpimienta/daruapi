@@ -139,9 +139,11 @@ class ExternalCtsService extends ResolversOperationsService {
 
   addDynamicPropertiesToIdAlmacen(almacen: IAlmacen): IidAlmacen {
     const dynamicProperties: IidAlmacen = {};
-    Object.entries(almacen.idAlmacen).forEach(([key, value]) => {
-      dynamicProperties[key] = value.toString();
-    });
+    if (almacen.idAlmacen) {
+      Object.entries(almacen.idAlmacen).forEach(([key, value]) => {
+        dynamicProperties[key] = value.toString();
+      });
+    }
     return dynamicProperties;
   }
 

@@ -26,8 +26,6 @@ export interface IVigencia {
   fin: string;
 }
 
-
-
 export interface IProductCtShippment {
   producto: string;
   cantidad: number;

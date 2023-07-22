@@ -18,6 +18,7 @@ type Almacenes {
   almacen: Almacen
   cantidad: Int
   almacenString: String
+  almacenStringByDynamic: String
 }
 
 type Almacen {

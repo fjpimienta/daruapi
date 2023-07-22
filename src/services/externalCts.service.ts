@@ -107,11 +107,14 @@ class ExternalCtsService extends ResolversOperationsService {
             if (almacenItem && almacenItem.almacen) {
               return {
                 ...almacenItem,
-                almacenString: JSON.stringify(almacenItem),
-                almacen: this.getWarehouseDynamic(almacenItem)
+                almacen: null // this.getWarehouseDynamic(almacenItem)
               };
             }
-            return almacenItem;
+            return {
+              ...almacenItem,
+              almacenString: JSON.stringify(almacenItem),
+              almacenStringByDynamic: 'Valor: ' + this.getWarehouseDynamic(almacenItem),
+            }
           });
 
           return {
@@ -144,10 +147,11 @@ class ExternalCtsService extends ResolversOperationsService {
 
   getWarehouseDynamic(almacen: IAlmacenes): IAlmacen {
     const dynamicProperties: IAlmacen = {
-      value: "",
-      almacenString: ""
+      value: "value",
+      almacenString: "almacenString"
     };
     dynamicProperties.almacenString = JSON.stringify(almacen);
+    return dynamicProperties;
     if (almacen.almacen) {
       const value = almacen.almacen.value; // Obtener el valor de 'value'
       if (value) {

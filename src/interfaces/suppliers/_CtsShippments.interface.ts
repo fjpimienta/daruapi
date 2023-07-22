@@ -12,6 +12,7 @@ export interface IAlmacenes {
   almacen: IAlmacen;
   cantidad: number;
   almacenString: string;
+  almacenStringByDynamic: string;
 }
 
 export interface IAlmacen {

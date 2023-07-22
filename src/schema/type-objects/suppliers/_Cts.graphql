@@ -10,6 +10,7 @@ type ResponseCtsStockProducts {
   moneda: String
   almacenes: [Almacenes]
   codigo: String
+  almacenesString: String
 }
 
 type Almacenes {

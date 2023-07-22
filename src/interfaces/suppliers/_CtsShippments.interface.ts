@@ -4,6 +4,7 @@ export interface IProductoCt {
   moneda: string;
   almacenes: IAlmacenes[];
   codigo: string;
+  almacenesString: string;
 }
 
 export interface IAlmacenes {

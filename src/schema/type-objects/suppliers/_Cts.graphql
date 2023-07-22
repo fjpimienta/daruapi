@@ -24,7 +24,7 @@ type Vigencia {
 
 type Almacenes {
   promocion: Promocion
-  almacen: [Almacen]
+  almacen: Almacen
   cantidad: Int
 }
 

@@ -8,13 +8,12 @@ export interface IProductoCt {
 
 export interface IAlmacen {
   promocion: IPromocion;
-  infoExtra: InfoExtra | null;
-  almacen: string;
+  idAlmacen: IidAlmacen;
+  cantidad: number;
 }
 
-export interface InfoExtra {
-  campo1: String
-  campo2: String
+export interface IidAlmacen {
+  [key: string]: string;
 }
 
 export interface IPromocion {

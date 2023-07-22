@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacen, IOrderCtResponse, IProductoCt, InfoExtra } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IAlmacen, IOrderCtResponse, IProductoCt, IidAlmacen } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import fetch from 'node-fetch';
 
@@ -103,15 +103,10 @@ class ExternalCtsService extends ResolversOperationsService {
         const data: IProductoCt[] = await result.json();
 
         const stockProductsCt = data.map((product: IProductoCt) => {
-          const almacenes = product.almacenes.map((almacen: IAlmacen) => {
-            const infoExtra = this.getInfoExtraForAlmacen(almacen);
-            const almacenSalida = JSON.stringify(almacen);
-            almacen.almacen = almacenSalida;
-            return {
-              ...almacen,
-              infoExtra
-            };
-          });
+          const almacenes = product.almacenes.map((almacenItem) => ({
+            ...almacenItem,
+            idAlmacen: this.addDynamicPropertiesToIdAlmacen(almacenItem),
+          }));
 
           return {
             precio: product.precio,
@@ -142,20 +137,13 @@ class ExternalCtsService extends ResolversOperationsService {
     }
   }
 
-  getInfoExtraForAlmacen(almacen: IAlmacen): any | null {
-    console.log('almacen: ', almacen);
-
-    if (almacen.infoExtra) {
-      const infoExtra: InfoExtra = {
-        campo1: "HMO" || "",
-        campo2: almacen.infoExtra.campo2 || "",
-        // Agrega otros campos según sea necesario
-      };
-      return infoExtra;
-    }
-    return null;
+  addDynamicPropertiesToIdAlmacen(almacen: IAlmacen): IidAlmacen {
+    const dynamicProperties: IidAlmacen = {};
+    Object.entries(almacen.idAlmacen).forEach(([key, value]) => {
+      dynamicProperties[key] = value.toString();
+    });
+    return dynamicProperties;
   }
-
 
   async setOrderCt(variables: IVariables) {
     const { idPedido, almacen, tipoPago, guiaConnect, envio, productoCt, cfdi } = variables;

@@ -113,7 +113,7 @@ class ExternalCtsService extends ResolversOperationsService {
             return {
               ...almacenItem,
               almacenString: JSON.stringify(almacenItem),
-              almacenStringByDynamic: 'Valor: ' + this.getWarehouseDynamic(almacenItem),
+              almacenStringByDynamic: 'Valor: ' + JSON.stringify(this.getWarehouseDynamic(almacenItem)),
             }
           });
 

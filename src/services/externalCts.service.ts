@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacen, IOrderCtResponse, IProductoCt, IidAlmacen } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacen } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import fetch from 'node-fetch';
 
@@ -105,7 +105,7 @@ class ExternalCtsService extends ResolversOperationsService {
         const stockProductsCt = data.map((product: IProductoCt) => {
           const almacenes = product.almacenes.map((almacenItem) => ({
             ...almacenItem,
-            idAlmacen: this.addDynamicPropertiesToIdAlmacen(almacenItem),
+            almacen: this.addDynamicPropertiesToIdAlmacen(almacenItem),
           }));
 
           return {
@@ -137,10 +137,10 @@ class ExternalCtsService extends ResolversOperationsService {
     }
   }
 
-  addDynamicPropertiesToIdAlmacen(almacen: IAlmacen): IidAlmacen {
-    const dynamicProperties: IidAlmacen = {};
-    if (almacen.idAlmacen) {
-      Object.entries(almacen.idAlmacen).forEach(([key, value]) => {
+  addDynamicPropertiesToIdAlmacen(almacen: IAlmacenes): IAlmacen {
+    const dynamicProperties: IAlmacen = {};
+    if (almacen.almacen) {
+      Object.entries(almacen.almacen).forEach(([key, value]) => {
         dynamicProperties[key] = value.toString();
       });
     }

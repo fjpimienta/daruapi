@@ -2,17 +2,17 @@
 export interface IProductoCt {
   precio: number;
   moneda: string;
-  almacenes: IAlmacen[];
+  almacenes: IAlmacenes[];
   codigo: string;
 }
 
-export interface IAlmacen {
+export interface IAlmacenes {
   promocion: IPromocion;
-  idAlmacen: IidAlmacen;
+  almacen: IAlmacen;
   cantidad: number;
 }
 
-export interface IidAlmacen {
+export interface IAlmacen {
   [key: string]: string;
 }
 

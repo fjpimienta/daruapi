@@ -8,7 +8,7 @@ type TokenCt {
 type ResponseCtsStockProducts {
   precio: Float
   moneda: String
-  almacenes: [Almacen]
+  almacenes: [Almacenes]
   codigo: String
 }
 
@@ -22,13 +22,13 @@ type Vigencia {
   fin: String
 }
 
-type Almacen {
+type Almacenes {
   promocion: Promocion
-  idAlmacen: [IdAlmacenEntry]
+  almacen: [Almacen]
   cantidad: Int
 }
 
-type IdAlmacenEntry {
+type Almacen {
   key: String
   value: String
 }

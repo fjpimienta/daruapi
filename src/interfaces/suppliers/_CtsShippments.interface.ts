@@ -17,6 +17,7 @@ export interface IAlmacenes {
 export interface IAlmacen {
   [key: string]: string;
   value: string;
+  almacenString: string;
 }
 
 export interface IPromocion {

@@ -23,6 +23,7 @@ type Almacenes {
 type Almacen {
   key: String
   value: String
+  almacenString: String
 }
 
 type Promocion {

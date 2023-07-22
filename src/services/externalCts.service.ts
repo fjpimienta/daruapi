@@ -87,7 +87,7 @@ class ExternalCtsService extends ResolversOperationsService {
   async getStockProductsCt() {
     try {
       const token = await this.getTokenCt();
-  
+
       const options = {
         method: 'GET',
         headers: {
@@ -95,32 +95,32 @@ class ExternalCtsService extends ResolversOperationsService {
           'Content-Type': 'application/json'
         }
       };
-  
+
       const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
       const result = await fetch(url, options);
-  
+
       if (result.ok) {
         const data: IProductoCt[] = await result.json();
-  
+
         const stockProductsCt = data.map((product: IProductoCt) => {
           const almacenes = product.almacenes.map((almacenItem) => {
             if (almacenItem && almacenItem.almacen) {
               return {
                 ...almacenItem,
-                almacen: this.addDynamicPropertiesToIdAlmacen(almacenItem),
-                almacenString: JSON.stringify(almacenItem)
+                almacenString: JSON.stringify(almacenItem),
+                almacen: this.getWarehouseDynamic(almacenItem)
               };
             }
             return almacenItem;
           });
-  
+
           return {
             ...product,
-            almacenes,
-            almacenesString: JSON.stringify(product.almacenes)
+            almacenesString: JSON.stringify(product.almacenes),
+            almacenes
           };
         });
-  
+
         return {
           status: true,
           message: 'La información que hemos pedido se ha cargado correctamente',
@@ -141,12 +141,13 @@ class ExternalCtsService extends ResolversOperationsService {
       };
     }
   }
-  
-  addDynamicPropertiesToIdAlmacen(almacen: IAlmacenes): IAlmacen {
+
+  getWarehouseDynamic(almacen: IAlmacenes): IAlmacen {
     const dynamicProperties: IAlmacen = {
-      value: ""
+      value: "",
+      almacenString: ""
     };
-    almacen.almacenString =  JSON.stringify(almacen);
+    dynamicProperties.almacenString = JSON.stringify(almacen);
     if (almacen.almacen) {
       const value = almacen.almacen.value; // Obtener el valor de 'value'
       if (value) {

@@ -8,17 +8,17 @@ export interface IProductoCt {
 }
 
 export interface IAlmacenes {
-  promocion: IPromocion;
-  almacen: IAlmacen;
-  cantidad: number;
-  almacenString: string;
-  almacenStringByDynamic: string;
+  almacenes: IAlmacen[]
 }
 
 export interface IAlmacen {
-  [key: string]: string;
-  value: string;
-  almacenString: string;
+  promocion: IPromocion;
+  [key: string]: number | IPromocion;
+}
+
+export interface IAlmacenDinamico {
+  key: string
+  value: number
 }
 
 export interface IPromocion {

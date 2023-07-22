@@ -14,17 +14,12 @@ type ResponseCtsStockProducts {
 }
 
 type Almacenes {
-  promocion: Promocion
-  almacen: Almacen
-  cantidad: Int
-  almacenString: String
-  almacenStringByDynamic: String
+  almacenDinamico: [AlmacenDinamico!]!
 }
 
-type Almacen {
-  key: String
-  value: String
-  almacenString: String
+type AlmacenDinamico {
+  key: String!
+  value: Int!
 }
 
 type Promocion {

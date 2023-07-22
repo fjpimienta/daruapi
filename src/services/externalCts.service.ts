@@ -150,7 +150,7 @@ class ExternalCtsService extends ResolversOperationsService {
       value: "",
       almacenString: ""
     };
-    dynamicProperties.almacenString = 'almacen: ' + JSON.stringify(almacen) + 'almacen.almacen: ' + JSON.stringify(almacen.almacen);
+    dynamicProperties.almacenString = 'almacen: ' + JSON.stringify(almacen); // + 'almacen.almacen: ' + JSON.stringify(almacen.almacen);
     return dynamicProperties;
     if (almacen.almacen) {
       const value = almacen.almacen.value; // Obtener el valor de 'value'

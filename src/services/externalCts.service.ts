@@ -138,14 +138,19 @@ class ExternalCtsService extends ResolversOperationsService {
   }
 
   addDynamicPropertiesToIdAlmacen(almacen: IAlmacenes): IAlmacen {
-    const dynamicProperties: IAlmacen = {};
-    if (almacen.almacen) {
-      Object.entries(almacen.almacen).forEach(([key, value]) => {
-        dynamicProperties[key] = value.toString();
-      });
-    }
-    return dynamicProperties;
+    return almacen.almacen;
   }
+
+  
+  // addDynamicPropertiesToIdAlmacen(almacen: IAlmacenes): IAlmacen {
+  //   const dynamicProperties: IAlmacen = {};
+  //   if (almacen.almacen) {
+  //     Object.entries(almacen.almacen).forEach(([key, value]) => {
+  //       dynamicProperties[key] = value.toString();
+  //     });
+  //   }
+  //   return dynamicProperties;
+  // }
 
   async setOrderCt(variables: IVariables) {
     const { idPedido, almacen, tipoPago, guiaConnect, envio, productoCt, cfdi } = variables;

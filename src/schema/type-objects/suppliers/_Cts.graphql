@@ -10,7 +10,6 @@ type ResponseCtsStockProducts {
   moneda: String
   almacenes: [Almacenes]
   codigo: String
-  almacenesString: String
 }
 
 type Almacenes {
@@ -20,6 +19,7 @@ type Almacenes {
 
 type AlmacenDinamico {
   key: String!
+  text: String
   value: Int!
 }
 

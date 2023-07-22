@@ -87,7 +87,7 @@ class ExternalCtsService extends ResolversOperationsService {
   async getStockProductsCt() {
     try {
       const token = await this.getTokenCt();
-
+  
       const options = {
         method: 'GET',
         headers: {
@@ -95,19 +95,24 @@ class ExternalCtsService extends ResolversOperationsService {
           'Content-Type': 'application/json'
         }
       };
-
+  
       const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
       const result = await fetch(url, options);
-
+  
       if (result.ok) {
         const data: IProductoCt[] = await result.json();
-
+  
         const stockProductsCt = data.map((product: IProductoCt) => {
-          const almacenes = product.almacenes.map((almacenItem) => ({
-            ...almacenItem,
-            almacen: this.addDynamicPropertiesToIdAlmacen(almacenItem),
-          }));
-
+          const almacenes = product.almacenes.map((almacenItem) => {
+            if (almacenItem && almacenItem.almacen) {
+              return {
+                ...almacenItem,
+                almacen: this.addDynamicPropertiesToIdAlmacen(almacenItem),
+              };
+            }
+            return almacenItem;
+          });
+  
           return {
             precio: product.precio,
             moneda: product.moneda,
@@ -115,7 +120,7 @@ class ExternalCtsService extends ResolversOperationsService {
             codigo: product.codigo
           };
         });
-
+  
         return {
           status: true,
           message: 'La información que hemos pedido se ha cargado correctamente',
@@ -136,6 +141,7 @@ class ExternalCtsService extends ResolversOperationsService {
       };
     }
   }
+  
 
   addDynamicPropertiesToIdAlmacen(almacen: IAlmacenes): IAlmacen {
     return Object.keys(almacen.almacen).length > 0 ? almacen.almacen : {};

@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenDinamico } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenDinamico, IPromocion } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import fetch from 'node-fetch';
 
@@ -106,13 +106,16 @@ class ExternalCtsService extends ResolversOperationsService {
           const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
             const almacenDinamico: IAlmacenDinamico[] = [];
 
-            for (const key in almacenItem) {
+            for (const [key, value] of Object.entries(almacenItem)) {
               if (key !== 'almacenes') {
-                const valor = almacenItem[key as keyof IAlmacenes];
-                if (typeof valor === 'number') {
-                  almacenDinamico.push({ key, value: valor });
+                if (typeof value === 'string') {
+                  almacenDinamico.push({ key, value });
+                } else if (key === 'promocion' && value !== undefined) {
+                  almacenDinamico.push({
+                    key: 'promocion',
+                    value: this.formatPromocion(value as IPromocion),
+                  });
                 }
-                // Puedes manejar el caso de IPromocion si es necesario
               }
             }
 
@@ -145,7 +148,12 @@ class ExternalCtsService extends ResolversOperationsService {
       };
     }
   }
-  
+
+
+  formatPromocion(promocion: IPromocion): string {
+    return `Precio: ${promocion.precio}, Vigencia: ${promocion.vigente.ini} a ${promocion.vigente.fin}`;
+  }
+
 
   async setOrderCt(variables: IVariables) {
     const { idPedido, almacen, tipoPago, guiaConnect, envio, productoCt, cfdi } = variables;

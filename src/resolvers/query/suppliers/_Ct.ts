@@ -1,7 +1,21 @@
 import { IResolvers } from '@graphql-tools/utils';
 import ExternalCtsService from '../../../services/externalCts.service';
 
+// Agrega esta función de resolución antes de definir los resolvers de GraphQL
+const resolveResponseValueUnionType = (obj: any) => {
+  // Verifica si el objeto es una instancia de Promocion
+  if (obj && typeof obj.precio === 'number' && obj.vigente !== undefined) {
+    return 'Promocion'; // Devuelve el nombre del tipo concreto (Promocion) dentro de la unión
+  }
+
+  // Si no es una instancia de Promocion, devuelve null o undefined
+  return null;
+};
+
 const resolversCtsQuery: IResolvers = {
+  ResponseValueUnion: {
+    __resolveType: resolveResponseValueUnionType, // Aquí se proporciona la función de resolución
+  },
   Query: {
     async tokenCt(_, __, context) {
       return new ExternalCtsService(_, __, context).getTokenCt();

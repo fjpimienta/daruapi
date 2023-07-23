@@ -14,7 +14,15 @@ const resolveResponseValueUnionType = (obj: any) => {
 
 const resolversCtsQuery: IResolvers = {
   ResponseValueUnion: {
-    __resolveType: resolveResponseValueUnionType, // Aquí se proporciona la función de resolución
+    __resolveType(value: any) {
+      if (typeof value === 'number') {
+        return 'Float';
+      } else if (value && value.hasOwnProperty('precio') && value.hasOwnProperty('vigente')) {
+        return 'Promocion';
+      }
+      // Si no se puede determinar el tipo, devuelve null o lanza un error
+      return null;
+    },
   },
   Query: {
     async tokenCt(_, __, context) {

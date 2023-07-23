@@ -121,25 +121,11 @@ class ExternalCtsService extends ResolversOperationsService {
                   almacenDinamico.push({
                     key: 'promocion',
                     value: promocionValor,
-                    promocionString: JSON.stringify(valor),
+                    promocionString: promocionString
                   });
                 }
               }
             }
-
-            // for (const [key, value] of Object.entries(almacenItem)) {
-            //   if (key !== 'almacenes') {
-            //     if (typeof value === 'string') {
-            //       almacenDinamico.push({ key, text: value, value: 0 }); // Aquí puedes asignar un valor predeterminado para value, ya que solo se utiliza para mostrar texto.
-            //     } else if (key === 'promocion' && value !== undefined) {
-            //       almacenDinamico.push({
-            //         key: 'promocion',
-            //         text: this.formatPromocion(value as IPromocion),
-            //         value: 0, // Otra vez, este valor no se utiliza, pero es necesario para mantener la estructura del objeto.
-            //       });
-            //     }
-            //   }
-            // }
 
             return { almacenDinamico };
           });
@@ -173,10 +159,6 @@ class ExternalCtsService extends ResolversOperationsService {
   // Type guard para verificar si el objeto es una IPromocion
   isPromocion(obj: any): obj is IPromocion {
     return obj && typeof obj.precio === 'number' && obj.vigente !== undefined;
-  }
-
-  formatPromocion(promocion: IPromocion): string {
-    return `Precio: ${promocion.precio}, Vigencia: ${promocion.vigente.ini} a ${promocion.vigente.fin}`;
   }
 
   async setOrderCt(variables: IVariables) {

@@ -23,7 +23,11 @@ type AlmacenDinamico {
   promocionString: String
 }
 
-union ResponseValueUnion = Promocion
+interface ResponseValueUnion {
+  precio: Float
+  vigente: Vigencia
+}
+
 
 type Promocion {
   precio: Float

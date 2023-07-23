@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacen } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenDinamico, IPromocion } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import fetch from 'node-fetch';
 
@@ -92,8 +92,8 @@ class ExternalCtsService extends ResolversOperationsService {
         method: 'GET',
         headers: {
           'x-auth': token.tokenCt.token,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       };
 
       const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
@@ -103,64 +103,69 @@ class ExternalCtsService extends ResolversOperationsService {
         const data: IProductoCt[] = await result.json();
 
         const stockProductsCt = data.map((product: IProductoCt) => {
-          const almacenes = product.almacenes.map((almacenItem) => {
-            if (almacenItem && almacenItem.almacen) {
-              return {
-                ...almacenItem,
-                almacenString: JSON.stringify(almacenItem),
-                almacen: this.getWarehouseDynamic(almacenItem)
-              };
+          const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
+            const almacenDinamico: IAlmacenDinamico[] = [];
+
+            for (const key in almacenItem) {
+              if (key !== 'almacenes') {
+                const valor = almacenItem[key as keyof IAlmacenes];
+                if (typeof valor === 'number') {
+                  almacenDinamico.push({
+                    key,
+                    value: valor,
+                    promocionString: JSON.stringify(almacenItem)
+                  });
+                }
+                // Puedes manejar el caso de IPromocion si es necesario
+              }
             }
-            return almacenItem;
+
+            // for (const [key, value] of Object.entries(almacenItem)) {
+            //   if (key !== 'almacenes') {
+            //     if (typeof value === 'string') {
+            //       almacenDinamico.push({ key, text: value, value: 0 }); // Aquí puedes asignar un valor predeterminado para value, ya que solo se utiliza para mostrar texto.
+            //     } else if (key === 'promocion' && value !== undefined) {
+            //       almacenDinamico.push({
+            //         key: 'promocion',
+            //         text: this.formatPromocion(value as IPromocion),
+            //         value: 0, // Otra vez, este valor no se utiliza, pero es necesario para mantener la estructura del objeto.
+            //       });
+            //     }
+            //   }
+            // }
+
+            return { almacenDinamico };
           });
 
           return {
             ...product,
-            almacenesString: JSON.stringify(product.almacenes),
-            almacenes
+            almacenes,
           };
         });
 
         return {
           status: true,
           message: 'La información que hemos pedido se ha cargado correctamente',
-          stockProductsCt
+          stockProductsCt,
         };
       } else {
         return {
           status: false,
           message: 'Error en el servicio. ',
-          stockProductsCt: null
+          stockProductsCt: null,
         };
       }
     } catch (error: any) {
       return {
         status: false,
         message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
-        stockProductsCt: null
+        stockProductsCt: null,
       };
     }
   }
 
-  getWarehouseDynamic(almacen: IAlmacenes): IAlmacen {
-    const dynamicProperties: IAlmacen = {
-      value: "",
-      almacenString: ""
-    };
-    dynamicProperties.almacenString = JSON.stringify(almacen);
-    if (almacen.almacen) {
-      const value = almacen.almacen.value; // Obtener el valor de 'value'
-      if (value) {
-        dynamicProperties.value = value.toString();
-      } else {
-        // Aquí puedes lanzar un error si 'value' es falso o indefinido
-        throw new Error("'value' es requerido pero no se ha proporcionado en el objeto almacen.almacen.");
-      }
-    } else {
-      // Aquí puedes lanzar un error si 'almacen.almacen' es falso o indefinido
-      throw new Error("El objeto almacen.almacen es requerido pero no se ha proporcionado.");
-    }
-    return dynamicProperties;
+  formatPromocion(promocion: IPromocion): string {
+    return `Precio: ${promocion.precio}, Vigencia: ${promocion.vigente.ini} a ${promocion.vigente.fin}`;
   }
 
   async setOrderCt(variables: IVariables) {

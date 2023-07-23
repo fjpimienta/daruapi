@@ -10,20 +10,17 @@ type ResponseCtsStockProducts {
   moneda: String
   almacenes: [Almacenes]
   codigo: String
-  almacenesString: String
 }
 
 type Almacenes {
   promocion: Promocion
-  almacen: Almacen
-  cantidad: Int
-  almacenString: String
+  almacenDinamico: [AlmacenDinamico!]!
 }
 
-type Almacen {
-  key: String
-  value: String
-  almacenString: String
+type AlmacenDinamico {
+  key: String!
+  value: Int!
+  promocionString: String
 }
 
 type Promocion {

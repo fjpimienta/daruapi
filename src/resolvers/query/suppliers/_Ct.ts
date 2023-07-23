@@ -15,6 +15,11 @@ const resolversCtsQuery: IResolvers = {
       return resolveResponseValueUnionType(value);
     },
   },
+  AlmacenDinamico: {
+    value(parent: any) {
+      return parent.value;
+    },
+  },
   Query: {
     async tokenCt(_, __, context) {
       return new ExternalCtsService(_, __, context).getTokenCt();

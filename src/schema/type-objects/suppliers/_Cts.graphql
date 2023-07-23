@@ -19,9 +19,11 @@ type Almacenes {
 
 type AlmacenDinamico {
   key: String!
-  value: Int!
+  value: ResponseValueUnion
   promocionString: String
 }
+
+union ResponseValueUnion = Float | Promocion
 
 type Promocion {
   precio: Float

@@ -2,19 +2,16 @@ import { IResolvers } from '@graphql-tools/utils';
 import ExternalCtsService from '../../../services/externalCts.service';
 import { Promocion } from '../../../models/promocion';
 
-// Agrega esta función de resolución antes de definir los resolvers de GraphQL
-const resolveResponseValueUnionType = (obj: any) => {
-  if (obj instanceof Promocion) {
-    return 'Promocion';
-  }
-  return null;
-};
-
-
 const resolversCtsQuery: IResolvers = {
   ResponseValueUnion: {
     __resolveType(value: any) {
-      return resolveResponseValueUnionType(value);
+      // Determinar el tipo concreto de 'value' en la unión 'ResponseValueUnion'
+      if (typeof value === 'number') {
+        return 'Float';
+      } else if (value instanceof Promocion) {
+        return 'Promocion';
+      }
+      return null;
     },
   },
   AlmacenDinamico: {

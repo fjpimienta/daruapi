@@ -10,5 +10,8 @@ export class Promocion {
     this.vigencia = vigencia;
   }
 
-  // Resto de la implementación de la clase...
+  // Implementar la función "__isTypeOf" para que GraphQL pueda determinar el tipo en tiempo de ejecución
+  static __isTypeOf(obj: any) {
+    return obj instanceof Promocion;
+  }
 }

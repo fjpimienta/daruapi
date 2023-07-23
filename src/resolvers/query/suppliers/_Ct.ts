@@ -3,24 +3,16 @@ import ExternalCtsService from '../../../services/externalCts.service';
 
 // Agrega esta función de resolución antes de definir los resolvers de GraphQL
 const resolveResponseValueUnionType = (obj: any) => {
-  // Verifica si el objeto es una instancia de Promocion
   if (obj && typeof obj.precio === 'number' && obj.vigente !== undefined) {
-    return 'Promocion'; // Devuelve el nombre del tipo concreto (Promocion) dentro de la unión
+    return 'Promocion';
   }
-
-  // Si no es una instancia de Promocion, devuelve null o undefined
   return null;
 };
 
 const resolversCtsQuery: IResolvers = {
   ResponseValueUnion: {
     __resolveType(value: any) {
-      if (typeof value === 'number') {
-        return 'Float';
-      } else if (value && typeof value === 'object' && value.hasOwnProperty('precio') && value.hasOwnProperty('vigente')) {
-        return 'Promocion';
-      }
-      return null; // Devolver null si no se puede determinar el tipo.
+      return resolveResponseValueUnionType(value);
     },
   },
   Query: {
@@ -51,7 +43,15 @@ const resolversCtsQuery: IResolvers = {
     async volProductCt(_, variables, context) {
       return new ExternalCtsService(_, variables, context).getVolProductCt(variables);
     }
-  }
+  },
+  Promocion: {
+    precio(parent: any) {
+      return parent.precio;
+    },
+    vigente(parent: any) {
+      return parent.vigente;
+    },
+  },
 };
 
 export default resolversCtsQuery;

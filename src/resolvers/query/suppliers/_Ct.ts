@@ -17,11 +17,10 @@ const resolversCtsQuery: IResolvers = {
     __resolveType(value: any) {
       if (typeof value === 'number') {
         return 'Float';
-      } else if (value && value.hasOwnProperty('precio') && value.hasOwnProperty('vigente')) {
+      } else if (value && typeof value === 'object' && value.hasOwnProperty('precio') && value.hasOwnProperty('vigente')) {
         return 'Promocion';
       }
-      // Si no se puede determinar el tipo, devuelve null o lanza un error
-      return null;
+      return null; // Devolver null si no se puede determinar el tipo.
     },
   },
   Query: {

@@ -10,24 +10,17 @@ type ResponseCtsStockProducts {
   moneda: String
   almacenes: [Almacenes]
   codigo: String
+  almacenesString: String
 }
 
 type Almacenes {
-  promocion: Promocion
   almacenDinamico: [AlmacenDinamico!]!
 }
 
 type AlmacenDinamico {
   key: String!
-  value: ResponseValueUnion
-  promocionString: String
+  value: Int!
 }
-
-interface ResponseValueUnion {
-  precio: Float
-  vigente: Vigencia
-}
-
 
 type Promocion {
   precio: Float

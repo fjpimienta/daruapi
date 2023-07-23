@@ -4,6 +4,7 @@ export interface IProductoCt {
   moneda: string;
   almacenes: IAlmacenes[];
   codigo: string;
+  almacenesString: string;
 }
 
 export interface IAlmacenes {
@@ -16,9 +17,8 @@ export interface IAlmacen {
 }
 
 export interface IAlmacenDinamico {
-  key: string;
-  value: number | IPromocion;
-  promocionString: string;
+  key: string
+  value: number
 }
 
 export interface IPromocion {

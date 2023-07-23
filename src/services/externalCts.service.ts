@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenDinamico, IPromocion } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenDinamico } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import fetch from 'node-fetch';
 
@@ -110,20 +110,9 @@ class ExternalCtsService extends ResolversOperationsService {
               if (key !== 'almacenes') {
                 const valor = almacenItem[key as keyof IAlmacenes];
                 if (typeof valor === 'number') {
-                  almacenDinamico.push({
-                    key,
-                    value: valor,
-                    promocionString: JSON.stringify(almacenItem)
-                  });
-                } else if (key === 'promocion' && valor !== undefined && this.isPromocion(valor)) {
-                  const promocionValor = valor as IPromocion;
-                  const promocionString = JSON.stringify(promocionValor);
-                  almacenDinamico.push({
-                    key: 'promocion',
-                    value: promocionValor,
-                    promocionString: promocionString
-                  });
+                  almacenDinamico.push({ key, value: valor });
                 }
+                // Puedes manejar el caso de IPromocion si es necesario
               }
             }
 
@@ -156,10 +145,7 @@ class ExternalCtsService extends ResolversOperationsService {
       };
     }
   }
-  // Type guard para verificar si el objeto es una IPromocion
-  isPromocion(obj: any): obj is IPromocion {
-    return obj && typeof obj.precio === 'number' && obj.vigente !== undefined;
-  }
+  
 
   async setOrderCt(variables: IVariables) {
     const { idPedido, almacen, tipoPago, guiaConnect, envio, productoCt, cfdi } = variables;

@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenDinamico, IPromocion } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import fetch from 'node-fetch';
 
@@ -104,13 +104,13 @@ class ExternalCtsService extends ResolversOperationsService {
 
         const stockProductsCt = data.map((product: IProductoCt) => {
           const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
-            const almacenDinamico: IAlmacenDinamico[] = [];
+            const almacenPromocion: IAlmacenPromocion[] = [];
 
             for (const key in almacenItem) {
               if (key !== 'almacenes') {
                 const valor = almacenItem[key as keyof IAlmacenes];
                 if (typeof valor === 'number') {
-                  almacenDinamico.push({
+                  almacenPromocion.push({
                     key,
                     value: valor,
                     promocionString: JSON.stringify(almacenItem)
@@ -119,22 +119,7 @@ class ExternalCtsService extends ResolversOperationsService {
                 // Puedes manejar el caso de IPromocion si es necesario
               }
             }
-
-            // for (const [key, value] of Object.entries(almacenItem)) {
-            //   if (key !== 'almacenes') {
-            //     if (typeof value === 'string') {
-            //       almacenDinamico.push({ key, text: value, value: 0 }); // Aquí puedes asignar un valor predeterminado para value, ya que solo se utiliza para mostrar texto.
-            //     } else if (key === 'promocion' && value !== undefined) {
-            //       almacenDinamico.push({
-            //         key: 'promocion',
-            //         text: this.formatPromocion(value as IPromocion),
-            //         value: 0, // Otra vez, este valor no se utiliza, pero es necesario para mantener la estructura del objeto.
-            //       });
-            //     }
-            //   }
-            // }
-
-            return { almacenDinamico };
+            return { almacenPromocion };
           });
 
           return {

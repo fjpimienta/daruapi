@@ -14,7 +14,7 @@ type ResponseCtsStockProducts {
 
 type Almacenes {
   promocion: Promocion
-  almacenDinamico: [AlmacenDinamico!]!
+  almacenPromocion: [AlmacenDinamico!]!
 }
 
 type AlmacenDinamico {

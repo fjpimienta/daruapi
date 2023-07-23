@@ -11,11 +11,10 @@ export interface IAlmacenes {
 }
 
 export interface IAlmacen {
-  promocion: IPromocion;
   [key: string]: number | IPromocion;
 }
 
-export interface IAlmacenDinamico {
+export interface IAlmacenPromocion {
   key: string
   value: number
   promocionString: string

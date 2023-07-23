@@ -23,7 +23,7 @@ type AlmacenDinamico {
   promocionString: String
 }
 
-union ResponseValueUnion = Int | Promocion
+union ResponseValueUnion = Promocion
 
 type Promocion {
   precio: Float

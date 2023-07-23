@@ -1,13 +1,15 @@
 import { IResolvers } from '@graphql-tools/utils';
 import ExternalCtsService from '../../../services/externalCts.service';
+import { Promocion } from '../../../models/promocion';
 
 // Agrega esta función de resolución antes de definir los resolvers de GraphQL
 const resolveResponseValueUnionType = (obj: any) => {
-  if (obj && typeof obj.precio === 'number' && obj.vigente !== undefined) {
+  if (obj instanceof Promocion) {
     return 'Promocion';
   }
   return null;
 };
+
 
 const resolversCtsQuery: IResolvers = {
   ResponseValueUnion: {

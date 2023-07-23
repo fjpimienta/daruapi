@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenDinamico } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacen } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import fetch from 'node-fetch';
 
@@ -92,8 +92,8 @@ class ExternalCtsService extends ResolversOperationsService {
         method: 'GET',
         headers: {
           'x-auth': token.tokenCt.token,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       };
 
       const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
@@ -103,49 +103,65 @@ class ExternalCtsService extends ResolversOperationsService {
         const data: IProductoCt[] = await result.json();
 
         const stockProductsCt = data.map((product: IProductoCt) => {
-          const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
-            const almacenDinamico: IAlmacenDinamico[] = [];
-
-            for (const key in almacenItem) {
-              if (key !== 'almacenes') {
-                const valor = almacenItem[key as keyof IAlmacenes];
-                if (typeof valor === 'number') {
-                  almacenDinamico.push({ key, value: valor });
-                }
-                // Puedes manejar el caso de IPromocion si es necesario
-              }
+          const almacenes = product.almacenes.map((almacenItem) => {
+            if (almacenItem && almacenItem.almacen) {
+              return {
+                ...almacenItem,
+                almacenString: JSON.stringify(almacenItem),
+                almacen: this.getWarehouseDynamic(almacenItem)
+              };
             }
-
-            return { almacenDinamico };
+            return almacenItem;
           });
 
           return {
             ...product,
-            almacenes,
+            almacenesString: JSON.stringify(product.almacenes),
+            almacenes
           };
         });
 
         return {
           status: true,
           message: 'La información que hemos pedido se ha cargado correctamente',
-          stockProductsCt,
+          stockProductsCt
         };
       } else {
         return {
           status: false,
           message: 'Error en el servicio. ',
-          stockProductsCt: null,
+          stockProductsCt: null
         };
       }
     } catch (error: any) {
       return {
         status: false,
         message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
-        stockProductsCt: null,
+        stockProductsCt: null
       };
     }
   }
-  
+
+  getWarehouseDynamic(almacen: IAlmacenes): IAlmacen {
+    const dynamicProperties: IAlmacen = {
+      value: "",
+      almacenString: ""
+    };
+    dynamicProperties.almacenString = JSON.stringify(almacen);
+    if (almacen.almacen) {
+      const value = almacen.almacen.value; // Obtener el valor de 'value'
+      if (value) {
+        dynamicProperties.value = value.toString();
+      } else {
+        // Aquí puedes lanzar un error si 'value' es falso o indefinido
+        throw new Error("'value' es requerido pero no se ha proporcionado en el objeto almacen.almacen.");
+      }
+    } else {
+      // Aquí puedes lanzar un error si 'almacen.almacen' es falso o indefinido
+      throw new Error("El objeto almacen.almacen es requerido pero no se ha proporcionado.");
+    }
+    return dynamicProperties;
+  }
 
   async setOrderCt(variables: IVariables) {
     const { idPedido, almacen, tipoPago, guiaConnect, envio, productoCt, cfdi } = variables;

@@ -370,7 +370,7 @@ class ExternalCvasService {
     const cliente = '73766';
     const { brandName } = variables;
     try {
-      const url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&marca=${brandName}`;
+      const url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&marca=${brandName}&promos=1&porcentajes=1&sucursales=1&TotalSuc=1&MonedaPesos=1&tc=1`;
       const response = await fetch(url);
       const xml = await response.text();
       const data = await this.parseXmlToJson(xml, 'lista_precios.xml')

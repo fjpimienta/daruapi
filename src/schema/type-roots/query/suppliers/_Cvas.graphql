@@ -21,4 +21,5 @@ type Query {
   listPricesCva(
     brandName: String
   ): ResultCvas
+  listProductsCva: ResultCvas
 }

@@ -1,7 +1,8 @@
 import { IContextData } from '../interfaces/context-data.interface';
-import { IGroupCva } from '../interfaces/suppliers/_CvasShippments.interface';
+import { IGroupCva, IResponseProductCva } from '../interfaces/suppliers/_CvasShippments.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import fetch, { Response } from 'node-fetch';
+
 const xml2js = require('xml2js');
 const decode = require('he');
 
@@ -392,6 +393,35 @@ class ExternalCvasService {
         listPricesCva: null
       };
     }
+  }
+
+  async getListProductsCva(): Promise<{
+    status: boolean;
+    message: string;
+    listProductsCva: IResponseProductCva[] | null;
+  }> {
+    const products: IResponseProductCva[] = [];
+    const brands = (await this.getListBrandsCva()).listBrandsCva;
+
+    for (const brand of brands) {
+      const brandName = { brandName: brand.descripcion };
+      const prodByBrand = await this.getListPricesCva(brandName);
+      if (prodByBrand && prodByBrand.listPricesCva && Array.isArray(prodByBrand.listPricesCva)) {
+        products.push(...prodByBrand.listPricesCva);
+      }
+    }
+
+    return products.length > 0
+      ? {
+        status: true,
+        message: 'La información que hemos pedido se ha cargado correctamente',
+        listProductsCva: products
+      }
+      : {
+        status: false,
+        message: 'Error en el servicio.',
+        listProductsCva: null
+      };
   }
 
   async parseXmlToJson(xml: string, catalog: string): Promise<any> {

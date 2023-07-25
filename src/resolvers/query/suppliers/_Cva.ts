@@ -35,6 +35,9 @@ const resolversCvasQuery: IResolvers = {
     },
     async listPricesCva(_, variables, context) {
       return new ExternalCvasService(_, variables, context).getListPricesCva(variables);
+    },
+    async listProductsCva(_, __, context) {
+      return new ExternalCvasService(_, __, context).getListProductsCva();
     }
   },
 };

@@ -23,7 +23,7 @@ input EnvioCtInput {
   estado: String
   ciudad: String
   codigoPostal: Int
-  telefono: String
+  telefono: Float
 }
 
 input ProductoCtInput {

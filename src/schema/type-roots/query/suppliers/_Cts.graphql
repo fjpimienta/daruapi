@@ -1,0 +1,30 @@
+type Query {
+  tokenCt: ResultCts
+  stockProductsCt: ResultCts
+  shippingCtRates(
+    destinoCt: String="",
+    productosCt: [ProductShipmentCtInput]
+  ): ResultCts
+  orderCt(
+    idPedido: Int,
+    almacen: String="",
+    tipoPago: String="",
+    guiaConnect: GuiaConnectInput,
+    envio: [EnvioInput],
+    producto: [ProductoCtInput],
+    cfdi: String=""
+  ): ResultCts
+  listOrdersCt: ResultCts
+  statusOrdersCt(
+    folio: String
+  ): ResultCts
+  detailOrdersCt(
+    folio: String
+  ): ResultCts
+  volProductCt(
+    codigo: String
+  ): ResultCts
+  confirmOrderCt(
+    folio: String
+  ): ResultCts
+}

@@ -1,0 +1,176 @@
+# Token Cva
+type TokenCva {
+  token: String
+}
+
+interface ResponseCva {
+  error: String
+  estado: String
+}
+
+# Shipping Cva
+type ResponseCvasShipping { 
+  result: String
+  cotizacion: Cotizacion
+}
+
+type Cotizacion { 
+  cajas: Int
+  subtotal: Float
+  iva: Float
+  montoTotal: Float
+}
+
+# Orders list Cva
+type ResponseCvaListsOrders {
+  Numero: String
+  Total: String
+  Moneda: String
+  NumOC: String
+  Almacen: String
+  Asignado: String
+  FechaAsignado: String
+}
+
+# Orders Cva
+type ResponseCvaOrderDetails implements ResponseCva { 
+  error: String
+  estado: String
+  respuesta: String
+}
+
+type ResponseCvaOrderDetail {
+  response: String
+}
+
+# Consulta Pedido CV
+type ResponseCvePedido {
+  Estatus: String
+  Factura: String
+  Total: String
+  Moneda: String
+  FechaPedido: String
+  NumOC: String
+  Almacen: String
+  Observaciones: String
+  CalleEnvio: String
+  NumeroEnvio: String
+  NumeroIntEnvio: String
+  ColoniaEnvio: String
+  CPEnvio: String
+  EstadoEnvio: String
+  CiudadEnvio: String
+  Atencion: String
+  Flete: String
+  TipoEnvio: String
+  Paqueteria: String
+  Guia: String
+  productos: Producto
+}
+
+type Producto {
+  clave: String
+  fabricante: String
+  cantidad: String
+  precioSinIva: String
+  Iva: String
+}
+
+#Order Cva
+type ResponseCvaOrder {
+  error: String
+  estado: String
+  pedido: String
+  total: String
+  agentemail: String
+  almacenmail: String
+}
+
+# Brands list Cva
+type ResponseBrandsCva {
+  clave: String
+  descripcion: String
+}
+
+# Groups list Cva
+type ResponseGroupsCva {
+  grupo: String
+}
+
+# Soluciones list Cva
+type ResponseSolucionesCva {
+  clave: String
+  descripcion: String
+}
+
+# Sucursales list Cva
+type ResponseSucursalesCva {
+  clave: String
+  nombre: String
+  cp: String
+}
+
+# Paqueterias list Cva
+type ResponsePaqueteriasCva {
+  clave: String
+  descripcion: String
+}
+
+type ResponseProductCva {
+  clave: String
+  codigo_fabricante: String
+  descripcion: String
+  solucion: String
+  grupo: String
+  marca: String
+  garantia: String
+  clase: String
+  disponible: Int
+  precio: Float
+  moneda: String
+  ficha_tecnica: String
+  ficha_comercial: String
+  imagen: String
+  disponibleCD: Int
+  tipocambio: Float
+  fechaactualizatipoc: String
+  TotalDescuento: String
+  MonedaDescuento: String
+  PrecioDescuento: String
+  MonedaPrecioDescuento: String
+  ClavePromocion: String
+  DescripcionPromocion: String
+  VencimientoPromocion: String
+  DisponibleEnPromocion: String
+  CEDIS_PROYECTO_IPN: Float
+  TALLER_PROYECTO_IPN: Float
+  VENTAS_ACAPULCO: Float
+  VENTAS_AGUASCALIENTES: Float
+  VENTAS_CAMPECHE: Float
+  VENTAS_CANCUN: Float
+  VENTAS_CHIHUAHUA: Float
+  VENTAS_COLIMA: Float
+  VENTAS_CUERNAVACA: Float
+  VENTAS_CULIACAN: Float
+  VENTAS_DF_TALLER: Float
+  VENTAS_DURANGO: Float
+  VENTAS_GUADALAJARA: Float
+  VENTAS_HERMOSILLO: Float
+  VENTAS_LEON: Float
+  VENTAS_MERIDA: Float
+  VENTAS_MONTERREY: Float
+  VENTAS_MORELIA: Float
+  VENTAS_OAXACA: Float
+  VENTAS_PACHUCA: Float
+  VENTAS_PUEBLA: Float
+  VENTAS_QUERETARO: Float
+  VENTAS_SAN_LUIS_POTOSI: Float
+  VENTAS_TAMPICO: Float
+  VENTAS_TEPIC: Float
+  VENTAS_TOLUCA: Float
+  VENTAS_TORREON: Float
+  VENTAS_TUXTLA: Float
+  VENTAS_VERACRUZ: Float
+  VENTAS_ZACATECAS: Float
+  ExsTotal: Float
+}

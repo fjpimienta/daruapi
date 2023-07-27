@@ -100,7 +100,6 @@ class DeliverysService extends ResolversOperationsService {
       messageError: delivery?.messageError,
       registerDate: new Date().toISOString()
     };
-    console.log('insert/deliveryObject: ', deliveryObject);
     const result = await this.add(this.collection, deliveryObject, 'delivery');
     return {
       status: result.status,

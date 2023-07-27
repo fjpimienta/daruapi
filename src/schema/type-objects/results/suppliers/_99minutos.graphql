@@ -1,0 +1,7 @@
+type Result99minutos implements Result {
+  status: Boolean!
+  message: String!
+  token99: Token99
+  coverage: Response99minutosCoverage
+  shippingRates: Response99minutosShipping
+}

@@ -1,0 +1,32 @@
+input ProductShipmentCtInput {
+  producto: String
+  cantidad: Int
+  precio: Float
+  moneda: String
+  almacen: String
+}
+
+input GuiaConnectInput {
+  generarGuia: Boolean
+  paqueteria: String
+}
+
+input EnvioInput {
+  nombre: String
+  direccion: String
+  entreCalles: String
+  colonia: String
+  estado: String
+  ciudad: String
+  noExterior: String
+  noInterior: String
+  codigoPostal: Int
+  telefono: Float
+}
+
+input ProductoCtInput {
+  cantidad: Float
+  clave: String
+  moneda: String
+  precio: Float
+}

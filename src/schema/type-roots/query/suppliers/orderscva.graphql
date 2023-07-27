@@ -12,6 +12,6 @@ type Query {
       filterName: String=""
    ): ResultOrderCva
    "Item del pedido seleccionado"
-   orderCva(id: ID!): ResultOrderCva
+   orderCvaX(id: ID!): ResultOrderCva
    orderCvaId: ResultOrderCva
 }

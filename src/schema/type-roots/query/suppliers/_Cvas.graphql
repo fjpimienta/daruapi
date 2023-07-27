@@ -1,0 +1,25 @@
+type Query {
+  tokenCva: ResultCvas
+  shippingCvaRates(
+    paqueteria: Int,
+    cp: Int,
+    cp_sucursal: Int,
+    productosCva: [ProductsShipmentCvaInput]
+  ): ResultCvas
+  listOrdersCva: ResultCvas
+  consultaOrderCva(
+    pedido: String
+  ): ResultCvas
+  orderCva(
+    pedidoCva: OrderCvaInput
+  ): ResultCvas
+  listBrandsCva: ResultCvas
+  listGroupsCva: ResultCvas
+  listSolucionesCva: ResultCvas
+  listSucursalesCva: ResultCvas
+  listPaqueteriasCva: ResultCvas
+  listPricesCva(
+    brandName: String
+  ): ResultCvas
+  listProductsCva: ResultCvas
+}

@@ -1,0 +1,157 @@
+# Token Ct
+type TokenCt {
+  token: String
+  time: String
+}
+
+# Definicion para el catalogo de productos CT
+type ResponseCtsStockProducts {
+  precio: Float
+  moneda: String
+  almacenes: [Almacenes]
+  codigo: String
+}
+
+type Almacenes {
+  promocion: Promocion
+  almacenPromocion: [AlmacenDinamico!]!
+}
+
+type AlmacenDinamico {
+  key: String!
+  value: Int!
+  promocionString: String
+}
+
+type Promocion {
+  precio: Float
+  vigente: Vigencia
+}
+
+type Vigencia {
+  ini: String
+  fin: String
+}
+# Fin Productos Ct
+
+interface ResponseCt {
+  codigo: String
+  mensaje: String
+  referencia: String
+}
+
+type ErroresCts {
+  errorCode: String
+  errorMessage: String
+  errorReference: String
+}
+
+# Shipping CT
+type ProductShipmentCT {
+  producto: String
+  cantidad: Int
+  precio: Float
+  moneda: String
+  almacen: String
+}
+
+type ResponseCtsShipping implements ResponseCt { 
+  codigo: String
+  mensaje: String
+  referencia: String
+  respuesta: ResponseCtShippments
+}
+
+type ResponseCtShippments {
+  cotizaciones: [CotizacionesCt]
+  errores: [ErroresCts]
+}
+
+type CotizacionesCt {
+  empresa: String
+  total: Float
+  metodo: String
+}
+
+# Orders CT
+type ResponseCtsOrders implements ResponseCt { 
+  codigo: String
+  mensaje: String
+  referencia: String
+  respuesta: ResponseCtOrder
+}
+
+type ResponseCtOrder {
+  pedidoWeb: String
+  fecha: String
+  tipoDeCambio: Float
+  estatus: String
+  errores: [ErroresCts]
+}
+
+# Confirm Order Ct
+type ResponseCtsConfirOrder {
+  okCode: Int,
+  okMessage: String,
+  okReference: String
+}
+
+# List Orders Ct
+type ResponseCtsListOrders {
+  idPedido: String
+  almacen: String
+  tipoPago: String
+  guiaConnect: GuiaConnect
+  envio: [EnvioCt]
+  producto: [ProductCt]
+  respuestaCT: ResponseListOrdersCt
+}
+
+type GuiaConnect {
+  generarGuia: Boolean
+  paqueteria: String
+}
+
+type EnvioCt {
+  nombre: String
+  direccion: String
+  entreCalles: String
+  noExterior: String
+  noInterior: String
+  colonia: String
+  estado: String
+  ciudad: String
+  codigoPostal: Int
+  telefono: Float
+}
+
+type ProductCt {
+  cantidad: String
+  clave: String
+  precio: Float
+  moneda: String
+}
+
+type ResponseListOrdersCt {
+  pedidoWeb: String
+  fecha: String
+  tipoDeCambio: Float
+  estatus: String
+  errores: [ErroresCts]
+}
+
+# Status Order Ct
+type ResponseCtsStatus {
+  status: String
+  folio: String
+}
+
+# Volumen de Productos CT
+type ResponseCtsVolProduct {
+  peso: Float
+  largo: Float
+  alto: Float
+  ancho: Float
+  UPC: String
+  EAN: String
+}

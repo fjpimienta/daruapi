@@ -62,8 +62,7 @@ class OrdersCtService extends ResolversOperationsService {
     const result = await this.nextId(this.collection);
     return {
       status: result.status,
-      message: result.message,
-      orderCtId: result.catId
+      message: result.message
     };
   }
 

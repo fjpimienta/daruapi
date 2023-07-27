@@ -1,0 +1,13 @@
+type ResultCts implements Result {
+  status: Boolean!
+  message: String!
+  tokenCt: TokenCt
+  stockProductsCt: [ResponseCtsStockProducts]
+  shippingCtRates: ResponseCtsShipping
+  orderCt: ResponseCtsOrders
+  confirmOrderCt: ResponseCtsConfirOrder
+  listOrdersCt: [ResponseCtsListOrders]
+  statusOrdersCt: ResponseCtsStatus
+  detailOrdersCt: ResponseCtsListOrders
+  volProductCt: ResponseCtsVolProduct
+}

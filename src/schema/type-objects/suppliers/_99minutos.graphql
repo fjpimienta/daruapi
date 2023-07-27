@@ -1,0 +1,62 @@
+# Token 99minutos
+type Token99 {
+  access_token: String
+  expires_in: Int
+  token_type: String
+  traceId: String
+}
+
+interface Response99minutos {
+  traceId: String
+  message: String
+  errors: [String]
+}
+
+# Coverage
+type Response99minutosCoverage implements Response99minutos {
+  traceId: String
+  message: String
+  errors: [String]
+  data: ReponseCoverage
+}
+
+type ReponseCoverage {
+  hasCoverage: Boolean
+}
+
+# Shipping Rates by Zipcodes
+type Response99minutosShipping implements Response99minutos {
+  traceId: String
+  message: String
+  errors: [String]
+  data: [ResponseShippingRates]
+}
+
+type ResponseShippingRates {
+  deliveryType: String
+  size: String
+  cityToCity: CityToCityInfo
+  prices: PricesInfo
+  taxes: TaxesInfo
+}
+
+type CityToCityInfo {
+  value: Boolean
+  category: String
+}
+
+type PricesInfo {
+  flat: Float
+  cityToCity: Float
+  cashOnDelivery: Float
+  insurance: Float
+  iva: Float
+  total: Float
+}
+
+type TaxesInfo {
+  cashOnDelivery: Float
+  cityToCity: Float
+  iva: Float
+  insuranceCost: Float
+}

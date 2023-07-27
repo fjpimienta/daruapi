@@ -24,7 +24,7 @@ type EnvioCt {
   estado: String
   ciudad: String
   codigoPostal: Int
-  telefono: String
+  telefono: Float
 }
 
 type ProductoCt {

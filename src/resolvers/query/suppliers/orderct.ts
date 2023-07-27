@@ -8,10 +8,7 @@ const resolversOrderCtsQuery: IResolvers = {
     },
     async orderCt(_, variables, context) {
       return new OrdersCtService(_, variables, context).details();
-    },
-    async orderCtId(_, __, context) {
-      return new OrdersCtService(_, __, context).next();
-    }
+    }    
   },
 };
 

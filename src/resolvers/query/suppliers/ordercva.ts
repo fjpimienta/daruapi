@@ -6,7 +6,7 @@ const resolversOrderCvasQuery: IResolvers = {
     async ordersCva(_, variables, context) {
       return new OrdersCvaService(_, { pagination: variables }, context).items(variables);
     },
-    async orderCva(_, variables, context) {
+    async orderCvaX(_, variables, context) {
       return new OrdersCvaService(_, variables, context).details();
     },
     async orderCvaId(_, __, context) {

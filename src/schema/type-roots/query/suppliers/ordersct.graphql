@@ -11,7 +11,4 @@ type Query {
       "Especificar el filtro por el name"
       filterName: String=""
    ): ResultOrderCt
-   "Item del pedido seleccionado"
-   orderCt(id: ID!): ResultOrderCt
-   orderCtId: ResultOrderCt
 }

@@ -3,16 +3,18 @@ import { IUser } from './user.interface';
 import { ICatalog } from './catalog.interface';
 import { IProduct } from './product.interface';
 import { IApiproveedor } from './apiproveedor.interface';
-import { IApisupplier, ISupplier } from './suppliers/supplier.interface';
+import { ISupplier } from './suppliers/supplier.interface';
 import { ICountry } from './country.interface';
 import { IOrder } from './order.interface';
 import { IShopProduct } from './shop-product.interface';
 import { IConfig } from './config.interface';
 import { IWarehouse } from './warehouses.interface';
-import { IApiShip, IShipping } from './shipping.interface';
-import { IOrderCt } from './suppliers/order-ct.interface';
-import { IOrderCva } from './suppliers/order-cva.interface';
+import { IShipping } from './shipping.interface';
+import { IEnvioCt, IGuiaConnect, IOrderCt, IProductoCt } from './suppliers/_CtsShippments.interface';
 import { IDelivery } from './delivery.interface';
+import { IProductCtShippment } from './suppliers/_CtsShippments.interface';
+import { IGroupCva, IOrderCva } from './suppliers/_CvasShippments.interface';
+import { IProductCvaShippment } from './suppliers/_CvasShippments.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -57,4 +59,42 @@ export interface IVariables {
   nameApi?: string;
   delivery?: IDelivery;
   deliverys?: IDelivery[];
+  // 99minutos Token
+  origin?: string;
+  destination?: string;
+  deliveryType?: string;
+  // 99minutos Shipping Rate
+  size?: string;
+  originZipcode?: string;
+  originCountry?: string;
+  destinationZipcode?: string;
+  destinationCountry?: string;
+  // Ct Shipping
+  destinoCt?: string;
+  productosCt?: IProductCtShippment[];
+  // Ct Order
+  idPedido?: number;
+  almacen?: string;
+  tipoPago?: string;
+  guiaConnect?: IGuiaConnect;
+  envio?: IEnvioCt;
+  productoCt?: IProductoCt;
+  cfdi?: string;
+  // Ct Status
+  folio?: string;
+  // Ct Volumen
+  codigo?: string;
+  // Cva Shipping
+  paqueteria?: number;
+  cp?: number;
+  cp_sucursal?: number;
+  productosCva?: IProductCvaShippment[];
+  // CVa Pedido Detalle
+  pedido?: string;
+  // CVa  Pedido Alta
+  pedidoCva?: IOrderCva;
+  // CVA Grupos
+  gruposCva?: IGroupCva;
+  // CVA Precios
+  brandName?: string;
 }

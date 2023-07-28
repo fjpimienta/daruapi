@@ -1,0 +1,7 @@
+input CardOpenpayInput {
+  card_number: String
+  holder_name: String
+  expiration_year: String
+  expiration_month: String
+  cvv2: String
+}

@@ -1,0 +1,15 @@
+# Openpay Card
+type CreateCardOpenpay {
+  id: String
+  type: String
+  card_number: String
+  holder_name: String
+  expiration_year: String
+  expiration_month: String
+  allows_charges: Boolean
+  allows_payouts: Boolean
+  creation_date: String
+  bank_name: String
+  customer_id: String
+  bank_code: String
+}

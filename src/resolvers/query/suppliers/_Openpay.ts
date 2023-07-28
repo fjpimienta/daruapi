@@ -1,14 +1,19 @@
 import { IResolvers } from '@graphql-tools/utils';
 import ExternalOpenpayService from '../../../services/externalOpenpay.service';
-import Openpay from 'openpay';
 
 const resolversOpenpayQuery: IResolvers = {
   Query: {
-    async createCard(_, variables, context) {
-      return new ExternalOpenpayService(_, variables, context).setNewCard(variables);
+    async createCardOpenpay(_, variables, context) {
+      return new ExternalOpenpayService(_, variables, context).create(variables);
     },
-    async getListCards(_, __, context) {
-      return new ExternalOpenpayService(_, __, context).getListCards();
+    async cardOpenpay(_, variables, context) {
+      return new ExternalOpenpayService(_, variables, context).oneCard(variables);
+    },
+    async listCardsOpenpay(_, __, context) {
+      return new ExternalOpenpayService(_, __, context).listCards();
+    },
+    async deleteCardOpenpay(_, variables, context) {
+      return new ExternalOpenpayService(_, variables, context).delete(variables);
     },
   },
 };

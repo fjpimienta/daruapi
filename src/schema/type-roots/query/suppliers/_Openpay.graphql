@@ -1,6 +1,12 @@
 type Query {
-  createCard(
+  createCardOpenpay(
     cardOpenpay: CardOpenpayInput
   ): ResultOpenpay
-  getListCards: ResultOpenpay
+  cardOpenpay(
+    idCardOpenpay: String
+  ): ResultOpenpay
+  listCardsOpenpay: ResultOpenpay
+  deleteCardOpenpay(
+    idCardOpenpay: String
+  ): ResultOpenpay
 }

@@ -15,9 +15,9 @@ class ExternalOpenpayService extends ResolversOperationsService {
     this.openpay = new OpenPay(MERCHANT_ID, client_secret, false);
   }
 
-  async getListCards() {
+  async listCards() {
     try {
-      const cardsList = await new Promise((resolve, reject) => {
+      const listCardsOpenpay = await new Promise((resolve, reject) => {
         this.openpay.cards.list({}, (error: any, response: any) => {
           if (error) {
             reject(error);
@@ -30,17 +30,17 @@ class ExternalOpenpayService extends ResolversOperationsService {
       return {
         status: true,
         message: 'La lista de tarjetas se ha creado correctamente.',
-        getListCards: cardsList,
+        listCardsOpenpay,
       };
     } catch (error: any) {
       return {
         status: false,
-        message: `Error al crear la tarjeta:', ${error.description}`,
+        message: `Error al crear la tarjeta: ' ${error.description}`,
       };
     }
   }
-  
-  async setNewCard(variables: IVariables) {
+
+  async create(variables: IVariables) {
     try {
       const { cardOpenpay } = variables;
       const token = await new Promise((resolve, reject) => {
@@ -61,7 +61,66 @@ class ExternalOpenpayService extends ResolversOperationsService {
     } catch (error: any) {
       return {
         status: false,
-        message: `Error al crear la tarjeta:', ${error.description}`,
+        message: `Error al crear la tarjeta: ' ${error.description}`,
+      };
+    }
+  }
+
+  async oneCard(variables: IVariables) {
+    try {
+      const { idCardOpenpay } = variables;
+
+      if (!idCardOpenpay) {
+        return {
+          status: false,
+          message: 'Se requiere el ID de la tarjeta para actualizar.',
+        };
+      }
+
+      const cardOpenpay = await new Promise((resolve, reject) => {
+        this.openpay.cards.get(idCardOpenpay, (error: any, response: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      return {
+        status: true,
+        message: 'La tarjeta se ha localizdo correctamente.',
+        cardOpenpay,
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: `Error al actualizar la tarjeta: ${error.message}`,
+      };
+    }
+  }
+
+  async delete(variables: IVariables) {
+    try {
+      const { idCardOpenpay } = variables;
+      const token = await new Promise((resolve, reject) => {
+        this.openpay.cards.delete(idCardOpenpay, (error: any, response: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      return {
+        status: true,
+        message: 'La tarjeta se ha eliminado correctamente.',
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: `Error al eliminar la tarjeta: ' ${error.description}`,
       };
     }
   }

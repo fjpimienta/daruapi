@@ -1,6 +1,7 @@
 type ResultOpenpay implements Result {
   status: Boolean!
   message: String!
-  createCardOpenpay: CreateCardOpenpay
-  getListCards: [ListCardsOpenpay]
+  createCardOpenpay: CardOpenpay
+  cardOpenpay: CardOpenpay
+  listCardsOpenpay: [CardOpenpay]
 }

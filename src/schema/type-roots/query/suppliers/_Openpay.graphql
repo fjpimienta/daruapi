@@ -2,4 +2,5 @@ type Query {
   createCard(
     cardOpenpay: CardOpenpayInput
   ): ResultOpenpay
+  getListCards: ResultOpenpay
 }

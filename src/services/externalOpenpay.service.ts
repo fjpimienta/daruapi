@@ -15,9 +15,31 @@ class ExternalOpenpayService extends ResolversOperationsService {
     this.openpay = new OpenPay(MERCHANT_ID, client_secret, false);
   }
 
-  /**
-   * @returns Token de la tarjeta obtenido de OpenPay.
-   */
+  async getListCards() {
+    try {
+      const cardsList = await new Promise((resolve, reject) => {
+        this.openpay.cards.list({}, (error: any, response: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      return {
+        status: true,
+        message: 'La lista de tarjetas se ha creado correctamente.',
+        getListCards: cardsList,
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: `Error al crear la tarjeta:', ${error.description}`,
+      };
+    }
+  }
+  
   async setNewCard(variables: IVariables) {
     try {
       const { cardOpenpay } = variables;

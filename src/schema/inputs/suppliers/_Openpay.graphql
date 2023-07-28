@@ -5,3 +5,24 @@ input CardOpenpayInput {
   expiration_month: String
   cvv2: String
 }
+
+input CustomerOpenpayInput {
+  external_id: String
+  name: String
+  last_name: String
+  email: String
+  phone_number: String
+  requires_account: Boolean
+  clabe: String
+  address: AddressOpenpayInput
+}
+
+input AddressOpenpayInput {
+  line1: String
+  line2: String
+  line3: String
+  postal_code: String
+  state: String
+  city: String
+  country_code: String
+}

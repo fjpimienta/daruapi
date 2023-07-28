@@ -1,4 +1,8 @@
 type Query {
+  createCustomerOpenpay (
+    customerOpenpay: CustomerOpenpayInput
+  ): ResultOpenpay
+
   createCardOpenpay(
     cardOpenpay: CardOpenpayInput
   ): ResultOpenpay

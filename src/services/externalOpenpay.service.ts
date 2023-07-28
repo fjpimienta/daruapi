@@ -16,6 +16,31 @@ class ExternalOpenpayService extends ResolversOperationsService {
   }
 
   //#region Customers
+  async createCustomer(variables: IVariables) {
+    try {
+      const { customerOpenpay } = variables;
+      const createCustomerOpenpay = await new Promise((resolve, reject) => {
+        this.openpay.customers.create(customerOpenpay, (error: any, response: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      return {
+        status: true,
+        message: 'Se ha creado correctamente el cliente.',
+        createCustomerOpenpay,
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: `Error al crear el cliente: ${error.description}`,
+      };
+    }
+  }
 
   //#endregion
 

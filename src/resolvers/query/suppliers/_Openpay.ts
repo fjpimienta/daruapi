@@ -3,6 +3,10 @@ import ExternalOpenpayService from '../../../services/externalOpenpay.service';
 
 const resolversOpenpayQuery: IResolvers = {
   Query: {
+    async createCustomerOpenpay(_, variables, context) {
+      return new ExternalOpenpayService(_, variables, context).createCustomer(variables);
+    },
+
     async createCardOpenpay(_, variables, context) {
       return new ExternalOpenpayService(_, variables, context).createCard(variables);
     },

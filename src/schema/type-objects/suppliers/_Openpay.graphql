@@ -1,4 +1,3 @@
-# Openpay Card
 type CardOpenpay {
   id: String
   type: String
@@ -12,4 +11,34 @@ type CardOpenpay {
   bank_name: String
   customer_id: String
   bank_code: String
+}
+
+type CustomerOpenpay {
+  id: String
+  creation_date: String
+  name: String
+  last_name: String
+  email: String
+  phone_number: String
+  external_id: String
+  status: String
+  balance: Float
+  address: AddressOpenpay
+  store: StoreOpenpay
+  clabe: String
+}
+
+type AddressOpenpay {
+  line1: String
+  line2: String
+  line3: String
+  postal_code: String
+  state: String
+  city: String
+  country_code: String
+}
+
+type StoreOpenpay {
+  reference: String
+  barcode_url: String
 }

@@ -15,6 +15,11 @@ class ExternalOpenpayService extends ResolversOperationsService {
     this.openpay = new OpenPay(MERCHANT_ID, client_secret, false);
   }
 
+  //#region Customers
+
+  //#endregion
+
+  //#region Cards
   async listCards() {
     try {
       const listCardsOpenpay = await new Promise((resolve, reject) => {
@@ -40,7 +45,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
     }
   }
 
-  async create(variables: IVariables) {
+  async createCard(variables: IVariables) {
     try {
       const { cardOpenpay } = variables;
       const token = await new Promise((resolve, reject) => {
@@ -100,7 +105,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
     }
   }
 
-  async delete(variables: IVariables) {
+  async deleteCard(variables: IVariables) {
     try {
       const { idCardOpenpay } = variables;
       const token = await new Promise((resolve, reject) => {
@@ -124,6 +129,8 @@ class ExternalOpenpayService extends ResolversOperationsService {
       };
     }
   }
+  //#endregion
+
 }
 
 export default ExternalOpenpayService;

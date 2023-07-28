@@ -42,6 +42,31 @@ class ExternalOpenpayService extends ResolversOperationsService {
     }
   }
 
+  async listCustomers() {
+    try {
+      const listCustomersOpenpay = await new Promise((resolve, reject) => {
+        this.openpay.customers.list({}, (error: any, response: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      return {
+        status: true,
+        message: 'La lista de clientes se ha creado correctamente.',
+        listCustomersOpenpay,
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: `Error al obtener la lista de clientes: ' ${error.description}`,
+      };
+    }
+  }
+
   //#endregion
 
   //#region Cards
@@ -65,7 +90,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
     } catch (error: any) {
       return {
         status: false,
-        message: `Error al crear la tarjeta: ' ${error.description}`,
+        message: `Error al obtener la lista de tarjetas: ' ${error.description}`,
       };
     }
   }
@@ -125,7 +150,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
     } catch (error: any) {
       return {
         status: false,
-        message: `Error al actualizar la tarjeta: ${error.message}`,
+        message: `Error al recuperar la tarjeta: ${error.message}`,
       };
     }
   }

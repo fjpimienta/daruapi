@@ -2,6 +2,7 @@ type Query {
   createCustomerOpenpay (
     customerOpenpay: CustomerOpenpayInput
   ): ResultOpenpay
+  listCustomersOpenpay: ResultOpenpay
 
   createCardOpenpay(
     cardOpenpay: CardOpenpayInput

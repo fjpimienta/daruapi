@@ -3,6 +3,7 @@ type ResultOpenpay implements Result {
   message: String!
 
   createCustomerOpenpay: CustomerOpenpay
+  listCustomersOpenpay: [CustomerOpenpay]
 
   createCardOpenpay: CardOpenpay
   cardOpenpay: CardOpenpay

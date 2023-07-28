@@ -9,6 +9,9 @@ const resolversOpenpayQuery: IResolvers = {
     async updateCustomerOpenpay(_, variables, context) {
       return new ExternalOpenpayService(_, variables, context).updateCustomer(variables);
     },
+    async deleteCustomerOpenpay(_, variables, context) {
+      return new ExternalOpenpayService(_, variables, context).deleteCustomer(variables);
+    },
     async customerOpenpay(_, variables, context) {
       return new ExternalOpenpayService(_, variables, context).oneCustomer(variables);
     },

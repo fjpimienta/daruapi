@@ -68,6 +68,31 @@ class ExternalOpenpayService extends ResolversOperationsService {
     }
   }
 
+  async deleteCustomer(variables: IVariables) {
+    try {
+      const { idCustomerOpenpay } = variables;
+      const token = await new Promise((resolve, reject) => {
+        this.openpay.customers.delete(idCustomerOpenpay, (error: any, response: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      return {
+        status: true,
+        message: 'Se ha eliminado el Cliente correctamente.',
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: `Error al eliminar el Cliente: ' ${error.description}`,
+      };
+    }
+  }
+
   async oneCustomer(variables: IVariables) {
     try {
       const { idCustomerOpenpay } = variables;
@@ -97,7 +122,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
     } catch (error: any) {
       return {
         status: false,
-        message: `Error al recuperar la tarjeta: ${error.message}`,
+        message: `Error al recuperar la tarjeta: ${error.description}`,
       };
     }
   }
@@ -210,7 +235,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
     } catch (error: any) {
       return {
         status: false,
-        message: `Error al recuperar la tarjeta: ${error.message}`,
+        message: `Error al recuperar la tarjeta: ${error.description}`,
       };
     }
   }

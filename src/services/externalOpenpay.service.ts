@@ -42,6 +42,40 @@ class ExternalOpenpayService extends ResolversOperationsService {
     }
   }
 
+  async oneCustomer(variables: IVariables) {
+    try {
+      const { idCustomerOpenpay } = variables;
+
+      if (!idCustomerOpenpay) {
+        return {
+          status: false,
+          message: 'Se requiere el ID del Cliente para buscarlo.',
+        };
+      }
+
+      const customerOpenpay = await new Promise((resolve, reject) => {
+        this.openpay.customers.get(idCustomerOpenpay, (error: any, response: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      return {
+        status: true,
+        message: 'El cliente se ha localizado correctamente.',
+        customerOpenpay,
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: `Error al recuperar la tarjeta: ${error.message}`,
+      };
+    }
+  }
+
   async listCustomers() {
     try {
       const listCustomersOpenpay = await new Promise((resolve, reject) => {
@@ -128,7 +162,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       if (!idCardOpenpay) {
         return {
           status: false,
-          message: 'Se requiere el ID de la tarjeta para actualizar.',
+          message: 'Se requiere el ID de la tarjeta para buscarlo.',
         };
       }
 
@@ -144,7 +178,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
 
       return {
         status: true,
-        message: 'La tarjeta se ha localizdo correctamente.',
+        message: 'La tarjeta se ha localizado correctamente.',
         cardOpenpay,
       };
     } catch (error: any) {

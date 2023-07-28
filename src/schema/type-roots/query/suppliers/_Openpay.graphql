@@ -3,6 +3,9 @@ type Query {
     customerOpenpay: CustomerOpenpayInput
   ): ResultOpenpay
   listCustomersOpenpay: ResultOpenpay
+  customerOpenpay(
+    idCustomerOpenpay: String
+  ): ResultOpenpay
 
   createCardOpenpay(
     cardOpenpay: CardOpenpayInput

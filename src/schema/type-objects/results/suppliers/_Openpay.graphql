@@ -4,6 +4,7 @@ type ResultOpenpay implements Result {
 
   createCustomerOpenpay: CustomerOpenpay
   listCustomersOpenpay: [CustomerOpenpay]
+  customerOpenpay: CustomerOpenpay
 
   createCardOpenpay: CardOpenpay
   cardOpenpay: CardOpenpay

@@ -2,6 +2,10 @@ type Query {
   createCustomerOpenpay (
     customerOpenpay: CustomerOpenpayInput
   ): ResultOpenpay
+  updateCustomerOpenpay (
+    idCustomerOpenpay: String
+    customerOpenpay: CustomerOpenpayInput
+  ): ResultOpenpay
   listCustomersOpenpay: ResultOpenpay
   customerOpenpay(
     idCustomerOpenpay: String

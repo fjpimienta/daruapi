@@ -42,6 +42,32 @@ class ExternalOpenpayService extends ResolversOperationsService {
     }
   }
 
+  async updateCustomer(variables: IVariables) {
+    try {
+      const { idCustomerOpenpay, customerOpenpay } = variables;
+      const updateCustomerOpenpay = await new Promise((resolve, reject) => {
+        this.openpay.customers.update(idCustomerOpenpay, customerOpenpay, (error: any, response: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      return {
+        status: true,
+        message: 'Se ha actualizado correctamente el cliente.',
+        updateCustomerOpenpay,
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: `Error al actualizar el cliente: ${error.description}`,
+      };
+    }
+  }
+
   async oneCustomer(variables: IVariables) {
     try {
       const { idCustomerOpenpay } = variables;

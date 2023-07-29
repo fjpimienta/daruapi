@@ -60,6 +60,6 @@ type ChargeOpenpay {
   customer_id: String
   currency: String
   # bank_account: BankAccountOpenpay
-  # card: Card
+  card: CardOpenpay
   # card_points: CardPoints
 }

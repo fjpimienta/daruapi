@@ -271,7 +271,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
     try {
       const { chargeOpenpay } = variables;
       const createChargeOpenpay = await new Promise((resolve, reject) => {
-        this.openpay.charge.create(chargeOpenpay, (error: any, response: any) => {
+        this.openpay.charges.create(chargeOpenpay, (error: any, response: any) => {
           if (error) {
             reject(error);
           } else {

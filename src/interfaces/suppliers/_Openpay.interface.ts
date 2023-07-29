@@ -1,3 +1,4 @@
+//#region "card"
 export interface ICardOpenpay {
   card_number: string;
   holder_name: string;
@@ -5,7 +6,9 @@ export interface ICardOpenpay {
   expiration_month: string;
   cvv2: string;
 }
+//#endregion
 
+//#region "Customers"
 export interface ICustomerOpenpay {
   external_id: string;
   name: string;
@@ -26,3 +29,33 @@ export interface IAddressOpenpay {
   city: string;
   country_code: string;
 }
+//#region 
+
+//#region "Charges"
+export interface IChargeOpenpay {
+  method: string;
+  source_id: string;
+  amount: number;
+  currency?: string;
+  description: string;
+  order_id?: string;
+  device_session_id: string;
+  capture?: boolean;
+  customer: ICustomerOpenpay;
+  payment_plan?: IPaymentPlanOpenpay;
+  // metadata?: MetadataField[];
+  use_card_points?: 'ONLY_POINTS' | 'MIXED' | 'NONE';
+  send_email?: boolean;
+  redirect_url?: string;
+  use_3d_secure?: boolean;
+}
+
+export interface IPaymentPlanOpenpay {
+  payments: number;
+}
+
+export interface IRefundChargeOpenpay {
+  description: string;
+  amount: number;
+}
+//#endregion

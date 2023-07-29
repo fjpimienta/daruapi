@@ -26,3 +26,30 @@ input AddressOpenpayInput {
   city: String
   country_code: String
 }
+
+input ChargeOpenpayInput {
+  method: String
+  source_id: String
+  amount: Float
+  currency: String
+  description: String
+  order_id: String
+  device_session_id: String
+  capture: Boolean
+  customer: CustomerOpenpayInput
+  payment_plan: PaymentPlanOpenpayInput
+  use_card_points: String
+  send_email: Boolean
+  redirect_url: String
+  use_3d_secure: Boolean
+  card: CardOpenpayInput
+}
+
+input PaymentPlanOpenpayInput {
+  payments: Int
+}
+
+input RefundChargeOpenpayInput {
+  description: String
+  amount: Float
+}

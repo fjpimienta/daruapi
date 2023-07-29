@@ -122,7 +122,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
     } catch (error: any) {
       return {
         status: false,
-        message: `Error al recuperar la tarjeta: ${error.description}`,
+        message: `Error al recuperar el Cliente: ${error.description}`,
       };
     }
   }
@@ -264,6 +264,162 @@ class ExternalOpenpayService extends ResolversOperationsService {
       };
     }
   }
+  //#endregion
+
+  //#region charge
+  async createCharge(variables: IVariables) {
+    try {
+      const { chargeOpenpay } = variables;
+      const createChargeOpenpay = await new Promise((resolve, reject) => {
+        this.openpay.charge.create(chargeOpenpay, (error: any, response: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      return {
+        status: true,
+        message: 'El cargo se ha creado correctamente.',
+        createChargeOpenpay,
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: `Error al crear el cargo: ' ${error.description}`,
+      };
+    }
+  }
+
+  async captureCharge(variables: IVariables) {
+    try {
+      const { idTransactionOpenpay } = variables;
+      
+      if (!idTransactionOpenpay) {
+        return {
+          status: false,
+          message: 'Se requiere el ID de la Transaccion para buscarla.',
+        };
+      }
+      
+      const captureChargeOpenpay = await new Promise((resolve, reject) => {
+        this.openpay.charges.capture(idTransactionOpenpay, (error: any, response: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      return {
+        status: true,
+        message: 'Se ha autorizado correctamente el cargo.',
+        captureChargeOpenpay,
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: `Error al autorizado el cargo: ${error.description}`,
+      };
+    }
+  }
+
+  async refundCharge(variables: IVariables) {
+    try {
+      const { idTransactionOpenpay, refundTransactionCharge } = variables;
+      
+      if (!idTransactionOpenpay) {
+        return {
+          status: false,
+          message: 'Se requiere el ID de la Transaccion para buscarla.',
+        };
+      }
+
+      const refundChargeOpenpay = await new Promise((resolve, reject) => {
+        this.openpay.charges.refund(idTransactionOpenpay, refundTransactionCharge, (error: any, response: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      return {
+        status: true,
+        message: 'Se ha devuelto correctamente el cargo.',
+        refundChargeOpenpay,
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: `Error al devolver el cargo: ${error.description}`,
+      };
+    }
+  }
+  
+  async oneCharge(variables: IVariables) {
+    try {
+      const { idTransactionOpenpay } = variables;
+
+      if (!idTransactionOpenpay) {
+        return {
+          status: false,
+          message: 'Se requiere el ID del Cargo para buscarlo.',
+        };
+      }
+
+      const chargeOpenpay = await new Promise((resolve, reject) => {
+        this.openpay.charges.get(idTransactionOpenpay, (error: any, response: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      return {
+        status: true,
+        message: 'El cargo se ha localizado correctamente.',
+        chargeOpenpay,
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: `Error al recuperar el cargo: ${error.description}`,
+      };
+    }
+  }
+
+  async listCharges() {
+    try {
+      const listChargesOpenpay = await new Promise((resolve, reject) => {
+        this.openpay.charges.list({}, (error: any, response: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      return {
+        status: true,
+        message: 'La lista de cargos se ha creado correctamente.',
+        listChargesOpenpay,
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: `Error al obtener la lista de cargos: ' ${error.description}`,
+      };
+    }
+  }
+
   //#endregion
 
 }

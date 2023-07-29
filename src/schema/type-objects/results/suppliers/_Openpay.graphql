@@ -10,4 +10,10 @@ type ResultOpenpay implements Result {
   createCardOpenpay: CardOpenpay
   cardOpenpay: CardOpenpay
   listCardsOpenpay: [CardOpenpay]
+
+  createChargeOpenpay: ChargeOpenpay
+  captureChargeOpenpay: ChargeOpenpay
+  refundChargeOpenpay: ChargeOpenpay
+  chargeOpenpay: ChargeOpenpay
+  listChargesOpenpay: [ChargeOpenpay]
 }

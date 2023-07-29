@@ -31,6 +31,22 @@ const resolversOpenpayQuery: IResolvers = {
     async deleteCardOpenpay(_, variables, context) {
       return new ExternalOpenpayService(_, variables, context).deleteCard(variables);
     },
+
+    async createChargeOpenpay(_, variables, context) {
+      return new ExternalOpenpayService(_, variables, context).createCharge(variables);
+    },
+    async captureChargeOpenpay(_, variables, context) {
+      return new ExternalOpenpayService(_, variables, context).captureCharge(variables);
+    },
+    async refundChargeOpenpay(_, variables, context) {
+      return new ExternalOpenpayService(_, variables, context).refundCharge(variables);
+    },
+    async chargeOpenpay(_, variables, context) {
+      return new ExternalOpenpayService(_, variables, context).oneCharge(variables);
+    },
+    async listChargesOpenpay(_, __, context) {
+      return new ExternalOpenpayService(_, __, context).listCharges();
+    },
   },
 };
 

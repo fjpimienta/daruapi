@@ -13,6 +13,7 @@ type CardOpenpay {
   bank_code: String
 }
 
+
 type CustomerOpenpay {
   id: String
   creation_date: String
@@ -41,4 +42,24 @@ type AddressOpenpay {
 type StoreOpenpay {
   reference: String
   barcode_url: String
+}
+
+
+type ChargeOpenpay {
+  id: String
+  authorization: String
+  transaction_type: String
+  operation_type: String
+  method: String
+  creation_date: String
+  order_id: String
+  status: String
+  amount: Float
+  description: String
+  error_message: String
+  customer_id: String
+  currency: String
+  # bank_account: BankAccountOpenpay
+  # card: Card
+  # card_points: CardPoints
 }

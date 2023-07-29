@@ -9,10 +9,10 @@ type Query {
   deleteCustomerOpenpay(
     idCustomerOpenpay: String
   ): ResultOpenpay
-  listCustomersOpenpay: ResultOpenpay
   customerOpenpay(
     idCustomerOpenpay: String
   ): ResultOpenpay
+  listCustomersOpenpay: ResultOpenpay
 
   createCardOpenpay(
     cardOpenpay: CardOpenpayInput
@@ -24,4 +24,19 @@ type Query {
   deleteCardOpenpay(
     idCardOpenpay: String
   ): ResultOpenpay
+
+  createChargeOpenpay(
+    chargeOpenpay: ChargeOpenpayInput
+  ): ResultOpenpay
+  chargeOpenpay(
+    idTransactionOpenpay: String
+  ): ResultOpenpay
+  refundChargeOpenpay (
+    idTransactionOpenpay: String
+    refundTransactionCharge: RefundChargeOpenpayInput
+  ): ResultOpenpay
+  captureChargeOpenpay (
+    idTransactionOpenpay: String
+  ): ResultOpenpay
+  listChargesOpenpay: ResultOpenpay
 }

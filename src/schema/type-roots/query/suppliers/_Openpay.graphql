@@ -1,0 +1,43 @@
+type Query {
+  createCustomerOpenpay (
+    customerOpenpay: CustomerOpenpayInput
+  ): ResultOpenpay
+  updateCustomerOpenpay (
+    idCustomerOpenpay: String
+    customerOpenpay: CustomerOpenpayInput
+  ): ResultOpenpay
+  deleteCustomerOpenpay(
+    idCustomerOpenpay: String
+  ): ResultOpenpay
+  customerOpenpay(
+    idCustomerOpenpay: String
+  ): ResultOpenpay
+  listCustomersOpenpay: ResultOpenpay
+
+  createCardOpenpay(
+    cardOpenpay: CardOpenpayInput
+  ): ResultOpenpay
+  cardOpenpay(
+    idCardOpenpay: String
+  ): ResultOpenpay
+  listCardsOpenpay: ResultOpenpay
+  deleteCardOpenpay(
+    idCardOpenpay: String
+  ): ResultOpenpay
+
+  createChargeOpenpay(
+    chargeOpenpay: ChargeOpenpayInput
+  ): ResultOpenpay
+  chargeOpenpay(
+    idTransactionOpenpay: String
+  ): ResultOpenpay
+  refundChargeOpenpay (
+    idTransactionOpenpay: String
+    refundTransactionCharge: RefundChargeOpenpayInput
+  ): ResultOpenpay
+  captureChargeOpenpay (
+    idChargeOpenpay: String
+    captureTransactionOpenpay: CaptureChargeOpenpayInput
+  ): ResultOpenpay
+  listChargesOpenpay: ResultOpenpay
+}

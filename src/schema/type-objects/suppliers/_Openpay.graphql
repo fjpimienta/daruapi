@@ -1,0 +1,63 @@
+type CardOpenpay {
+  id: String
+  type: String
+  card_number: String
+  holder_name: String
+  expiration_year: String
+  expiration_month: String
+  allows_charges: Boolean
+  allows_payouts: Boolean
+  creation_date: String
+  bank_name: String
+  customer_id: String
+  bank_code: String
+}
+
+type CustomerOpenpay {
+  id: String
+  creation_date: String
+  name: String
+  last_name: String
+  email: String
+  phone_number: String
+  external_id: String
+  status: String
+  balance: Float
+  address: AddressOpenpay
+  store: StoreOpenpay
+  clabe: String
+}
+
+type AddressOpenpay {
+  line1: String
+  line2: String
+  line3: String
+  postal_code: String
+  state: String
+  city: String
+  country_code: String
+}
+
+type StoreOpenpay {
+  reference: String
+  barcode_url: String
+}
+
+type ChargeOpenpay {
+  id: String
+  authorization: String
+  transaction_type: String
+  operation_type: String
+  method: String
+  creation_date: String
+  order_id: String
+  status: String
+  amount: Float
+  description: String
+  error_message: String
+  customer_id: String
+  currency: String
+  # bank_account: BankAccountOpenpay
+  card: CardOpenpay
+  # card_points: CardPoints
+}

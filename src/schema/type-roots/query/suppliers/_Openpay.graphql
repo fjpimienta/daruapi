@@ -36,7 +36,8 @@ type Query {
     refundTransactionCharge: RefundChargeOpenpayInput
   ): ResultOpenpay
   captureChargeOpenpay (
-    idTransactionOpenpay: String
+    idChargeOpenpay: String
+    captureTransactionOpenpay: CaptureChargeOpenpayInput
   ): ResultOpenpay
   listChargesOpenpay: ResultOpenpay
 }

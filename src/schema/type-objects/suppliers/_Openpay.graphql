@@ -13,7 +13,6 @@ type CardOpenpay {
   bank_code: String
 }
 
-
 type CustomerOpenpay {
   id: String
   creation_date: String
@@ -43,7 +42,6 @@ type StoreOpenpay {
   reference: String
   barcode_url: String
 }
-
 
 type ChargeOpenpay {
   id: String

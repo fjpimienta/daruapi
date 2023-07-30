@@ -43,10 +43,15 @@ input ChargeOpenpayInput {
   redirect_url: String
   use_3d_secure: Boolean
   card: CardOpenpayInput
+  confirm: Boolean
 }
 
 input PaymentPlanOpenpayInput {
   payments: Int
+}
+
+input CaptureChargeOpenpayInput {
+  amount: Float
 }
 
 input RefundChargeOpenpayInput {

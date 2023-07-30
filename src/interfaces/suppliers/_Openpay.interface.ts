@@ -54,8 +54,12 @@ export interface IPaymentPlanOpenpay {
   payments: number;
 }
 
-export interface IRefundChargeOpenpay {
-  description: string;
+export interface ICaptureChargeOpenpay {
   amount: number;
+}
+
+export interface IRefundChargeOpenpay {
+  amount: number;
+  description: string;
 }
 //#endregion

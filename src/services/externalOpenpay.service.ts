@@ -286,6 +286,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         createChargeOpenpay,
       };
     } catch (error: any) {
+      console.error('error: ', error);
       return {
         status: false,
         message: `Error al crear el cargo: ' ${error.description}`,
@@ -295,17 +296,17 @@ class ExternalOpenpayService extends ResolversOperationsService {
 
   async captureCharge(variables: IVariables) {
     try {
-      const { idTransactionOpenpay } = variables;
-      
-      if (!idTransactionOpenpay) {
+      const { idChargeOpenpay, captureTransactionOpenpay } = variables;
+
+      if (!idChargeOpenpay) {
         return {
           status: false,
           message: 'Se requiere el ID de la Transaccion para buscarla.',
         };
       }
-      
+
       const captureChargeOpenpay = await new Promise((resolve, reject) => {
-        this.openpay.charges.capture(idTransactionOpenpay, (error: any, response: any) => {
+        this.openpay.charges.capture(idChargeOpenpay, captureTransactionOpenpay, (error: any, response: any) => {
           if (error) {
             reject(error);
           } else {
@@ -320,6 +321,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         captureChargeOpenpay,
       };
     } catch (error: any) {
+      console.error('error: ', error);
       return {
         status: false,
         message: `Error al autorizado el cargo: ${error.description}`,
@@ -329,9 +331,9 @@ class ExternalOpenpayService extends ResolversOperationsService {
 
   async refundCharge(variables: IVariables) {
     try {
-      const { idTransactionOpenpay, refundTransactionCharge } = variables;
-      
-      if (!idTransactionOpenpay) {
+      const { idChargeOpenpay, refundTransactionCharge } = variables;
+
+      if (!idChargeOpenpay) {
         return {
           status: false,
           message: 'Se requiere el ID de la Transaccion para buscarla.',
@@ -339,7 +341,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       }
 
       const refundChargeOpenpay = await new Promise((resolve, reject) => {
-        this.openpay.charges.refund(idTransactionOpenpay, refundTransactionCharge, (error: any, response: any) => {
+        this.openpay.charges.refund(idChargeOpenpay, refundTransactionCharge, (error: any, response: any) => {
           if (error) {
             reject(error);
           } else {
@@ -354,13 +356,14 @@ class ExternalOpenpayService extends ResolversOperationsService {
         refundChargeOpenpay,
       };
     } catch (error: any) {
+      console.error('error: ', error);
       return {
         status: false,
         message: `Error al devolver el cargo: ${error.description}`,
       };
     }
   }
-  
+
   async oneCharge(variables: IVariables) {
     try {
       const { idTransactionOpenpay } = variables;

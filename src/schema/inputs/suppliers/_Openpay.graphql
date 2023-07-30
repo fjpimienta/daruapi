@@ -1,0 +1,60 @@
+input CardOpenpayInput {
+  card_number: String
+  holder_name: String
+  expiration_year: String
+  expiration_month: String
+  cvv2: String
+}
+
+input CustomerOpenpayInput {
+  external_id: String
+  name: String
+  last_name: String
+  email: String
+  phone_number: String
+  requires_account: Boolean
+  clabe: String
+  address: AddressOpenpayInput
+}
+
+input AddressOpenpayInput {
+  line1: String
+  line2: String
+  line3: String
+  postal_code: String
+  state: String
+  city: String
+  country_code: String
+}
+
+input ChargeOpenpayInput {
+  method: String
+  source_id: String
+  amount: Float
+  currency: String
+  description: String
+  order_id: String
+  device_session_id: String
+  capture: Boolean
+  customer: CustomerOpenpayInput
+  payment_plan: PaymentPlanOpenpayInput
+  use_card_points: String
+  send_email: Boolean
+  redirect_url: String
+  use_3d_secure: Boolean
+  card: CardOpenpayInput
+  confirm: Boolean
+}
+
+input PaymentPlanOpenpayInput {
+  payments: Int
+}
+
+input CaptureChargeOpenpayInput {
+  amount: Float
+}
+
+input RefundChargeOpenpayInput {
+  description: String
+  amount: Float
+}

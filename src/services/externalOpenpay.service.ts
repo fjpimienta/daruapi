@@ -10,9 +10,9 @@ class ExternalOpenpayService extends ResolversOperationsService {
     super(root, variables, context);
 
     // Inicializar la instancia de OpenPay con tus credenciales
-    const MERCHANT_ID = 'mbhvpztgt3rqse7zvxrc';
-    const client_secret = 'sk_6a6bd967ab13459bb311f3d61fe03029';
-    this.openpay = new OpenPay(MERCHANT_ID, client_secret, false);
+    const MERCHANT_ID = process.env.OPENPAY_MERCHANT_ID ?? 'mbhvpztgt3rqse7zvxrc';
+    const CLIENT_SECRET = process.env.OPENPAY_CLIENT_SECRET ?? 'sk_6a6bd967ab13459bb311f3d61fe03029';
+    this.openpay = new OpenPay(MERCHANT_ID, CLIENT_SECRET, false);
   }
 
   //#region Customers

@@ -175,7 +175,7 @@ class ExternalCtsService extends ResolversOperationsService {
       })
     };
 
-    const url = 'http://connect.ctonline.mx:3001/paqueteria/cotizacion';
+    const url = 'http://connect.ctonline.mx:3001/pedido';
     const result = await fetch(url, options);
     const data = await result.json();
 

@@ -2,6 +2,8 @@ import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
+
+import logger from '../utils/logger';
 import fetch from 'node-fetch';
 
 class ExternalCtsService extends ResolversOperationsService {
@@ -29,6 +31,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = 'http://connect.ctonline.mx:3001/cliente/token';
     const response = await fetch(url, options);
     const data = await response.json();
+    logger.info(`GraphQL Response: ${data}`);
     const status = response.ok;
     const message = status ? 'El token se ha generado correctamente. data:' : 'Error en el servicio. ' + JSON.stringify(data);
 
@@ -63,6 +66,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = 'http://connect.ctonline.mx:3001/paqueteria/cotizacion';
     const result = await fetch(url, options);
     const data = await result.json();
+    logger.info(`GraphQL Response: ${data}`);
 
     if (result.ok) {
       return {
@@ -101,6 +105,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
       if (result.ok) {
         const data: IProductoCt[] = await result.json();
+        logger.info(`GraphQL Response: ${data}`);
 
         const stockProductsCt = data.map((product: IProductoCt) => {
           const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
@@ -175,9 +180,12 @@ class ExternalCtsService extends ResolversOperationsService {
       })
     };
 
+    console.log('setOrderCt/options: ', options);
+
     const url = 'http://connect.ctonline.mx:3001/pedido';
     const result = await fetch(url, options);
     const data = await result.json();
+    logger.info(`GraphQL Response: ${data}`);
 
     if (result.ok) {
       return {
@@ -217,6 +225,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = `http://connect.ctonline.mx:3001/pedido/confirmar`;
     const result = await fetch(url, options);
     const data = await result.json();
+    logger.info(`GraphQL Response: ${data}`);
 
     const status = result.ok;
     const message = status ? 'La información que hemos enviado se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
@@ -246,6 +255,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = 'http://connect.ctonline.mx:3001/pedido/listar';
     const response = await fetch(url, options);
     const data = await response.json();
+    logger.info(`GraphQL Response: ${data}`);
 
     if (response.ok) {
       const listOrdersCt = data
@@ -293,6 +303,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = `http://connect.ctonline.mx:3001/pedido/estatus/${folio}`;
     const result = await fetch(url, options);
     const data = await result.json();
+    logger.info(`GraphQL Response: ${data}`);
 
     const status = result.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
@@ -322,6 +333,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = `http://connect.ctonline.mx:3001/pedido/detalle/${folio}`;
     const result = await fetch(url, options);
     const data = await result.json();
+    logger.info(`GraphQL Response: ${data}`);
 
     const status = result.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
@@ -356,6 +368,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = `http://connect.ctonline.mx:3001/paqueteria/volumetria/${codigo}`;
     const result = await fetch(url, options);
     const data = await result.json();
+    logger.info(`GraphQL Response: ${data}`);
 
     const status = result.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;

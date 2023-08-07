@@ -104,7 +104,7 @@ class BrandsService extends ResolversOperationsService {
       slug: slugify(brand?.description || '', { lower: true }),
       order: brand?.order,
       active: true,
-      registerDate: new Date().toISOString()//,
+      registerDate: new Date()//,
       // suppliersCat
     };
     const result = await this.add(this.collection, brandObject, 'marca');

@@ -101,7 +101,7 @@ class TagsService extends ResolversOperationsService {
       slug: slugify(tag?.description || '', { lower: true }),
       order: tag?.order,
       active: true,
-      registerDate: new Date().toISOString()//,
+      registerDate: new Date()//,
       // suppliersCat
     };
     const result = await this.add(this.collection, tagObject, 'etiqueta');

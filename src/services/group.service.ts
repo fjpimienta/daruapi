@@ -104,7 +104,7 @@ class GroupsService extends ResolversOperationsService {
       slug: slugify(group?.description || '', { lower: true }),
       order: group?.order,
       active: true,
-      registerDate: new Date().toISOString()//,
+      registerDate: new Date()//,
       // suppliersCat
     };
     const result = await this.add(this.collection, groupObject, 'grupo');

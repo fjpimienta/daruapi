@@ -5,4 +5,5 @@ type Shipment {
   metodoShipping: String!
   costo: Float!
   lugarEnvio: String!
+  lugarRecepcion: String!
 }

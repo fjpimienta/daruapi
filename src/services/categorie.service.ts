@@ -104,7 +104,7 @@ class CategoriesService extends ResolversOperationsService {
       slug: slugify(categorie?.description || '', { lower: true }),
       order: categorie?.order,
       active: true,
-      registerDate: new Date().toISOString()//,
+      registerDate: new Date()//,
       // suppliersCat
     };
     const result = await this.add(this.collection, categorieObject, 'categoria');

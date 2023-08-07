@@ -3,4 +3,5 @@ export interface IShipment {
   metodoShipping?: string;
   costo?: number;
   lugarEnvio: string;
+  lugarRecepcion: string;
 }

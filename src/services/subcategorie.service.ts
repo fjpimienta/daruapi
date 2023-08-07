@@ -101,7 +101,7 @@ class SubcategoriesService extends ResolversOperationsService {
       slug: slugify(subcategorie?.description || '', { lower: true }),
       order: subcategorie?.order,
       active: true,
-      registerDate: new Date().toISOString()//,
+      registerDate: new Date()//,
       // suppliersCat
     };
     const result = await this.add(this.collection, categorieObject, 'subcategoria');

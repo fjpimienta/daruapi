@@ -3,4 +3,5 @@ input ShipmentInput {
   metodoShipping: String
   costo: Float
   lugarEnvio: String
+  lugarRecepcion: String
 }

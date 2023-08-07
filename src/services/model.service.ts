@@ -101,7 +101,7 @@ class ModelsService extends ResolversOperationsService {
       slug: slugify(model?.description || '', { lower: true }),
       order: model?.order,
       active: true,
-      registerDate: new Date().toISOString()//,
+      registerDate: new Date()//,
       // suppliersCat
     };
     const result = await this.add(this.collection, modelObject, 'modelo');

@@ -31,7 +31,8 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = 'http://connect.ctonline.mx:3001/cliente/token';
     const response = await fetch(url, options);
     const data = await response.json();
-    logger.info(`GraphQL Response: ${data}`);
+    const dataString = JSON.stringify(data);
+    logger.info(`GraphQL Response: ${dataString}`);
     const status = response.ok;
     const message = status ? 'El token se ha generado correctamente. data:' : 'Error en el servicio. ' + JSON.stringify(data);
 
@@ -66,7 +67,8 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = 'http://connect.ctonline.mx:3001/paqueteria/cotizacion';
     const result = await fetch(url, options);
     const data = await result.json();
-    logger.info(`GraphQL Response: ${data}`);
+    const dataString = JSON.stringify(data);
+    logger.info(`GraphQL Response: ${dataString}`);
 
     if (result.ok) {
       return {
@@ -105,7 +107,8 @@ class ExternalCtsService extends ResolversOperationsService {
 
       if (result.ok) {
         const data: IProductoCt[] = await result.json();
-        logger.info(`GraphQL Response: ${data}`);
+        const dataString = JSON.stringify(data);
+        logger.info(`GraphQL Response: ${dataString}`);
 
         const stockProductsCt = data.map((product: IProductoCt) => {
           const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
@@ -185,7 +188,8 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = 'http://connect.ctonline.mx:3001/pedido';
     const result = await fetch(url, options);
     const data = await result.json();
-    logger.info(`GraphQL Response: ${data}`);
+    const dataString = JSON.stringify(data);
+    logger.info(`GraphQL Response: ${dataString}`);
 
     if (result.ok) {
       return {
@@ -225,7 +229,8 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = `http://connect.ctonline.mx:3001/pedido/confirmar`;
     const result = await fetch(url, options);
     const data = await result.json();
-    logger.info(`GraphQL Response: ${data}`);
+    const dataString = JSON.stringify(data);
+    logger.info(`GraphQL Response: ${dataString}`);
 
     const status = result.ok;
     const message = status ? 'La información que hemos enviado se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
@@ -255,7 +260,8 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = 'http://connect.ctonline.mx:3001/pedido/listar';
     const response = await fetch(url, options);
     const data = await response.json();
-    logger.info(`GraphQL Response: ${data}`);
+    const dataString = JSON.stringify(data);
+    logger.info(`GraphQL Response: ${dataString}`);
 
     if (response.ok) {
       const listOrdersCt = data
@@ -303,7 +309,8 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = `http://connect.ctonline.mx:3001/pedido/estatus/${folio}`;
     const result = await fetch(url, options);
     const data = await result.json();
-    logger.info(`GraphQL Response: ${data}`);
+    const dataString = JSON.stringify(data);
+    logger.info(`GraphQL Response: ${dataString}`);
 
     const status = result.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
@@ -333,7 +340,8 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = `http://connect.ctonline.mx:3001/pedido/detalle/${folio}`;
     const result = await fetch(url, options);
     const data = await result.json();
-    logger.info(`GraphQL Response: ${data}`);
+    const dataString = JSON.stringify(data);
+    logger.info(`GraphQL Response: ${dataString}`);
 
     const status = result.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
@@ -368,7 +376,8 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = `http://connect.ctonline.mx:3001/paqueteria/volumetria/${codigo}`;
     const result = await fetch(url, options);
     const data = await result.json();
-    logger.info(`GraphQL Response: ${data}`);
+    const dataString = JSON.stringify(data);
+    logger.info(`GraphQL Response: ${dataString}`);
 
     const status = result.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;

@@ -74,12 +74,12 @@ type CotizacionesCt {
 }
 
 # Orders CT
-type ResponseCtsOrders implements ResponseCt { 
-  codigo: String
-  mensaje: String
-  referencia: String
-  respuesta: ResponseCtOrder
-}
+# type ResponseCtsOrders implements ResponseCt { 
+#   codigo: String
+#   mensaje: String
+#   referencia: String
+#   respuesta: ResponseCtOrder
+# }
 
 type ResponseCtOrder {
   pedidoWeb: String

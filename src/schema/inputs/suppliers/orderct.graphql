@@ -4,7 +4,7 @@ input OrderCtInput {
   tipoPago: String!
   guiaConnect: GuiaConnectInput
   envio: [EnvioCtInput]
-  producto: [ProductoCtInput]
+  productoCt: [ProductoCtInput]
   cfdi: String
 }
 

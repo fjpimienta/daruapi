@@ -183,8 +183,6 @@ class ExternalCtsService extends ResolversOperationsService {
       })
     };
 
-    console.log('setOrderCt/options: ', options);
-
     const url = 'http://connect.ctonline.mx:3001/pedido';
     const result = await fetch(url, options);
     const data = await result.json();
@@ -271,7 +269,7 @@ class ExternalCtsService extends ResolversOperationsService {
           tipoPago: order.tipoPago,
           guiaConnect: order.guiaConnect,
           envio: order.envio,
-          producto: order.producto,
+          producto: order.productoCt,
           respuestaCT: order.respuestaCT
         }))
         .sort((a: IOrderCtResponse, b: IOrderCtResponse) => {

@@ -11,7 +11,7 @@ type Query {
     tipoPago: String="",
     guiaConnect: GuiaConnectInput,
     envio: [EnvioInput],
-    producto: [ProductoCtInput],
+    productoCt: [ProductoCtInput],
     cfdi: String=""
   ): ResultCts
   listOrdersCt: ResultCts

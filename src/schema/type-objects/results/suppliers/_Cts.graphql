@@ -4,7 +4,7 @@ type ResultCts implements Result {
   tokenCt: TokenCt
   stockProductsCt: [ResponseCtsStockProducts]
   shippingCtRates: ResponseCtsShipping
-  orderCt: ResponseCtsOrders
+  orderCt: ResponseCtOrder
   confirmOrderCt: ResponseCtsConfirOrder
   listOrdersCt: [ResponseCtsListOrders]
   statusOrdersCt: ResponseCtsStatus

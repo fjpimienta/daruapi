@@ -194,10 +194,11 @@ class ExternalCtsService extends ResolversOperationsService {
         status: true,
         message: 'La información que hemos enviado se ha cargado correctamente',
         orderCt: {
-          codigo: data.codigo,
-          mensaje: data.mensaje,
-          referencia: data.referencia,
-          respuesta: data.respuesta
+          pedidoWeb: data[0].respuestaCT.pedidoWeb,
+          fecha: data[0].respuestaCT.fecha,
+          tipoDeCambio: data[0].respuestaCT.tipoDeCambio,
+          estatus: data[0].respuestaCT.estatus,
+          errores: data[0].respuestaCT.errores,
         }
       }
     }
@@ -269,7 +270,7 @@ class ExternalCtsService extends ResolversOperationsService {
           tipoPago: order.tipoPago,
           guiaConnect: order.guiaConnect,
           envio: order.envio,
-          producto: order.productoCt,
+          productoCt: order.productoCt,
           respuestaCT: order.respuestaCT
         }))
         .sort((a: IOrderCtResponse, b: IOrderCtResponse) => {
@@ -353,7 +354,7 @@ class ExternalCtsService extends ResolversOperationsService {
         tipoPago: data[0].tipoPago,
         guiaConnect: data[0].guiaConnect,
         envio: data[0].envio,
-        producto: data[0].producto,
+        productoCt: data[0].producto,
         respuestaCT: data[0].respuestaCT
       } : null
     };

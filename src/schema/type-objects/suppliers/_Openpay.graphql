@@ -50,6 +50,7 @@ type ChargeOpenpay {
   operation_type: String
   method: String
   creation_date: String
+  operation_date: String
   order_id: String
   status: String
   amount: Float
@@ -60,4 +61,15 @@ type ChargeOpenpay {
   # bank_account: BankAccountOpenpay
   card: CardOpenpay
   # card_points: CardPoints
+  payment_method: PaymentMethodOpenpay
+  conciliated: Boolean
+}
+
+type PaymentMethodOpenpay {
+  type: String
+  url: String
+  agreement: String
+  bank: String
+  clabe: String
+  name: String
 }

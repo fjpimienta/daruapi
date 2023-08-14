@@ -17,6 +17,7 @@ export interface ICustomerOpenpay {
   phone_number: string;
   requires_account: boolean;
   clabe: string;
+  bank_name: string;
   address: IAddressOpenpay;
 }
 

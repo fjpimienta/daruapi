@@ -425,6 +425,37 @@ class ExternalOpenpayService extends ResolversOperationsService {
 
   //#endregion
 
+  //#region Payouts
+  async createPayout(variables: IVariables) {
+    try {
+      const { payoutOpenpay } = variables;
+      console.log('payoutOpenpay: ', payoutOpenpay);
+      const createPayoutOpenpay = await new Promise((resolve, reject) => {
+        this.openpay.payouts.create(payoutOpenpay, (error: any, response: any) => {
+          if (error) {
+            console.log('error: ', error);
+            reject(error);
+          } else {
+            console.log('createCharge/response: ', response);
+            resolve(response);
+          }
+        });
+      });
+      console.log('createCharge/createPayoutOpenpay: ', createPayoutOpenpay);
+      return {
+        status: true,
+        message: 'El cargo se ha creado correctamente.',
+        createPayoutOpenpay,
+      };
+    } catch (error: any) {
+      console.error('error: ', error);
+      return {
+        status: false,
+        message: `Error al crear el cargo: ' ${error.description}`,
+      };
+    }
+  }
+
 }
 
 export default ExternalOpenpayService;

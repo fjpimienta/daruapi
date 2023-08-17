@@ -40,4 +40,8 @@ type Query {
     captureTransactionOpenpay: CaptureChargeOpenpayInput
   ): ResultOpenpay
   listChargesOpenpay: ResultOpenpay
+
+  createPayoutOpenpay(
+    payoutOpenpay: PayoutOpenpayInput
+  ): ResultOpenpay
 }

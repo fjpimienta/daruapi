@@ -59,3 +59,18 @@ input RefundChargeOpenpayInput {
   description: String
   amount: Float
 }
+
+input PayoutOpenpayInput {
+  method: String
+  bank_account: BankAccountOpenpayInput
+  amount: Float
+  description: String
+  order_id: String
+}
+
+input BankAccountOpenpayInput {
+  clabe: String
+  holder_name: String
+  alias: String
+  bank_name: String
+}

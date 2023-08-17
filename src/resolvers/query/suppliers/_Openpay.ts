@@ -47,6 +47,10 @@ const resolversOpenpayQuery: IResolvers = {
     async listChargesOpenpay(_, __, context) {
       return new ExternalOpenpayService(_, __, context).listCharges();
     },
+
+    async createPayoutOpenpay(_, variables, context) {
+      return new ExternalOpenpayService(_, variables, context).createPayout(variables);
+    },
   },
 };
 

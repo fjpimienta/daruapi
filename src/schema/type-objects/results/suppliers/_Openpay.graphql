@@ -16,4 +16,6 @@ type ResultOpenpay implements Result {
   refundChargeOpenpay: ChargeOpenpay
   chargeOpenpay: ChargeOpenpay
   listChargesOpenpay: [ChargeOpenpay]
+
+  createPayoutOpenpay: PayoutOpenpay
 }

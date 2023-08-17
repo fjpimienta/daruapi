@@ -51,6 +51,13 @@ export interface IChargeOpenpay {
   use_3d_secure?: boolean;
 }
 
+export interface IBankAccountOpenpay {
+  clabe: string;
+  holder_name: string;
+  alias: string;
+  bank_name: string;
+}
+
 export interface IPaymentPlanOpenpay {
   payments: number;
 }
@@ -62,5 +69,13 @@ export interface ICaptureChargeOpenpay {
 export interface IRefundChargeOpenpay {
   amount: number;
   description: string;
+}
+
+export interface IPayoutOpenpay {
+  method: string;
+  bank_account: IBankAccountOpenpay;
+  amount: number;
+  description: string;
+  order_id: string;
 }
 //#endregion

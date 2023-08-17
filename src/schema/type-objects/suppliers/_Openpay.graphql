@@ -59,11 +59,12 @@ type ChargeOpenpay {
   error_message: String
   customer_id: String
   currency: String
-  # bank_account: BankAccountOpenpay
+  bank_account: BankAccountOpenpay
   card: CardOpenpay
   # card_points: CardPoints
   payment_method: PaymentMethodOpenpay
   conciliated: Boolean
+  customer: CustomerOpenpay
 }
 
 type PaymentMethodOpenpay {
@@ -73,4 +74,29 @@ type PaymentMethodOpenpay {
   bank: String
   clabe: String
   name: String
+}
+
+type PayoutOpenpay {
+  id: String
+  amount: String
+  authorization: String
+  method: String
+  operation_type: String
+  transaction_type: String
+  status: String
+  currency: String
+  creation_date: String
+  operation_date: String
+  description: String
+  error_message: String
+  order_id: String
+  bank_account: BankAccountOpenpay,
+  customer_id: String
+}
+
+type BankAccountOpenpay {
+  clabe: String
+  holder_name: String
+  alias: String
+  bank_name: String
 }

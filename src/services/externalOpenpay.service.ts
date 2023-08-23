@@ -43,7 +43,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al crear el cliente: ${description}`,
+        message: description,
       };
     }
   }
@@ -71,7 +71,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al actualizar el cliente: ${description}`,
+        message: description,
       };
     }
   }
@@ -98,7 +98,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al eliminar el Cliente: ${description}`,
+        message: description,
       };
     }
   }
@@ -134,7 +134,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al recuperar el Cliente: ${description}`,
+        message: description,
       };
     }
   }
@@ -161,7 +161,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al obtener la lista de clientes: ${description}`,
+        message: description,
       };
     }
   }
@@ -191,7 +191,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al obtener la lista de tarjetas: ${description}`,
+        message: description,
       };
     }
   }
@@ -219,7 +219,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al crear la tarjeta: ${description}`,
+        message: description,
       };
     }
   }
@@ -255,7 +255,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al recuperar la tarjeta: ${description}`,
+        message: description,
       };
     }
   }
@@ -282,7 +282,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al eliminar la tarjeta: ${description}`,
+        message: description,
       };
     }
   }
@@ -312,7 +312,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al crear el cargo: ${description}`,
+        message: description,
       };
     }
   }
@@ -348,7 +348,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al autorizado el cargo: ${description}`,
+        message: description,
       };
     }
   }
@@ -384,7 +384,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al devolver el cargo: ${description}`,
+        message: description,
       };
     }
   }
@@ -420,7 +420,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al recuperar el cargo: ${description}`,
+        message: description,
       };
     }
   }
@@ -447,7 +447,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al obtener la lista de cargos: ${description}`,
+        message: description,
       };
     }
   }
@@ -481,7 +481,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       let description = this.decodeError(error);
       return {
         status: false,
-        message: `Error al crear el cargo: ${description}`,
+        message: description,
       };
     }
   }

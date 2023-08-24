@@ -2,8 +2,8 @@ type Query {
   tokenCva: ResultCvas
   shippingCvaRates(
     paqueteria: Int,
-    cp: Int,
-    cp_sucursal: Int,
+    cp: String,
+    cp_sucursal: String,
     productosCva: [ProductsShipmentCvaInput]
   ): ResultCvas
   listOrdersCva: ResultCvas

@@ -12,8 +12,8 @@ input ProductInput {
   top: Boolean
   featured: Boolean
   new: Boolean
-  # author: String
-  # sold: String
+  author: String
+  sold: String
   partnumber: String
   sku: String
   upc: String

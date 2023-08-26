@@ -6,7 +6,7 @@ input WarehouseInput {
   latitud: String
   longitud: String
   suppliersProd: [SupplierProdInput]
-  products: [ProductInput]
+  products: [CartItemInput]
   productShipments: [ProductShipmentInput]
   shipments: [ShipmentInput]
 }

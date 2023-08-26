@@ -7,7 +7,7 @@ type Warehouse {
   latitud: String
   longitud: String
   suppliersProd: SupplierProd
-  products: [Product]
+  products: [Cartitem]
   productShipments: [ProductShipment]
   shipments: [Shipment]
 }

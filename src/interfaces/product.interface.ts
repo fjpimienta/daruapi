@@ -11,6 +11,8 @@ export interface IProduct {
   top: boolean;
   featured: boolean;
   new: boolean;
+  author: string;
+  sold: string;
   short_desc?: string;
   partnumber: string;
   sku: string;

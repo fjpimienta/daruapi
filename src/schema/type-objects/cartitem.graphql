@@ -12,16 +12,24 @@ type Cartitem {
   top: Boolean
   featured: Boolean
   new: Boolean
-  author: String
-  sold: String
+  #author: String
+  #sold: String
+  partnumber: String
+  sku: String
+  upc: String
   category: [Categorys]
+  brand: String
   brands: [Brands]
   model: String
   peso: Float
   pictures: [Picture]
   sm_pictures: [Picture]
   variants: [Variant]
+  unidadDeMedida: UnidadDeMedida
   active: Boolean
+  suppliersProd: SupplierProd
+  descuentos: Descuentos
+  promociones: Promociones
   qty: Int
   sum: Float
 }
@@ -90,4 +98,42 @@ type File {
   filename: String!
   mimetype: String!
   encoding: String!
+}
+
+type UnidadDeMedida {
+  id: String
+  name: String
+  slug: String
+}
+
+# type SupplierProd {
+#   idProveedor: String
+#   codigo: String
+#   price: Float
+#   moneda: String
+#   branchOffices: [BranchOffices]
+# }
+
+type BranchOffices {
+  id: String
+  name: String
+  estado: String
+  cantidad: Float
+  cp: String
+  latitud: String
+  longitud: String
+}
+
+type Descuentos {
+  total_descuento: Float
+  moneda_descuento: String
+  precio_descuento: Float
+}
+
+type Promociones {
+  clave_promocion: String
+  descripcion_promocion: String
+  inicio_promocion: String
+  vencimiento_promocion: String
+  disponible_en_promocion: Float
 }

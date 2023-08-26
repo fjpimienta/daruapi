@@ -505,6 +505,9 @@ class ExternalOpenpayService extends ResolversOperationsService {
       case 1002:
         return 'La llamada no esta autenticada o la autenticación es incorrecta.';
       case 1003:
+        if (error.http_code===422) {
+          return 'El cargo a la tarjeta se encuentra en estado final.';
+        }
         return 'La operación no se pudo completar por que el valor de uno o más de los parámetros no es correcto.';
       case 1004:
         return 'Un servicio necesario para el procesamiento de la transacción no se encuentra disponible.';

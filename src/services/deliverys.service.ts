@@ -130,6 +130,15 @@ class DeliverysService extends ResolversOperationsService {
     }
     const objectUpdate = {
       deliveryId: delivery?.deliveryId,
+      user: delivery?.user,
+      warehouses: delivery?.warehouses,
+      ordersCt: delivery?.ordersCt,
+      ordersCva: delivery?.ordersCva,
+      orderCtResponse: delivery?.orderCtResponse,
+      orderCtConfirmResponse: delivery?.orderCtConfirmResponse,
+      orderCvaResponse: delivery?.orderCvaResponse,
+      statusError: delivery?.statusError,
+      messageError: delivery?.messageError,
     };
     // Conocer el id del almacen
     const filter = { id: delivery?.id };

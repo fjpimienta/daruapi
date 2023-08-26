@@ -2,7 +2,6 @@ export interface IProduct {
   id?: string;
   name?: string;
   slug?: string;
-  short_desc?: string;
   price: number;
   sale_price: number;
   review: number;
@@ -12,8 +11,7 @@ export interface IProduct {
   top: boolean;
   featured: boolean;
   new: boolean;
-  author: string;
-  sold: string;
+  short_desc?: string;
   partnumber: string;
   sku: string;
   upc: string;
@@ -47,24 +45,12 @@ export interface IPivotCategory {
 export interface IBrands {
   name: string;
   slug: string;
-  pivot: IPivotBrand;
-}
-
-export interface IPivotBrand {
-  product_id: string;
-  brand_id: string;
 }
 
 export interface IPicture {
   width: string;
   height: string;
   url: string;
-  pivot: IPivotePicture;
-}
-
-export interface IPivotePicture {
-  related_id: string;
-  upload_file_id: string;
 }
 
 export interface IVariant {
@@ -110,7 +96,7 @@ export interface ISupplierProd {
 export interface IBranchOffices {
   id: string;
   name: string;
-  slug: string;
+  estado: string;
   cantidad: number;
   cp: string;
   latitud: string;
@@ -126,6 +112,7 @@ export interface IDescuentos {
 export interface IPromociones {
   clave_promocion: string;
   descripcion_promocion: string;
+  inicio_promocion: string;
   vencimiento_promocion: string;
   disponible_en_promocion: number;
 }

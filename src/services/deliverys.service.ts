@@ -47,7 +47,7 @@ class DeliverysService extends ResolversOperationsService {
 
   // Obtener detalles del item
   async details() {
-    const result = await this.get(this.collection);
+    const result = await this.getByDelivery(this.collection);
     return {
       status: result.status,
       message: result.message,

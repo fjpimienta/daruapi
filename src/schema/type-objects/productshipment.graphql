@@ -3,8 +3,8 @@
 type ProductShipment {
   producto: String!
   cantidad: Float!
-  precio: String!
-  priceSupplier: String!
+  precio: Float!
+  priceSupplier: Float!
   moneda: String!
   almacen: String!
   cp: String!

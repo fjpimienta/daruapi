@@ -3,7 +3,6 @@ type Warehouse {
   cp: String!
   name: String
   estado: String
-  ciudad: String
   latitud: String
   longitud: String
   suppliersProd: SupplierProd

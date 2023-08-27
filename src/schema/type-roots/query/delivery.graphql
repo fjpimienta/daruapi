@@ -11,6 +11,6 @@ type Query {
       filterName: String=""
    ): ResultDelivery
    "Item del deliverys seleccionado"
-   delivery(id: ID!): ResultDelivery
+   delivery(deliveryId: String!): ResultDelivery
    deliveryId: ResultDelivery
 }

@@ -47,7 +47,7 @@ class DeliverysService extends ResolversOperationsService {
 
   // Obtener detalles del item
   async details() {
-    const result = await this.get(this.collection);
+    const result = await this.getByDelivery(this.collection);
     return {
       status: result.status,
       message: result.message,
@@ -130,6 +130,15 @@ class DeliverysService extends ResolversOperationsService {
     }
     const objectUpdate = {
       deliveryId: delivery?.deliveryId,
+      user: delivery?.user,
+      warehouses: delivery?.warehouses,
+      ordersCt: delivery?.ordersCt,
+      ordersCva: delivery?.ordersCva,
+      orderCtResponse: delivery?.orderCtResponse,
+      orderCtConfirmResponse: delivery?.orderCtConfirmResponse,
+      orderCvaResponse: delivery?.orderCvaResponse,
+      statusError: delivery?.statusError,
+      messageError: delivery?.messageError,
     };
     // Conocer el id del almacen
     const filter = { id: delivery?.id };

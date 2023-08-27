@@ -6,8 +6,8 @@ const resolversDeliverysQuery: IResolvers = {
     async deliverys(_, variables, context) {
       return new DeliverysService(_, { pagination: variables }, context).items(variables);
     },
-    async delivery(_, { id }, context) {
-      return new DeliverysService(_, { id }, context).details();
+    async delivery(_, variables, context) {
+      return new DeliverysService(_, variables, context).details();
     },
     async deliveryId(_, __, context) {
       return new DeliverysService(_, __, context).next();

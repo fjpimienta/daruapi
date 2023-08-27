@@ -59,6 +59,7 @@ export interface IVariables {
   typeApi?: string;
   nameApi?: string;
   delivery?: IDelivery;
+  deliveryId?: string;
   deliverys?: IDelivery[];
   // 99minutos Token
   origin?: string;
@@ -108,6 +109,6 @@ export interface IVariables {
   idTransactionOpenpay?: string;
   captureTransactionOpenpay?: ICaptureChargeOpenpay;
   refundTransactionCharge?: IRefundChargeOpenpay;
-  payoutOpenpay? : IPayoutOpenpay;
+  payoutOpenpay?: IPayoutOpenpay;
   idPayoutOpenpay?: string;
 }

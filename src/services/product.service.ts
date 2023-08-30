@@ -33,11 +33,33 @@ class ProductsService extends ResolversOperationsService {
         filter = { active: { $eq: false } };
       }
     } else {
-      filter = { active: { $ne: false }, 'slug': regExp };
+      filter = {
+        active: { $ne: false }, $or: [
+          { 'slug': regExp },
+          { 'brand': regExp },
+          { 'partnumber': regExp },
+          { 'category.name': regExp }
+        ]
+      };
       if (active === ACTIVE_VALUES_FILTER.ALL) {
-        filter = { 'slug': regExp };
+        filter = {
+          $or: [
+            { 'slug': regExp },
+            { 'brand': regExp },
+            { 'partnumber': regExp },
+            { 'category.name': regExp }
+          ]
+        };
       } else if (active === ACTIVE_VALUES_FILTER.INACTIVE) {
-        filter = { active: { $eq: false }, 'slug': regExp };
+        filter = {
+          active: { $eq: false },
+          $or: [
+            { 'slug': regExp },
+            { 'brand': regExp },
+            { 'partnumber': regExp },
+            { 'category.name': regExp }
+          ]
+        };
       }
     }
     if (offer) {

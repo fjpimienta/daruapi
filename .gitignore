@@ -13,6 +13,9 @@
 # logs
 /src/logs
 
+#temp
+/src/temp
+
 # dependencies
 /node_modules
 

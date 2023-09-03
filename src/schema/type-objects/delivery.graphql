@@ -3,6 +3,9 @@
 type Delivery {
   id: ID
   deliveryId: String!
+  cliente: String!
+  importe: Float!
+  registerDate: String!
   user: User!
   warehouses: [Warehouse]!
   ordersCt: [OrderCt]

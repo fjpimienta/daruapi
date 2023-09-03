@@ -1,6 +1,9 @@
 input DeliveryInput {
   id: ID
   deliveryId: String
+  cliente: String!
+  importe: Float!
+  registerDate: String!
   user: UserInput!
   warehouses: [WarehouseInput]!
   ordersCt: [OrderCtInput]

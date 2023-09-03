@@ -8,6 +8,8 @@ import { IWarehouse } from './warehouses.interface';
 export interface IDelivery {
   id: string;
   deliveryId: string;
+  cliente: string;
+  importe: number;
   registerDate?: string;
   user: IUser;
   warehouses: IWarehouse[];

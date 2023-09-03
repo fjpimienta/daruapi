@@ -1,7 +1,9 @@
-"Item basico para definir las propiedades basicas de los elementos de la API Store"
 interface Delivery {
   id: ID
   deliveryId: String
+  cliente: String!
+  importe: Float!
+  registerDate: String!
   user: User!
   warehouses: [Warehouse]!
   ordersCt: [OrderCt]

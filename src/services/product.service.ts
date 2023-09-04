@@ -69,8 +69,7 @@ class ProductsService extends ResolversOperationsService {
       filter = { ...filter, ...{ 'brands.slug': { $in: brands } } };
     }
     if (categories) {
-      const regExpCat = new RegExp('.*' + categories + '.*', 'i');
-      filter = { ...filter, ...{ 'category.slug': regExpCat } };
+      filter = { ...filter, ...{ 'category.slug': { $in: categories } } };
     }
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;

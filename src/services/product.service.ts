@@ -35,7 +35,7 @@ class ProductsService extends ResolversOperationsService {
     } else {
       filter = {
         active: { $ne: false }, $or: [
-          { 'slug': regExp },
+          { 'name': regExp },
           { 'brand': regExp },
           { 'partnumber': regExp },
           { 'category.name': regExp }
@@ -44,7 +44,7 @@ class ProductsService extends ResolversOperationsService {
       if (active === ACTIVE_VALUES_FILTER.ALL) {
         filter = {
           $or: [
-            { 'slug': regExp },
+            { 'name': regExp },
             { 'brand': regExp },
             { 'partnumber': regExp },
             { 'category.name': regExp }
@@ -54,7 +54,7 @@ class ProductsService extends ResolversOperationsService {
         filter = {
           active: { $eq: false },
           $or: [
-            { 'slug': regExp },
+            { 'name': regExp },
             { 'brand': regExp },
             { 'partnumber': regExp },
             { 'category.name': regExp }
@@ -73,7 +73,7 @@ class ProductsService extends ResolversOperationsService {
       filter = {
         ...filter, ...{
           $or: [
-            { 'slug': regExpCat },
+            { 'name': regExpCat },
             { 'category.slug': regExpCat }
           ]
         }

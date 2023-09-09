@@ -7,6 +7,7 @@ import {
   updateOneElement, asignDocumentId, insertManyElements, deleteManyElements
 } from '../lib/db-operations';
 import { IApisupplier } from '../interfaces/suppliers/supplier.interface';
+import slugify from 'slugify';
 
 class ResolversOperationsService {
   private root: object;
@@ -121,7 +122,7 @@ class ResolversOperationsService {
   // Obtener detalles del item
   protected async getByName(collection: string) {
     const collectionLabel = collection.toLowerCase();
-    const name = this.getVariables().name;
+    const name = slugify(this.getVariables().name || '', { lower: true });
     try {
       return await findOneElement(this.getDB(), collection,
         { 'slug': name }

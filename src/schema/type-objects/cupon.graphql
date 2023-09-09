@@ -1,0 +1,14 @@
+type Cupon implements Item {
+  id: ID!
+  description: String!
+  slug: String!
+  order: Int!
+  active: Boolean
+  suppliersCat: [SupplierCat]
+}
+
+type SupplierCat {
+  idProveedor: ID
+  name: String
+  slug: String
+}

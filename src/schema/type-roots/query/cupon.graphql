@@ -1,0 +1,10 @@
+type Query {
+   cupons (
+      page: Int=1, 
+      itemsPage: Int=10,
+      active: ActiveFilterEnum = ACTIVE
+      filterName: String=""
+   ): ResultCupon
+   cupon(id: ID!): ResultCupon
+   cuponId: ResultCupon
+}

@@ -1,0 +1,8 @@
+type ResultCupon implements Result{
+  info: ResultInfo
+  status: Boolean!
+  message: String!
+  cupon: Cupon
+  cupons: [Cupon!]!
+  cuponId: String
+}

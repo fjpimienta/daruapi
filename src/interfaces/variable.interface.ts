@@ -111,4 +111,6 @@ export interface IVariables {
   refundTransactionCharge?: IRefundChargeOpenpay;
   payoutOpenpay?: IPayoutOpenpay;
   idPayoutOpenpay?: string;
+  cupon?: ICatalog;
+  cupons?: ICatalog[];
 }

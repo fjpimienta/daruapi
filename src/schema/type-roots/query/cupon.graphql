@@ -5,6 +5,6 @@ type Query {
       active: ActiveFilterEnum = ACTIVE
       filterName: String=""
    ): ResultCupon
-   cupon(id: ID!): ResultCupon
+   cupon(name: String!): ResultCupon
    cuponId: ResultCupon
 }

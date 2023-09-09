@@ -6,8 +6,8 @@ const resolversCuponsQuery: IResolvers = {
     async cupons(_, variables, context) {
       return new CuponsService(_, { pagination: variables }, context).items(variables);
     },
-    async cupon(_, { id }, context) {
-      return new CuponsService(_, { id }, context).details();
+    async cupon(_, variables, context) {
+      return new CuponsService(_, variables, context).details();
     },
     async cuponId(_, __, context) {
       return new CuponsService(_, __, context).next();

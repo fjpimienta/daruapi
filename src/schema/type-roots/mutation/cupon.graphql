@@ -1,0 +1,6 @@
+type Mutation {
+   addCupon(cupon: CatalogInput!): ResultCupon
+   updateCupon(cupon: CatalogInput!): ResultCupon
+   deleteCupon(id: ID!): ResultCupon
+   blockCupon(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultCupon
+}

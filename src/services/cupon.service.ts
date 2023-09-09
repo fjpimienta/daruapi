@@ -8,7 +8,7 @@ import { pagination } from '../lib/pagination';
 import { asignDocumentId } from '../lib/db-operations';
 import ResolversOperationsService from './resolvers-operaciones.service';
 
-class BrandsService extends ResolversOperationsService {
+class CuponsService extends ResolversOperationsService {
   collection = COLLECTIONS.CUPONS;
   catalogName = 'Cupones';
   constructor(root: object, variables: object, context: IContextData) {
@@ -50,11 +50,19 @@ class BrandsService extends ResolversOperationsService {
 
   // Obtener detalles del item
   async details() {
-    const result = await this.get(this.collection);
-    return {
-      status: result.status,
-      message: result.message,
-      cupon: result.item
+    const name = this.getVariables().name;
+    if (name) {
+      const result = await this.getByName(this.collection);
+      return {
+        status: result.status,
+        message: result.message,
+        cupon: result.item
+      };
+    }
+    return await {
+      status: false,
+      message: 'No hay cupon para buscar',
+      supplierName: null
     };
   }
 
@@ -191,4 +199,4 @@ class BrandsService extends ResolversOperationsService {
   }
 }
 
-export default BrandsService;
+export default CuponsService;

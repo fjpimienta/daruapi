@@ -72,7 +72,7 @@ class CuponsService extends ResolversOperationsService {
     return {
       status: result.status,
       message: result.message,
-      brandId: result.catId
+      cuponId: result.catId
     };
   }
 
@@ -98,7 +98,7 @@ class CuponsService extends ResolversOperationsService {
     }
 
     // Si valida las opciones anteriores, venir aqui y crear el documento
-    const brandObject = {
+    const cuponObject = {
       id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),
       description: cupon?.description,
       slug: slugify(cupon?.description || '', { lower: true }),
@@ -106,7 +106,7 @@ class CuponsService extends ResolversOperationsService {
       active: true,
       registerDate: new Date()//,
     };
-    const result = await this.add(this.collection, brandObject, 'cupon');
+    const result = await this.add(this.collection, cuponObject, 'cupon');
     return {
       status: result.status,
       message: result.message,

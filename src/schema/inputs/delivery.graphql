@@ -5,7 +5,7 @@ input DeliveryInput {
   cupon: CatalogInput
   discount: Float!
   importe: Float!
-  registerDate: String!
+  registerDate: String
   user: UserInput!
   warehouses: [WarehouseInput]!
   ordersCt: [OrderCtInput]

@@ -2,6 +2,8 @@ interface Delivery {
   id: ID
   deliveryId: String
   cliente: String!
+  cupon: Catalog
+  discount: Float!
   importe: Float!
   registerDate: String!
   user: User!

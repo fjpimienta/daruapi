@@ -1,3 +1,4 @@
+import { ICatalog } from './catalog.interface';
 import { IOrderCt } from './suppliers/_CtsShippments.interface';
 import { IOrderCva } from './suppliers/_CvasShippments.interface';
 import { IOrderCtConfirmResponse, IOrderCtResponse } from './suppliers/orderctresponse.interface';
@@ -9,6 +10,8 @@ export interface IDelivery {
   id: string;
   deliveryId: string;
   cliente: string;
+  cupon?: ICatalog;
+  discount: number;
   importe: number;
   registerDate?: string;
   user: IUser;

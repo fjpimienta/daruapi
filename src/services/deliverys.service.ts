@@ -90,6 +90,8 @@ class DeliverysService extends ResolversOperationsService {
       id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),
       deliveryId: delivery?.deliveryId,
       cliente: delivery?.cliente,
+      cupon: delivery?.cupon,
+      discount: delivery?.discount,
       importe: delivery?.importe,
       user: delivery?.user,
       warehouses: delivery?.warehouses,
@@ -133,6 +135,8 @@ class DeliverysService extends ResolversOperationsService {
     const objectUpdate = {
       deliveryId: delivery?.deliveryId,
       cliente: delivery?.cliente,
+      cupon: delivery?.cupon,
+      discount: delivery?.discount,
       importe: delivery?.importe,
       user: delivery?.user,
       warehouses: delivery?.warehouses,

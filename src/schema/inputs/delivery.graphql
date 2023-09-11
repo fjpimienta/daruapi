@@ -2,6 +2,8 @@ input DeliveryInput {
   id: ID
   deliveryId: String
   cliente: String!
+  cupon: CatalogInput
+  discount: Float!
   importe: Float!
   registerDate: String!
   user: UserInput!

@@ -7,7 +7,7 @@ type Delivery {
   cupon: Catalog
   discount: Float!
   importe: Float!
-  registerDate: String!
+  registerDate: String
   user: User!
   warehouses: [Warehouse]!
   ordersCt: [OrderCt]

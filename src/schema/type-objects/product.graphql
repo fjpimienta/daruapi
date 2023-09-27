@@ -141,6 +141,7 @@ type Promociones {
   inicio_promocion: String
   vencimiento_promocion: String
   disponible_en_promocion: Float
+  porciento: Float
 }
 
 type File {

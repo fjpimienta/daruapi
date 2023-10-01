@@ -55,7 +55,7 @@ class UsersService extends ResolversOperationsService {
       if (user === null) {
         return {
           status: false,
-          message: 'Usuario no existe.',
+          message: 'El usuario no es parte de #DARUTEAM. Unete a nuestra comunidad',
           token: null
         };
       }
@@ -122,7 +122,7 @@ class UsersService extends ResolversOperationsService {
     if (userCheck !== null) {
       return {
         status: false,
-        message: `El email ${user?.email} ya se encuentra registrado, intente con otro email.`,
+        message: `El email ${user?.email} ya es parte de #DARUTEAM. Intentar con otro email.`,
         user: null
       };
     }

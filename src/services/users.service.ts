@@ -64,7 +64,7 @@ class UsersService extends ResolversOperationsService {
         delete user.password;
         delete user.registerdate;
       }
-      if (!user.active){
+      if (!user.active) {
         return {
           status: false,
           message: 'El usuario no está activo. Verificar su cuenta de correo.',
@@ -228,7 +228,19 @@ class UsersService extends ResolversOperationsService {
       };
     }
     const token = new JWT().sign({ user: { id, email } }, EXPIRETIME.H1);
-    const html = `Para activar la cuenta haz click aquí: <a href="${process.env.CLIENT_URL}active/${token}">Click aqui</a>`;
+    const html = `
+    <header>
+        <h1>Bienvenido a #DARUTEAM</h1>
+    </header>
+    <main>
+        <p>¡Bienvenido a nuestro TEAM! Estamos emocionados de tenerte como parte de nuestra comunidad.</p>
+        <p>Para activar la cuenta haz click aquí: <a href="${process.env.CLIENT_URL}active/${token}">Click aqui</a></p>
+        <p>Consulta nuestros terminos y condiciones. <a href="${process.env.CLIENT_URL}terminos">Click aqui</a></p>
+    </main>
+    <footer>
+        <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en <a href="${process.env.CLIENT_URL}contact">Contactanos</a>.</p>
+    </footer>
+    `
     const mail = {
       to: email,
       subject: 'Activar Usuario',

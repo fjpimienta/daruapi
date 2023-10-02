@@ -32,6 +32,7 @@ input CartItemInput {
   promociones: PromocionesInput
   qty: Int
   sum: Float
+  assignedBranchId: Boolean
 }
 
 input CategorysInput {

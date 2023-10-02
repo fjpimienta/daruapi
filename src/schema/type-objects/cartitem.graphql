@@ -32,6 +32,7 @@ type Cartitem {
   promociones: Promociones
   qty: Int
   sum: Float
+  assignedBranchId: Boolean
 }
 
 type Categorys {

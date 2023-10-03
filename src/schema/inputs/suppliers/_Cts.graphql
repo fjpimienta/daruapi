@@ -20,7 +20,7 @@ input EnvioInput {
   ciudad: String
   noExterior: String
   noInterior: String
-  codigoPostal: Int
+  codigoPostal: String
   telefono: Float
 }
 

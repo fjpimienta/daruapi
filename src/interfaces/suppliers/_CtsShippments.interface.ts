@@ -81,7 +81,7 @@ export interface IEnvioCt {
   colonia: string;
   estado: string;
   ciudad: string;
-  codigoPostal: number;
+  codigoPostal: string;
   telefono: number;
 }
 

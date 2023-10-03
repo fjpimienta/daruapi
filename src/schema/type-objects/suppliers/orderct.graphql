@@ -23,7 +23,7 @@ type EnvioCt {
   colonia: String
   estado: String
   ciudad: String
-  codigoPostal: Int
+  codigoPostal: String
   telefono: Float
 }
 

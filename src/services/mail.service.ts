@@ -5,10 +5,10 @@ class MailService {
   send(mail: IMailOptions) {
     return new Promise((resolve, reject) => {
       transport.sendMail({
-        from: '"✅ 🛒DARU Shop ✉ ✅" <daruvhsa@gmail.com>',    // sender address
-        to: mail.to,                                          // list of receivers
-        subject: mail.subject,                                // Subject line
-        html: mail.html,                                      // html body
+        from: '"✅ 🛒DARU Shop ✉ ✅" <marketplace@daru.mx>',     // sender address
+        to: mail.to,                                              // list of receivers
+        subject: mail.subject,                                    // Subject line
+        html: mail.html,                                          // html body
       }, (error, _) => {
         (error) ? reject({
           status: false,

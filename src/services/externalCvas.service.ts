@@ -156,7 +156,13 @@ class ExternalCvasService {
     };
     const result = await fetch('https://www.grupocva.com/pedidos_web/pedidos_ws_cva.php', options);
     const content = await result.text();
-    const data = await this.parseXmlToJson(content, wsdl);
+    let data = await this.parseXmlToJson(content, wsdl);
+    const dataArray = []; // Aquí almacenaremos los elementos en un array
+    if (data.length > 0) {
+    } else {
+      dataArray.push(data);
+      data = dataArray;
+    }
     const pedidos = data;
     if (result.ok) {
       return {

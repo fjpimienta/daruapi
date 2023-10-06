@@ -104,6 +104,8 @@ interface SupplierProd {
   price: Float
   moneda: String
   branchOffices: [BranchOffices]
+  category: Categorys
+  subCategory: Categorys
 }
 
 interface BranchOffices {

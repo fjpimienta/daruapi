@@ -107,6 +107,8 @@ input SupplierProdInput {
   price: Float
   moneda: String
   branchOffices: [BranchOfficesInput]
+  category: CategorysInput
+  subCategory: CategorysInput
 }
 
 input BranchOfficesInput {

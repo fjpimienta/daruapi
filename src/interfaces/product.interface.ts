@@ -93,6 +93,8 @@ export interface ISupplierProd {
   price: number;
   moneda: string;
   branchOffices: IBranchOffices[];
+  category: ICategorys
+  subCategory: ICategorys
 }
 
 export interface IBranchOffices {

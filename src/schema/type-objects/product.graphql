@@ -106,6 +106,8 @@ type SupplierProd {
   price: Float
   moneda: String
   branchOffices: [BranchOffices]
+  category: Categorys
+  subCategory: Categorys
 }
 
 type BranchOffices {

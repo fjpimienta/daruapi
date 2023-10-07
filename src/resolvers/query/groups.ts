@@ -11,6 +11,9 @@ const resolversGroupsQuery: IResolvers = {
     },
     async groupId(_, __, context) {
       return new GroupsService(_, __, context).next();
+    },
+    async subGroup(_, variables, context) {
+      return new GroupsService(_, variables, context).subGroup(variables);
     }
   },
 };

@@ -5,13 +5,13 @@ import ResolversOperationsService from './resolvers-operaciones.service';
 
 class CategoryGroupsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
-  catalogName = 'Marcas';
+  catalogName = 'Productos';
 
   constructor(root: object, variables: object, context: IContextData) {
     super(root, variables, context);
   }
 
-  // Listar informacion de Marcas
+  // Listar informacion de Categorias
   async items() {
     const result: Array<object> = await findElementsCategorysGroup(
       this.getDB(),

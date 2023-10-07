@@ -3,7 +3,7 @@ import { ACTIVE_VALUES_FILTER, COLLECTIONS } from '../config/constants';
 import { ICatalog } from '../interfaces/catalog.interface';
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { findElements, findOneElement } from '../lib/db-operations';
+import { findElements, findOneElement, findSubcategoryProduct } from '../lib/db-operations';
 import { asignDocumentId } from '../lib/db-operations';
 import { pagination } from '../lib/pagination';
 import ResolversOperationsService from './resolvers-operaciones.service';
@@ -56,6 +56,30 @@ class GroupsService extends ResolversOperationsService {
       status: result.status,
       message: result.message,
       group: result.item
+    };
+  }
+
+  // Recupera la subcategoria
+  async subGroup(variables: IVariables) {
+    console.log('variables: ', variables);
+    const filterName = variables.filterName || '';
+    const result: String = await findSubcategoryProduct(
+      this.getDB(),
+      this.collection,
+      filterName
+    );
+    console.log('result: ', result);
+    if (result && result.length === 0) {
+      return {
+        status: false,
+        message: 'La informacion que hemos pedido no se ha obtenido tal y como se esperaba',
+        subGrup: ''
+      };
+    }
+    return {
+      status: true,
+      message: 'La informacion que hemos pedido se ha cargado correctamente',
+      subGroup: result
     };
   }
 

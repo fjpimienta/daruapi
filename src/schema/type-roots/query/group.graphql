@@ -14,4 +14,5 @@ type Query {
    "Item del grupo seleccionado"
    group(id: ID!): ResultGroup
    groupId: ResultGroup
+   subGroup(filterName: String): ResultGroup
 }

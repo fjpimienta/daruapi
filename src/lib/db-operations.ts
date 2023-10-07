@@ -264,3 +264,39 @@ export const findElementsCategorysGroup = async (
     ).toArray());
   });
 };
+
+export const findSubcategoryProduct = async (
+  database: Db,
+  collection: string,
+  categorySlug: string
+): Promise<string> => {
+  return new Promise(async (resolve) => {
+    const pipeline = [
+      { $unwind: '$subgrupos' },
+      { $unwind: '$subgrupos.supplier' },
+      { $unwind: '$subgrupos.supplier.categories' },
+      {
+        $match: {
+          'subgrupos.supplier.categories.slug': categorySlug
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          subgrupoSlug: '$subgrupos.slug'
+        }
+      }
+    ];
+    const result = await database.collection(collection).aggregate(pipeline).toArray();
+    console.log('findSubcategoryProduct.result: ', result);
+    if (result.length > 0) {
+      // Devuelve el primer resultado (debería ser el único)
+      console.log('findSubcategoryProduct.result[0]: ', result[0]);
+      console.log('findSubcategoryProduct.result[0].subgrupoSlug: ', result[0].subgrupoSlug);
+      resolve(result[0].subgrupoSlug);
+    } else {
+      // Si no se encuentra ninguna coincidencia, devuelve null
+      resolve('NA');
+    }
+  });
+};

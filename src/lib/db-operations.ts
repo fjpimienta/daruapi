@@ -305,7 +305,9 @@ export const findSubcategoryProduct = async (
       console.log('findSubcategoryProduct.result: ', result[0]);
       resolve(result[0]);
     } else {
-      resolve(null);
+      const categorySubCategory = { categoria: { slug: '', description: '' }, subCategoria: { slug: '', description: '' } };
+      console.log('findSubcategoryProduct.result: ', categorySubCategory);
+      resolve(categorySubCategory);
     }
   });
 };

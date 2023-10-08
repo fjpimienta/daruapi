@@ -3,7 +3,7 @@ import { ACTIVE_VALUES_FILTER, COLLECTIONS } from '../config/constants';
 import { ICatalog } from '../interfaces/catalog.interface';
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { findElements, findOneElement, findSubcategoryProduct } from '../lib/db-operations';
+import { findElements, findOneElement } from '../lib/db-operations';
 import { asignDocumentId } from '../lib/db-operations';
 import { pagination } from '../lib/pagination';
 import ResolversOperationsService from './resolvers-operaciones.service';

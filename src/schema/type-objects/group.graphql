@@ -6,22 +6,10 @@ type Group implements Item {
   order: Int!
   active: Boolean
   suppliersCat: [SupplierCat]
-  subGroup: [SubGroup]
 }
 
 type SupplierCat {
   idProveedor: ID
-  categories: [categories]
-}
-
-type categories {
+  name: String
   slug: String
-}
-
-type SubGroup {
-  description: String!
-  slug: String!
-  order: Int!
-  active: Boolean
-  suppliers: [SupplierCat]
 }

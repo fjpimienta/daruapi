@@ -8,5 +8,4 @@ type ResultGroup implements Result{
   group: Group
   groups: [Group!]!
   groupId: String
-  subGroup: String
 }

@@ -15,6 +15,7 @@ export enum COLLECTIONS {
   SUBCATEGORIES = 'subcategories',
   TAGS = 'tags',
   GROUPS = 'groups',
+  CATEGORYS = 'categorys',
   CLIENTS = 'clients',
   SUPPLIERS = 'suppliers',
   BRANCH_OFFICES = 'branch_offices',

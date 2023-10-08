@@ -6,10 +6,28 @@ type Subcategorie implements Item {
   order: Int!
   active: Boolean
   suppliersCat: [SupplierCat]
+  subCategory: [SubCategory]
 }
 
 type SupplierCat {
   idProveedor: ID
-  name: String
+  categories: [Categories]
+}
+
+type Categories {
   slug: String
+  description: String
+}
+
+type SubCategory {
+  description: String!
+  slug: String!
+  order: Int!
+  active: Boolean
+  suppliers: [SupplierCat]
+}
+
+type CategorySubCategory {
+  categoria: Categories,
+  subCategoria: Categories
 }

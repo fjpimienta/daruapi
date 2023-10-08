@@ -59,30 +59,6 @@ class GroupsService extends ResolversOperationsService {
     };
   }
 
-  // Recupera la subcategoria
-  async subGroup(variables: IVariables) {
-    console.log('variables: ', variables);
-    const filterName = variables.filterName || '';
-    const result: String = await findSubcategoryProduct(
-      this.getDB(),
-      this.collection,
-      filterName
-    );
-    console.log('result: ', result);
-    if (result && result.length === 0) {
-      return {
-        status: false,
-        message: 'La informacion que hemos pedido no se ha obtenido tal y como se esperaba',
-        subGrup: ''
-      };
-    }
-    return {
-      status: true,
-      message: 'La informacion que hemos pedido se ha cargado correctamente',
-      subGroup: result
-    };
-  }
-
   // Obtener el siguiente elemento
   async next() {
     const result = await this.nextId(this.collection);

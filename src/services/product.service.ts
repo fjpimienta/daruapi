@@ -10,7 +10,7 @@ import { ICategorys, IProduct } from '../interfaces/product.interface';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
-  collectionG = COLLECTIONS.GROUPS;
+  collectionCat = COLLECTIONS.CATEGORYS;
   catalogName = 'Productos';
 
   constructor(root: object, variables: object, context: IContextData) {
@@ -212,39 +212,21 @@ class ProductsService extends ResolversOperationsService {
         product.price = 0;
         product.sale_price = 0;
       }
-      const subCategory: string = await findSubcategoryProduct(
+      const resultCat: any = await findSubcategoryProduct(
         this.getDB(),
-        this.collectionG,
+        this.collectionCat,
         product.subCategory[0].slug
       );
-      product.subCategory[0].name = subCategory.toLocaleUpperCase();
-      product.subCategory[0].slug = subCategory;
+      product.category[0].slug = resultCat.categoria[0].slug;
+      product.category[0].name = resultCat.categoria[0].description;
+      product.subCategory[0].slug = resultCat.subCategoria[0].slug;
+      product.subCategory[0].name = resultCat.subCategoria[0].description;
       product.slug = slugify(product?.name || '', { lower: true });
       product.active = true;
       i += 1;
       product.registerDate = new Date().toISOString();
       productsAdd.push(product);
     }
-
-
-
-    // products?.forEach(product => {
-    //   product.id = i.toString();
-    //   if (product.price === null) {
-    //     product.price = 0;
-    //     product.sale_price = 0;
-    //   }
-    //   product.slug = slugify(product?.name || '', { lower: true });
-    //   // const result: String = await findSubcategoryProduct(
-    //   //   this.getDB(),
-    //   //   this.collectionG,
-    //   //   product.subCategory[0].slug
-    //   // );
-    //   product.active = true;
-    //   i += 1;
-    //   product.registerDate = new Date().toISOString();
-    //   productsAdd?.push(product);
-    // });
     // Guardar los elementos nuevos
     if (productsAdd.length > 0) {
       const result = await this.addList(this.collection, productsAdd || [], 'products');

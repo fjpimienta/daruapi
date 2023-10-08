@@ -8,4 +8,5 @@ type ResultSubcategorie implements Result{
   subcategorie: Subcategorie
   subcategories: [Subcategorie!]!
   subcategorieId: String
+  categorySubCategory: CategorySubCategory
 }

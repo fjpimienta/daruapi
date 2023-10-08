@@ -268,35 +268,44 @@ export const findElementsCategorysGroup = async (
 export const findSubcategoryProduct = async (
   database: Db,
   collection: string,
-  categorySlug: string
-): Promise<string> => {
+  subCategorySlug: string
+): Promise<object | null> => {
   return new Promise(async (resolve) => {
     const pipeline = [
-      { $unwind: '$subgrupos' },
-      { $unwind: '$subgrupos.supplier' },
-      { $unwind: '$subgrupos.supplier.categories' },
+      { $unwind: '$subCategorys' },
+      { $unwind: '$subCategorys.supplier' },
+      { $unwind: '$subCategorys.supplier.subCategorys' },
       {
         $match: {
-          'subgrupos.supplier.categories.slug': categorySlug
+          'subCategorys.supplier.subCategorys.slug': subCategorySlug
         }
       },
       {
+        $lookup: {
+          from: 'categorys',
+          localField: 'suppliersCat.categories.slug',
+          foreignField: 'slug',
+          as: 'categoria'
+        }
+      }, {
         $project: {
           _id: 0,
-          subgrupoSlug: '$subgrupos.slug'
+          categoria: {
+            $arrayElemAt: ['$categoria', 0] // Utiliza $arrayElemAt para obtener el primer valor
+          },
+          subCategoria: {
+            slug: '$subCategorys.slug',
+            description: '$subCategorys.description'
+          }
         }
       }
     ];
     const result = await database.collection(collection).aggregate(pipeline).toArray();
-    console.log('findSubcategoryProduct.result: ', result);
     if (result.length > 0) {
-      // Devuelve el primer resultado (debería ser el único)
-      console.log('findSubcategoryProduct.result[0]: ', result[0]);
-      console.log('findSubcategoryProduct.result[0].subgrupoSlug: ', result[0].subgrupoSlug);
-      resolve(result[0].subgrupoSlug);
+      console.log('findSubcategoryProduct.result: ', result[0]);
+      resolve(result[0]);
     } else {
-      // Si no se encuentra ninguna coincidencia, devuelve null
-      resolve('NA');
+      resolve(null);
     }
   });
 };

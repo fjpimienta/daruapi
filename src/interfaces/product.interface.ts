@@ -18,6 +18,7 @@ export interface IProduct {
   sku: string;
   upc: string;
   category: ICategorys[];
+  subCategory: ICategorys[];
   brand: string;
   brands: IBrands[];
   model: string;

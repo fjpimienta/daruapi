@@ -70,7 +70,7 @@ class SubcategoriesService extends ResolversOperationsService {
       return {
         status: false,
         message: 'La informacion que hemos pedido no se ha obtenido tal y como se esperaba',
-        categorySubCategory: ''
+        categorySubCategory: null
       };
     }
     return {

@@ -24,6 +24,7 @@ class ProductsService extends ResolversOperationsService {
     const offer = variables.offer;
     const brands = variables.brands;
     const categories = variables.categories;
+    const subCategories = variables.subCategories;
     let filter: object;
     const regExp = new RegExp('.*' + filterName + '.*', 'i');
     if (filterName === '' || filterName === undefined) {
@@ -39,7 +40,8 @@ class ProductsService extends ResolversOperationsService {
           { 'name': regExp },
           { 'brand': regExp },
           { 'partnumber': regExp },
-          { 'category.name': regExp }
+          { 'category.name': regExp },
+          { 'subCategory.name': regExp }
         ]
       };
       if (active === ACTIVE_VALUES_FILTER.ALL) {
@@ -48,7 +50,8 @@ class ProductsService extends ResolversOperationsService {
             { 'name': regExp },
             { 'brand': regExp },
             { 'partnumber': regExp },
-            { 'category.name': regExp }
+            { 'category.name': regExp },
+            { 'subCategory.name': regExp }
           ]
         };
       } else if (active === ACTIVE_VALUES_FILTER.INACTIVE) {
@@ -58,7 +61,8 @@ class ProductsService extends ResolversOperationsService {
             { 'name': regExp },
             { 'brand': regExp },
             { 'partnumber': regExp },
-            { 'category.name': regExp }
+            { 'category.name': regExp },
+            { 'subCategory.name': regExp }
           ]
         };
       }
@@ -74,8 +78,17 @@ class ProductsService extends ResolversOperationsService {
       filter = {
         ...filter, ...{
           $or: [
-            { 'name': regExpCat },
             { 'category.slug': regExpCat }
+          ]
+        }
+      };
+    }
+    if (subCategories) {
+      const regExpCat = new RegExp('.*' + subCategories + '.*', 'i');
+      filter = {
+        ...filter, ...{
+          $or: [
+            { 'subCategory.slug': regExpCat }
           ]
         }
       };

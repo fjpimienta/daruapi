@@ -31,6 +31,7 @@ export interface IVariables {
   model?: ICatalog;
   categorie?: ICatalog;
   categories?: ICatalog[];
+  subCategories?: ICatalog[];
   subcategorie?: ICatalog;
   tag?: ICatalog;
   group?: ICatalog;

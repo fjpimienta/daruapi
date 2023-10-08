@@ -39,9 +39,7 @@ class ProductsService extends ResolversOperationsService {
         active: { $ne: false }, $or: [
           { 'name': regExp },
           { 'brand': regExp },
-          { 'partnumber': regExp },
-          { 'category.name': regExp },
-          { 'subCategory.name': regExp }
+          { 'partnumber': regExp }
         ]
       };
       if (active === ACTIVE_VALUES_FILTER.ALL) {
@@ -49,9 +47,7 @@ class ProductsService extends ResolversOperationsService {
           $or: [
             { 'name': regExp },
             { 'brand': regExp },
-            { 'partnumber': regExp },
-            { 'category.name': regExp },
-            { 'subCategory.name': regExp }
+            { 'partnumber': regExp }
           ]
         };
       } else if (active === ACTIVE_VALUES_FILTER.INACTIVE) {
@@ -60,15 +56,13 @@ class ProductsService extends ResolversOperationsService {
           $or: [
             { 'name': regExp },
             { 'brand': regExp },
-            { 'partnumber': regExp },
-            { 'category.name': regExp },
-            { 'subCategory.name': regExp }
+            { 'partnumber': regExp }
           ]
         };
       }
     }
     if (offer) {
-      filter = { ...filter, ...{ 'promociones.disponible_en_promocion': { $gt: 10 } } };
+      filter = { ...filter, ...{ 'promociones.disponible_en_promocion': { $gt: 3 } } };
     }
     if (brands) {
       filter = { ...filter, ...{ 'brands.slug': { $in: brands } } };

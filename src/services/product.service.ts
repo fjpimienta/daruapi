@@ -217,10 +217,10 @@ class ProductsService extends ResolversOperationsService {
         this.collectionCat,
         product.subCategory[0].slug
       );
-      product.category[0].slug = resultCat.categoria[0].slug;
-      product.category[0].name = resultCat.categoria[0].description;
-      product.subCategory[0].slug = resultCat.subCategoria[0].slug;
-      product.subCategory[0].name = resultCat.subCategoria[0].description;
+      product.category[0].slug = resultCat.categoria.slug;
+      product.category[0].name = resultCat.categoria.description;
+      product.subCategory[0].slug = resultCat.subCategoria.slug;
+      product.subCategory[0].name = resultCat.subCategoria.description;
       product.slug = slugify(product?.name || '', { lower: true });
       product.active = true;
       i += 1;

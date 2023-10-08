@@ -2,14 +2,15 @@ import slugify from 'slugify';
 import { ACTIVE_VALUES_FILTER, COLLECTIONS } from '../config/constants';
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { findAllElements, findElements, findOneElement } from '../lib/db-operations';
+import { findAllElements, findElements, findOneElement, findSubcategoryProduct } from '../lib/db-operations';
 import { asignDocumentId } from '../lib/db-operations';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import { pagination } from '../lib/pagination';
-import { IProduct } from '../interfaces/product.interface';
+import { ICategorys, IProduct } from '../interfaces/product.interface';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
+  collectionG = COLLECTIONS.GROUPS;
   catalogName = 'Productos';
 
   constructor(root: object, variables: object, context: IContextData) {
@@ -198,24 +199,52 @@ class ProductsService extends ResolversOperationsService {
       const result = await this.delList(this.collection, filter, 'producto');
     }
     // Complementa los datos del producto.
-    products?.forEach(product => {
+    if (!products) {
+      return {
+        status: false,
+        message: 'No existen elementos para integrar',
+        products: null
+      };
+    }
+    for (const product of products) {
       product.id = i.toString();
       if (product.price === null) {
         product.price = 0;
         product.sale_price = 0;
       }
+      const subCategory: string = await findSubcategoryProduct(
+        this.getDB(),
+        this.collectionG,
+        product.subCategory[0].slug
+      );
+      product.subCategory[0].name = subCategory.toLocaleUpperCase();
+      product.subCategory[0].slug = subCategory;
       product.slug = slugify(product?.name || '', { lower: true });
-      // s.category = new Categorys();
-      // s.subCategory = new Categorys();
-      // s.category.slug = slugify(item.solucion, { lower: true });;
-      // s.category.name = item.solucion;
-      // s.subCategory.slug = slugify(item.grupo, { lower: true });;
-      // s.subCategory.name = item.grupo;
       product.active = true;
       i += 1;
       product.registerDate = new Date().toISOString();
-      productsAdd?.push(product);
-    });
+      productsAdd.push(product);
+    }
+
+
+
+    // products?.forEach(product => {
+    //   product.id = i.toString();
+    //   if (product.price === null) {
+    //     product.price = 0;
+    //     product.sale_price = 0;
+    //   }
+    //   product.slug = slugify(product?.name || '', { lower: true });
+    //   // const result: String = await findSubcategoryProduct(
+    //   //   this.getDB(),
+    //   //   this.collectionG,
+    //   //   product.subCategory[0].slug
+    //   // );
+    //   product.active = true;
+    //   i += 1;
+    //   product.registerDate = new Date().toISOString();
+    //   productsAdd?.push(product);
+    // });
     // Guardar los elementos nuevos
     if (productsAdd.length > 0) {
       const result = await this.addList(this.collection, productsAdd || [], 'products');

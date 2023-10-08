@@ -18,6 +18,7 @@ input CartItemInput {
   sku: String
   upc: String
   category: [CategorysInput]
+  subCategory: [CategorysInput]
   brand: String
   brands: [BrandsInput]
   model: String

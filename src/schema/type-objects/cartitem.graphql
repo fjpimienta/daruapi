@@ -18,6 +18,7 @@ type Cartitem {
   sku: String
   upc: String
   category: [Categorys]
+  subCategory: [Categorys]
   brand: String
   brands: [Brands]
   model: String

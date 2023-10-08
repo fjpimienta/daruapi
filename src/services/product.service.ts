@@ -152,6 +152,7 @@ class ProductsService extends ResolversOperationsService {
       sku: product?.sku,
       upc: product?.upc,
       category: product?.category,
+      subCategory: product?.subCategory,
       brand: product?.brand,
       brands: product?.brands,
       model: product?.model,
@@ -204,6 +205,12 @@ class ProductsService extends ResolversOperationsService {
         product.sale_price = 0;
       }
       product.slug = slugify(product?.name || '', { lower: true });
+      // s.category = new Categorys();
+      // s.subCategory = new Categorys();
+      // s.category.slug = slugify(item.solucion, { lower: true });;
+      // s.category.name = item.solucion;
+      // s.subCategory.slug = slugify(item.grupo, { lower: true });;
+      // s.subCategory.name = item.grupo;
       product.active = true;
       i += 1;
       product.registerDate = new Date().toISOString();
@@ -334,6 +341,7 @@ class ProductsService extends ResolversOperationsService {
       sku: product?.sku,
       upc: product?.upc,
       category: product?.category,
+      subCategory: product?.subCategory,
       brand: product?.brand,
       brands: product?.brands,
       model: product?.model,

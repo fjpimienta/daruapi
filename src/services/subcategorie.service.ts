@@ -2,11 +2,12 @@ import slugify from 'slugify';
 import { ACTIVE_VALUES_FILTER, COLLECTIONS } from '../config/constants';
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { findOneElement } from '../lib/db-operations';
+import { findOneElement, findSubcategoryProduct } from '../lib/db-operations';
 import { asignDocumentId } from '../lib/db-operations';
 import ResolversOperationsService from './resolvers-operaciones.service';
 
 class SubcategoriesService extends ResolversOperationsService {
+  collectionCat = COLLECTIONS.CATEGORYS;
   collection = COLLECTIONS.SUBCATEGORIES;
   catalogName = 'Subcategorias';
   constructor(root: object, variables: object, context: IContextData) {
@@ -53,6 +54,29 @@ class SubcategoriesService extends ResolversOperationsService {
       status: result.status,
       message: result.message,
       subcategorie: result.item
+    };
+  }
+
+  // Recupera la subcategoria
+  async categorySubCategory(variables: IVariables) {
+    console.log('variables: ', variables);
+    const filterName = variables.filterName || '';
+    const result: any = await findSubcategoryProduct(
+      this.getDB(),
+      this.collectionCat,
+      filterName
+    );
+    if (result && result.length === 0) {
+      return {
+        status: false,
+        message: 'La informacion que hemos pedido no se ha obtenido tal y como se esperaba',
+        categorySubCategory: ''
+      };
+    }
+    return {
+      status: true,
+      message: 'La informacion que hemos pedido se ha cargado correctamente',
+      categorySubCategory: result
     };
   }
 

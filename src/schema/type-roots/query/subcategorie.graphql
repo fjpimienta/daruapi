@@ -14,4 +14,5 @@ type Query {
    "Item de la subcategoria seleccionada"
    subcategorie(id: ID!): ResultSubcategorie
    subcategorieId: ResultSubcategorie
+   categorySubCategory(filterName: String): ResultSubcategorie
 }

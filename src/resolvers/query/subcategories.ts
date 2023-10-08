@@ -11,6 +11,10 @@ const resolversSubcategoriesQuery: IResolvers = {
     },
     async subcategorieId(_, __, context) {
       return new SubcategoriesService(_, __, context).next();
+    },
+    async categorySubCategory(_, variables, context) {
+      console.log('categorySubCategory.variables: ', variables)
+      return new SubcategoriesService(_, variables, context).categorySubCategory(variables);
     }
   },
 };

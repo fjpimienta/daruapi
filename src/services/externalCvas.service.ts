@@ -373,13 +373,11 @@ class ExternalCvasService {
 
   async getListPricesCva(variables: IVariables) {
     const cliente = '73766';
-    const { brandName, groupName } = variables;
+    const { groupName } = variables;
     try {
       let url = '';
       if (groupName) {
         url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&grupo=${groupName}&promos=1&porcentajes=1&sucursales=1&TotalSuc=1&MonedaPesos=1&tc=1`;
-      } else if (brandName) {
-        url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&marca=${brandName}&promos=1&porcentajes=1&sucursales=1&TotalSuc=1&MonedaPesos=1&tc=1`;
       }
       const response = await fetch(url);
       const xml = await response.text();
@@ -489,9 +487,9 @@ class ExternalCvasService {
 
     for (const group of filteredGroups) {
       const groupName = { groupName: group.grupo };
-      const prodByBrand = await this.getListPricesCva(groupName);
-      if (prodByBrand && prodByBrand.listPricesCva && Array.isArray(prodByBrand.listPricesCva)) {
-        products.push(...prodByBrand.listPricesCva);
+      const prodByGroup = await this.getListPricesCva(groupName);
+      if (prodByGroup && prodByGroup.listPricesCva && Array.isArray(prodByGroup.listPricesCva)) {
+        products.push(...prodByGroup.listPricesCva);
       }
     }
 

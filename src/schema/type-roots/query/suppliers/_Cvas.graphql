@@ -19,7 +19,7 @@ type Query {
   listSucursalesCva: ResultCvas
   listPaqueteriasCva: ResultCvas
   listPricesCva(
-    brandName: String
+    groupName: String
   ): ResultCvas
   listProductsCva: ResultCvas
   listProductsCvaByGroup: ResultCvas

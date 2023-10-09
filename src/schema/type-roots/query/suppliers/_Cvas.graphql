@@ -22,4 +22,5 @@ type Query {
     brandName: String
   ): ResultCvas
   listProductsCva: ResultCvas
+  listProductsCvaByGroup: ResultCvas
 }

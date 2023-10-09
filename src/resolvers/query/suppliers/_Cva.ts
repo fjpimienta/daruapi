@@ -38,6 +38,9 @@ const resolversCvasQuery: IResolvers = {
     },
     async listProductsCva(_, __, context) {
       return new ExternalCvasService(_, __, context).getListProductsCva();
+    },
+    async listProductsCvaByGroup(_, __, context) {
+      return new ExternalCvasService(_, __, context).getListProductsCvaByGroup();
     }
   },
 };

@@ -100,6 +100,7 @@ export interface IVariables {
   gruposCva?: IGroupCva;
   // CVA Precios
   brandName?: string;
+  groupName?: string;
   // Openpay
   idCardOpenpay?: string;
   cardOpenpay?: ICardOpenpay;

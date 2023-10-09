@@ -272,13 +272,12 @@ class ExternalCvasService {
       const url = 'http://www.grupocva.com/catalogo_clientes_xml/grupos.xml';
       const response = await fetch(url);
       const xml = await response.text();
-      const groupList: IGroupCva[] = await this.parseXmlToJson(xml, 'grupos.xml');
 
       return response.ok
         ? {
           status: true,
           message: 'La información que hemos pedido se ha cargado correctamente',
-          listGroupsCva: groupList
+          listGroupsCva: await this.parseXmlToJson(xml, 'grupos.xml')
         }
         : {
           status: false,
@@ -374,9 +373,14 @@ class ExternalCvasService {
 
   async getListPricesCva(variables: IVariables) {
     const cliente = '73766';
-    const { brandName } = variables;
+    const { brandName, groupName } = variables;
     try {
-      const url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&marca=${brandName}&promos=1&porcentajes=1&sucursales=1&TotalSuc=1&MonedaPesos=1&tc=1`;
+      let url = '';
+      if (groupName) {
+        url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&grupo=${groupName}&promos=1&porcentajes=1&sucursales=1&TotalSuc=1&MonedaPesos=1&tc=1`;
+      } else if (brandName) {
+        url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&marca=${brandName}&promos=1&porcentajes=1&sucursales=1&TotalSuc=1&MonedaPesos=1&tc=1`;
+      }
       const response = await fetch(url);
       const xml = await response.text();
       let data = await this.parseXmlToJson(xml, 'lista_precios.xml')
@@ -432,6 +436,75 @@ class ExternalCvasService {
         status: false,
         message: 'Error en el servicio.',
         listProductsCva: null
+      };
+  }
+
+  async getListProductsCvaByGroup(): Promise<{
+    status: boolean;
+    message: string;
+    listProductsCvaByGroup: IResponseProductCva[] | null;
+  }> {
+    const products: IResponseProductCva[] = [];
+    const groups = (await this.getListGroupsCva()).listGroupsCva;
+
+    function excludeGroups(groupsToExclude: string[], allGroups: { grupo: string }[]): { grupo: string }[] {
+      const filteredGroups = allGroups.filter(groupObj => !groupsToExclude.includes(groupObj.grupo));
+      return filteredGroups;
+    }
+    // Grupos para excluir
+    const groupsToExclude = [
+      "AIRE ACONDICIONADO",
+      "ALARMAS",
+      "ANTENAS",
+      "ASPIRADORAS",
+      "BASCULA",
+      "CAFETERA",
+      "CALCULADORA",
+      "CONTADOR DE BILLETES",
+      "EMPAQUES",
+      "FREIDORA DE AIRE",
+      "FUNDAS",
+      "HIDROLAVADORAS",
+      "JUGUETES",
+      "KIOSKO",
+      "LICUADORA",
+      "LINEA BLANCA",
+      "MAQUINA PARA CORTAR CABELLO",
+      "MAQUINAS DE COSER",
+      "MAQUINAS DE ESCRIBIR",
+      "MICA",
+      "PIZARRON",
+      "PRODUCTOS DE LIMPIEZA",
+      "RADIO RELOJ",
+      "RASURADORA",
+      "RELOJES",
+      "VENTILADORES",
+      "TRITURADORA DE DOCUMENTOS",
+      "VENTILADORES",
+      "TERMOMETRO",
+      "PIZARRON",
+    ];
+    // Obtener la lista de grupos excluyendo los especificados
+    const filteredGroups = excludeGroups(groupsToExclude, groups);
+
+    for (const group of filteredGroups) {
+      const groupName = { groupName: group.grupo };
+      const prodByBrand = await this.getListPricesCva(groupName);
+      if (prodByBrand && prodByBrand.listPricesCva && Array.isArray(prodByBrand.listPricesCva)) {
+        products.push(...prodByBrand.listPricesCva);
+      }
+    }
+
+    return products.length > 0
+      ? {
+        status: true,
+        message: 'La información que hemos pedido se ha cargado correctamente',
+        listProductsCvaByGroup: products
+      }
+      : {
+        status: false,
+        message: 'Error en el servicio.',
+        listProductsCvaByGroup: null
       };
   }
 

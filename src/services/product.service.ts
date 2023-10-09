@@ -224,11 +224,11 @@ class ProductsService extends ResolversOperationsService {
         this.collectionCat,
         product.subCategory[0].slug
       );
-      if(resultCat.categoria.slug) {
+      if(resultCat.categoria && resultCat.categoria.slug) {
         product.category[0].slug = resultCat.categoria.slug;
         product.category[0].name = resultCat.categoria.description;  
       }
-      if (resultCat.subCategoria.slug) {
+      if (resultCat.subCategoria && resultCat.subCategoria.slug) {
         product.subCategory[0].slug = resultCat.subCategoria.slug;
         product.subCategory[0].name = resultCat.subCategoria.description;
       }

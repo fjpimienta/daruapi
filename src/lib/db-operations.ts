@@ -283,7 +283,7 @@ export const findSubcategoryProduct = async (
       {
         $lookup: {
           from: 'categorys',
-          localField: 'suppliersCat.categories.slug',
+          localField: 'slug',
           foreignField: 'slug',
           as: 'categoria'
         }
@@ -302,11 +302,9 @@ export const findSubcategoryProduct = async (
     ];
     const result = await database.collection(collection).aggregate(pipeline).toArray();
     if (result.length > 0) {
-      console.log('findSubcategoryProduct.result: ', result[0]);
       resolve(result[0]);
     } else {
       const categorySubCategory = { categoria: { slug: '', description: '' }, subCategoria: { slug: '', description: '' } };
-      console.log('findSubcategoryProduct.result: ', categorySubCategory);
       resolve(categorySubCategory);
     }
   });

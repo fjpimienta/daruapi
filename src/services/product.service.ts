@@ -38,7 +38,7 @@ class ProductsService extends ResolversOperationsService {
       filter = {
         active: { $ne: false }, $or: [
           { 'name': regExp },
-          { 'brand': regExp },
+          { 'sku': regExp },
           { 'partnumber': regExp }
         ]
       };
@@ -46,7 +46,7 @@ class ProductsService extends ResolversOperationsService {
         filter = {
           $or: [
             { 'name': regExp },
-            { 'brand': regExp },
+            { 'sku': regExp },
             { 'partnumber': regExp }
           ]
         };
@@ -55,7 +55,7 @@ class ProductsService extends ResolversOperationsService {
           active: { $eq: false },
           $or: [
             { 'name': regExp },
-            { 'brand': regExp },
+            { 'sku': regExp },
             { 'partnumber': regExp }
           ]
         };
@@ -68,24 +68,10 @@ class ProductsService extends ResolversOperationsService {
       filter = { ...filter, ...{ 'brands.slug': { $in: brands } } };
     }
     if (categories) {
-      const regExpCat = new RegExp('.*' + categories + '.*', 'i');
-      filter = {
-        ...filter, ...{
-          $or: [
-            { 'category.slug': regExpCat }
-          ]
-        }
-      };
+      filter = { ...filter, ...{ 'category.slug': categories } };
     }
     if (subCategories) {
-      const regExpCat = new RegExp('.*' + subCategories + '.*', 'i');
-      filter = {
-        ...filter, ...{
-          $or: [
-            { 'subCategory.slug': regExpCat }
-          ]
-        }
-      };
+      filter = { ...filter, ...{ 'subCategory.slug': subCategories } };
     }
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
@@ -224,9 +210,9 @@ class ProductsService extends ResolversOperationsService {
         this.collectionCat,
         product.subCategory[0].slug
       );
-      if(resultCat.categoria && resultCat.categoria.slug) {
+      if (resultCat.categoria && resultCat.categoria.slug) {
         product.category[0].slug = resultCat.categoria.slug;
-        product.category[0].name = resultCat.categoria.description;  
+        product.category[0].name = resultCat.categoria.description;
       }
       if (resultCat.subCategoria && resultCat.subCategoria.slug) {
         product.subCategory[0].slug = resultCat.subCategoria.slug;

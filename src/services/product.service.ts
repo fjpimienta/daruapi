@@ -68,10 +68,10 @@ class ProductsService extends ResolversOperationsService {
       filter = { ...filter, ...{ 'brands.slug': { $in: brands } } };
     }
     if (categories) {
-      filter = { ...filter, ...{ 'category.slug': categories } };
+      filter = { ...filter, ...{ 'category.slug': { $in: categories } } };
     }
     if (subCategories) {
-      filter = { ...filter, ...{ 'subCategory.slug': subCategories } };
+      filter = { ...filter, ...{ 'subCategory.slug': { $in: subCategories } } };
     }
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;

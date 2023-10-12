@@ -28,6 +28,7 @@ import resolversCtsQuery from './suppliers/_Ct';
 import resolversCvasQuery from './suppliers/_Cva';
 import resolversOpenpayQuery from './suppliers/_Openpay';
 import resolversCuponsQuery from './cupons';
+import resolversIcecatQuery from './suppliers/_icecat';
 
 const queryResolvers = GMR.merge([
   resolversUsersQuery,
@@ -58,7 +59,8 @@ const queryResolvers = GMR.merge([
   resolversCtsQuery,
   resolversCvasQuery,
   resolversOpenpayQuery,
-  resolversCuponsQuery
+  resolversCuponsQuery,
+  resolversIcecatQuery
 ]);
 
 export default queryResolvers;

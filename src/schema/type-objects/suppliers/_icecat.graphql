@@ -1,0 +1,119 @@
+type IcecatProduct {
+  GeneralInfo: GeneralInfo
+  Image: Image
+  Multimedia: [String]
+  Gallery: [Gallery]
+}
+
+type GeneralInfo {
+  IcecatId: Int
+  ReleaseDate: String
+  EndOfLifeDate: String
+  Title: String
+  TitleInfo: TitleInfo
+  Brand: String
+  BrandID: String
+  BrandLogo: String
+  BrandInfo: BrandInfo
+  ProductName: String
+  ProductNameInfo: ProductNameInfo
+  BrandPartCode: String
+  GTIN: [String]
+  Category: Category
+  ProductFamily: EmptyObject
+  ProductSeries: ProductSeries
+  Description: EmptyObject
+  SummaryDescription: SummaryDescription
+  BulletPoints: EmptyObject
+  GeneratedBulletPoints: GeneratedBulletPoints
+}
+
+type TitleInfo {
+  GeneratedIntTitle: String
+  GeneratedLocalTitle: LocalizedString
+  BrandLocalTitle: LocalizedString
+}
+
+type LocalizedString {
+  Value: String
+  Language: String
+}
+
+type BrandInfo {
+  BrandName: String
+  BrandLocalName: String
+  BrandLogo: String
+}
+
+type ProductNameInfo {
+  ProductIntName: String
+  ProductLocalName: LocalizedString
+}
+
+type Category {
+  CategoryID: String
+  Name: LocalizedString
+}
+
+type ProductSeries {
+  SeriesID: String
+}
+
+type SummaryDescription {
+  ShortSummaryDescription: String
+  LongSummaryDescription: String
+}
+
+type GeneratedBulletPoints {
+  Language: String
+  Values: [String]
+}
+
+type Image {
+  HighPic: String
+  HighPicSize: String
+  HighPicHeight: String
+  HighPicWidth: String
+  LowPic: String
+  LowPicSize: String
+  LowPicHeight: String
+  LowPicWidth: String
+  Pic500x500: String
+  Pic500x500Size: String
+  Pic500x500Height: String
+  Pic500x500Width: String
+  ThumbPic: String
+  ThumbPicSize: String
+}
+
+type Gallery {
+  ID: String
+  LowPic: String
+  LowSize: String
+  LowHeight: String
+  LowWidth: String
+  ThumbPic: String
+  ThumbPicSize: String
+  Pic: String
+  Size: String
+  PicHeight: String
+  PicWidth: String
+  Pic500x500: String
+  Pic500x500Size: String
+  Pic500x500Height: String
+  Pic500x500Width: String
+  No: String
+  IsMain: String
+  Updated: String
+  IsPrivate: String
+  Type: String
+  Attributes: OriginalFileName
+}
+
+type EmptyObject {
+  empty: String
+}
+
+type OriginalFileName {
+  OriginalFileName: String
+}

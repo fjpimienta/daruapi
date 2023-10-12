@@ -1,0 +1,6 @@
+type Query {
+  icecatProduct(
+    brandIcecat: String
+    productIcecat: String
+  ): ResultIcecat
+}

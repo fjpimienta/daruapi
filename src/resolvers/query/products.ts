@@ -7,7 +7,7 @@ const resolversProductsQuery: IResolvers = {
       return new ProductsService(_, { pagination: variables }, context).items(variables);
     },
     async product(_, variables, context) {
-      return new ProductsService(_, variables, context).details();
+      return new ProductsService(_, variables, context).details(variables, context);
     },
     async productId(_, __, context) {
       return new ProductsService(_, __, context).next();

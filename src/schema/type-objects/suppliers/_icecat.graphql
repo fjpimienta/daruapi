@@ -1,7 +1,7 @@
 type IcecatProduct {
   GeneralInfo: GeneralInfo
   Image: Image
-  Multimedia: [String]
+  Multimedia: [Multimedia]
   Gallery: [Gallery]
 }
 
@@ -84,6 +84,22 @@ type Image {
   Pic500x500Width: String
   ThumbPic: String
   ThumbPicSize: String
+}
+
+type Multimedia {
+  ID: String
+  URL: String
+  Type: String
+  ContentType: String
+  KeepAsUrl: String
+  Description: String
+  Size: String
+  IsPrivate: String
+  Updated: String
+  Language: String
+  IsVideo: Int
+  ThumbUrl: String
+  PreviewUrl: String
 }
 
 type Gallery {

@@ -25,7 +25,7 @@ class ExternalIcecatsService extends ResolversOperationsService {
       const responseJson = await response.json();
       if (response.statusText === 'OK') {
         return {
-          status: false,
+          status: true,
           message: `El producto ${productIcecat} de la marca ${brandIcecat} se ha encontrado.`,
           icecatProduct: responseJson.data,
         };

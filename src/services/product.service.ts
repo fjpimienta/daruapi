@@ -6,7 +6,8 @@ import { findAllElements, findElements, findOneElement, findSubcategoryProduct }
 import { asignDocumentId } from '../lib/db-operations';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import { pagination } from '../lib/pagination';
-import { ICategorys, IProduct } from '../interfaces/product.interface';
+import { ICategorys, IPicture, IProduct } from '../interfaces/product.interface';
+import ExternalIcecatsService from './externalIcecat.service';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
@@ -85,12 +86,37 @@ class ProductsService extends ResolversOperationsService {
   }
 
   // Obtener detalles del item
-  async details() {
+  async details(variables: object, context: IContextData) {
     const result = await this.get(this.collection);
+    const product = result.item;
+    const icecat = await new ExternalIcecatsService({}, variables, context).getICecatProductInt(
+      product.brand,
+      product.partnumber
+    );
+    if (icecat.status) {
+      if (icecat.icecatProduct.Gallery.length > 0) {
+        product.pictures = [];
+        product.sm_pictures = [];
+        for (const pictureI of icecat.icecatProduct.Gallery) {
+          const pict: IPicture = {
+            width: pictureI.Pic500x500Width,
+            height: pictureI.Pic500x500Height,
+            url: pictureI.Pic500x500
+          };
+          product.pictures.push(pict);
+          const pict_sm: IPicture = {
+            width: pictureI.LowWidth,
+            height: pictureI.LowHeight,
+            url: pictureI.LowPic
+          };
+          product.sm_pictures.push(pict_sm);
+        }  
+      }
+    }
     return {
       status: result.status,
       message: result.message,
-      product: result.item
+      product: product
     };
   }
 

@@ -33,6 +33,7 @@ type Product {
   suppliersProd: SupplierProd
   descuentos: Descuentos
   promociones: Promociones
+  generalInfo: GeneralInfo
 }
 
 type Categorys {
@@ -151,4 +152,82 @@ type File {
   filename: String!
   mimetype: String!
   encoding: String!
+}
+
+type GeneralInfo {
+  IcecatId: Int
+  ReleaseDate: String
+  EndOfLifeDate: String
+  Title: String
+  TitleInfo: TitleInfo
+  Brand: String
+  BrandID: String
+  BrandLogo: String
+  BrandInfo: BrandInfo
+  ProductName: String
+  ProductNameInfo: ProductNameInfo
+  BrandPartCode: String
+  GTIN: [String]
+  Category: Category
+  ProductFamily: EmptyObject
+  ProductSeries: ProductSeries
+  Description: EmptyObject
+  SummaryDescription: SummaryDescription
+  BulletPoints: BulletPoints
+  GeneratedBulletPoints: GeneratedBulletPoints
+}
+
+type TitleInfo {
+  GeneratedIntTitle: String
+  GeneratedLocalTitle: LocalizedString
+  BrandLocalTitle: LocalizedString
+}
+
+type LocalizedString {
+  Value: String
+  Language: String
+}
+
+type BrandInfo {
+  BrandName: String
+  BrandLocalName: String
+  BrandLogo: String
+}
+
+type ProductNameInfo {
+  ProductIntName: String
+  ProductLocalName: LocalizedString
+}
+
+type Category {
+  CategoryID: String
+  Name: LocalizedString
+}
+
+type ProductSeries {
+  SeriesID: String
+}
+
+type SummaryDescription {
+  ShortSummaryDescription: String
+  LongSummaryDescription: String
+}
+
+type BulletPoints {
+  BulletPointsId: String
+  Language: String
+  Values: [String]
+}
+
+type GeneratedBulletPoints {
+  Language: String
+  Values: [String]
+}
+
+type EmptyObject {
+  empty: String
+}
+
+type OriginalFileName {
+  OriginalFileName: String
 }

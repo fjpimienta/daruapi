@@ -24,7 +24,7 @@ type GeneralInfo {
   ProductSeries: ProductSeries
   Description: EmptyObject
   SummaryDescription: SummaryDescription
-  BulletPoints: EmptyObject
+  BulletPoints: BulletPoints
   GeneratedBulletPoints: GeneratedBulletPoints
 }
 
@@ -62,6 +62,12 @@ type ProductSeries {
 type SummaryDescription {
   ShortSummaryDescription: String
   LongSummaryDescription: String
+}
+
+type BulletPoints {
+  BulletPointsId: String
+  Language: String
+  Values: [String]
 }
 
 type GeneratedBulletPoints {

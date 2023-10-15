@@ -31,6 +31,7 @@ interface Product {
   suppliersProd: SupplierProd
   descuentos: Descuentos
   promociones: Promociones
+  generalInfo: GeneralInfo
 }
 
 interface Categorys {
@@ -149,4 +150,82 @@ interface File {
   filename: String!
   mimetype: String!
   encoding: String!
+}
+
+interface GeneralInfo {
+  IcecatId: Int
+  ReleaseDate: String
+  EndOfLifeDate: String
+  Title: String
+  TitleInfo: TitleInfo
+  Brand: String
+  BrandID: String
+  BrandLogo: String
+  BrandInfo: BrandInfo
+  ProductName: String
+  ProductNameInfo: ProductNameInfo
+  BrandPartCode: String
+  GTIN: [String]
+  Category: Category
+  ProductFamily: EmptyObject
+  ProductSeries: ProductSeries
+  Description: EmptyObject
+  SummaryDescription: SummaryDescription
+  BulletPoints: BulletPoints
+  GeneratedBulletPoints: GeneratedBulletPoints
+}
+
+interface TitleInfo {
+  GeneratedIntTitle: String
+  GeneratedLocalTitle: LocalizedString
+  BrandLocalTitle: LocalizedString
+}
+
+interface LocalizedString {
+  Value: String
+  Language: String
+}
+
+interface BrandInfo {
+  BrandName: String
+  BrandLocalName: String
+  BrandLogo: String
+}
+
+interface ProductNameInfo {
+  ProductIntName: String
+  ProductLocalName: LocalizedString
+}
+
+interface Category {
+  CategoryID: String
+  Name: LocalizedString
+}
+
+interface ProductSeries {
+  SeriesID: String
+}
+
+interface SummaryDescription {
+  ShortSummaryDescription: String
+  LongSummaryDescription: String
+}
+
+type BulletPoints {
+  BulletPointsId: String
+  Language: String
+  Values: [String]
+}
+
+interface GeneratedBulletPoints {
+  Language: String
+  Values: [String]
+}
+
+interface EmptyObject {
+  empty: String
+}
+
+interface OriginalFileName {
+  OriginalFileName: String
 }

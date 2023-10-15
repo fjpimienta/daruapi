@@ -86,32 +86,77 @@ class ProductsService extends ResolversOperationsService {
   }
 
   // Obtener detalles del item
-  async details(variables: object, context: IContextData) {
+  async details(variables: IVariables, context: IContextData) {
     const result = await this.get(this.collection);
     const product = result.item;
+    if (!product) {
+      return {
+        status: false,
+        message: `El Producto no existe en la base de datos.`,
+        product: null
+      };
+    }
     const icecat = await new ExternalIcecatsService({}, variables, context).getICecatProductInt(
       product.brand,
       product.partnumber
     );
     if (icecat.status) {
+      if (icecat.icecatProduct.GeneralInfo && icecat.icecatProduct.GeneralInfo.IcecatId !== '') {
+        product.generalInfo = icecat.icecatProduct.GeneralInfo;
+      }
       if (icecat.icecatProduct.Gallery.length > 0) {
         product.pictures = [];
         product.sm_pictures = [];
         for (const pictureI of icecat.icecatProduct.Gallery) {
-          const pict: IPicture = {
-            width: pictureI.Pic500x500Width,
-            height: pictureI.Pic500x500Height,
-            url: pictureI.Pic500x500
-          };
-          product.pictures.push(pict);
-          const pict_sm: IPicture = {
-            width: pictureI.LowWidth,
-            height: pictureI.LowHeight,
-            url: pictureI.LowPic
-          };
-          product.sm_pictures.push(pict_sm);
-        }  
+          if (pictureI.Pic500x500 !== '') {
+            const pict: IPicture = {
+              width: pictureI.Pic500x500Width,
+              height: pictureI.Pic500x500Height,
+              url: pictureI.Pic500x500
+            };
+            product.pictures.push(pict);
+            const pict_sm: IPicture = {
+              width: pictureI.LowWidth,
+              height: pictureI.LowHeight,
+              url: pictureI.LowPic
+            };
+            product.sm_pictures.push(pict_sm);
+          }
+        }
       }
+    } else {
+      const generalInfo: any = {};
+      generalInfo.IcecatId = 0;
+      generalInfo.Title = product.name;
+      const titleInfo = {
+        GeneratedIntTitle: product.short_desc,
+      };
+      generalInfo.TitleInfo = titleInfo;
+      generalInfo.Brand = product.brand ? product.brand.toUpperCase() : '';
+      generalInfo.BrandLogo = `/assets/brands/${product.brand}`;
+      generalInfo.brandPartCode = product.partnumber;
+      const gtin: string[] = [];
+      gtin.push(product.upc);
+      generalInfo.GTIN = gtin;
+      const category = { CategoryID: product.subCategory[0].slug, Name: { Value: product.subCategory[0].name, Language: 'ES' } };
+      generalInfo.Category = category;
+      const summaryDescription = {
+        ShortSummaryDescription: product.name,
+        LongSummaryDescription: product.short_desc
+      }
+      generalInfo.SummaryDescription = summaryDescription;
+      const generatedBulletP: string[] = [];
+      if (product.category[0].name) generatedBulletP.push('Categoria: ' + product.category[0].name);
+      if (product.model) generatedBulletP.push('Modelo: ' + product.model);
+      if (product.sustituto) generatedBulletP.push('Sustituo: ' + product.sustituto);
+      if (product.upc) generatedBulletP.push('Codigo Universal: ' + product.upc);
+      const generatedBulletPoints = {
+        Language: 'ES',
+        Values: generatedBulletP
+      }
+      generalInfo.GeneratedBulletPoints = generatedBulletPoints;
+
+      product.generalInfo = generalInfo;
     }
     return {
       status: result.status,

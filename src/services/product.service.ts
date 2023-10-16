@@ -129,7 +129,15 @@ class ProductsService extends ResolversOperationsService {
       generalInfo.IcecatId = 0;
       generalInfo.Title = product.name;
       const titleInfo = {
-        GeneratedIntTitle: product.short_desc,
+        GeneratedIntTitle: product.name,
+        GeneratedLocalTitle: {
+          Value: product.short_desc,
+          Language: 'ES'
+        },
+        BrandLocalTitle: {
+          Value: '',
+          Language: 'ES'
+        }
       };
       generalInfo.TitleInfo = titleInfo;
       generalInfo.Brand = product.brand ? product.brand.toUpperCase() : '';

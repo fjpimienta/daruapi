@@ -118,4 +118,8 @@ export interface IVariables {
   //icecat
   brandIcecat?: String;
   productIcecat?: String;
+  // ingram
+  ingramPartNumber?: String;
+  vendorPartNumber?: String;
+  upc?: String;
 }

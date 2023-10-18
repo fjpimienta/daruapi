@@ -1,0 +1,6 @@
+type ResultIngram implements Result {
+    status: Boolean!
+    message: String!
+    tokenIngram: TokenIngram
+    ingramProduct: IngramProduct
+}

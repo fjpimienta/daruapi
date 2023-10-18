@@ -49,9 +49,8 @@ class ExternalIngramService extends ResolversOperationsService {
 
   }
 
-  async getIngramProduct(variables: IVariables) {
+  async getIngramProduct() {
     try {
-      const { vendorPartNumber, upc } = variables;
       let ingramPartNumber = undefined;
       const collection = 'ingram_products';
 

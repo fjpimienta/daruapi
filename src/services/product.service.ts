@@ -8,6 +8,7 @@ import ResolversOperationsService from './resolvers-operaciones.service';
 import { pagination } from '../lib/pagination';
 import { ICategorys, IPicture, IProduct } from '../interfaces/product.interface';
 import ExternalIcecatsService from './externalIcecat.service';
+import ExternalIngramService from './externalIngram.service';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
@@ -125,46 +126,100 @@ class ProductsService extends ResolversOperationsService {
         }
       }
     } else {
-      const generalInfo: any = {};
-      generalInfo.IcecatId = 0;
-      generalInfo.Title = product.name;
-      const titleInfo = {
-        GeneratedIntTitle: product.name,
-        GeneratedLocalTitle: {
-          Value: product.short_desc,
-          Language: 'ES'
-        },
-        BrandLocalTitle: {
-          Value: '',
-          Language: 'ES'
+      const ingram = await new ExternalIngramService({}, variables, context).getIngramProduct();
+      if (ingram.ingramProduct) {
+        console.log('ingram.ingramProduct: ', ingram.ingramProduct);
+        const generalInfo: any = {};
+        generalInfo.IcecatId = 0;
+        generalInfo.Title = ingram.ingramProduct.description;
+        const titleInfo = {
+          GeneratedIntTitle: ingram.ingramProduct.description,
+          GeneratedLocalTitle: {
+            Value: ingram.ingramProduct.productDetailDescription,
+            Language: 'ES'
+          },
+          BrandLocalTitle: {
+            Value: '',
+            Language: 'ES'
+          }
+        };
+        generalInfo.TitleInfo = titleInfo;
+        generalInfo.Brand = ingram.ingramProduct.brand ? ingram.ingramProduct.vendorName.toUpperCase() : '';
+        generalInfo.BrandLogo = `/assets/brands/${ingram.ingramProduct.vendorName}`;
+        generalInfo.brandPartCode = ingram.ingramProduct.vendorPartNumber;
+        const gtin: string[] = [];
+        gtin.push(ingram.ingramProduct.upc);
+        generalInfo.GTIN = gtin;
+        const category = {
+          CategoryID: product.subCategory[0].slug,
+          Name: {
+            Value: product.subCategory[0].name,
+            Language: 'ES'
+          }
+        };
+        generalInfo.Category = category;
+        const summaryDescription = {
+          ShortSummaryDescription: ingram.ingramProduct.description,
+          LongSummaryDescription: ingram.ingramProduct.productDetailDescription
         }
-      };
-      generalInfo.TitleInfo = titleInfo;
-      generalInfo.Brand = product.brand ? product.brand.toUpperCase() : '';
-      generalInfo.BrandLogo = `/assets/brands/${product.brand}`;
-      generalInfo.brandPartCode = product.partnumber;
-      const gtin: string[] = [];
-      gtin.push(product.upc);
-      generalInfo.GTIN = gtin;
-      const category = { CategoryID: product.subCategory[0].slug, Name: { Value: product.subCategory[0].name, Language: 'ES' } };
-      generalInfo.Category = category;
-      const summaryDescription = {
-        ShortSummaryDescription: product.name,
-        LongSummaryDescription: product.short_desc
-      }
-      generalInfo.SummaryDescription = summaryDescription;
-      const generatedBulletP: string[] = [];
-      if (product.category[0].name) generatedBulletP.push('Categoria: ' + product.category[0].name);
-      if (product.model) generatedBulletP.push('Modelo: ' + product.model);
-      if (product.sustituto) generatedBulletP.push('Sustituo: ' + product.sustituto);
-      if (product.upc) generatedBulletP.push('Codigo Universal: ' + product.upc);
-      const generatedBulletPoints = {
-        Language: 'ES',
-        Values: generatedBulletP
-      }
-      generalInfo.GeneratedBulletPoints = generatedBulletPoints;
+        generalInfo.SummaryDescription = summaryDescription;
+        const generatedBulletP: string[] = [];
 
-      product.generalInfo = generalInfo;
+        for (const spec of ingram.ingramProduct.technicalSpecifications) {
+          const headerName = spec.headerName;
+          const attributeName = spec.attributeName;
+          const attributeValue = spec.attributeValue;
+          const bulletPoint = `${attributeName}: ${attributeValue}`;
+          generatedBulletP.push(bulletPoint);
+        }
+        const generatedBulletPoints = {
+          Language: 'ES',
+          Values: generatedBulletP
+        }
+        generalInfo.GeneratedBulletPoints = generatedBulletPoints;
+        product.generalInfo = generalInfo;
+      } else {
+        const generalInfo: any = {};
+        generalInfo.IcecatId = 0;
+        generalInfo.Title = product.name;
+        const titleInfo = {
+          GeneratedIntTitle: product.name,
+          GeneratedLocalTitle: {
+            Value: product.short_desc,
+            Language: 'ES'
+          },
+          BrandLocalTitle: {
+            Value: '',
+            Language: 'ES'
+          }
+        };
+        generalInfo.TitleInfo = titleInfo;
+        generalInfo.Brand = product.brand ? product.brand.toUpperCase() : '';
+        generalInfo.BrandLogo = `/assets/brands/${product.brand}`;
+        generalInfo.brandPartCode = product.partnumber;
+        const gtin: string[] = [];
+        gtin.push(product.upc);
+        generalInfo.GTIN = gtin;
+        const category = { CategoryID: product.subCategory[0].slug, Name: { Value: product.subCategory[0].name, Language: 'ES' } };
+        generalInfo.Category = category;
+        const summaryDescription = {
+          ShortSummaryDescription: product.name,
+          LongSummaryDescription: product.short_desc
+        }
+        generalInfo.SummaryDescription = summaryDescription;
+        const generatedBulletP: string[] = [];
+        if (product.category[0].name) generatedBulletP.push('Categoria: ' + product.category[0].name);
+        if (product.model) generatedBulletP.push('Modelo: ' + product.model);
+        if (product.sustituto) generatedBulletP.push('Sustituo: ' + product.sustituto);
+        if (product.upc) generatedBulletP.push('Codigo Universal: ' + product.upc);
+        const generatedBulletPoints = {
+          Language: 'ES',
+          Values: generatedBulletP
+        }
+        generalInfo.GeneratedBulletPoints = generatedBulletPoints;
+
+        product.generalInfo = generalInfo;
+      }
     }
     return {
       status: result.status,

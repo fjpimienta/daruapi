@@ -1,0 +1,8 @@
+type Query {
+  tokenIngram: ResultIngram
+  ingramProduct(
+    ingramPartNumber: String
+    vendorPartNumber: String
+    upc: String
+  ): ResultIngram
+}

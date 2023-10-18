@@ -93,10 +93,20 @@ class ResolversOperationsService {
 
   // Obtener detalles del item
   protected async getByField(collection: string) {
-    const c_pais = this.getVariables().c_pais;
+    const { c_pais, vendorPartNumber, upc } = this.variables;
     const collectionLabel = collection.toLowerCase();
+    let filter: object = {};
+    if (c_pais) {
+      filter = { c_pais: c_pais };
+    }
+    if (vendorPartNumber) {
+      filter = { "Vendor Part Number": { $regex: new RegExp(vendorPartNumber + '\\s*$') } };
+    } else if (upc) {
+      const cleanedUpc = upc.replace(/^0+/, '');
+      filter = { "UPC Code": cleanedUpc };
+    }
     try {
-      return await findOneElement(this.getDB(), collection, { c_pais }).then(result => {
+      return await findOneElement(this.getDB(), collection, filter).then(result => {
         if (result) {
           return {
             status: true,

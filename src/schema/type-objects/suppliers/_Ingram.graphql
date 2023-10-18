@@ -1,0 +1,95 @@
+type TokenIngram {
+  access_token: String
+  token_type: String
+  expires_in: String
+}
+
+type IngramProduct {
+  ingramPartNumber: String
+  vendorPartNumber: String
+  upc: String
+  customerPartNumber: String
+  productAuthorized: String
+  description: String
+  productDetailDescription: String
+  productCategory: String
+  productSubCategory: String
+  vendorName: String
+  vendorNumber: String
+  productStatusCode: String
+  productClass: String
+  indicators: ProductIndicators
+  ciscoFields: CiscoFields
+  technicalSpecifications: [TechnicalSpecification]
+  warrantyInformation: [String]
+  additionalInformation: AdditionalInformation
+}
+
+type ProductIndicators {
+  hasWarranty: Boolean
+  isNewProduct: Boolean
+  hasReturnLimits: Boolean
+  isBackOrderAllowed: Boolean
+  isShippedFromPartner: Boolean
+  isReplacementProduct: Boolean
+  replacementType: String
+  isDirectship: Boolean
+  isDownloadable: Boolean
+  isDigitalType: Boolean
+  skuType: String
+  hasStdSpecialPrice: Boolean
+  hasAcopSpecialPrice: Boolean
+  hasAcopQuantityBreak: Boolean
+  hasStdWebDiscount: Boolean
+  hasAcopWebDiscount: Boolean
+  hasSpecialBid: Boolean
+  isExportableToCountry: Boolean
+  isDiscontinuedProduct: Boolean
+  isRefurbished: Boolean
+  isReturnableProduct: Boolean
+  isIngramShip: Boolean
+  isEnduserRequired: Boolean
+  isHeavyWeight: Boolean
+  hasLtl: Boolean
+  isClearanceProduct: Boolean
+  hasBundle: Boolean
+  isOversizeProduct: Boolean
+  isPreorderProduct: Boolean
+  isLicenseProduct: Boolean
+  isDirectshipOrderable: Boolean
+  isServiceSku: Boolean
+  isConfigurable: Boolean
+}
+
+type CiscoFields {
+  productSubGroup: String
+  serviceProgramName: String
+  itemCatalogCategory: String
+  configurationIndicator: String
+  internalBusinessEntity: String
+  itemType: String
+  globalListPrice: String
+}
+
+type TechnicalSpecification {
+  headerName: String
+  attributeName: String
+  attributeDisplay: String
+  attributeValue: String
+}
+
+type AdditionalInformation {
+  productWeight: [ProductWeight]
+  isBulkFreight: Boolean
+  height: String
+  width: String
+  length: String
+  netWeight: String
+  dimensionUnit: String
+}
+
+type ProductWeight {
+  plantId: String
+  weight: Float
+  weightUnit: String
+}

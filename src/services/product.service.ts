@@ -130,7 +130,7 @@ class ProductsService extends ResolversOperationsService {
         vendorPartNumber: product.partnumber,
         upc: product.upc
       }
-      
+
       const ingram = await new ExternalIngramService({}, variableI, context).getIngramProduct();
       if (ingram.ingramProduct) {
         const generalInfo: any = {};
@@ -169,12 +169,14 @@ class ProductsService extends ResolversOperationsService {
         generalInfo.SummaryDescription = summaryDescription;
         const generatedBulletP: string[] = [];
 
-        for (const spec of ingram.ingramProduct.technicalSpecifications) {
-          const headerName = spec.headerName;
-          const attributeName = spec.attributeName;
-          const attributeValue = spec.attributeValue;
-          const bulletPoint = `${attributeName}: ${attributeValue}`;
-          generatedBulletP.push(bulletPoint);
+        if (ingram.ingramProduct.technicalSpecifications) {
+          for (const spec of ingram.ingramProduct.technicalSpecifications) {
+            const headerName = spec.headerName;
+            const attributeName = spec.attributeName;
+            const attributeValue = spec.attributeValue;
+            const bulletPoint = `${attributeName}: ${attributeValue}`;
+            generatedBulletP.push(bulletPoint);
+          }
         }
         const generatedBulletPoints = {
           Language: 'ES',

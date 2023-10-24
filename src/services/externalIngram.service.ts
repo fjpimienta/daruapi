@@ -102,8 +102,45 @@ class ExternalIngramService extends ResolversOperationsService {
     }
   }
 
-  async getIcecatProductInt() {
-
+  async getIngramProducts() {
+    try {
+      // Get todos los productos.
+      const token = await this.getTokenIngram();
+      const apiUrl = 'https://api.ingrammicro.com:443/sandbox/resellers/v6/catalog';
+      const optionsIngram = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'IM-CustomerNumber': '20-840450',
+          'IM-CountryCode': 'MX',
+          'IM-CorrelationID': 'fbac82ba-cf0a-4bcf-fc03-0c5084',
+          'IM-SenderID': 'DARU DEV',
+          'Authorization': 'Bearer ' + token.tokenIngram.access_token
+        },
+      };
+      const url = `${apiUrl}/?pageNumber=1&pageSize=10000&type=IM::any`;
+      const response = await fetch(url, optionsIngram);
+      const responseJson = await response.json();
+      if (response.statusText === 'OK') {
+        return {
+          status: true,
+          message: `Se ha generado la lista de productos.`,
+          ingramProducts: responseJson.catalog,
+        };
+      } else {
+        return {
+          status: false,
+          message: `No se ha generado la lista de productos.`,
+          ingramProducts: null,
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        ingramProducts: null,
+      };
+    }
   }
 }
 

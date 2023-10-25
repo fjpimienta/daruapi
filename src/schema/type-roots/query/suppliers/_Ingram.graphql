@@ -6,4 +6,5 @@ type Query {
     upc: String
   ): ResultIngram
   ingramProducts: ResultIngram
+  pricesIngram: ResultIngram
 }

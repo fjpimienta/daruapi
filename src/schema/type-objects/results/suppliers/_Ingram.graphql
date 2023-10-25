@@ -4,4 +4,5 @@ type ResultIngram implements Result {
     tokenIngram: TokenIngram
     ingramProduct: IngramProduct
     ingramProducts: [IngramProduct]
+    pricesIngram: [PricesIngram]
 }

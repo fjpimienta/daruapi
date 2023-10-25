@@ -4,6 +4,7 @@ import ResolversOperationsService from './resolvers-operaciones.service';
 
 import logger from '../utils/logger';
 import fetch from 'node-fetch';
+import { IPricesIngram, IProductsQuery } from '../interfaces/suppliers/_Ingram.interface';
 
 class ExternalIngramService extends ResolversOperationsService {
   constructor(root: object, variables: object, context: IContextData) {
@@ -46,7 +47,6 @@ class ExternalIngramService extends ResolversOperationsService {
       message,
       tokenIngram
     };
-
   }
 
   async getIngramProduct() {
@@ -131,17 +131,120 @@ class ExternalIngramService extends ResolversOperationsService {
         return {
           status: false,
           message: `No se ha generado la lista de productos.`,
-          ingramProducts: null,
+          ingramProducts: [],
         };
       }
     } catch (error: any) {
       return {
         status: false,
         message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
-        ingramProducts: null,
+        ingramProducts: [],
       };
     }
   }
+
+  async getPricesIngram() {
+    try {
+      // Get todos los productos.
+      const productosIngram = await this.getIngramProducts();
+      if (productosIngram.status && productosIngram.ingramProducts.length > 0) {
+        // Generar bloques de 100 productos.
+        let i = 0;
+        let partsNumber: IProductsQuery[] = [];
+        const pricesIngram: IPricesIngram[] = [];
+        for (const prod of productosIngram.ingramProducts) {
+          i += 1;
+          partsNumber.push({ ingramPartNumber: prod.ingramPartNumber });
+          if (i % 100 === 0) {
+            const productPrices = await this.getPricesIngram100(partsNumber)
+            for (const prodPrices of productPrices.pricesIngram) {
+              if (prodPrices.availability) {
+                pricesIngram.push(prodPrices);
+              }
+            }
+            partsNumber = [];
+          }
+        }
+        // Verificar si quedan productos pendientes.
+        if (partsNumber.length > 0) {
+          const productPrices = await this.getPricesIngram100(partsNumber);
+          for (const prodPrices of productPrices.pricesIngram) {
+            if (prodPrices.availability) {
+              pricesIngram.push(prodPrices);
+            }
+          }
+        }
+        return {
+          status: true,
+          message: `Se ha generado la lista de precios de productos.`,
+          pricesIngram
+        };
+      } else {
+        return {
+          status: false,
+          message: `No se ha generado la lista de precios de productos.`,
+          pricesIngram: null,
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        ingramProduct: null,
+      };
+    }
+  }
+
+  async getPricesIngram100(productsQuery: IProductsQuery[]) {
+    try {
+      // Consultar precio y disponibilidad por bloques de 100.
+      const token = await this.getTokenIngram();
+      const apiUrl = 'https://api.ingrammicro.com:443/sandbox/resellers/v6/catalog/priceandavailability';
+      const optionsIngram = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'IM-CustomerNumber': '20-840450',
+          'IM-CountryCode': 'MX',
+          'IM-CorrelationID': 'fbac82ba-cf0a-4bcf-fc03-0c5084',
+          'IM-SenderID': 'DARU DEV',
+          'Authorization': 'Bearer ' + token.tokenIngram.access_token,
+        },
+        body: JSON.stringify({
+          'showAvailableDiscounts': true,
+          'showReserveInventoryDetails': true,
+          'availabilityByWarehouse': {
+            'availabilityForAllLocation': true
+          },
+          'products': productsQuery
+        }),
+        redirect: 'manual' as RequestRedirect
+      };
+      const url = `${apiUrl}?includeAvailability=true&includePricing=true&includeProductAttributes=true`;
+      const response = await fetch(url, optionsIngram);
+      const responseJson = await response.json();
+      if (response.statusText === 'OK' || response.status === 207) {
+        return {
+          status: true,
+          message: `Se ha generado la lista de precios de productos.`,
+          pricesIngram: responseJson,
+        };
+      } else {
+        return {
+          status: false,
+          message: `No se ha generado la lista de precios de productos.`,
+          pricesIngram: [],
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        pricesIngram: [],
+      };
+    }
+  }
+
 }
 
 export default ExternalIngramService;

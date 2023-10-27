@@ -158,7 +158,7 @@ class ExternalIngramService extends ResolversOperationsService {
           if (i % 100 === 0) {
             const productPrices = await this.getPricesIngram100(partsNumber)
             for (const prodPrices of productPrices.pricesIngram) {
-              if (prodPrices.availability) {
+              if (prodPrices.availability && ['A', 'B', 'C'].includes(prodPrices.productClass) ) {
                 pricesIngram.push(prodPrices);
               }
             }

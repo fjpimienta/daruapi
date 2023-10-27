@@ -93,3 +93,86 @@ type ProductWeight {
   weight: Float
   weightUnit: String
 }
+
+# PriceIngram
+type PricesIngram {
+  productStatusMessage: String
+  ingramPartNumber: String
+  vendorPartNumber: String
+  extendedVendorPartNumber: String
+  upc: String
+  vendorNumber: String
+  vendorName: String
+  description: String
+  productClass: String
+  uom: String
+  acceptBackOrder: Boolean
+  productAuthorized: Boolean
+  returnableProduct: Boolean
+  endUserInfoRequired: Boolean
+  govtSpecialPriceAvailable: Boolean
+  availability: Availability
+  pricing: Pricing
+  discounts: [Discount]
+  bundlePartIndicator: String
+  serviceFees: [ServiceFee]
+}
+
+type Availability {
+  available: Boolean
+  totalAvailability: Int
+  availabilityByWarehouse: [AvailabilityByWarehouse]
+}
+
+type AvailabilityByWarehouse {
+  warehouseId: Int
+  location: String
+  quantityAvailable: Int
+  quantityBackordered: Int
+  backOrderInfo: [BackOrderInfo]
+}
+
+type BackOrderInfo {
+  quantity: Int
+  etaDate: String
+}
+
+type Pricing {
+  mapPrice: Float
+  currencyCode: String
+  retailPrice: Float
+  customerPrice: Float
+}
+
+type Discount {
+  specialPricing: [SpecialPricing]
+  quantityDiscounts: [QuantityDiscount]
+}
+
+type SpecialPricing {
+  specialPricingAvailableQuantity: Int
+  specialPricingExpirationDate: String
+  specialBidNumber: String
+  specialPricingMinQuantity: Int
+  specialPricingEffectiveDate: String
+  discountType: String
+  specialPricingDiscount: Float
+  governmentDiscountType: String
+  governmentDiscountedCustomerPrice: Float
+}
+
+type QuantityDiscount {
+  currencyType: String
+  amount: Float
+  quantity: Int
+  conditionType: String
+  currencyCode: String
+}
+
+type ServiceFee {
+  conditionType: String
+  description: String
+  amount: Float
+  endDate: String
+  currencyCode: String
+}

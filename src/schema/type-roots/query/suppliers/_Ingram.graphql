@@ -5,4 +5,6 @@ type Query {
     vendorPartNumber: String
     upc: String
   ): ResultIngram
+  ingramProducts: ResultIngram
+  pricesIngram: ResultIngram
 }

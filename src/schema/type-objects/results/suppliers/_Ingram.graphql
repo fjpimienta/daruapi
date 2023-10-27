@@ -3,4 +3,6 @@ type ResultIngram implements Result {
     message: String!
     tokenIngram: TokenIngram
     ingramProduct: IngramProduct
+    ingramProducts: [IngramProduct]
+    pricesIngram: [PricesIngram]
 }

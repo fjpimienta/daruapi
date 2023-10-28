@@ -414,16 +414,14 @@ class ExternalCvasService {
     listProductsCva: IResponseProductCva[] | null;
   }> {
     const products: IResponseProductCva[] = [];
-    const brands = (await this.getListBrandsCva()).listBrandsCva;
-
-    for (const brand of brands) {
-      const brandName = { brandName: brand.descripcion };
-      const prodByBrand = await this.getListPricesCva(brandName);
+    const groups = (await this.getListGroupsCva()).listGroupsCva;
+    for (const group of groups) {
+      const prodByBrand = await this.getListPricesCva({ groupName: group.grupo });
       if (prodByBrand && prodByBrand.listPricesCva && Array.isArray(prodByBrand.listPricesCva)) {
         products.push(...prodByBrand.listPricesCva);
       }
     }
-
+    
     return products.length > 0
       ? {
         status: true,

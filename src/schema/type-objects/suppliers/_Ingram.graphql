@@ -95,7 +95,7 @@ type ProductWeight {
 }
 
 # PriceIngram
-type PricesIngram {
+type ResponsePricesIngram {
   productStatusMessage: String
   ingramPartNumber: String
   vendorPartNumber: String

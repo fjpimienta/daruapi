@@ -143,9 +143,10 @@ class ExternalIngramService extends ResolversOperationsService {
     }
   }
 
-  async getPricesIngram() {
+  async getPricesIngram(variables: IVariables) {
     try {
       // Get todos los productos.
+      const { allRecords } = variables;
       const productosIngram = await this.getIngramProducts();
       if (productosIngram.status && productosIngram.ingramProducts.length > 0) {
         // Generar bloques de 100 productos.
@@ -158,7 +159,9 @@ class ExternalIngramService extends ResolversOperationsService {
           if (i % 100 === 0) {
             const productPrices = await this.getPricesIngram100(partsNumber)
             for (const prodPrices of productPrices.pricesIngram) {
-              if (prodPrices.availability && ['A', 'B', 'C'].includes(prodPrices.productClass) ) {
+              if (allRecords) {
+                pricesIngram.push(prodPrices);
+              } else if (prodPrices.availability && ['A', 'B', 'C'].includes(prodPrices.productClass)) {
                 pricesIngram.push(prodPrices);
               }
             }

@@ -122,4 +122,5 @@ export interface IVariables {
   ingramPartNumber?: String;
   vendorPartNumber?: String;
   upc?: String;
+  allRecords?: Boolean;
 }

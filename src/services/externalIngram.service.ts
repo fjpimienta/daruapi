@@ -156,8 +156,8 @@ class ExternalIngramService extends ResolversOperationsService {
         for (const prod of productosIngram.ingramProducts) {
           i += 1;
           partsNumber.push({ ingramPartNumber: prod.ingramPartNumber });
-          if (i % 100 === 0) {
-            const productPrices = await this.getPricesIngram100(partsNumber)
+          if (i % 500 === 0) {
+            const productPrices = await this.getPricesIngramBloque(partsNumber)
             for (const prodPrices of productPrices.pricesIngram) {
               if (allRecords) {
                 pricesIngram.push(prodPrices);
@@ -170,7 +170,7 @@ class ExternalIngramService extends ResolversOperationsService {
         }
         // Verificar si quedan productos pendientes.
         if (partsNumber.length > 0) {
-          const productPrices = await this.getPricesIngram100(partsNumber);
+          const productPrices = await this.getPricesIngramBloque(partsNumber);
           for (const prodPrices of productPrices.pricesIngram) {
             if (prodPrices.availability) {
               pricesIngram.push(prodPrices);
@@ -198,7 +198,7 @@ class ExternalIngramService extends ResolversOperationsService {
     }
   }
 
-  async getPricesIngram100(productsQuery: IProductsQuery[]) {
+  async getPricesIngramBloque(productsQuery: IProductsQuery[]) {
     try {
       // Consultar precio y disponibilidad por bloques de 100.
       const token = await this.getTokenIngram();

@@ -32,7 +32,19 @@ class PasswordService extends ResolversOperationsService {
       email
     };
     const token = new JWT().sign({ user: newUser }, EXPIRETIME.M15);
-    const html = `Para cambiar el password haz click sobre esto: <a href="${process.env.CLIENT_URL}reset/${token}">Click aqui</a>`;
+    const html = `
+    <header>
+        <h1>Bienvenido a #DARUTEAM</h1>
+    </header>
+    <main>
+        <p>¡Bienvenido a nuestro TEAM! Estamos emocionados de tenerte como parte de nuestra comunidad.</p>
+        <p>Para cambiar el password haz click sobre esto: <a href="${process.env.CLIENT_URL}reset/${token}">Click aqui</a></p>
+        <p>Consulta nuestros terminos y condiciones. <a href="${process.env.CLIENT_URL}terminos">Click aqui</a></p>
+    </main>
+    <footer>
+        <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en <a href="${process.env.CLIENT_URL}contact">Contactanos</a>.</p>
+    </footer>
+    `
     const mail = {
       to: email,
       subject: 'Peticion para cambiar de password',

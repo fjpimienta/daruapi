@@ -139,3 +139,96 @@ type EmptyObject {
 type OriginalFileName {
   OriginalFileName: String
 }
+
+
+type IcecatProductInt {
+  _id: ID
+  Requested_prod_id: String
+  Requested_GTIN_EAN_UPC: String
+  Requested_Icecat_id: Int
+  Supplier: String
+  Prod_id: String
+  Icecat_id: Int
+  GTIN_EAN_UPC: String
+  Category: String
+  CatId: Int
+  Model: String
+  Updated: String
+  Quality: String
+  On_Market: Int
+  Product_Views: Int
+  HighPic: String
+  HighPic_Resolution: String
+  LowPic: String
+  Pic500x500: String
+  ThumbPic: String
+  Folder_PDF: String
+  ProductTitle: String
+  ShortDesc: String
+  ShortSummaryDescription: String
+  LongSummaryDescription: String
+  LongDesc: String
+  ProductGallery: String
+  ProductGallery_Resolution: String
+  ProductGallery_ExpirationDate: String
+  BulletPoints: String
+  Your_product_ID: String
+  # Tiempo_de_recarga_de_la_batería: String
+  # Tiempo_típico_de_respaldo_a_carga_completa: String
+  # Tiempo_típico_de_respaldo_a_media_carga: String
+  # Batería_hot_swap: String
+  # Arranque_en_frío: String
+  # Capacidad_de_potencia_de_salida_VA: String
+  # Potencia_de_salida: String
+  # Índice_de_aumento_de_energía: String
+  # Alarmas_audibles: String
+  # Topología_UPS: String
+  # Forma_de_onda: String
+  # Voltaje_de_entrada_de_operación_min: String
+  # Voltaje_de_entrada_de_operación_máx: String
+  # Frecuencia_de_entrada: String
+  # Voltaje_de_operación_de_salida_min: String
+  # Voltaje_de_operación_de_salida_máx: String
+  # Regulación_del_voltaje_de_salida: String
+  # Regulación_automática_de_voltaje_AVR: String
+  # Máxima_corriente: String
+  # Número_de_fases_de_entrada: Int
+  # Eficiencia: String
+  # Filtro_de_ruido_EMI_RFI: String
+  # Protección_de_sobrecarga: String
+  # Funciones_de_protección_de_sobrecarga: String
+  # Funciones_de_protección_de_poder: String
+  # País_de_origen: String
+  # Intervalo_de_temperatura_operativa_T_T: String
+  # Intervalo_de_temperatura_de_almacenaje: String
+  # Intervalo_de_humedad_relativa_para_funcionamiento: String
+  # Largo_de_la_caja_principal: String
+  # Longitud_de_la_caja_principal: String
+  # Alto_de_la_caja_principal: String
+  # Peso_de_la_caja_principal: String
+  # Cantidad_por_caja_principal: String
+  # Certificados_de_sustentabilidad: String
+  # Color_del_producto: String
+  # Longitud_de_cable: String
+  # Indicadores_LED: String
+  # Certificación: String
+  # Factor_de_forma: String
+  # Material_de_la_cubierta: String
+  # Voltaje_nominal_de_salida: String
+  # Voltaje_nominal_de_entrada: String
+  # Peso: String
+  # Peso_del_paquete: String
+  # Ancho: String
+  # Profundidad: String
+  # Altura: String
+  # Ancho_del_paquete: String
+  # Largo_del_paquete: String
+  # Alto_del_paquete: String
+  # Tipo_de_salida_AC: String
+  # Conector: String
+  # Cantidad_de_salidas_AC: String
+  # Cantidad_de_puertos_USB: Int
+  # Puertos_de_módem_RJ_11: Int
+  # Humedad_relativa_sin_funcionamiento: String
+  # Peso_imperial: String
+}

@@ -1,3 +1,4 @@
+import { COLLECTIONS } from '../config/constants';
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
@@ -8,7 +9,8 @@ class ExternalIcecatsService extends ResolversOperationsService {
     super(root, variables, context);
   }
 
-  async getICecatProductInt(brandIcecat: string, productIcecat: string) {
+  async getICecatProductInt(variables: IVariables) {
+    const { brandIcecat, productIcecat } = variables;
     try {
       const language = 'es';
       const userName = 'daru.admin';
@@ -80,6 +82,17 @@ class ExternalIcecatsService extends ResolversOperationsService {
       };
     }
   }
+
+  async getIcecatProductLocal() {
+    const collection = COLLECTIONS.ICECAT_PRODUCTS;
+    const result = await this.getByField(collection);
+    return {
+      status: result.status,
+      message: result.message,
+      icecatProductLocal: result.item
+    };
+  }
+
 }
 
 export default ExternalIcecatsService;

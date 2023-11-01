@@ -104,7 +104,6 @@ class ProductsService extends ResolversOperationsService {
     const icecatExt = await new ExternalIcecatsService({}, variableLocal, context).getIcecatProductLocal();
 
     if (icecatExt.status) {
-      console.log('details.icecatExt: ', icecatExt.icecatProductLocal);
       if (icecatExt.icecatProductLocal) {
         const generalInfo: any = {};
         generalInfo.IcecatId = 0;
@@ -125,7 +124,11 @@ class ProductsService extends ResolversOperationsService {
         generalInfo.BrandLogo = `/assets/brands/${icecatExt.icecatProductLocal.Supplier}`;
         generalInfo.brandPartCode = icecatExt.icecatProductLocal.Prod_id;
         const gtin: string[] = [];
-        gtin.push(icecatExt.icecatProductLocal.Requested_GTIN);
+        if (icecatExt.icecatProductLocal.Requested_GTIN.includes('|')) {
+          gtin.push(...icecatExt.icecatProductLocal.Requested_GTIN.split('|'));
+        } else {
+          gtin.push(icecatExt.icecatProductLocal.Requested_GTIN);
+        }
         generalInfo.GTIN = gtin;
         const category = {
           CategoryID: slugify(icecatExt.icecatProductLocal.Category || '', { lower: true }),
@@ -157,10 +160,35 @@ class ProductsService extends ResolversOperationsService {
         }
         generalInfo.GeneratedBulletPoints = generatedBulletPoints;
         product.generalInfo = generalInfo;
+        console.log('icecatExt.icecatProductLocal.ProductGallery: ', icecatExt.icecatProductLocal.ProductGallery);
+
+        if (icecatExt.icecatProductLocal.ProductGallery.includes('|') ) {
+          product.pictures = [];
+          product.sm_pictures = [];
+          const imagenes: string[] = icecatExt.icecatProductLocal.ProductGallery.split('|');
+          console.log('imagenes: ', imagenes);
+          for (const pictureI of imagenes) {
+            if (pictureI !== '') {
+              const pict: IPicture = {
+                width: '500',
+                height: '500',
+                url: pictureI
+              };
+              product.pictures.push(pict);
+              const pict_sm: IPicture = {
+                width: '300',
+                height: '300',
+                url: pictureI
+              };
+              product.sm_pictures.push(pict_sm);
+            }
+          }
+        }
       }
+      console.log('product: ', product);
     } else {
       const icecat = await new ExternalIcecatsService({}, variableLocal, context).getICecatProductInt(variableLocal);
-      console.log('details.icecat: ', icecat);
+      // console.log('details.icecat: ', icecat);
       if (icecat.status) {
         if (icecat.icecatProduct.GeneralInfo && icecat.icecatProduct.GeneralInfo.IcecatId !== '') {
           product.generalInfo = icecat.icecatProduct.GeneralInfo;
@@ -287,7 +315,7 @@ class ProductsService extends ResolversOperationsService {
         }
       }
     }
-    console.log('product: ', product);
+    // console.log('product: ', product);
     return {
       status: result.status,
       message: result.message,

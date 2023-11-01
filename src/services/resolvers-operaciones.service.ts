@@ -92,12 +92,15 @@ class ResolversOperationsService {
   }
 
   // Obtener detalles del item
-  protected async getByField(collection: string) {
-    const { c_pais, vendorPartNumber, upc } = this.variables;
-    const collectionLabel = collection.toLowerCase();
-    let filter: object = {};
+  protected async getByField(collection: string, filter: object = {}) {
+    const { c_pais, vendorPartNumber, upc, brandIcecat, productIcecat } = this.variables;
+    const collectionLabel = `El Producto ${productIcecat}`;
     if (c_pais) {
       filter = { c_pais: c_pais };
+    }
+    if (productIcecat && brandIcecat) {
+      const brand = brandIcecat.toLowerCase();
+      filter = { "Prod_id": productIcecat, "Supplier": new RegExp(brand, "i") };
     }
     if (vendorPartNumber) {
       filter = { "Vendor Part Number": { $regex: new RegExp(vendorPartNumber + '\\s*$') } };

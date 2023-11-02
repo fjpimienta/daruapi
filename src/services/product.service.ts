@@ -77,7 +77,7 @@ class ProductsService extends ResolversOperationsService {
     }
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
-    const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter);
+    const result = await this.listProducts(this.collection, this.catalogName, page, itemsPage, filter);
     return {
       info: result.info,
       status: result.status,
@@ -162,7 +162,7 @@ class ProductsService extends ResolversOperationsService {
         product.generalInfo = generalInfo;
         console.log('icecatExt.icecatProductLocal.ProductGallery: ', icecatExt.icecatProductLocal.ProductGallery);
 
-        if (icecatExt.icecatProductLocal.ProductGallery.includes('|') ) {
+        if (icecatExt.icecatProductLocal.ProductGallery.includes('|')) {
           product.pictures = [];
           product.sm_pictures = [];
           const imagenes: string[] = icecatExt.icecatProductLocal.ProductGallery.split('|');

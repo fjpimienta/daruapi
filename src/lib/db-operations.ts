@@ -90,7 +90,33 @@ export const findElements = async (
   }
 };
 
-
+export const findElementsProducts = async (
+  database: Db,
+  collection: string,
+  paginationOptions: IPaginationOptions = {
+    page: 1,
+    pages: 1,
+    itemsPage: -1,
+    skip: 0,
+    total: -1
+  },
+  aggregate: Array<object> = [] // Cambio el tipo de 'object' a 'Array<object>'
+): Promise<Array<object>> => {
+  if (paginationOptions.total === -1) {
+    return new Promise(async (resolve) => {
+      const pipeline = [
+        ...aggregate,
+      ];
+      resolve(await database.collection(collection).aggregate(pipeline).toArray());
+    });
+  }
+  return new Promise(async (resolve) => {
+    const pipeline = [
+      ...aggregate,
+    ];
+    resolve(await database.collection(collection).aggregate(pipeline).toArray());
+  });
+};
 
 export const findAllElements = async (
   database: Db,
@@ -195,6 +221,25 @@ export const countElements = async (
   filter: object = {}
 ) => {
   return await database.collection(collection).countDocuments(filter);
+};
+
+export const countElementsProducts = async (
+  database: Db,
+  collection: string,
+  aggregate: Array<object> = [] // Cambio el tipo de 'object' a 'Array<object>'
+): Promise<number> => {
+  return new Promise(async (resolve) => {
+    const pipeline = [
+      ...aggregate,
+      { $count: "count" }
+    ];
+    const result = await database.collection(collection).aggregate(pipeline).toArray();
+    if (result.length > 0 && result[0].count) {
+      resolve(result[0].count);
+    } else {
+      resolve(0); // Si no se encontraron resultados, devolver 0
+    }
+  });
 };
 
 export const randomItems = async (

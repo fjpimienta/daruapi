@@ -1,10 +1,10 @@
 import { Db } from 'mongodb';
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { pagination } from '../lib/pagination';
+import { pagination, paginationProducts } from '../lib/pagination';
 import {
   deleteOneElement, findElements, findOneElement, insertOneElement,
-  updateOneElement, asignDocumentId, insertManyElements, deleteManyElements
+  updateOneElement, asignDocumentId, insertManyElements, deleteManyElements, findElementsProducts
 } from '../lib/db-operations';
 import { IApisupplier } from '../interfaces/suppliers/supplier.interface';
 import slugify from 'slugify';
@@ -60,6 +60,49 @@ class ResolversOperationsService {
         status: false,
         message: `Lista de ${listElement} no cargada correctamente: ${error}`,
         items: []
+      };
+    }
+  }
+
+  // Listar informacion de Productos
+  protected async listProducts(
+    collection: string,
+    listElement: string,
+    page: number = 1,
+    itemsPage: number = 10,
+    filter: object = { active: { $ne: false } },
+  ) {
+    try {
+      // Agregamos la etapa de agregación para encontrar el registro con el menor "sale_price" por "partnumber"
+      const aggregate = [
+        { $match: filter, },
+        { $sort: { partnumber: 1, sale_price: 1 }, },
+        {
+          $group: {
+            _id: '$partnumber',
+            doc: { $first: '$$ROOT' },
+          },
+        },
+        { $replaceRoot: { newRoot: '$doc' }, },
+      ];
+      const paginationData = await paginationProducts(this.getDB(), collection, page, itemsPage, aggregate);
+      return {
+        info: {
+          page: paginationData.page,
+          pages: paginationData.pages,
+          itemsPage: paginationData.itemsPage,
+          total: paginationData.total,
+        },
+        status: true,
+        message: `Lista de ${listElement} cargada correctamente`,
+        items: findElementsProducts(this.getDB(), collection, paginationData, aggregate),
+      };
+    } catch (error) {
+      return {
+        info: null,
+        status: false,
+        message: `Lista de ${listElement} no cargada correctamente: ${error}`,
+        items: [],
       };
     }
   }

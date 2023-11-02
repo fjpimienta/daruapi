@@ -38,6 +38,7 @@ class ConfigsService extends ResolversOperationsService {
       message: config?.message,
       exchange_rate: config?.exchange_rate,
       offer: config?.offer,
+      minimum_offer: config?.minimum_offer,
       registerDate: new Date().toISOString()
     };
     const result = await this.add(this.collection, configObject, 'config');
@@ -71,6 +72,7 @@ class ConfigsService extends ResolversOperationsService {
     const objectUpdate = {
       message: config?.message,
       exchange_rate: config?.exchange_rate,
+      minimum_offer: config?.minimum_offer,
       offer: config?.offer
     };
     // Conocer el id de la config

@@ -64,7 +64,7 @@ class ProductsService extends ResolversOperationsService {
       }
     }
     if (offer) {
-      filter = { ...filter, ...{ featured: { $eq: true } } };
+      filter = { ...filter, ...{ featured: { $eq: offer } } };
     }
     if (brands) {
       filter = { ...filter, ...{ 'brands.slug': { $in: brands } } };

@@ -73,6 +73,7 @@ class ResolversOperationsService {
     filter: object = { active: { $ne: false } },
   ) {
     try {
+      const paginationData = await paginationProducts(this.getDB(), collection, page, itemsPage, filter);
       // Agregamos la etapa de agregación para encontrar el registro con el menor "sale_price" por "partnumber"
       const aggregate = [
         { $match: filter, },
@@ -84,8 +85,9 @@ class ResolversOperationsService {
           },
         },
         { $replaceRoot: { newRoot: '$doc' }, },
+        { $skip: (paginationData.page - 1) * paginationData.itemsPage },
+        { $limit: paginationData.itemsPage },
       ];
-      const paginationData = await paginationProducts(this.getDB(), collection, page, itemsPage, aggregate);
       return {
         info: {
           page: paginationData.page,
@@ -95,7 +97,7 @@ class ResolversOperationsService {
         },
         status: true,
         message: `Lista de ${listElement} cargada correctamente`,
-        items: findElementsProducts(this.getDB(), collection, paginationData, aggregate),
+        items: findElementsProducts(this.getDB(), collection, aggregate),
       };
     } catch (error) {
       return {

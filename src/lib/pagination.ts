@@ -37,7 +37,7 @@ export async function paginationProducts(
   collection: string,
   page: number = 1,
   itemsPage: number = 48,
-  aggregate: Array<object> = []
+  filter: object = { active: { $ne: false } },
 ) {
   // Comprobar el numero de items por pagina
   if (itemsPage < 1) {
@@ -48,7 +48,7 @@ export async function paginationProducts(
   if (page < 1) {
     page = 1;
   }
-  const total = await countElementsProducts(db, collection, aggregate);
+  const total = await countElementsProducts(db, collection, filter);
   const pages = Math.ceil(total / itemsPage);
 
   return {

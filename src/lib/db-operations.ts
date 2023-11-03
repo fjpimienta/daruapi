@@ -93,31 +93,12 @@ export const findElements = async (
 export const findElementsProducts = async (
   database: Db,
   collection: string,
-  paginationOptions: IPaginationOptions = {
-    page: 1,
-    pages: 1,
-    itemsPage: -1,
-    skip: 0,
-    total: -1
-  },
   aggregate: Array<object> = [] // Cambio el tipo de 'object' a 'Array<object>'
 ): Promise<Array<object>> => {
-  if (paginationOptions.total === -1) {
-    return new Promise(async (resolve) => {
-      const pipeline = [
-        ...aggregate,
-      ];
-      pipeline.push({ $limit: paginationOptions.itemsPage });
-      pipeline.push({ $skip: paginationOptions.skip });
-      resolve(await database.collection(collection).aggregate(pipeline).toArray());
-    });
-  }
   return new Promise(async (resolve) => {
     const pipeline = [
       ...aggregate,
     ];
-    pipeline.push({ $limit: paginationOptions.itemsPage });
-    pipeline.push({ $skip: paginationOptions.skip });
     resolve(await database.collection(collection).aggregate(pipeline).toArray());
   });
 };
@@ -230,8 +211,19 @@ export const countElements = async (
 export const countElementsProducts = async (
   database: Db,
   collection: string,
-  aggregate: Array<object> = [] // Cambio el tipo de 'object' a 'Array<object>'
+  filter: object = { active: { $ne: false } },
 ): Promise<number> => {
+  const aggregate = [
+    { $match: filter, },
+    { $sort: { partnumber: 1, sale_price: 1 }, },
+    {
+      $group: {
+        _id: '$partnumber',
+        doc: { $first: '$$ROOT' },
+      },
+    },
+    { $replaceRoot: { newRoot: '$doc' }, },
+  ];
   return new Promise(async (resolve) => {
     const pipeline = [
       ...aggregate,

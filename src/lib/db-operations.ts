@@ -107,6 +107,8 @@ export const findElementsProducts = async (
       const pipeline = [
         ...aggregate,
       ];
+      pipeline.push({ $limit: paginationOptions.itemsPage });
+      pipeline.push({ $skip: paginationOptions.skip });
       resolve(await database.collection(collection).aggregate(pipeline).toArray());
     });
   }
@@ -114,6 +116,8 @@ export const findElementsProducts = async (
     const pipeline = [
       ...aggregate,
     ];
+    pipeline.push({ $limit: paginationOptions.itemsPage });
+    pipeline.push({ $skip: paginationOptions.skip });
     resolve(await database.collection(collection).aggregate(pipeline).toArray());
   });
 };

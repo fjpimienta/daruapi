@@ -3,6 +3,7 @@ type ResultCts implements Result {
   message: String!
   tokenCt: TokenCt
   stockProductsCt: [ResponseCtsStockProducts]
+  jsonProductsCt: [ResponseCtsJsonProducts]
   shippingCtRates: ResponseCtsShipping
   orderCt: ResponseCtOrder
   confirmOrderCt: ResponseCtsConfirOrder

@@ -18,8 +18,6 @@ class ExternalCtsService extends ResolversOperationsService {
    * @returns TokenCt: Objeto enviado por Ct minutos.
    */
   async getTokenCt() {
-    const getProduct = await this.getProductJson();
-    
     const options = {
       method: 'POST',
       headers: {
@@ -47,11 +45,20 @@ class ExternalCtsService extends ResolversOperationsService {
     };
   }
 
-  async getProductJson() {
+  async getJsonProductsCt() {
     try {
-      const prodCt = await this.downloadFileFromFTP();
-      console.log('prodCt: ', prodCt);
-    } catch (error) {
+      const jsonProductsCt = (await this.downloadFileFromFTP()).data;
+      return {
+        status: true,
+        message: 'La información que hemos pedido se ha cargado correctamente',
+        jsonProductsCt,
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        jsonProductsCt: null,
+      };
       console.error('El archivo no se encontró en la ubicación local:', error);
     }
   }

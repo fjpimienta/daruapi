@@ -1,13 +1,16 @@
 import { IResolvers } from '@graphql-tools/utils';
 import ExternalCtsService from '../../../services/externalCts.service';
 
-const resolversCtsQuery: IResolvers = {  
+const resolversCtsQuery: IResolvers = {
   Query: {
     async tokenCt(_, __, context) {
       return new ExternalCtsService(_, __, context).getTokenCt();
     },
     async shippingCtRates(_, variables, context) {
       return new ExternalCtsService(_, variables, context).setShippingCtRates(variables);
+    },
+    async jsonProductsCt(_, __, context) {
+      return new ExternalCtsService(_, __, context).getJsonProductsCt();
     },
     async stockProductsCt(_, __, context) {
       return new ExternalCtsService(_, __, context).getStockProductsCt();

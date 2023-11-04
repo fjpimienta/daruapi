@@ -5,6 +5,8 @@ import ResolversOperationsService from './resolvers-operaciones.service';
 
 import logger from '../utils/logger';
 import fetch from 'node-fetch';
+import { Client, AccessOptions } from 'basic-ftp';
+import fs from 'fs';
 
 class ExternalCtsService extends ResolversOperationsService {
   constructor(root: object, variables: object, context: IContextData) {
@@ -41,6 +43,24 @@ class ExternalCtsService extends ResolversOperationsService {
       message,
       tokenCt: status ? data : null
     };
+  }
+
+  async getJsonProductsCt() {
+    try {
+      const jsonProductsCt = (await this.downloadFileFromFTP()).data;
+      return {
+        status: true,
+        message: 'La información que hemos pedido se ha cargado correctamente',
+        jsonProductsCt,
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        jsonProductsCt: null,
+      };
+      console.error('El archivo no se encontró en la ubicación local:', error);
+    }
   }
 
   /**
@@ -394,6 +414,45 @@ class ExternalCtsService extends ResolversOperationsService {
       } : null
     };
   }
+
+  async downloadFileFromFTP() {
+    const client = new Client();
+    client.ftp.verbose = true; // Activa para ver información detallada en la consola
+
+    try {
+      const accessOptions: AccessOptions = {
+        host: '216.70.82.104',
+        user: 'VHA0990',
+        password: 'PtZ9hAXJnkJInZXReEwN',
+      };
+      await client.access(accessOptions);
+
+      const remoteFilePath = '/catalogo_xml/productos.json';
+      const localFilePath = './uploads/files/productos.json';
+      await client.downloadTo(localFilePath, remoteFilePath);
+
+      console.log('Archivo descargado exitosamente');
+
+      // Leer y enviar el json.
+      const fileContent = fs.readFileSync(localFilePath, 'utf-8');
+      const jsonData = JSON.parse(fileContent);
+      return await {
+        status: true,
+        mesage: 'Se ha descargado correctamente el json.',
+        data: jsonData
+      };
+    } catch (error) {
+      console.error('Error al descargar el archivo:', error);
+      return await {
+        status: false,
+        mesage: `Error al descargar el archivo: ${error}`,
+        data: null
+      };
+    } finally {
+      client.close();
+    }
+  }
 }
+
 
 export default ExternalCtsService;

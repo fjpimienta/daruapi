@@ -124,7 +124,7 @@ class ProductsService extends ResolversOperationsService {
         generalInfo.BrandLogo = `/assets/brands/${icecatExt.icecatProductLocal.Supplier}`;
         generalInfo.brandPartCode = icecatExt.icecatProductLocal.Prod_id;
         const gtin: string[] = [];
-        if (icecatExt.icecatProductLocal.Requested_GTIN.includes('|')) {
+        if (icecatExt.icecatProductLocal.Requested_GTIN && icecatExt.icecatProductLocal.Requested_GTIN.includes('|')) {
           gtin.push(...icecatExt.icecatProductLocal.Requested_GTIN.split('|'));
         } else {
           gtin.push(icecatExt.icecatProductLocal.Requested_GTIN);
@@ -162,7 +162,7 @@ class ProductsService extends ResolversOperationsService {
         product.generalInfo = generalInfo;
         console.log('icecatExt.icecatProductLocal.ProductGallery: ', icecatExt.icecatProductLocal.ProductGallery);
 
-        if (icecatExt.icecatProductLocal.ProductGallery.includes('|')) {
+        if (icecatExt.icecatProductLocal.ProductGallery && icecatExt.icecatProductLocal.ProductGallery.includes('|')) {
           product.pictures = [];
           product.sm_pictures = [];
           const imagenes: string[] = icecatExt.icecatProductLocal.ProductGallery.split('|');

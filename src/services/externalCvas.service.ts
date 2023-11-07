@@ -134,17 +134,18 @@ class ExternalCvasService {
   }
 
   async getListOrdersCva() {
-    const wsdl = 'ListaPedidos';
-    const options = {
-      method: 'POST',
-      headers: {
-        'Accept-Charset': 'UTF-8',
-        'Content-Type': 'text/xml; charset=utf-8'
-      },
-      params: {
-        "wsdl": wsdl
-      },
-      body: `<?xml version="1.0" encoding="utf-8"?>
+    try {
+      const wsdl = 'ListaPedidos';
+      const options = {
+        method: 'POST',
+        headers: {
+          'Accept-Charset': 'UTF-8',
+          'Content-Type': 'text/xml; charset=utf-8'
+        },
+        params: {
+          "wsdl": wsdl
+        },
+        body: `<?xml version="1.0" encoding="utf-8"?>
         <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
           <soap:Body>
             <${wsdl} xmlns="https://www.grupocva.com/pedidos_web/">
@@ -153,29 +154,46 @@ class ExternalCvasService {
             </${wsdl}>
           </soap:Body>
         </soap:Envelope>`
-    };
-    const result = await fetch('https://www.grupocva.com/pedidos_web/pedidos_ws_cva.php', options);
-    const content = await result.text();
-    let data = await this.parseXmlToJson(content, wsdl);
-    const dataArray = []; // Aquí almacenaremos los elementos en un array
-    if (data.length > 0) {
-    } else {
-      dataArray.push(data);
-      data = dataArray;
-    }
-    const pedidos = data;
-    if (result.ok) {
+      };
+      const result = await fetch('https://www.grupocva.com/pedidos_web/pedidos_ws_cva.php', options);
+      if (result.statusText === 'OK') {
+        const content = await result.text();
+        let data = await this.parseXmlToJson(content, wsdl);
+        if (!data) {
+          return {
+            status: false,
+            message: 'No hay pedidos vigentes en este periodo.',
+            listOrdersCva: null
+          };
+        }
+        const dataArray = []; // Aquí almacenaremos los elementos en un array
+        if (data.length > 0) {
+        } else {
+          dataArray.push(data);
+          data = dataArray;
+        }
+        const pedidos = data;
+        if (pedidos && result.ok) {
+          return {
+            status: true,
+            message: 'La información que hemos pedido se ha cargado correctamente',
+            listOrdersCva: pedidos
+          };
+        }
+      } else {
+        return {
+          status: false,
+          message: 'Error en el servicio. Consultar con el Administrador.',
+          listOrdersCva: null
+        };
+      }
+    } catch (error) {
       return {
-        status: true,
-        message: 'La información que hemos pedido se ha cargado correctamente',
-        listOrdersCva: pedidos
+        status: false,
+        message: 'Error en el servicio. Consultar con el Administrador.',
+        listBrandsCva: null
       };
     }
-    return {
-      status: false,
-      message: 'Error en el servicio.',
-      listOrdersCva: null
-    };
   }
 
   async getConsultaOrderCva(variables: IVariables) {
@@ -236,7 +254,7 @@ class ExternalCvasService {
     }
     return {
       status: false,
-      message: 'Error en el servicio.',
+      message: 'Error en el servicio. Consultar con el Administrador.',
       consultaOrderCva: null
     };
   }
@@ -255,13 +273,13 @@ class ExternalCvasService {
         }
         : {
           status: false,
-          message: 'Error en el servicio.',
+          message: 'Error en el servicio. Consultar con el Administrador.',
           listBrandsCva: null
         };
     } catch (error) {
       return {
         status: false,
-        message: 'Error en el servicio.',
+        message: 'Error en el servicio. Consultar con el Administrador.',
         listBrandsCva: null
       };
     }
@@ -281,13 +299,13 @@ class ExternalCvasService {
         }
         : {
           status: false,
-          message: 'Error en el servicio.',
+          message: 'Error en el servicio. Consultar con el Administrador.',
           listGroupsCva: null
         };
     } catch (error) {
       return {
         status: false,
-        message: 'Error en el servicio.',
+        message: 'Error en el servicio. Consultar con el Administrador.',
         listGroupsCva: null
       };
     }
@@ -307,13 +325,13 @@ class ExternalCvasService {
         }
         : {
           status: false,
-          message: 'Error en el servicio.',
+          message: 'Error en el servicio. Consultar con el Administrador.',
           listSolucionesCva: null
         };
     } catch (error) {
       return {
         status: false,
-        message: 'Error en el servicio.',
+        message: 'Error en el servicio. Consultar con el Administrador.',
         listSolucionesCva: null
       };
     }
@@ -333,13 +351,13 @@ class ExternalCvasService {
         }
         : {
           status: false,
-          message: 'Error en el servicio.',
+          message: 'Error en el servicio. Consultar con el Administrador.',
           listSucursalesCva: null
         };
     } catch (error) {
       return {
         status: false,
-        message: 'Error en el servicio.',
+        message: 'Error en el servicio. Consultar con el Administrador.',
         listSucursalesCva: null
       };
     }
@@ -359,13 +377,13 @@ class ExternalCvasService {
         }
         : {
           status: false,
-          message: 'Error en el servicio.',
+          message: 'Error en el servicio. Consultar con el Administrador.',
           listPaqueteriasCva: null
         };
     } catch (error) {
       return {
         status: false,
-        message: 'Error en el servicio.',
+        message: 'Error en el servicio. Consultar con el Administrador.',
         listPaqueteriasCva: null
       };
     }
@@ -396,13 +414,13 @@ class ExternalCvasService {
         }
         : {
           status: false,
-          message: 'Error en el servicio.',
+          message: 'Error en el servicio. Consultar con el Administrador.',
           listPricesCva: null
         };
     } catch (error) {
       return {
         status: false,
-        message: 'Error en el servicio.',
+        message: 'Error en el servicio. Consultar con el Administrador.',
         listPricesCva: null
       };
     }
@@ -421,7 +439,7 @@ class ExternalCvasService {
         products.push(...prodByBrand.listPricesCva);
       }
     }
-    
+
     return products.length > 0
       ? {
         status: true,
@@ -430,7 +448,7 @@ class ExternalCvasService {
       }
       : {
         status: false,
-        message: 'Error en el servicio.',
+        message: 'Error en el servicio. Consultar con el Administrador.',
         listProductsCva: null
       };
   }
@@ -499,7 +517,7 @@ class ExternalCvasService {
       }
       : {
         status: false,
-        message: 'Error en el servicio.',
+        message: 'Error en el servicio. Consultar con el Administrador.',
         listProductsCvaByGroup: null
       };
   }

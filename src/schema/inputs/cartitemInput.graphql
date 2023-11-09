@@ -153,3 +153,77 @@ input File {
   mimetype: String!
   encoding: String!
 }
+
+input GeneralInfInput {
+  IcecatId: Int
+  ReleaseDate: String
+  EndOfLifeDate: String
+  Title: String
+  TitleInfo: TitleInfoInput
+  Brand: String
+  BrandID: String
+  BrandLogo: String
+  BrandInfo: BrandInfoInput
+  ProductName: String
+  ProductNameInfo: ProductNameInfoInput
+  BrandPartCode: String
+  GTIN: [String]
+  Category: CategoryInput
+  ProductFamily: EmptyObjectInput
+  ProductSeries: ProductSeriesInput
+  Description: EmptyObjectInput
+  SummaryDescription: SummaryDescriptionInput
+  BulletPoints: BulletPointsInput
+  GeneratedBulletPoints: GeneratedBulletPointsInput
+}
+
+input TitleInfoInput {
+  GeneratedIntTitle: String
+  GeneratedLocalTitle: LocalizedStringInput
+  BrandLocalTitle: LocalizedStringInput
+}
+
+input BrandInfoInput {
+  BrandName: String
+  BrandLocalName: String
+  BrandLogo: String
+}
+
+input ProductNameInfoInput {
+  ProductIntName: String
+  ProductLocalName: LocalizedStringInput
+}
+
+input LocalizedStringInput {
+  Value: String
+  Language: String
+}
+
+input CategoryInput {
+  CategoryID: String
+  Name: LocalizedStringInput
+}
+
+input EmptyObjectInput {
+  empty: String
+}
+
+input ProductSeriesInput {
+  SeriesID: String
+}
+
+input SummaryDescriptionInput {
+  ShortSummaryDescription: String
+  LongSummaryDescription: String
+}
+
+input BulletPointsInput {
+  BulletPointsId: String
+  Language: String
+  Values: [String]
+}
+
+input GeneratedBulletPointsInput {
+  Language: String
+  Values: [String]
+}

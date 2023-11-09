@@ -31,6 +31,7 @@ input CartItemInput {
   suppliersProd: SupplierProdInput
   descuentos: DescuentosInput
   promociones: PromocionesInput
+  generalInfo: GeneralInfoInput
   qty: Int
   sum: Float
   assignedBranchId: Boolean
@@ -154,7 +155,7 @@ input File {
   encoding: String!
 }
 
-input GeneralInfInput {
+input GeneralInfoInput {
   IcecatId: Int
   ReleaseDate: String
   EndOfLifeDate: String

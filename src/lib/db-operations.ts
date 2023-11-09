@@ -244,8 +244,19 @@ export const randomItems = async (
   filter: object = {},
   items: number = 10
 ): Promise<Array<object>> => {
+  const aggregate = [
+    { $sort: { partnumber: 1, sale_price: 1 }, },
+    {
+      $group: {
+        _id: '$partnumber',
+        doc: { $first: '$$ROOT' },
+      },
+    },
+    { $replaceRoot: { newRoot: '$doc' }, },
+  ];
   return new Promise(async (resolve) => {
     const pipeline = [
+      ...aggregate,
       { $match: filter },
       { $sample: { size: items } }
     ];
@@ -277,8 +288,19 @@ export const findElementsBrandsGroup = async (
   database: Db,
   collection: string,
 ): Promise<Array<object>> => {
+  const aggregate = [
+    { $sort: { partnumber: 1, sale_price: 1 }, },
+    {
+      $group: {
+        _id: '$partnumber',
+        doc: { $first: '$$ROOT' },
+      },
+    },
+    { $replaceRoot: { newRoot: '$doc' }, },
+  ];
   return new Promise(async (resolve) => {
     const pipeline = [
+      ...aggregate,
       { $group: { _id: '$brands', total: { $sum: 1 } } }
     ];
     resolve(await database.collection(collection).aggregate(
@@ -296,8 +318,19 @@ export const findElementsCategorysGroup = async (
   database: Db,
   collection: string,
 ): Promise<Array<object>> => {
+  const aggregate = [
+    { $sort: { partnumber: 1, sale_price: 1 }, },
+    {
+      $group: {
+        _id: '$partnumber',
+        doc: { $first: '$$ROOT' },
+      },
+    },
+    { $replaceRoot: { newRoot: '$doc' }, },
+  ];
   return new Promise(async (resolve) => {
     const pipeline = [
+      ...aggregate,
       { $group: { _id: '$category', total: { $sum: 1 } } }
     ];
     resolve(await database.collection(collection).aggregate(

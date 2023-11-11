@@ -372,7 +372,12 @@ export const findSubcategoryProduct = async (
             description: '$subCategorys.description'
           }
         }
-      }
+      },
+      {
+        $project: {
+          'categoria._id': 0, // Omitir el _id de la categoría
+        },
+      },
     ];
     const result = await database.collection(collection).aggregate(pipeline).toArray();
     if (result.length > 0) {

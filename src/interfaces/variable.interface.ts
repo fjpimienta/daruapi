@@ -62,6 +62,7 @@ export interface IVariables {
   delivery?: IDelivery;
   deliveryId?: string;
   deliverys?: IDelivery[];
+  role?: string;
   // 99minutos Token
   origin?: string;
   destination?: string;

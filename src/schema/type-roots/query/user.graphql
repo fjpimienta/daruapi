@@ -10,6 +10,7 @@ type Query {
       active: ActiveFilterEnum = ACTIVE
       "Especificar el filtro por el name"
       filterName: String=""
+      role: String="CLIENT"
    ): ResultUsers
    "Para iniciar sesion de usuario"
    login(email: String!, password: String!, include: Boolean!): ResultLogin

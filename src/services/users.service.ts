@@ -17,8 +17,7 @@ class UsersService extends ResolversOperationsService {
 
   // Listar informacion
   async items(variables: IVariables) {
-    const active = variables.active;
-    const filterName = variables.filterName;
+    const { active, filterName, role } = variables;
     let filter: object;
     const regExp = new RegExp('.*' + filterName + '.*', 'i');
     if (filterName === '' || filterName === undefined) {
@@ -35,6 +34,9 @@ class UsersService extends ResolversOperationsService {
       } else if (active === ACTIVE_VALUES_FILTER.INACTIVE) {
         filter = { active: { $eq: false }, 'name': regExp };
       }
+    }
+    if (role) {
+      filter = { ...filter, ...{ role: { $eq: role } } };
     }
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;

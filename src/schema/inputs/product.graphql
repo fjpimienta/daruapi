@@ -31,6 +31,12 @@ input ProductInput {
   suppliersProd: SupplierProdInput
   descuentos: DescuentosInput
   promociones: PromocionesInput
+  especificaciones: [EspecificacionInput]
+}
+
+input EspecificacionInput {
+  tipo: String
+  valor: String
 }
 
 input CategorysInput {

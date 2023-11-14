@@ -32,6 +32,12 @@ export interface IProduct {
   descuentos: IDescuentos;
   promociones: IPromociones;
   registerDate?: String;
+  especificaciones: IEspecificaciones;
+}
+
+export interface IEspecificaciones {
+  tipo: String;
+  valor: String;
 }
 
 export interface ICategorys {

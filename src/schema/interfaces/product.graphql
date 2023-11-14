@@ -32,6 +32,12 @@ interface Product {
   descuentos: Descuentos
   promociones: Promociones
   generalInfo: GeneralInfo
+  especificaciones: [Especificacion]
+}
+
+interface Especificacion {
+  tipo: String
+  valor: String
 }
 
 interface Categorys {

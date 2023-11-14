@@ -2,11 +2,11 @@ import slugify from 'slugify';
 import { ACTIVE_VALUES_FILTER, COLLECTIONS } from '../config/constants';
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { findAllElements, findElements, findOneElement, findSubcategoryProduct } from '../lib/db-operations';
+import { findAllElements, findOneElement, findSubcategoryProduct } from '../lib/db-operations';
 import { asignDocumentId } from '../lib/db-operations';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import { pagination } from '../lib/pagination';
-import { ICategorys, IPicture, IProduct } from '../interfaces/product.interface';
+import { IPicture, IProduct } from '../interfaces/product.interface';
 import ExternalIcecatsService from './externalIcecat.service';
 import ExternalIngramService from './externalIngram.service';
 

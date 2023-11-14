@@ -34,6 +34,12 @@ type Product {
   descuentos: Descuentos
   promociones: Promociones
   generalInfo: GeneralInfo
+  especificaciones: [Especificacion]
+}
+
+type Especificacion {
+  tipo: String
+  valor: String
 }
 
 type Categorys {

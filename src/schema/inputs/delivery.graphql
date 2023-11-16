@@ -13,6 +13,7 @@ input DeliveryInput {
   orderCtResponse: OrderCtResponseInput
   orderCtConfirmResponse: OrderCtConfirmResponseInput
   orderCvaResponse: OrderCvaResponseInput
+  invoiceConfig: InvoiceConfigInput
   statusError: Boolean
   messageError: String
 }

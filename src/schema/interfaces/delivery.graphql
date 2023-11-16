@@ -13,6 +13,7 @@ interface Delivery {
   orderCtResponse: RespuestaCt
   orderCtConfirmResponse: RespuestaConfirmCt
   orderCvaResponse: RespuestaCva
+  invoiceConfig: InvoiceConfig
   statusError: Boolean
   messageError: String
 }

@@ -100,6 +100,7 @@ class DeliverysService extends ResolversOperationsService {
       orderCtResponse: delivery?.orderCtResponse,
       orderCtConfirmResponse: delivery?.orderCtConfirmResponse,
       orderCvaResponse: delivery?.orderCvaResponse,
+      invoiceConfig: delivery?.invoiceConfig,
       statusError: delivery?.statusError,
       messageError: delivery?.messageError,
       registerDate: new Date().toISOString()
@@ -145,6 +146,7 @@ class DeliverysService extends ResolversOperationsService {
       orderCtResponse: delivery?.orderCtResponse,
       orderCtConfirmResponse: delivery?.orderCtConfirmResponse,
       orderCvaResponse: delivery?.orderCvaResponse,
+      invoiceConfig: delivery?.invoiceConfig,
       statusError: delivery?.statusError,
       messageError: delivery?.messageError,
     };

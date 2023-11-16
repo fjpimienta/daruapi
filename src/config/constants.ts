@@ -38,7 +38,8 @@ export enum COLLECTIONS {
   DELIVERYS = 'deliverys',
   CUPONS = 'cupons',
   DISCOUNTS = 'discounts',
-  ICECAT_PRODUCTS = 'icecat_products'
+  ICECAT_PRODUCTS = 'icecat_products',
+  INVOICE_CONFIG = 'invoice_config'
 }
 
 export enum MESSAGES {

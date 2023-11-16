@@ -1,0 +1,40 @@
+type InvoiceConfig {
+  formaPago: [FormaPago]
+  regimenFiscal: [RegimenFiscal]
+  usoCFDI: [UsoCFDI]
+}
+
+type FormaPago {
+  id: String
+  descripcion: String
+  bancarizado: String
+  numeroDeOperacion: String
+  rFCDelEmisorDeLaCuentaOrdenante: String
+  cuentaOrdenante: String
+  patronParaCuentaOrdenante: String
+  rFCDelEmisorCuentaDeBeneficiario: String
+  cuentaDeBenenficiario: String
+  patronParaCuentaBeneficiaria: String
+  tipoCadenaPago: String
+  nombreDelBancoEmisorDeLaCuentaOrdenanteEnCasoDeExtranjero: String
+  fechaInicioDeVigencia: String
+  fechaFinDeVigencia: String
+}
+
+type RegimenFiscal {
+  id: String
+  descripcion: String
+  fisica: String
+  moral: String
+  fechaDeInicioDeVigencia: String
+  fechaDeFinDeVigencia: String
+}
+
+type UsoCFDI {
+  id: String
+  descripcion: String
+  aplicaParaTipoPersonaFisica: String
+  aplicaParaTipoPersonaMoral: String
+  fechaInicioDeVigencia: String
+  fechaFinDeVigencia: String
+}

@@ -1,4 +1,5 @@
 import { ICatalog } from './catalog.interface';
+import { IInvoiceConfig } from './invoiceConfig.interface';
 import { IOrderCt } from './suppliers/_CtsShippments.interface';
 import { IOrderCva } from './suppliers/_CvasShippments.interface';
 import { IOrderCtConfirmResponse, IOrderCtResponse } from './suppliers/orderctresponse.interface';
@@ -21,6 +22,7 @@ export interface IDelivery {
   orderCtResponse?: IOrderCtResponse;
   orderCtConfirmResponse?: IOrderCtConfirmResponse;
   orderCvaResponse?: IOrderCvaResponse;
+  invoiceConfig?: IInvoiceConfig;
   statusError: boolean;
   messageError: string;
 }

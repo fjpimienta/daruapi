@@ -1,16 +1,21 @@
 input InvoiceConfigInput {
-  id: ID
   apellidoPaterno: String
   apellidoMaterno: String
   nombres: String
   rfc: String
   codigoPostal: String
-  formaPago: [FormaPagoInput]
-  regimenFiscal: [RegimenFiscalInput]
-  usoCFDI: [UsoCFDIInput]
+  formaPago: FormaPagoInput
+  metodoPago: MetodoPagoInput
+  regimenFiscal: RegimenFiscalInput
+  usoCFDI: UsoCFDIInput
 }
 
 input FormaPagoInput {
+  id: String
+  descripcion: String
+}
+
+input MetodoPagoInput {
   id: String
   descripcion: String
 }

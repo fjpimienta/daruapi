@@ -1,5 +1,6 @@
 type InvoiceConfig {
   formaPago: [FormaPago]
+  metodoPago: [MetodoPago]
   regimenFiscal: [RegimenFiscal]
   usoCFDI: [UsoCFDI]
 }
@@ -17,6 +18,13 @@ type FormaPago {
   patronParaCuentaBeneficiaria: String
   tipoCadenaPago: String
   nombreDelBancoEmisorDeLaCuentaOrdenanteEnCasoDeExtranjero: String
+  fechaInicioDeVigencia: String
+  fechaFinDeVigencia: String
+}
+
+type MetodoPago {
+  id: String
+  descripcion: String
   fechaInicioDeVigencia: String
   fechaFinDeVigencia: String
 }

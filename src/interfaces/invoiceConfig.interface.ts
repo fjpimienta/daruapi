@@ -6,11 +6,17 @@ export interface IInvoiceConfig {
   rfc: string;
   codigoPostal: string;
   formaPago: IFormaPago[];
+  metodoPago: IMetodoPago[];
   regimenFiscal: IRegimenFiscal[];
   usoCFDI: IUsoCFDI[];
 }
 
 export interface IFormaPago {
+  id: string;
+  descripcion: string;
+}
+
+export interface IMetodoPago {
   id: string;
   descripcion: string;
 }

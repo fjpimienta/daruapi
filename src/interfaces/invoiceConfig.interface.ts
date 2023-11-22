@@ -1,8 +1,7 @@
 export interface IInvoiceConfig {
   id: string;
-  apellidoPaterno: string;
-  apellidoMaterno: string;
   nombres: string;
+  apellidos: string;
   rfc: string;
   codigoPostal: string;
   formaPago: IFormaPago[];

@@ -1,7 +1,6 @@
 input InvoiceConfigInput {
-  apellidoPaterno: String
-  apellidoMaterno: String
   nombres: String
+  apellidos: String
   rfc: String
   codigoPostal: String
   formaPago: FormaPagoInput

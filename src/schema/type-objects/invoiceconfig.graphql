@@ -1,3 +1,14 @@
+type InvoiceConfigI {
+  nombres: String
+  apellidos: String
+  rfc: String
+  codigoPostal: String
+  formaPago: FormaPago
+  metodoPago: MetodoPago
+  regimenFiscal: RegimenFiscal
+  usoCFDI: UsoCFDI
+}
+
 type InvoiceConfig {
   formaPago: [FormaPago]
   metodoPago: [MetodoPago]

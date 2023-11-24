@@ -15,7 +15,7 @@ type Delivery {
   orderCtResponse: RespuestaCt
   orderCtConfirmResponse: RespuestaConfirmCt
   orderCvaResponse: RespuestaCva
-  invoiceConfig: InvoiceConfig
+  invoiceConfig: InvoiceConfigI
   statusError: Boolean
   messageError: String
 }

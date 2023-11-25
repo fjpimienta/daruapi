@@ -1,8 +1,10 @@
 export interface IInvoiceConfig {
   nombres: string;
   apellidos: string;
+  nombreEmpresa: string;
   rfc: string;
   codigoPostal: string;
+  factura: Boolean;
   formaPago: IFormaPago;
   metodoPago: IMetodoPago;
   regimenFiscal: IRegimenFiscal;

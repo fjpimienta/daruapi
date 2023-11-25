@@ -1,8 +1,10 @@
 type InvoiceConfigI {
   nombres: String
   apellidos: String
+  nombreEmpresa: String
   rfc: String
   codigoPostal: String
+  factura: Boolean
   formaPago: FormaPago
   metodoPago: MetodoPago
   regimenFiscal: RegimenFiscal

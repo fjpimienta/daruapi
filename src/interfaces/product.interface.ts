@@ -4,6 +4,7 @@ export interface IProduct {
   slug?: string;
   price: number;
   sale_price: number;
+  exchangeRate: number;
   review: number;
   ratings: number;
   until: string;

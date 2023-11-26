@@ -5,6 +5,7 @@ interface Product {
   short_desc: String!
   price: Float
   sale_price: Float
+  exchangeRate: Float
   review: Int
   ratings: Int
   until: String

@@ -154,18 +154,20 @@ class ExternalIngramService extends ResolversOperationsService {
         let partsNumber: IProductsQuery[] = [];
         const pricesIngram: IPricesIngram[] = [];
         for (const prod of productosIngram.ingramProducts) {
-          i += 1;
-          partsNumber.push({ ingramPartNumber: prod.ingramPartNumber });
-          if (i % 20 === 0) {
-            const productPrices = await this.getPricesIngramBloque(partsNumber)
-            for (const prodPrices of productPrices.pricesIngram) {
-              if (allRecords) {
-                pricesIngram.push(prodPrices);
-              } else if (prodPrices.availability && ['A', 'B', 'C'].includes(prodPrices.productClass)) {
-                pricesIngram.push(prodPrices);
+          if (prod.type === "IM::physical" || prod.vendorName.toUpperCase() !== "APPLE TEST") {
+            i += 1;
+            partsNumber.push({ ingramPartNumber: prod.ingramPartNumber });
+            if (i % 20 === 0) {
+              const productPrices = await this.getPricesIngramBloque(partsNumber)
+              for (const prodPrices of productPrices.pricesIngram) {
+                if (allRecords) {
+                  pricesIngram.push(prodPrices);
+                } else if (prodPrices.availability && ['A', 'B', 'C'].includes(prodPrices.productClass)) {
+                  pricesIngram.push(prodPrices);
+                }
               }
+              partsNumber = [];
             }
-            partsNumber = [];
           }
         }
         // Verificar si quedan productos pendientes.

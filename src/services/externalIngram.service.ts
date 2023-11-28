@@ -156,7 +156,7 @@ class ExternalIngramService extends ResolversOperationsService {
         for (const prod of productosIngram.ingramProducts) {
           i += 1;
           partsNumber.push({ ingramPartNumber: prod.ingramPartNumber });
-          if (i % 500 === 0) {
+          if (i % 20 === 0) {
             const productPrices = await this.getPricesIngramBloque(partsNumber)
             for (const prodPrices of productPrices.pricesIngram) {
               if (allRecords) {
@@ -177,11 +177,19 @@ class ExternalIngramService extends ResolversOperationsService {
             }
           }
         }
-        return {
-          status: true,
-          message: `Se ha generado la lista de precios de productos.`,
-          pricesIngram
-        };
+        if (pricesIngram.length > 0) {
+          return {
+            status: true,
+            message: `Se ha generado la lista de precios de productos.`,
+            pricesIngram
+          };
+        } else {
+          return {
+            status: false,
+            message: `No se han encontrado productos.`,
+            pricesIngram: null,
+          };
+        }
       } else {
         return {
           status: false,

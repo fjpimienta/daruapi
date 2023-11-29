@@ -163,3 +163,32 @@ export interface IPricesIngram {
     currencyCode: string;
   }[];
 }
+
+// Catalogo Price.txt
+export interface ICatalogIngram {
+  changeCode: string;
+  imSKU: string;
+  vendorNumber: string;
+  vendorName: string;
+  descriptionLine1: string;
+  descriptionLine2: string;
+  retailPriceMSRP: number;
+  vendorPartNumber: string;
+  weight: number;
+  upcCode: string;
+  length: number;
+  width: number;
+  height: number;
+  customerCostChangeCode: string;
+  customerCost: number;
+  specialPricingChangeCode: string;
+  stockAvailableYN: string;
+  partStatus: string;
+  allianceProduct: string;
+  cpuCode: string;
+  mediaCode: string;
+  ingramCatSubcategory: number;
+  yIfPartStockedAtIM: string;
+  rebateAppliedToCostYN: string;
+  substituteIMPartNumber: string;
+}

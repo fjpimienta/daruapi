@@ -5,12 +5,15 @@ import ResolversOperationsService from './resolvers-operaciones.service';
 import logger from '../utils/logger';
 import fetch from 'node-fetch';
 import { IPricesIngram, IProductsQuery } from '../interfaces/suppliers/_Ingram.interface';
+import { COLLECTIONS } from '../config/constants';
 
 class ExternalIngramService extends ResolversOperationsService {
+  collection = COLLECTIONS.INGRAM_PRODUCTS;
+  catalogName = 'Productos Ingram';
+
   constructor(root: object, variables: object, context: IContextData) {
     super(root, variables, context);
   }
-
 
   async getTokenIngram() {
     const username = 'ZpGbzheF2yQlsfA00vuvu4JdXkf76w9L';
@@ -52,10 +55,9 @@ class ExternalIngramService extends ResolversOperationsService {
   async getIngramProduct() {
     try {
       let ingramPartNumber = undefined;
-      const collection = 'ingram_products';
 
-      const result = await this.getByField(collection);
-      ingramPartNumber = result.item['IM SKU'];
+      const result = await this.getByField(this.collection);
+      ingramPartNumber = result.item.imSKU.trim();
 
       if (!ingramPartNumber) {
         return {
@@ -206,6 +208,15 @@ class ExternalIngramService extends ResolversOperationsService {
         ingramProduct: null,
       };
     }
+  }
+
+  async getCatalogIngram() {
+    const result = await this.listAll(this.collection, this.catalogName);
+    return {
+      status: result.status,
+      message: result.message,
+      catalogIngram: result.items
+    };
   }
 
   async getPricesIngramBloque(productsQuery: IProductsQuery[]) {

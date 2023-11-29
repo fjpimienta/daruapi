@@ -5,12 +5,15 @@ import ResolversOperationsService from './resolvers-operaciones.service';
 import logger from '../utils/logger';
 import fetch from 'node-fetch';
 import { IPricesIngram, IProductsQuery } from '../interfaces/suppliers/_Ingram.interface';
+import { COLLECTIONS } from '../config/constants';
 
 class ExternalIngramService extends ResolversOperationsService {
+  collection = COLLECTIONS.INGRAM_PRODUCTS;
+  catalogName = 'Productos Ingram';
+
   constructor(root: object, variables: object, context: IContextData) {
     super(root, variables, context);
   }
-
 
   async getTokenIngram() {
     const username = 'ZpGbzheF2yQlsfA00vuvu4JdXkf76w9L';
@@ -52,10 +55,9 @@ class ExternalIngramService extends ResolversOperationsService {
   async getIngramProduct() {
     try {
       let ingramPartNumber = undefined;
-      const collection = 'ingram_products';
 
-      const result = await this.getByField(collection);
-      ingramPartNumber = result.item['IM SKU'];
+      const result = await this.getByField(this.collection);
+      ingramPartNumber = result.item.imSKU.trim();
 
       if (!ingramPartNumber) {
         return {
@@ -154,18 +156,20 @@ class ExternalIngramService extends ResolversOperationsService {
         let partsNumber: IProductsQuery[] = [];
         const pricesIngram: IPricesIngram[] = [];
         for (const prod of productosIngram.ingramProducts) {
-          i += 1;
-          partsNumber.push({ ingramPartNumber: prod.ingramPartNumber });
-          if (i % 20 === 0) {
-            const productPrices = await this.getPricesIngramBloque(partsNumber)
-            for (const prodPrices of productPrices.pricesIngram) {
-              if (allRecords) {
-                pricesIngram.push(prodPrices);
-              } else if (prodPrices.availability && ['A', 'B', 'C'].includes(prodPrices.productClass)) {
-                pricesIngram.push(prodPrices);
+          if (prod.type === "IM::physical" || prod.vendorName.toUpperCase() !== "APPLE TEST") {
+            i += 1;
+            partsNumber.push({ ingramPartNumber: prod.ingramPartNumber });
+            if (i % 20 === 0) {
+              const productPrices = await this.getPricesIngramBloque(partsNumber)
+              for (const prodPrices of productPrices.pricesIngram) {
+                if (allRecords) {
+                  pricesIngram.push(prodPrices);
+                } else if (prodPrices.availability && ['A', 'B', 'C'].includes(prodPrices.productClass)) {
+                  pricesIngram.push(prodPrices);
+                }
               }
+              partsNumber = [];
             }
-            partsNumber = [];
           }
         }
         // Verificar si quedan productos pendientes.
@@ -204,6 +208,15 @@ class ExternalIngramService extends ResolversOperationsService {
         ingramProduct: null,
       };
     }
+  }
+
+  async getCatalogIngram() {
+    const result = await this.listAll(this.collection, this.catalogName);
+    return {
+      status: result.status,
+      message: result.message,
+      catalogIngram: result.items
+    };
   }
 
   async getPricesIngramBloque(productsQuery: IProductsQuery[]) {

@@ -64,6 +64,38 @@ class ResolversOperationsService {
     }
   }
 
+  protected async listAll(
+    collection: string,
+    listElement: string,
+    page: number = 1,
+    itemsPage: number = -1,
+    filter: object = {},
+    sort: object = {}
+  ) {
+    try {
+      sort = { ...sort, ...{ id: 1 } };
+      const paginationData = await pagination(this.getDB(), collection, page, itemsPage, filter);
+      return {
+        info: {
+          page: paginationData.page,
+          pages: paginationData.pages,
+          itemsPage: paginationData.itemsPage,
+          total: -1
+        },
+        status: true,
+        message: `Lista de ${listElement} cargada correctamente`,
+        items: findElements(this.getDB(), collection, filter, paginationData, sort)
+      };
+    } catch (error) {
+      return {
+        info: null,
+        status: false,
+        message: `Lista de ${listElement} no cargada correctamente: ${error}`,
+        items: []
+      };
+    }
+  }
+
   // Listar informacion de Productos
   protected async listProducts(
     collection: string,

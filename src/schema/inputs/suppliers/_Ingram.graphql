@@ -1,0 +1,27 @@
+input CatalogIngramInput {
+  changeCode: String
+  imSKU: String
+  vendorNumber: String
+  vendorName: String
+  descriptionLine1: String
+  descriptionLine2: String
+  retailPriceMSRP: Float
+  vendorPartNumber: String
+  weight: Float
+  upcCode: String
+  length: Float
+  width: Float
+  height: Float
+  customerCostChangeCode: String
+  customerCost: Float
+  specialPricingChangeCode: String
+  stockAvailableYN: String
+  partStatus: String
+  allianceProduct: String
+  cpuCode: String
+  mediaCode: String
+  ingramCatSubcategory: Float
+  yIfPartStockedAtIM: String
+  rebateAppliedToCostYN: String
+  substituteIMPartNumber: String
+}

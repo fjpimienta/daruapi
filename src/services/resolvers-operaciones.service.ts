@@ -180,7 +180,7 @@ class ResolversOperationsService {
       filter = { "Prod_id": productIcecat, "Supplier": new RegExp(brand, "i") };
     }
     if (vendorPartNumber) {
-      filter = { "Vendor Part Number": { $regex: new RegExp(vendorPartNumber + '\\s*$') } };
+      filter = { "vendorPartNumber": { $regex: new RegExp(vendorPartNumber + '\\s*$') } };
     } else if (upc) {
       const cleanedUpc = upc.replace(/^0+/, '');
       filter = { "UPC Code": cleanedUpc };

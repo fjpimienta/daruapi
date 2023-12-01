@@ -7,7 +7,7 @@ const resolversIngramQuery: IResolvers = {
       return new ExternalIngramService(_, __, context).getTokenIngram();
     },
     async ingramProduct(_, variables, context) {
-      return new ExternalIngramService(_, variables, context).getIngramProduct();
+      return new ExternalIngramService(_, variables, context).getIngramProduct(variables);
     },
     async ingramProducts(_, variables, context) {
       return new ExternalIngramService(_, variables, context).getIngramProducts();

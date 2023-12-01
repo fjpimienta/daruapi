@@ -218,7 +218,7 @@ class ProductsService extends ResolversOperationsService {
           vendorPartNumber: product.partnumber,
           upc: product.upc
         }
-        const ingram = await new ExternalIngramService({}, variableI, context).getIngramProduct();
+        const ingram = await new ExternalIngramService({}, variableI, context).getIngramProduct({});
         if (ingram.ingramProduct) {
           const generalInfo: any = {};
           generalInfo.IcecatId = 0;

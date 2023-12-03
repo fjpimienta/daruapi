@@ -6,5 +6,6 @@ type ResultIngram implements Result {
     ingramProduct: IngramProduct
     ingramProducts: [IngramProduct]
     pricesIngram: [ResponsePricesIngram]
-    catalogIngram: [ResponseCatalogoIngram]
+    catalogIngram: ResponseCatalogoIngram
+    catalogIngrams: [ResponseCatalogoIngram]
 }

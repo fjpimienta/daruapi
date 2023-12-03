@@ -215,12 +215,29 @@ class ExternalIngramService extends ResolversOperationsService {
     }
   }
 
-  async getCatalogIngram() {
+  async getCatalogIngram(variables: IVariables) {
+    try {
+      const result = await this.getByField(this.collection);
+      return {
+        status: result.status,
+        message: result.message,
+        catalogIngram: result.item
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        catalogIngram: null,
+      };
+    }
+  }
+
+  async getCatalogIngrams() {
     const result = await this.listAll(this.collection, this.catalogName);
     return {
       status: result.status,
       message: result.message,
-      catalogIngram: result.items
+      catalogIngrams: result.items
     };
   }
 

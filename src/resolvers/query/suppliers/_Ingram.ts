@@ -16,7 +16,10 @@ const resolversIngramQuery: IResolvers = {
       return new ExternalIngramService(_, variables, context).getPricesIngram(variables);
     },
     async catalogIngram(_, variables, context) {
-      return new ExternalIngramService(_, variables, context).getCatalogIngram();
+      return new ExternalIngramService(_, variables, context).getCatalogIngram(variables);
+    },
+    async catalogIngrams(_, variables, context) {
+      return new ExternalIngramService(_, variables, context).getCatalogIngrams();
     }
   }
 };

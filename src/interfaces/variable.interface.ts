@@ -125,4 +125,5 @@ export interface IVariables {
   vendorPartNumber?: String;
   upc?: String;
   allRecords?: Boolean;
+  imSKU?: String;
 }

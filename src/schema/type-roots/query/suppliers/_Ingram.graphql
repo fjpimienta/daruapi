@@ -9,5 +9,8 @@ type Query {
   pricesIngram(
     allRecords: Boolean = false
   ): ResultIngram
-  catalogIngram: ResultIngram
+  catalogIngram(
+    imSKU: String
+  ): ResultIngram
+  catalogIngrams: ResultIngram
 }

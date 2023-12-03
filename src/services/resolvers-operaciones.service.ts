@@ -170,20 +170,26 @@ class ResolversOperationsService {
 
   // Obtener detalles del item
   protected async getByField(collection: string, filter: object = {}) {
-    const { c_pais, vendorPartNumber, upc, brandIcecat, productIcecat } = this.variables;
-    const collectionLabel = `El Producto ${productIcecat}`;
+    const { c_pais, vendorPartNumber, upc, brandIcecat, productIcecat, imSKU } = this.variables;
+    let collectionLabel = '';
     if (c_pais) {
       filter = { c_pais: c_pais };
     }
     if (productIcecat && brandIcecat) {
       const brand = brandIcecat.toLowerCase();
       filter = { "Prod_id": productIcecat, "Supplier": new RegExp(brand, "i") };
+      collectionLabel = `El Producto ${productIcecat}`;
     }
     if (vendorPartNumber) {
       filter = { "vendorPartNumber": { $regex: new RegExp(vendorPartNumber + '\\s*$') } };
+      collectionLabel = `El Producto ${vendorPartNumber}`;
     } else if (upc) {
       const cleanedUpc = upc.replace(/^0+/, '');
       filter = { "UPC Code": cleanedUpc };
+      collectionLabel = `El Producto ${cleanedUpc}`;
+    } else if (imSKU) {
+      filter = { "imSKU": { $regex: new RegExp(imSKU + '\\s*$') } };
+      collectionLabel = `El Producto ${imSKU}`;
     }
     try {
       return await findOneElement(this.getDB(), collection, filter).then(result => {

@@ -233,7 +233,9 @@ class ExternalIngramService extends ResolversOperationsService {
   }
 
   async getCatalogIngrams() {
-    const result = await this.listAll(this.collection, this.catalogName);
+    // Extraer solo los productos disponibles en Ingram.
+    const filter: object = {"stockAvailableYN": "Y"}
+    const result = await this.listAll(this.collection, this.catalogName, 1,-1, filter);
     return {
       status: result.status,
       message: result.message,

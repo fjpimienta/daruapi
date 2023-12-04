@@ -75,12 +75,13 @@ class ResolversOperationsService {
     try {
       sort = { ...sort, ...{ id: 1 } };
       const paginationData = await pagination(this.getDB(), collection, page, itemsPage, filter);
+      paginationData.total = -1;
       return {
         info: {
           page: paginationData.page,
           pages: paginationData.pages,
           itemsPage: paginationData.itemsPage,
-          total: -1
+          total: paginationData.total
         },
         status: true,
         message: `Lista de ${listElement} cargada correctamente`,

@@ -19,4 +19,7 @@ type Query {
    "Item del producto seleccionado"
    product(id: ID!): ResultProduct
    productId: ResultProduct
+   productField(
+    partNumber: String
+  ): ResultProduct
 }

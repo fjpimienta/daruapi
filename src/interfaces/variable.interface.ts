@@ -117,13 +117,13 @@ export interface IVariables {
   cupon?: ICatalog;
   cupons?: ICatalog[];
   //icecat
-  brandIcecat?: String;
-  productIcecat?: String;
-  upcIcecat?: String;
+  brandIcecat?: string;
+  productIcecat?: string;
+  upcIcecat?: string;
   // ingram
-  ingramPartNumber?: String;
-  vendorPartNumber?: String;
-  upc?: String;
+  ingramPartNumber?: string;
+  vendorPartNumber?: string;
+  upc?: string;
   allRecords?: Boolean;
-  imSKU?: String;
+  imSKU?: string;
 }

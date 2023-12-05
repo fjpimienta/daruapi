@@ -126,4 +126,6 @@ export interface IVariables {
   upc?: string;
   allRecords?: Boolean;
   imSKU?: string;
+  // products
+  partNumber?: string;
 }

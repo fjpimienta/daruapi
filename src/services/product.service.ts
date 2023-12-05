@@ -323,6 +323,23 @@ class ProductsService extends ResolversOperationsService {
     };
   }
 
+  async getProductField() {
+    try {
+      const result = await this.getByField(this.collection);
+      return {
+        status: result.status,
+        message: result.message,
+        productField: result.item
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        productField: null,
+      };
+    }
+  }
+
   // Obtener el siguiente elemento
   async next() {
     const result = await this.nextId(this.collection);

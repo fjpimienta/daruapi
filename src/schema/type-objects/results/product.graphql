@@ -8,4 +8,5 @@ type ResultProduct implements Result{
   product: Product
   products: [Product!]!
   productId: String
+  productField: Product
 }

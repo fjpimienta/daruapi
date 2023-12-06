@@ -2,4 +2,5 @@ type ResultIcecat implements Result {
     status: Boolean!
     message: String!
     icecatProduct: IcecatProduct
+    icecatProductLocal: IcecatProductLocal
 }

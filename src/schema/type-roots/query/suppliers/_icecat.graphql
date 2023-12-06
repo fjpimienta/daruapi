@@ -3,4 +3,8 @@ type Query {
     brandIcecat: String
     productIcecat: String
   ): ResultIcecat
+  icecatProductLocal(
+    brandIcecat: String,
+    productIcecat: String
+  ): ResultIcecat 
 }

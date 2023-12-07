@@ -160,7 +160,6 @@ class ProductsService extends ResolversOperationsService {
         }
         generalInfo.GeneratedBulletPoints = generatedBulletPoints;
         product.generalInfo = generalInfo;
-        console.log('icecatExt.icecatProductLocal.ProductGallery: ', icecatExt.icecatProductLocal.ProductGallery);
 
         if (icecatExt.icecatProductLocal.ProductGallery && icecatExt.icecatProductLocal.ProductGallery.includes('|')) {
           product.pictures = [];
@@ -184,10 +183,8 @@ class ProductsService extends ResolversOperationsService {
           }
         }
       }
-      console.log('product: ', product);
     } else {
       const icecat = await new ExternalIcecatsService({}, variableLocal, context).getICecatProductInt(variableLocal);
-      // console.log('details.icecat: ', icecat);
       if (icecat.status) {
         if (icecat.icecatProduct.GeneralInfo && icecat.icecatProduct.GeneralInfo.IcecatId !== '') {
           product.generalInfo = icecat.icecatProduct.GeneralInfo;
@@ -314,7 +311,6 @@ class ProductsService extends ResolversOperationsService {
         }
       }
     }
-    // console.log('product: ', product);
     return {
       status: result.status,
       message: result.message,
@@ -513,31 +509,36 @@ class ProductsService extends ResolversOperationsService {
             product.pictures = [];
             product.sm_pictures = [];
             for (const pictureI of productLocal.productField.pictures) {
-              if (pictureI !== '') {
+              if (pictureI.url !== '') {
                 const pict: IPicture = {
-                  width: '500',
-                  height: '500',
-                  url: pictureI
+                  width: pictureI.width,
+                  height: pictureI.height,
+                  url: pictureI.url
                 };
                 product.pictures.push(pict);
-                const pict_sm: IPicture = {
-                  width: '300',
-                  height: '300',
-                  url: pictureI
+              }
+            }
+            for (const pictureIsm of productLocal.productField.sm_pictures) {
+              if (pictureIsm.url !== '') {
+                const pict: IPicture = {
+                  width: pictureIsm.width,
+                  height: pictureIsm.height,
+                  url: pictureIsm.url
                 };
-                product.sm_pictures.push(pict_sm);
+                product.sm_pictures.push(pict);
               }
             }
           }
         }
       }
-      productsAdd.push(product);
+      // Guardar siempre y cuando tenga imagenes
+      if (product && product.pictures && product.pictures.length > 0) {
+        productsAdd.push(product);
+      }
     }
     // Guardar los elementos nuevos
-    console.log('productsAdd.length: ', productsAdd.length);
     if (productsAdd.length > 0) {
       const result = await this.addList(this.collection, productsAdd || [], 'products');
-      console.log('result: ', result);
       return {
         status: result.status,
         message: result.message,

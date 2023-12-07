@@ -7,7 +7,7 @@ const resolversProductMutation: IResolvers = {
       return new ProductsService(_, variables, context).insert();
     },
     async addProducts(_, variables, context) {
-      return new ProductsService(_, variables, context).insertMany();
+      return new ProductsService(_, variables, context).insertMany(context);
     },
     async updateProduct(_, variables, context) {
       return new ProductsService(_, variables, context).modify();

@@ -419,7 +419,7 @@ class ProductsService extends ResolversOperationsService {
   }
 
   // Añadir una lista
-  async insertMany() {
+  async insertMany(context: IContextData) {
     const products = this.getVariables().products;
     let productsAdd: IProduct[] = [];
     if (products?.length === 0) {                                   // Verificar que envien productos.
@@ -471,6 +471,64 @@ class ProductsService extends ResolversOperationsService {
       i += 1;
       product.registerDate = new Date().toISOString();
       productsAdd.push(product);
+      // Recuperar imagenes de icecat todos los proveedores
+      const variableLocal = {
+        brandIcecat: product.brands[0].slug,
+        productIcecat: product.partnumber
+      }
+      // Busca las imagenes en Icecat Local
+      const icecatExt = await new ExternalIcecatsService({}, variableLocal, context).getIcecatProductLocal();
+      if (icecatExt.status) {
+        if (icecatExt.icecatProductLocal) {
+          if (icecatExt.icecatProductLocal.LowPic !== '') {
+            product.pictures = [];
+            product.sm_pictures = [];
+            const imagenes: string[] = icecatExt.icecatProductLocal.ProductGallery.split('|');
+            console.log('imagenes: ', imagenes);
+            for (const pictureI of imagenes) {
+              if (pictureI !== '') {
+                const pict: IPicture = {
+                  width: '500',
+                  height: '500',
+                  url: pictureI
+                };
+                product.pictures.push(pict);
+                const pict_sm: IPicture = {
+                  width: '300',
+                  height: '300',
+                  url: pictureI
+                };
+                product.sm_pictures.push(pict_sm);
+              }
+            }
+          }
+        }
+      } else {                  // Si no hay imagenes en icecat local buscan en los otros proveedores las imagenes.
+        const variableLoc = {
+          partNumber: product.partnumber
+        }
+        const productLocal = await new ProductsService({}, variableLoc, context).getProductField();
+        if (productLocal.productField.pictures && productLocal.productField.pictures.length > 0) {
+          product.pictures = [];
+          product.sm_pictures = [];
+          for (const pictureI of productLocal.productField.pictures) {
+            if (pictureI !== '') {
+              const pict: IPicture = {
+                width: '500',
+                height: '500',
+                url: pictureI
+              };
+              product.pictures.push(pict);
+              const pict_sm: IPicture = {
+                width: '300',
+                height: '300',
+                url: pictureI
+              };
+              product.sm_pictures.push(pict_sm);
+            }
+          }
+        }
+      }
     }
     // Guardar los elementos nuevos
     if (productsAdd.length > 0) {

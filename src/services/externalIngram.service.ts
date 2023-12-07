@@ -4,7 +4,7 @@ import ResolversOperationsService from './resolvers-operaciones.service';
 
 import logger from '../utils/logger';
 import fetch from 'node-fetch';
-import { IPricesIngram, IProductsQuery } from '../interfaces/suppliers/_Ingram.interface';
+import { IIngramProduct, IPricesIngram, IProductsQuery } from '../interfaces/suppliers/_Ingram.interface';
 import { COLLECTIONS } from '../config/constants';
 
 class ExternalIngramService extends ResolversOperationsService {
@@ -153,8 +153,7 @@ class ExternalIngramService extends ResolversOperationsService {
       const { allRecords } = variables;
       const productosIngram = await this.getIngramProducts();
       if (productosIngram.status && productosIngram.ingramProducts.length > 0) {
-        console.log("productosIngram.ingramProducts.length: ", productosIngram.ingramProducts.length);
-        // Generar bloques de 100 productos.
+        // Generar bloques de 50 productos.
         let i = 0;
         let partsNumber: IProductsQuery[] = [];
         const pricesIngram: IPricesIngram[] = [];
@@ -164,7 +163,6 @@ class ExternalIngramService extends ResolversOperationsService {
             partsNumber.push({ ingramPartNumber: prod.ingramPartNumber });
             if (i % 50 === 0) {
               const productPrices = await this.getPricesIngramBloque(partsNumber)
-              console.log("productPrices: ", productPrices);
               for (const prodPrices of productPrices.pricesIngram) {
                 if (allRecords) {
                   pricesIngram.push(prodPrices);
@@ -176,7 +174,6 @@ class ExternalIngramService extends ResolversOperationsService {
             }
           }
         }
-        console.log("i: ", i);
         // Verificar si quedan productos pendientes.
         if (partsNumber.length > 0) {
           const productPrices = await this.getPricesIngramBloque(partsNumber);
@@ -187,6 +184,16 @@ class ExternalIngramService extends ResolversOperationsService {
           }
         }
         if (pricesIngram.length > 0) {
+          // Agregar categorias y subcategorias
+          for (const priceItem of pricesIngram) {
+            const item = productosIngram.ingramProducts.find((x: IIngramProduct) => x.vendorPartNumber === priceItem.vendorPartNumber);
+            if (item) {
+              priceItem.category = item.category ? item.category : '';
+              priceItem.subCategory = item.subCategory ? item.subCategory : '';
+              priceItem.newProduct = item.newProduct === 'true' ? true : false;
+            }
+          }
+          // Fin Agregar
           return {
             status: true,
             message: `Se ha generado la lista de precios de productos.`,
@@ -234,8 +241,8 @@ class ExternalIngramService extends ResolversOperationsService {
 
   async getCatalogIngrams() {
     // Extraer solo los productos disponibles en Ingram.
-    const filter: object = {"stockAvailableYN": "Y"}
-    const result = await this.listAll(this.collection, this.catalogName, 1,-1, filter);
+    const filter: object = { "stockAvailableYN": "Y" }
+    const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
     return {
       status: result.status,
       message: result.message,

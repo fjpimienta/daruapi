@@ -104,6 +104,9 @@ type ResponsePricesIngram {
   vendorNumber: String
   vendorName: String
   description: String
+  category: String
+  subCategory: String
+  newProduct: Boolean
   productClass: String
   uom: String
   acceptBackOrder: Boolean

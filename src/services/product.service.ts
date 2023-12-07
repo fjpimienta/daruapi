@@ -542,7 +542,7 @@ class ProductsService extends ResolversOperationsService {
       return {
         status: result.status,
         message: result.message,
-        products: result.items
+        products: []
       };
     }
   }

@@ -1,0 +1,6 @@
+type Welcome {
+  id: ID
+  email: String!
+  name: String!
+  cupon: String!
+}

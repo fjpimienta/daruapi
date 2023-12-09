@@ -1,0 +1,6 @@
+input WelcomeInput {
+  id: ID
+  email: String!
+  name: String!
+  cupon: String!
+}

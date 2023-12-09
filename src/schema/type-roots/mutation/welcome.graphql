@@ -1,0 +1,6 @@
+type Mutation {
+   addWelcome(welcome: WelcomeInput!): ResultWelcome
+   updateWelcome(welcome: WelcomeInput!): ResultWelcome
+   deleteWelcome(id: ID!): ResultWelcome
+   blockWelcome(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultWelcome
+}

@@ -16,6 +16,7 @@ import { IProductCtShippment } from './suppliers/_CtsShippments.interface';
 import { IGroupCva, IOrderCva } from './suppliers/_CvasShippments.interface';
 import { IProductCvaShippment } from './suppliers/_CvasShippments.interface';
 import { ICaptureChargeOpenpay, ICardOpenpay, IChargeOpenpay, ICustomerOpenpay, IPayoutOpenpay, IRefundChargeOpenpay } from './suppliers/_Openpay.interface';
+import { IWelcome } from './welcome.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -48,6 +49,8 @@ export interface IVariables {
   order?: IOrder;
   orders?: IOrder[];
   config?: IConfig;
+  welcome?: IWelcome;
+  welcomes?: IWelcome[];
   warehouse?: IWarehouse;
   warehouses?: IWarehouse[];
   shipping?: IShipping;

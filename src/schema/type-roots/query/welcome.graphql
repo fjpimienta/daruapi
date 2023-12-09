@@ -1,0 +1,10 @@
+type Query {
+  welcomes (
+      page: Int=1, 
+      itemsPage: Int=10,
+      active: ActiveFilterEnum = ACTIVE
+      filterName: String=""
+   ): ResultWelcome
+   welcome(id: ID!): ResultWelcome
+   welcomeId: ResultWelcome
+}

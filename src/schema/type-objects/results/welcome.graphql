@@ -3,6 +3,9 @@ type ResultWelcome implements Result{
   status: Boolean!
   message: String!
   welcome: Welcome
+  welcomeByField(
+    email: String
+  ): Welcome
   welcomeId: String
   welcomes: [Welcome!]!
 }

@@ -53,6 +53,15 @@ class WelcomesService extends ResolversOperationsService {
     };
   }
 
+  async detailsByField() {
+    const result = await this.getByField(this.collection);
+    return {
+      status: result.status,
+      message: result.message,
+      welcome: result.item
+    };
+  }
+
   // Obtener el siguiente elemento
   async next() {
     const result = await this.nextId(this.collection);
@@ -108,6 +117,7 @@ class WelcomesService extends ResolversOperationsService {
       email: welcome?.email,
       name: welcome?.name,
       cupon: welcome?.cupon,
+      active: true,
       registerDate: new Date().toISOString()
     };
     const result = await this.add(this.collection, welcomeObject, 'welcome');

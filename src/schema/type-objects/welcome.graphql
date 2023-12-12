@@ -3,4 +3,5 @@ type Welcome {
   email: String!
   name: String!
   cupon: String!
+  active: Boolean
 }

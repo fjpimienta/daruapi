@@ -3,4 +3,5 @@ export interface IWelcome {
   email?: string;
   name?: string;
   cupon?: string;
+  active?: boolean;
 }

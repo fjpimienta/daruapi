@@ -6,5 +6,6 @@ type Query {
       filterName: String=""
    ): ResultWelcome
    welcome(id: ID!): ResultWelcome
+   welcomeByField(email: String): ResultWelcome
    welcomeId: ResultWelcome
 }

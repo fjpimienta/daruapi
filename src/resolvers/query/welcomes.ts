@@ -9,6 +9,9 @@ const resolversWelcomesQuery: IResolvers = {
     async welcome(_, variables, context) {
       return new WelcomesService(_, variables, context).details();
     },
+    async welcomeByField(_, variables, context) {
+      return new WelcomesService(_, variables, context).detailsByField();
+    },
     async welcomeId(_, __, context) {
       return new WelcomesService(_, __, context).next();
     }

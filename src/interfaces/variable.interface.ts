@@ -119,6 +119,7 @@ export interface IVariables {
   idPayoutOpenpay?: string;
   cupon?: ICatalog;
   cupons?: ICatalog[];
+  email?: String;
   //icecat
   brandIcecat?: string;
   productIcecat?: string;

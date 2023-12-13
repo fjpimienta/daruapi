@@ -17,6 +17,7 @@ import { IGroupCva, IOrderCva } from './suppliers/_CvasShippments.interface';
 import { IProductCvaShippment } from './suppliers/_CvasShippments.interface';
 import { ICaptureChargeOpenpay, ICardOpenpay, IChargeOpenpay, ICustomerOpenpay, IPayoutOpenpay, IRefundChargeOpenpay } from './suppliers/_Openpay.interface';
 import { IWelcome } from './welcome.interface';
+import { ICupon } from './cupon.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -117,8 +118,8 @@ export interface IVariables {
   refundTransactionCharge?: IRefundChargeOpenpay;
   payoutOpenpay?: IPayoutOpenpay;
   idPayoutOpenpay?: string;
-  cupon?: ICatalog;
-  cupons?: ICatalog[];
+  cupon?: ICupon;
+  cupons?: ICupon[];
   email?: String;
   //icecat
   brandIcecat?: string;

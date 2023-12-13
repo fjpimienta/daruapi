@@ -1,9 +1,8 @@
-type Cupon {
-  id: ID!
+input CuponInput {
+  id: ID
   cupon: String!
   description: String!
   typeDiscount: String!
   amountDiscount: Float!
   minimumPurchase: Float!
-  active: Boolean
 }

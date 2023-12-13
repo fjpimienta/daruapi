@@ -50,9 +50,9 @@ class CuponsService extends ResolversOperationsService {
 
   // Obtener detalles del item
   async details() {
-    const name = this.getVariables().name;
-    if (name) {
-      const result = await this.getByName(this.collection);
+    const cupon = this.getVariables().cupon;
+    if (cupon) {
+      const result = await this.getByField(this.collection);
       return {
         status: result.status,
         message: result.message,
@@ -100,9 +100,11 @@ class CuponsService extends ResolversOperationsService {
     // Si valida las opciones anteriores, venir aqui y crear el documento
     const cuponObject = {
       id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),
+      cupon: cupon?.cupon,
       description: cupon?.description,
-      slug: slugify(cupon?.description || '', { lower: true }),
-      order: cupon?.order,
+      typeDiscount: cupon?.typeDiscount,
+      amountDiscount: cupon?.amountDiscount,
+      minimumPurchase: cupon?.minimumPurchase,
       active: true,
       registerDate: new Date()//,
     };
@@ -127,7 +129,7 @@ class CuponsService extends ResolversOperationsService {
       };
     }
     // Comprobar que no existe
-    if (!this.checkData(cupon?.description || '')) {
+    if (!this.checkData(cupon?.cupon || '')) {
       return {
         status: false,
         message: `El Cupon no se ha especificado correctamente`,
@@ -135,9 +137,11 @@ class CuponsService extends ResolversOperationsService {
       };
     }
     const objectUpdate = {
+      cupon: cupon?.cupon,
       description: cupon?.description,
-      slug: slugify(cupon?.description || '', { lower: true }),
-      order: cupon?.order
+      typeDiscount: cupon?.typeDiscount,
+      amountDiscount: cupon?.amountDiscount,
+      minimumPurchase: cupon?.minimumPurchase,
     };
     // Conocer el id del cupon
     const filter = { id: cupon?.id };
@@ -179,6 +183,12 @@ class CuponsService extends ResolversOperationsService {
     }
     let update = { active: unblock };
     const result = await this.update(this.collection, { id }, update, 'cupon');
+    if (!result.status) {
+      return {
+        status: result.status,
+        message: result.message
+      };
+    }
     const action = (unblock) ? 'Activado' : 'Desactivado';
     return {
       status: result.status,

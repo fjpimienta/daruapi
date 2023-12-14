@@ -106,6 +106,21 @@ class DeliverysService extends ResolversOperationsService {
       registerDate: new Date().toISOString()
     };
     const result = await this.add(this.collection, deliveryObject, 'delivery');
+    // Si se guarda el envio, inactivar el cupon.
+    if (result.status === true) {
+      if (delivery && delivery?.user) {
+        const collection = COLLECTIONS.WELCOMES;
+        const filter = {
+          email: delivery?.user.email
+        }
+        const welcome = await this.getByField(collection, filter);
+        if (welcome && welcome.item) {
+          const id = { id: welcome.item.id };
+          const active = { active: false };
+          await this.update(collection, id, active, 'welcome');
+        }
+      }
+    }
     return {
       status: result.status,
       message: result.message,

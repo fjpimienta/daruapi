@@ -4,7 +4,7 @@ type Delivery {
   id: ID
   deliveryId: String!
   cliente: String!
-  cupon: Catalog
+  cupon: Cupon
   discount: Float!
   importe: Float!
   registerDate: String

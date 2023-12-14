@@ -1,4 +1,4 @@
-import { ICatalog } from './catalog.interface';
+import { ICupon } from './cupon.interface';
 import { IInvoiceConfig } from './invoiceConfig.interface';
 import { IOrderCt } from './suppliers/_CtsShippments.interface';
 import { IOrderCva } from './suppliers/_CvasShippments.interface';
@@ -11,7 +11,7 @@ export interface IDelivery {
   id: string;
   deliveryId: string;
   cliente: string;
-  cupon?: ICatalog;
+  cupon?: ICupon;
   discount: number;
   importe: number;
   registerDate?: string;

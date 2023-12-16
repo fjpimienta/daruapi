@@ -5,4 +5,5 @@ type Cupon {
   typeDiscount: String!
   amountDiscount: Float!
   minimumPurchase: Float!
+  cupon: Cupon!
 }

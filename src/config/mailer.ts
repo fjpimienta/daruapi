@@ -1,21 +1,23 @@
 import chalk from 'chalk';
 import nodemailer from 'nodemailer';
 
-export const transport = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   pool: true,
   host: 'smtp.ionos.mx',
-  port: 587,                                    // 465 (gmail)
-  secure: false,                                // true for 465, false for other ports
+  port: 587,
+  secure: false,
   auth: {
-    user: process.env.USER_EMAIL,               // generated ethereal user
-    pass: process.env.USER_PASSWORD,            // generated ethereal password
+    user: process.env.USER_EMAIL,
+    pass: process.env.USER_PASSWORD,
   },
   tls: {
-    ciphers: 'SSLv3'                            //  adding the tls.ciphers option to use SSLv3
-  }
+    ciphers: 'TLS_AES_128_GCM_SHA256',
+  },
 });
 
-transport.verify().then(() => {
+export default transporter;
+
+transporter.verify().then(() => {
   console.log('=================NODE MAILER CONFIG=====================');
   console.log(`STATUS: ${chalk.greenBright('ONLINE')}`);
   console.log(`MESSAGE: ${chalk.greenBright('MAILER CONNECT!!!')}`);

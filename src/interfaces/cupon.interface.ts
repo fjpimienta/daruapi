@@ -5,4 +5,5 @@ export interface ICupon {
   typeDiscount?: string;
   amountDiscount?: number;
   minimumPurchase?: number;
+  active?: boolean;
 }

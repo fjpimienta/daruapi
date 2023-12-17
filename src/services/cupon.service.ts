@@ -142,6 +142,7 @@ class CuponsService extends ResolversOperationsService {
       typeDiscount: cupon?.typeDiscount,
       amountDiscount: cupon?.amountDiscount,
       minimumPurchase: cupon?.minimumPurchase,
+      active: cupon?.active
     };
     // Conocer el id del cupon
     const filter = { id: cupon?.id };

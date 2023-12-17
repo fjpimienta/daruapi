@@ -5,4 +5,5 @@ input CuponInput {
   typeDiscount: String!
   amountDiscount: Float!
   minimumPurchase: Float!
+  active: Boolean!
 }

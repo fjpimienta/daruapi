@@ -4,14 +4,14 @@ import nodemailer from 'nodemailer';
 export const transport = nodemailer.createTransport({
   pool: true,
   host: 'smtp.ionos.mx',
-  port: 587,                                    // 465 (gmail)
-  secure: false,                                // true for 465, false for other ports
+  port: 587,                                   // Deberías usar 587 para TLS o STARTTLS, 465 es para SSL, pero no estás usando "secure: true"
+  secure: true,                                // Establecer a true solo si estás utilizando SSL (puerto 465)
   auth: {
-    user: process.env.USER_EMAIL,               // generated ethereal user
-    pass: process.env.USER_PASSWORD,            // generated ethereal password
+    user: process.env.USER_EMAIL,              // generated ethereal user
+    pass: process.env.USER_PASSWORD,           // generated ethereal password
   },
   tls: {
-    ciphers: 'SSLv3'                            //  adding the tls.ciphers option to use SSLv3
+    ciphers: 'TLS_AES_128_GCM_SHA256'          // Mejorar las ciphers para seguridad, SSLv3 no se recomienda
   }
 });
 

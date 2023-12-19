@@ -18,6 +18,7 @@ import resolversUserMutation from './user';
 import resolversDeliveryMutation from './delivery';
 import resolversCuponMutation from './cupon';
 import resolversWelcomeMutation from './welcome';
+import resolversIcommktMutation from './suppliers/_Icommkt';
 
 const mutationResolvers = GMR.merge([
   resolversUserMutation,
@@ -38,7 +39,8 @@ const mutationResolvers = GMR.merge([
   resolversOrderCvasMutation,
   resolversDeliveryMutation,
   resolversCuponMutation,
-  resolversWelcomeMutation
+  resolversWelcomeMutation,
+  resolversIcommktMutation
 ]);
 
 export default mutationResolvers;

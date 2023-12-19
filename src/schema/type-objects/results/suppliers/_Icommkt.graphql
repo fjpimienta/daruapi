@@ -5,4 +5,5 @@ type ResultIcommkt implements Result {
     icommktContacts: [IcommktContact]
     addContact: IcommktContact
     updateContact: IcommktContact
+    removeContact: IcommktContact
 }

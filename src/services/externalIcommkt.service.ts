@@ -194,8 +194,63 @@ class ExternalIcommktsService extends ResolversOperationsService {
     }
   }
 
-  async setDeleteContact() {
-
+  async setRemoveContact(variables: IVariables) {
+    try {
+      const { email } = variables;
+      const ProfileKey = 'ODkzMjQ20';
+      const Authorization = 'MjU0NC04MzQxLWRhcnVteF91c3I1';
+      const apiUrl = 'https://api.icommarketing.com/Contacts/RemoveContact.Json/';
+      const options = {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': Authorization
+        },
+        body: JSON.stringify({
+          "ProfileKey": ProfileKey,
+          "Contact": {
+            "Email": email
+          }
+        })
+      };
+      console.log('options: ', options);
+      const result = await fetch(apiUrl, options);
+      console.log('result: ', result);
+      const data = await result.json();
+      console.log('data: ', data);
+      if (result.ok) {
+        if (data.RemoveContactJsonResult.StatusCode === 2) {
+          return {
+            status: true,
+            message: `El Contacto ${email} se ha eliminado correctamente.`,
+            removeContact: data.RemoveContactJsonResult.Data
+          };
+        } else if (data.RemoveContactJsonResult.StatusCode === 101) {
+          return {
+            status: false,
+            message: `El Contacto ${email} no se encuentra. Validar contacto.`,
+            removeContact: data.RemoveContactJsonResult.Data
+          };
+        }
+        return {
+          status: false,
+          message: `El Contacto ${email} no se ha eliminado. Validar contacto.`,
+          removeContact: data.RemoveContactJsonResult.Data
+        };
+      }
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + data.code + ': ' + data.message,
+        removeContact: null
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        addContact: null,
+      };
+    }
   }
 
   async setUnsubscribeContact() {

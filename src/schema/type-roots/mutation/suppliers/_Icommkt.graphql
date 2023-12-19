@@ -5,4 +5,7 @@ type Mutation {
   updateContact(
     icommkContactInputs: [IcommkContactInput!]!
   ): ResultIcommkt
+  removeContact(
+    email: String!
+  ): ResultIcommkt
 }

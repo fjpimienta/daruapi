@@ -8,6 +8,9 @@ const resolversIcommktMutation: IResolvers = {
     },
     async updateContact(_, variables, context) {
       return new ExternalIcommktsService(_, variables, context).setUpdateContact(variables);
+    },
+    async removeContact(_, variables, context) {
+      return new ExternalIcommktsService(_, variables, context).setRemoveContact(variables);
     }
   }
 };

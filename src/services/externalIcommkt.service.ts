@@ -92,6 +92,119 @@ class ExternalIcommktsService extends ResolversOperationsService {
     }
   }
 
+  async setAddContact(variables: IVariables) {
+    try {
+      const { icommkContactInput } = variables;
+      const ProfileKey = 'ODkzMjQ20';
+      const Authorization = 'MjU0NC04MzQxLWRhcnVteF91c3I1';
+      const apiUrl = 'https://api.icommarketing.com/Contacts/SaveContact.Json/';
+      const options = {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': Authorization
+        },
+        body: JSON.stringify({
+          "ProfileKey": ProfileKey,
+          "Contact": icommkContactInput
+        })
+      };
+      const result = await fetch(apiUrl, options);
+      console.log('result: ', result);
+      const data = await result.json();
+      console.log('data: ', data);
+      if (result.ok) {
+        if (data.SaveContactJsonResult.StatusCode === 1) {
+          return {
+            status: true,
+            message: `El Contacto ${icommkContactInput?.Email} se ha agregado correctamente.`,
+            addContact: data.SaveContactJsonResult.Data
+          };
+        }
+        return {
+          status: false,
+          message: `El Contacto ${icommkContactInput?.Email} no se ha agregado. Validar contacto.`,
+          addContact: data.SaveContactJsonResult.Data
+        };
+      }
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + data.code + ': ' + data.message,
+        addContact: null
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        addContact: null,
+      };
+    }
+  }
+
+  async setUpdateContact(variables: IVariables) {
+    try {
+      const { icommkContactInputs } = variables;
+      const ProfileKey = 'ODkzMjQ20';
+      const Authorization = 'MjU0NC04MzQxLWRhcnVteF91c3I1';
+      const apiUrl = 'https://api.icommarketing.com/Contacts/SaveMultiContact.Json/';
+      if (icommkContactInputs && icommkContactInputs?.length > 0) {
+        const options = {
+          method: 'POST',
+          headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': Authorization
+          },
+          body: JSON.stringify({
+            "ProfileKey": ProfileKey,
+            "ContactList": icommkContactInputs
+          })
+        };
+        const icommkContactInput = icommkContactInputs[0];
+        const result = await fetch(apiUrl, options);
+        const data = await result.json();
+        if (result.ok) {
+          if (data.SaveMultiContactJsonResult.StatusCode === 1 && data.SaveMultiContactJsonResult.Responses[0].StatusCode === 1) {
+            return {
+              status: true,
+              message: `El Contacto ${icommkContactInput.Email} se ha actualizado correctamente.`,
+              updateContact: data.SaveMultiContactJsonResult.Responses[0]
+            };
+          }
+          return {
+            status: false,
+            message: `El Contacto ${icommkContactInput.Email} no se ha actualizado. Validar contacto.`,
+            updateContact: data.SaveMultiContactJsonResult.Responses
+          };
+        }
+
+      }
+      return {
+        status: false,
+        message: 'No hay datos que actualizar.',
+        updateContact: null
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        addContact: null,
+      };
+    }
+  }
+
+  async setDeleteContact() {
+
+  }
+
+  async setUnsubscribeContact() {
+
+  }
+
+  async setActiveContact() {
+
+  }
 }
 
 export default ExternalIcommktsService;

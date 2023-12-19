@@ -3,4 +3,6 @@ type ResultIcommkt implements Result {
     message: String!
     icommktContact: IcommktContact
     icommktContacts: [IcommktContact]
+    addContact: IcommktContact
+    updateContact: IcommktContact
 }

@@ -1,10 +1,5 @@
-export interface ListContactsFullJsonResult {
-  ListContactsFullJsonResult: Contact[];
-}
-
-export interface Contact {
+export interface IIcommktContact {
   Email: string;
-  Status: string;
   CustomFields: CustomField[];
 }
 

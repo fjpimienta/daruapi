@@ -1,0 +1,6 @@
+type ResultIcommkt implements Result {
+    status: Boolean!
+    message: String!
+    icommktContact: IcommktContact
+    icommktContacts: [IcommktContact]
+}

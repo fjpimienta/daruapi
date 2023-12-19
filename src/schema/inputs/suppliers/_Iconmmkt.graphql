@@ -1,0 +1,14 @@
+input IcommktInput {
+  ProfileKey: String
+  Contact: ContactInput
+}
+
+input ContactInput {
+  Email: String
+  CustomFields: [CustomFieldInput]
+}
+
+input CustomFieldInput {
+  Key: String
+  Value: String
+}

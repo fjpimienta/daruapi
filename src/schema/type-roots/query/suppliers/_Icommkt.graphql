@@ -1,0 +1,6 @@
+type Query {
+  icommktContacts: ResultIcommkt 
+  icommktContact(
+    email: String
+  ): ResultIcommkt
+}

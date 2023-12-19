@@ -1,0 +1,10 @@
+type IcommktContact {
+  Email: String
+  Status: String
+  CustomFields: [CustomFieldsValue]
+}
+
+type CustomFieldsValue {
+  Key: String
+  Value: String
+}

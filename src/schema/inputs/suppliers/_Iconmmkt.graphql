@@ -1,0 +1,9 @@
+input IcommkContactInput {
+  Email: String
+  CustomFields: [CustomFieldInput]
+}
+
+input CustomFieldInput {
+  Key: String
+  Value: String
+}

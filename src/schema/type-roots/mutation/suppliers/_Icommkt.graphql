@@ -1,0 +1,11 @@
+type Mutation {
+  addContact(
+    icommkContactInput: IcommkContactInput!
+  ): ResultIcommkt
+  updateContact(
+    icommkContactInputs: [IcommkContactInput!]!
+  ): ResultIcommkt
+  removeContact(
+    email: String!
+  ): ResultIcommkt
+}

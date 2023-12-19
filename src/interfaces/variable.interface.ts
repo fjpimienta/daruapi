@@ -18,6 +18,7 @@ import { IProductCvaShippment } from './suppliers/_CvasShippments.interface';
 import { ICaptureChargeOpenpay, ICardOpenpay, IChargeOpenpay, ICustomerOpenpay, IPayoutOpenpay, IRefundChargeOpenpay } from './suppliers/_Openpay.interface';
 import { IWelcome } from './welcome.interface';
 import { ICupon } from './cupon.interface';
+import { IIcommktContact } from './suppliers/_Icommkt.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -133,4 +134,7 @@ export interface IVariables {
   imSKU?: string;
   // products
   partNumber?: string;
+  // icommkt
+  icommkContactInput?: IIcommktContact
+  icommkContactInputs?: [IIcommktContact]
 }

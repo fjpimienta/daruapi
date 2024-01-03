@@ -12,6 +12,9 @@ const resolversCtsQuery: IResolvers = {
     async jsonProductsCt(_, __, context) {
       return new ExternalCtsService(_, __, context).getJsonProductsCt();
     },
+    async jsonProductsCtHP(_, __, context) {
+      return new ExternalCtsService(_, __, context).getJsonProductsCtHP();
+    },
     async stockProductsCt(_, __, context) {
       return new ExternalCtsService(_, __, context).getStockProductsCt();
     },

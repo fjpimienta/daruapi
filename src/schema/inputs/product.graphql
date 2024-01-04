@@ -18,6 +18,7 @@ input ProductInput {
   partnumber: String
   sku: String
   upc: String
+  ean: String
   category: [CategorysInput]
   subCategory: [CategorysInput]
   brand: String

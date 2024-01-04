@@ -19,6 +19,8 @@ input FormaPagoInput {
 input MetodoPagoInput {
   id: String
   descripcion: String
+  fechaInicioDeVigencia: String
+  fechaFinDeVigencia: String
 }
 
 input RegimenFiscalInput {

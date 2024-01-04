@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion, IResponseCtsJsonProducts, IEspecificacion } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 
 import logger from '../utils/logger';
@@ -67,7 +67,6 @@ class ExternalCtsService extends ResolversOperationsService {
   async getJsonProductsCtHP() {
     try {
       const jsonProductsCtHP = (await this.downloadHPFileFromFTP()).data;
-      console.log('jsonProductsCtHP: ', jsonProductsCtHP);
       return {
         status: true,
         message: 'La información que hemos pedido se ha cargado correctamente',
@@ -484,10 +483,70 @@ class ExternalCtsService extends ResolversOperationsService {
       // Leer y enviar el json.
       const fileContent = fs.readFileSync(localFilePath, 'utf-8');
       const data = await this.parseXmlToJson(fileContent, 'productos_especiales_VHA2391.xml');
+      const products: IResponseCtsJsonProducts[] = [];
+      let i = 0;
+      for (const prod of data) {
+        i += 1;
+        const newEspecificaciones: IEspecificacion[] = [];
+        // Verifica si 'especificacion' existe y no es nulo
+        if (prod.especificacion && typeof prod.especificacion === 'object') {
+          // Convierte las propiedades del objeto en un array de [clave, valor]
+          const especificacionArray = Object.entries(prod.especificacion);
+          // Itera sobre el array resultante
+          for (const [clave, valor] of especificacionArray) {
+            if (newEspecificaciones.length < 5) {
+              // Comprobación de tipo (type assertion) para 'valor'
+              const valorEspecifico = valor as { tipo: string; valor: string };
+              // Crea una nueva especificación
+              const newEspecificacion: IEspecificacion = {
+                tipo: valorEspecifico.tipo,
+                valor: valorEspecifico.valor
+              };
+              // Agrega la nueva especificación al array
+              newEspecificaciones.push(newEspecificacion);
+            } else {
+              // Si ya hay 5 especificaciones, sal del bucle
+              break;
+            }
+          }
+        } else {
+          console.error("La propiedad 'especificacion' no es un objeto iterable.");
+        }
+        const newProduct: IResponseCtsJsonProducts = {
+          idProducto: i,
+          clave: prod.clave,
+          numParte: prod.no_parte,
+          nombre: prod.nombre,
+          modelo: prod.modelo,
+          idMarca: prod.idMarca,
+          marca: prod.marca,
+          idSubCategoria: prod.idSubCategoria,
+          subcategoria: prod.subcategoria,
+          idCategoria: prod.idCategoria,
+          categoria: prod.categoria,
+          descripcion_corta: prod.descripcion_corta,
+          ean: prod.ean,
+          upc: prod.upc,
+          sustituto: prod.sustituto,
+          activo: prod.estatus === 'Activo' ? 1 : 0,
+          protegido: 0,
+          existencia: prod.existencia,
+          precio: prod.precio,
+          moneda: prod.moneda,
+          tipoCambio: prod.tipoCambio,
+          especificaciones: newEspecificaciones,
+          promociones: prod.promociones,
+          imagen: prod.imagen,
+        };
+        products.push(newProduct);
+      }
+
+      // console.log('products: ', products);
+
       return await {
         status: true,
         mesage: 'Se ha descargado correctamente el xml.',
-        data
+        data: products
       };
     } catch (error) {
       console.error('Error al descargar el archivo:', error);
@@ -503,12 +562,10 @@ class ExternalCtsService extends ResolversOperationsService {
 
   async parseXmlToJson(xml: string, catalog: string): Promise<any> {
     try {
-      let pedidosXml;
-      let pedidosXmlContent;
       const result = await xml2js.parseStringPromise(xml, { explicitArray: false });
       switch (catalog) {
         case 'productos_especiales_VHA2391.xml':
-          return result.Articulo.Producto;       
+          return result.Articulo.Producto;
         default:
           throw new Error('Catálogo no válido');
       }

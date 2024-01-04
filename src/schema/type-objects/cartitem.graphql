@@ -32,6 +32,7 @@ type Cartitem {
   suppliersProd: SupplierProd
   descuentos: Descuentos
   promociones: Promociones
+  especificaciones: Especificaciones
   qty: Int
   sum: Float
   assignedBranchId: Boolean
@@ -140,4 +141,9 @@ type Promociones {
   vencimiento_promocion: String
   disponible_en_promocion: Float
   porciento: Float
+}
+
+type Especificaciones {
+  tipo: String
+  valor: String
 }

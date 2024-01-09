@@ -36,7 +36,8 @@ class DeliverysService extends ResolversOperationsService {
     }
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
-    const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter);
+    const order = { "id": -1 };
+    const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter, order);
     return {
       info: result.info,
       status: result.status,

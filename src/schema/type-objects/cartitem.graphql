@@ -36,6 +36,7 @@ type Cartitem {
   qty: Int
   sum: Float
   assignedBranchId: Boolean
+  fecha: String
 }
 
 type Categorys {

@@ -4,6 +4,7 @@ export interface ICartItem extends IProduct {
   qty: number;
 	sum: number;
   assignedBranchId: Boolean
+  fecha: string;
 }
 
 

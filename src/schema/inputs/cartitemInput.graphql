@@ -36,6 +36,7 @@ input CartItemInput {
   qty: Int
   sum: Float
   assignedBranchId: Boolean
+  fecha: String
 }
 
 input CategorysInput {

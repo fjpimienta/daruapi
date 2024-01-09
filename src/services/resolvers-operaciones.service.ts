@@ -38,10 +38,10 @@ class ResolversOperationsService {
     page: number = 1,
     itemsPage: number = 10,
     filter: object = { active: { $ne: false } },
-    sort: object = {}
+    sort: object = { id: 1 }
   ) {
     try {
-      sort = { ...sort, ...{ id: 1 } };
+      sort = { ...sort };
       const paginationData = await pagination(this.getDB(), collection, page, itemsPage, filter);
       return {
         info: {

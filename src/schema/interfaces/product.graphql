@@ -111,6 +111,7 @@ interface SupplierProd {
   idProveedor: ID
   codigo: String
   price: Float
+  sale_price: Float
   moneda: String
   branchOffices: [BranchOffices]
   category: Categorys

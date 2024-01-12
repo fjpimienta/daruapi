@@ -111,6 +111,7 @@ input SupplierProdInput {
   idProveedor: ID
   codigo: String
   price: Float
+  sale_price: Float
   moneda: String
   branchOffices: [BranchOfficesInput]
   category: CategorysInput

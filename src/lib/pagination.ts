@@ -40,13 +40,15 @@ export async function paginationProducts(
   filter: object = { active: { $ne: false } },
 ) {
   // Comprobar el numero de items por pagina
-  if (itemsPage < 1) {
-    itemsPage = 1000; // Establecer en 1000 para valores menores que 1
-  } else if (itemsPage > 48) {
-    itemsPage = 48; // Establecer en 48 para valores mayores que 48
-  }
-  if (page < 1) {
-    page = 1;
+  if (itemsPage !== 10000) {
+    if (itemsPage < 1) {
+      itemsPage = 1000; // Establecer en 1000 para valores menores que 1
+    } else if (itemsPage > 48) {
+      itemsPage = 48; // Establecer en 48 para valores mayores que 48
+    }
+    if (page < 1) {
+      page = 1;
+    }
   }
   const total = await countElementsProducts(db, collection, filter);
   const pages = Math.ceil(total / itemsPage);

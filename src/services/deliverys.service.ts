@@ -27,11 +27,11 @@ class DeliverysService extends ResolversOperationsService {
         filter = { active: { $eq: false } };
       }
     } else {
-      filter = { active: { $ne: false }, 'sucursal': regExp };
+      filter = { active: { $ne: false }, 'cliente': regExp };
       if (active === ACTIVE_VALUES_FILTER.ALL) {
-        filter = { 'sucursal': regExp };
+        filter = { 'cliente': regExp };
       } else if (active === ACTIVE_VALUES_FILTER.INACTIVE) {
-        filter = { active: { $eq: false }, 'sucursal': regExp };
+        filter = { active: { $eq: false }, 'cliente': regExp };
       }
     }
     const page = this.getVariables().pagination?.page;

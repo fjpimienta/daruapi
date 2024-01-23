@@ -124,11 +124,14 @@ class ProductsService extends ResolversOperationsService {
         generalInfo.BrandLogo = `/assets/brands/${icecatExt.icecatProductLocal.Supplier}`;
         generalInfo.brandPartCode = icecatExt.icecatProductLocal.Prod_id;
         const gtin: string[] = [];
-        if (icecatExt.icecatProductLocal.Requested_GTIN && icecatExt.icecatProductLocal.Requested_GTIN.includes('|')) {
-          gtin.push(...icecatExt.icecatProductLocal.Requested_GTIN.split('|'));
-        } else {
-          gtin.push(icecatExt.icecatProductLocal.Requested_GTIN);
-        }
+        // if (icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC && icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC.includes('|')) {
+        //   gtin.push(...icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC.split('|'));
+        // } else {
+        //   gtin.push(icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC);
+        // }
+        // Temporal
+        gtin.push(icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC);
+        // Fin temporal
         generalInfo.GTIN = gtin;
         const category = {
           CategoryID: slugify(icecatExt.icecatProductLocal.Category || '', { lower: true }),

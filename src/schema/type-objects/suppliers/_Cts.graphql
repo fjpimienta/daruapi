@@ -144,7 +144,11 @@ type ResponseListOrdersCt {
 type ResponseCtsStatus {
   status: String
   folio: String
-  guias: [String]
+  guias: [GuiasCt]
+}
+
+type GuiasCt {
+  guia: String
   paqueteria: String
   direccion: String
   archivo: String

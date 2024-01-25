@@ -146,6 +146,7 @@ type ResponseCtsStatus {
   folio: String
   guias: [String]
   paqueteria: String
+  direccion: String
   archivo: String
 }
 

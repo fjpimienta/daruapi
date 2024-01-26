@@ -10,8 +10,8 @@ const resolversMailMutation: IResolvers = {
     async sendEmail(_, { mail }) {
       return new MailService().send(mail);
     },
-    async activeUserEmail(_, { id, email }) {
-      return new UsersService(_, { user: { id, email } }, {}).active();
+    async activeUserEmail(_, { id, email, admin }) {
+      return new UsersService(_, { user: { id, email }, admin }, {}).active();
     },
     async activeUserAction(_, { id, password }, { token, db }) {
       // Verificar el token

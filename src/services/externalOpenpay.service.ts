@@ -11,7 +11,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
 
     // Inicializar la instancia de OpenPay con tus credenciales
     const MERCHANT_ID = process.env.OPENPAY_MERCHANT_ID ?? 'm6xdaknfuv0l7ytry0li';
-    const CLIENT_SECRET = process.env.OPENPAY_CLIENT_SECRET ?? 'sk_hzwz5re4i0mvygx0tbtmdevpn1i86cax';
+    const CLIENT_SECRET = process.env.OPENPAY_CLIENT_SECRET ?? 'sk_ccac7cdb1545480d9ace51adc96d20d9';
     this.openpay = new OpenPay(MERCHANT_ID, CLIENT_SECRET);
   }
 
@@ -301,7 +301,6 @@ class ExternalOpenpayService extends ResolversOperationsService {
           }
         });
       });
-
       return {
         status: true,
         message: 'El cargo se ha creado correctamente.',

@@ -234,15 +234,13 @@ class UsersService extends ResolversOperationsService {
     const urlActivacion = admin ? process.env.CLIENT_URL_ADMIN : process.env.CLIENT_URL;
     const html = `
     <header>
-        <h1>Bienvenido a #DARUTEAM</h1>
+        <h1>Bienvenido al Tablero de Control</h1>
     </header>
     <main>
         <p>¡Bienvenido a nuestro TEAM! Estamos emocionados de tenerte como parte de nuestra comunidad.</p>
         <p>Para activar la cuenta haz click aquí: <a href="${urlActivacion}/auth/active/${token}">Click aqui</a></p>
-        <p>Consulta nuestros terminos y condiciones. <a href="${urlActivacion}terminos">Click aqui</a></p>
     </main>
     <footer>
-        <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en <a href="${urlActivacion}contact">Contactanos</a>.</p>
     </footer>
     `
     const mail = {

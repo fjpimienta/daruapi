@@ -11,7 +11,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
 
     // Inicializar la instancia de OpenPay con tus credenciales
     const MERCHANT_ID = process.env.OPENPAY_MERCHANT_ID ?? 'm6xdaknfuv0l7ytry0li';
-    const CLIENT_SECRET = process.env.OPENPAY_CLIENT_SECRET ?? 'sk_hzwz5re4i0mvygx0tbtmdevpn1i86cax';
+    const CLIENT_SECRET = process.env.OPENPAY_CLIENT_SECRET ?? 'sk_ccac7cdb1545480d9ace51adc96d20d9';
     this.openpay = new OpenPay(MERCHANT_ID, CLIENT_SECRET);
   }
 
@@ -292,8 +292,10 @@ class ExternalOpenpayService extends ResolversOperationsService {
   async createCharge(variables: IVariables) {
     try {
       const { chargeOpenpay } = variables;
+      console.log('chargeOpenpay: ', chargeOpenpay);
       const createChargeOpenpay = await new Promise((resolve, reject) => {
         this.openpay.charges.create(chargeOpenpay, (error: any, response: any) => {
+          console.log('error: ', error);
           if (error) {
             reject(error);
           } else {
@@ -301,7 +303,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
           }
         });
       });
-
+      console.log('createChargeOpenpay: ', createChargeOpenpay);
       return {
         status: true,
         message: 'El cargo se ha creado correctamente.',

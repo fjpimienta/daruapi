@@ -29,6 +29,7 @@ export interface IVariables {
   slug?: string;
   pagination?: IPaginationOptions;
   user?: IUser;
+  admin?: boolean;
   brand?: ICatalog;
   brands?: ICatalog[];
   model?: ICatalog;

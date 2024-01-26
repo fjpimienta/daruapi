@@ -223,6 +223,7 @@ class UsersService extends ResolversOperationsService {
   async active() {
     const id = this.getVariables().user?.id;
     const email = this.getVariables().user?.email || '';
+    const admin = this.getVariables().admin || '';
     if (email === undefined || email === '') {
       return {
         status: false,
@@ -230,17 +231,18 @@ class UsersService extends ResolversOperationsService {
       };
     }
     const token = new JWT().sign({ user: { id, email } }, EXPIRETIME.H1);
+    const urlActivacion = admin ? process.env.CLIENT_URL_ADMIN : process.env.CLIENT_URL;
     const html = `
     <header>
         <h1>Bienvenido a #DARUTEAM</h1>
     </header>
     <main>
         <p>¡Bienvenido a nuestro TEAM! Estamos emocionados de tenerte como parte de nuestra comunidad.</p>
-        <p>Para activar la cuenta haz click aquí: <a href="${process.env.CLIENT_URL}active/${token}">Click aqui</a></p>
-        <p>Consulta nuestros terminos y condiciones. <a href="${process.env.CLIENT_URL}terminos">Click aqui</a></p>
+        <p>Para activar la cuenta haz click aquí: <a href="${urlActivacion}active/${token}">Click aqui</a></p>
+        <p>Consulta nuestros terminos y condiciones. <a href="${urlActivacion}terminos">Click aqui</a></p>
     </main>
     <footer>
-        <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en <a href="${process.env.CLIENT_URL}contact">Contactanos</a>.</p>
+        <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en <a href="${urlActivacion}contact">Contactanos</a>.</p>
     </footer>
     `
     const mail = {

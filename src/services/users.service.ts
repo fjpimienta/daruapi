@@ -239,7 +239,7 @@ class UsersService extends ResolversOperationsService {
       </header>
       <main>
           <p>¡Bienvenido a nuestro TEAM! Estamos emocionados de tenerte como parte de nuestra comunidad.</p>
-          <p>Para activar la cuenta haz click aquí: <a href="${process.env.CLIENT_URL_ADMIN}/auth/active/${token}">Click aqui</a></p>
+          <p>Para activar la cuenta haz click aquí: <a href="${process.env.CLIENT_URL_ADMIN}active/${token}">Click aqui</a></p>
       </main>
       <footer>
       </footer>
@@ -251,7 +251,7 @@ class UsersService extends ResolversOperationsService {
       </header>
       <main>
           <p>¡Bienvenido a nuestro TEAM! Estamos emocionados de tenerte como parte de nuestra comunidad.</p>
-          <p>Para activar la cuenta haz click aquí: <a href="${process.env.CLIENT_URL}/auth/active/${token}">Click aqui</a></p>
+          <p>Para activar la cuenta haz click aquí: <a href="${process.env.CLIENT_URL}auth/active/${token}">Click aqui</a></p>
           <p>Consulta nuestros terminos y condiciones. <a href="${process.env.CLIENT_URL}terminos">Click aqui</a></p>
       </main>
       <footer>

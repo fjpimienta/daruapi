@@ -292,10 +292,8 @@ class ExternalOpenpayService extends ResolversOperationsService {
   async createCharge(variables: IVariables) {
     try {
       const { chargeOpenpay } = variables;
-      console.log('chargeOpenpay: ', chargeOpenpay);
       const createChargeOpenpay = await new Promise((resolve, reject) => {
         this.openpay.charges.create(chargeOpenpay, (error: any, response: any) => {
-          console.log('error: ', error);
           if (error) {
             reject(error);
           } else {
@@ -303,7 +301,6 @@ class ExternalOpenpayService extends ResolversOperationsService {
           }
         });
       });
-      console.log('createChargeOpenpay: ', createChargeOpenpay);
       return {
         status: true,
         message: 'El cargo se ha creado correctamente.',

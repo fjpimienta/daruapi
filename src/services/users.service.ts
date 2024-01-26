@@ -238,7 +238,7 @@ class UsersService extends ResolversOperationsService {
     </header>
     <main>
         <p>¡Bienvenido a nuestro TEAM! Estamos emocionados de tenerte como parte de nuestra comunidad.</p>
-        <p>Para activar la cuenta haz click aquí: <a href="${urlActivacion}active/${token}">Click aqui</a></p>
+        <p>Para activar la cuenta haz click aquí: <a href="${urlActivacion}/auth/active/${token}">Click aqui</a></p>
         <p>Consulta nuestros terminos y condiciones. <a href="${urlActivacion}terminos">Click aqui</a></p>
     </main>
     <footer>

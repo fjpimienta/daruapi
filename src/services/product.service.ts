@@ -165,23 +165,25 @@ class ProductsService extends ResolversOperationsService {
         product.generalInfo = generalInfo;
 
         if (icecatExt.icecatProductLocal.ProductGallery && icecatExt.icecatProductLocal.ProductGallery.includes('|')) {
-          product.pictures = [];
-          product.sm_pictures = [];
           const imagenes: string[] = icecatExt.icecatProductLocal.ProductGallery.split('|');
-          for (const pictureI of imagenes) {
-            if (pictureI !== '') {
-              const pict: IPicture = {
-                width: '500',
-                height: '500',
-                url: pictureI
-              };
-              product.pictures.push(pict);
-              const pict_sm: IPicture = {
-                width: '300',
-                height: '300',
-                url: pictureI
-              };
-              product.sm_pictures.push(pict_sm);
+          if (imagenes.length > 0) {
+            product.pictures = [];
+            product.sm_pictures = [];
+            for (const pictureI of imagenes) {
+              if (pictureI !== '') {
+                const pict: IPicture = {
+                  width: '500',
+                  height: '500',
+                  url: pictureI
+                };
+                product.pictures.push(pict);
+                const pict_sm: IPicture = {
+                  width: '300',
+                  height: '300',
+                  url: pictureI
+                };
+                product.sm_pictures.push(pict_sm);
+              }
             }
           }
         }
@@ -209,6 +211,21 @@ class ProductsService extends ResolversOperationsService {
                 url: pictureI.LowPic
               };
               product.sm_pictures.push(pict_sm);
+            } else {
+              if (pictureI.Pic !== '') {
+                const pict: IPicture = {
+                  width: pictureI.PicWidth,
+                  height: pictureI.PicHeight,
+                  url: pictureI.Pic
+                };
+                product.pictures.push(pict);
+                const pict_sm: IPicture = {
+                  width: pictureI.LowWidth,
+                  height: pictureI.LowHeight,
+                  url: pictureI.ThumbPic
+                };
+                product.sm_pictures.push(pict_sm);
+              }
             }
           }
         }
@@ -482,23 +499,25 @@ class ProductsService extends ResolversOperationsService {
         if (icecatExt.status) {
           if (icecatExt.icecatProductLocal) {
             if (icecatExt.icecatProductLocal.LowPic !== '') {
-              product.pictures = [];
-              product.sm_pictures = [];
               const imagenes: string[] = icecatExt.icecatProductLocal.ProductGallery.split('|');
-              for (const pictureI of imagenes) {
-                if (pictureI !== '') {
-                  const pict: IPicture = {
-                    width: '500',
-                    height: '500',
-                    url: pictureI
-                  };
-                  product.pictures.push(pict);
-                  const pict_sm: IPicture = {
-                    width: '300',
-                    height: '300',
-                    url: pictureI
-                  };
-                  product.sm_pictures.push(pict_sm);
+              if (imagenes.length > 0) {
+                product.pictures = [];
+                product.sm_pictures = [];
+                for (const pictureI of imagenes) {
+                  if (pictureI !== '') {
+                    const pict: IPicture = {
+                      width: '500',
+                      height: '500',
+                      url: pictureI
+                    };
+                    product.pictures.push(pict);
+                    const pict_sm: IPicture = {
+                      width: '300',
+                      height: '300',
+                      url: pictureI
+                    };
+                    product.sm_pictures.push(pict_sm);
+                  }
                 }
               }
             }

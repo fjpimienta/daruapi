@@ -103,7 +103,7 @@ class WelcomesService extends ResolversOperationsService {
       // Conocer el id de la welcome
       const filter = { email: welcome?.email };
       // Ejecutar actualización
-      const result = await this.updateForce(this.collection, filter, objectUpdate, 'welcome');
+      const result = await this.updateForce(this.collection, filter, objectUpdate, 'bienvenida');
       return {
         status: result.status,
         message: result.message,
@@ -119,7 +119,7 @@ class WelcomesService extends ResolversOperationsService {
       active: true,
       registerDate: new Date().toISOString()
     };
-    const result = await this.add(this.collection, welcomeObject, 'welcome');
+    const result = await this.add(this.collection, welcomeObject, 'bienvenida');
     return {
       status: result.status,
       message: result.message,

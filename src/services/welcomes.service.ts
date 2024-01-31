@@ -95,22 +95,21 @@ class WelcomesService extends ResolversOperationsService {
 
     // Comprobar que no existe el correo
     if (await this.checkEmailDatabase(welcome?.email || '')) {
+      const objectUpdate = {
+        email: welcome?.email,
+        name: welcome?.name,
+        cupon: welcome?.cupon
+      };
+      // Conocer el id de la welcome
+      const filter = { email: welcome?.email };
+      // Ejecutar actualización
+      const result = await this.updateForce(this.collection, filter, objectUpdate, 'welcome');
       return {
-        status: false,
-        message: `El correo ya existe en la base de datos, intenta con otro correo`,
-        welcome: null
+        status: result.status,
+        message: result.message,
+        welcome: result.item
       };
     }
-
-    // Comprobar que no existe el nombre
-    if (await this.checkNameDatabase(welcome?.name || '')) {
-      return {
-        status: false,
-        message: `El nombre ya existe en la base de datos, intenta con otro nombre`,
-        welcome: null
-      };
-    }
-
     // Si valida las opciones anteriores, venir aqui y crear el documento
     const welcomeObject = {
       id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),

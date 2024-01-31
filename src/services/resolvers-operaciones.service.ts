@@ -434,6 +434,32 @@ class ResolversOperationsService {
     }
   }
 
+  // Modificar Item
+  protected async updateForce(collection: string, filter: object, objectUpdate: object, item: string) {
+    try {
+      return await updateOneElement(
+        this.getDB(),
+        collection,
+        filter,
+        objectUpdate
+      ).then(
+        res => {
+          return {
+            status: true,
+            message: `El registro de ${item} actualizado correctamente.`,
+            item: Object.assign({}, filter, objectUpdate)
+          };
+        }
+      );
+    } catch (error) {
+      return {
+        status: false,
+        message: `Error inesperado al modificar el ${item}. Intentalo de nuevo.`,
+        item: null
+      };
+    }
+  }
+
   // Eliminar item
   protected async del(collection: string, filter: object, item: string) {
     try {

@@ -355,7 +355,7 @@ class ResolversOperationsService {
           if (res.result.ok === 1) {
             return {
               status: true,
-              message: `Se ha agregado correctamente el ${item}.`,
+              message: `Se ha agregado correctamente el registro de ${item}.`,
               item: document
             };
           }
@@ -414,7 +414,7 @@ class ResolversOperationsService {
           if (res.result.nModified === 1 && res.result.ok) {
             return {
               status: true,
-              message: `El registro de ${item} actualizado correctamente.`,
+              message: `El registro de ${item} se ha actualizado correctamente.`,
               item: Object.assign({}, filter, objectUpdate)
             };
           }

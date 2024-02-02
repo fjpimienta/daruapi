@@ -88,3 +88,16 @@ export interface IResponseProductCva {
   VENTAS_ZACATECAS: number;
   ExsTotal: number;
 }
+
+export interface IEnvioCVA {
+  nombre: string;
+  direccion: string;
+  entreCalles: string;
+  noExterior: string;
+  noInterior: string;
+  colonia: string;
+  estado: string;
+  ciudad: string;
+  codigoPostal: string;
+  telefono: string;
+}

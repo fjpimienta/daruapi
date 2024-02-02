@@ -7,6 +7,7 @@ input DeliveryInput {
   importe: Float!
   registerDate: String
   user: UserInput!
+  chargeOpenpay: ChargeOpenpayInput
   warehouses: [WarehouseInput]!
   ordersCt: [OrderCtInput]
   ordersCva: [OrderCvaInput]

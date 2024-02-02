@@ -1,5 +1,4 @@
 "Tipo de objeto para almacenar la informacion de las Products de los Productos"
-
 type Delivery {
   id: ID
   deliveryId: String!
@@ -9,6 +8,7 @@ type Delivery {
   importe: Float!
   registerDate: String
   user: User!
+  chargeOpenpay: ChargeOpenpay
   warehouses: [Warehouse]!
   ordersCt: [OrderCt]
   ordersCva: [OrderCva]

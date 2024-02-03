@@ -1,6 +1,6 @@
 type Query {
   tokenCt: ResultCts
-  existenciaProductoCT(
+  existenciaProductoCt(
     codigoCt: String=""
   ): ResultCts
   stockProductsCt: ResultCts

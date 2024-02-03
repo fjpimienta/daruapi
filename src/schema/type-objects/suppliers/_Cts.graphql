@@ -12,6 +12,11 @@ type ResponseCtsStockProducts {
   codigo: String
 }
 
+type ResponseCtsExistenciaProduct {
+  key: String
+  existencia: Int
+}
+
 type Almacenes {
   promocion: Promocion
   almacenPromocion: [AlmacenDinamico!]!

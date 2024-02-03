@@ -15,8 +15,8 @@ const resolversCtsQuery: IResolvers = {
     async jsonProductsCtHP(_, __, context) {
       return new ExternalCtsService(_, __, context).getJsonProductsCtHP();
     },
-    async existenciaProductoCT(_, variables, context) {
-      return new ExternalCtsService(_, variables, context).getExistenciaProductoCT(variables);
+    async existenciaProductoCt(_, variables, context) {
+      return new ExternalCtsService(_, variables, context).getExistenciaProductoCt(variables);
     },
     async stockProductsCt(_, __, context) {
       return new ExternalCtsService(_, __, context).getStockProductsCt();

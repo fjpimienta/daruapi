@@ -128,7 +128,7 @@ class ExternalCtsService extends ResolversOperationsService {
     };
   }
 
-  async getExistenciaProductoCT(variables: IVariables) {
+  async getExistenciaProductoCt(variables: IVariables) {
     try {
       const token = await this.getTokenCt();
       const { codigoCt } = variables;
@@ -140,35 +140,30 @@ class ExternalCtsService extends ResolversOperationsService {
           'Content-Type': 'application/json',
         },
       };
-
       const url = 'http://connect.ctonline.mx:3001/existencia/' + codigoCt;
-
       const result = await fetch(url, options);
-
       if (result.ok) {
         const data: IExistenciaAlmacenCT[] = await result.json();
         const dataString = JSON.stringify(data);
         logger.info(`GraphQL Response: ${dataString}`);
-
-        const existenciaProductoCT = JSON.parse(dataString);
-
+        const existenciaProductoCt = JSON.parse(dataString);
         return {
           status: true,
           message: 'La información que hemos pedido se ha cargado correctamente',
-          existenciaProductoCT,
+          existenciaProductoCt,
         };
       } else {
         return {
           status: false,
           message: 'Error en el servicio. url: ' + url + ', options: ' + options + ', result:' + result,
-          existenciaProductoCT: null,
+          existenciaProductoCt: null,
         };
       }
     } catch (error: any) {
       return {
         status: false,
         message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
-        existenciaProductoCT: null,
+        existenciaProductoCt: null,
       };
     }
   }

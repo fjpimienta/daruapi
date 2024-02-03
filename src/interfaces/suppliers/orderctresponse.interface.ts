@@ -17,3 +17,7 @@ export interface IOrderCtConfirmResponse {
   okMessage: string;
   okReference: string;
 }
+
+export interface IOrderCtConfirm {
+  folio: string;
+}

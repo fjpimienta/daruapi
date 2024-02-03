@@ -2,6 +2,7 @@ type ResultCts implements Result {
   status: Boolean!
   message: String!
   tokenCt: TokenCt
+  existenciaProductoCT: ResponseCtsStockProducts
   stockProductsCt: [ResponseCtsStockProducts]
   jsonProductsCt: [ResponseCtsJsonProducts]
   jsonProductsCtHP: [ResponseCtsJsonProducts]

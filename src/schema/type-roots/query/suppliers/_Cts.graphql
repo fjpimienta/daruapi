@@ -1,5 +1,8 @@
 type Query {
   tokenCt: ResultCts
+  existenciaProductoCT(
+    codigoCt: String=""
+  ): ResultCts
   stockProductsCt: ResultCts
   jsonProductsCt: ResultCts
   jsonProductsCtHP: ResultCts

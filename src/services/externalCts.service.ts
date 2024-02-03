@@ -128,6 +128,79 @@ class ExternalCtsService extends ResolversOperationsService {
     };
   }
 
+  async getExistenciaProductoCT(variables: IVariables) {
+    try {
+      const token = await this.getTokenCt();
+      const { codigoCt } = variables;
+      console.log('codigoCt: ', codigoCt);
+      const options = {
+        method: 'GET',
+        headers: {
+          'x-auth': token.tokenCt.token,
+          'Content-Type': 'application/json',
+        },
+      };
+
+      const url = 'http://connect.ctonline.mx:3001/existencia/' + codigoCt;
+      console.log('url: ', url);
+
+      const result = await fetch(url, options);
+      console.log('result: ', result);
+
+      if (result.ok) {
+        const data: IProductoCt[] = await result.json();
+        const dataString = JSON.stringify(data);
+        logger.info(`GraphQL Response: ${dataString}`);
+
+        const stockProductsCt = data.map((product: IProductoCt) => {
+          const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
+            const almacenPromocion: IAlmacenPromocion[] = [];
+
+            for (const key in almacenItem) {
+              if (key !== 'almacenes') {
+                const valor = almacenItem[key as keyof IAlmacenes];
+                if (typeof valor === 'number') {
+                  almacenPromocion.push({
+                    key,
+                    value: valor,
+                    promocionString: JSON.stringify(almacenItem)
+                  });
+                }
+                // Puedes manejar el caso de IPromocion si es necesario
+              }
+            }
+            console.log('almacenPromocion: ', almacenPromocion);
+            return { almacenPromocion };
+          });
+
+          return {
+            ...product,
+            almacenes,
+          };
+        });
+        console.log('stockProductsCt: ', stockProductsCt);
+
+        return {
+          status: true,
+          message: 'La información que hemos pedido se ha cargado correctamente',
+          stockProductsCt,
+        };
+      } else {
+        return {
+          status: false,
+          message: 'Error en el servicio. ',
+          stockProductsCt: null,
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        stockProductsCt: null,
+      };
+    }
+  }
+
   async getStockProductsCt() {
     try {
       const token = await this.getTokenCt();

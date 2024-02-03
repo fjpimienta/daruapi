@@ -14,6 +14,12 @@ export interface IAlmacen {
   [key: string]: number | IPromocion;
 }
 
+export interface IExistenciaAlmacen {
+  [key: string]: {
+    existencia: number;
+  };
+}
+
 export interface IAlmacenPromocion {
   key: string
   value: number

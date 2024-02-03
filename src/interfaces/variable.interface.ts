@@ -94,6 +94,7 @@ export interface IVariables {
   folio?: string;
   // Ct Volumen
   codigo?: string;
+  codigoCt?: string;
   // Cva Shipping
   paqueteria?: number;
   cp?: number;

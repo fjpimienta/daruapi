@@ -132,7 +132,6 @@ class ExternalCtsService extends ResolversOperationsService {
     try {
       const token = await this.getTokenCt();
       const { codigoCt } = variables;
-      console.log('codigoCt: ', codigoCt);
       const options = {
         method: 'GET',
         headers: {
@@ -143,10 +142,13 @@ class ExternalCtsService extends ResolversOperationsService {
       const url = 'http://connect.ctonline.mx:3001/existencia/' + codigoCt;
       const result = await fetch(url, options);
       if (result.ok) {
-        const data: IExistenciaAlmacenCT[] = await result.json();
+        const data: IExistenciaAlmacenCT = await result.json();
         const dataString = JSON.stringify(data);
         logger.info(`GraphQL Response: ${dataString}`);
-        const existenciaProductoCt = JSON.parse(dataString);
+        const existenciaProductoCt = Object.keys(data).map(key => ({
+          key,
+          existencia: data[key].existencia,
+        }));
         return {
           status: true,
           message: 'La información que hemos pedido se ha cargado correctamente',

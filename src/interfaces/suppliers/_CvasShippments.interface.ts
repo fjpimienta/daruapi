@@ -32,6 +32,7 @@ export interface IGroupCva {
 
 export interface IResponseProductCva {
   clave: string;
+  upc: string;
   codigo_fabricante: string;
   descripcion: string;
   solucion: string;
@@ -87,6 +88,8 @@ export interface IResponseProductCva {
   VENTAS_VERACRUZ: number;
   VENTAS_ZACATECAS: number;
   ExsTotal: number;
+  dimensiones: string;
+  peso: string;
 }
 
 export interface IEnvioCVA {

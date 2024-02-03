@@ -108,6 +108,7 @@ export interface IVariables {
   // CVA Precios
   brandName?: string;
   groupName?: string;
+  codigoCva?: string;
   // Openpay
   idCardOpenpay?: string;
   cardOpenpay?: ICardOpenpay;

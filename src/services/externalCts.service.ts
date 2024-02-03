@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion, IResponseCtsJsonProducts, IEspecificacion, IExistenciaAlmacen } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion, IResponseCtsJsonProducts, IEspecificacion, IExistenciaAlmacenCT } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 
 import logger from '../utils/logger';
@@ -146,29 +146,29 @@ class ExternalCtsService extends ResolversOperationsService {
       const result = await fetch(url, options);
 
       if (result.ok) {
-        const data: IExistenciaAlmacen[] = await result.json();
+        const data: IExistenciaAlmacenCT[] = await result.json();
         const dataString = JSON.stringify(data);
         logger.info(`GraphQL Response: ${dataString}`);
 
-        const stockProductsCtObject = JSON.parse(dataString);
+        const existenciaProductoCT = JSON.parse(dataString);
 
         return {
           status: true,
           message: 'La información que hemos pedido se ha cargado correctamente',
-          stockProductsCt: stockProductsCtObject,
+          existenciaProductoCT,
         };
       } else {
         return {
           status: false,
           message: 'Error en el servicio. url: ' + url + ', options: ' + options + ', result:' + result,
-          stockProductsCt: null,
+          existenciaProductoCT: null,
         };
       }
     } catch (error: any) {
       return {
         status: false,
         message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
-        stockProductsCt: null,
+        existenciaProductoCT: null,
       };
     }
   }

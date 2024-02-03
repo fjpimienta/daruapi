@@ -188,7 +188,7 @@ class ExternalCtsService extends ResolversOperationsService {
       } else {
         return {
           status: false,
-          message: 'Error en el servicio. ',
+          message: 'Error en el servicio. url: ' + url + ', options: ' + options + ', result:' + result,
           stockProductsCt: null,
         };
       }

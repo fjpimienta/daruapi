@@ -10,7 +10,7 @@ import fs from 'fs';
 const xml2js = require('xml2js');
 import ResolversOperationsService from './resolvers-operaciones.service';
 
-import almacenesCt from './../../uploads/json/ct_almacenes.json';
+import almacenesCt from './../json/ct_almacenes.json';
 
 
 class ExternalCtsService extends ResolversOperationsService {

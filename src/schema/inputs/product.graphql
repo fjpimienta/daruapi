@@ -120,7 +120,6 @@ input SupplierProdInput {
 
 input BranchOfficesInput {
   id: String
-  key: String
   name: String
   estado: String
   cantidad: Float

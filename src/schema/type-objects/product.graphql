@@ -122,7 +122,6 @@ type SupplierProd {
 
 type BranchOffices {
   id: String
-  key: String
   estado: String
   cantidad: Float
   cp: String

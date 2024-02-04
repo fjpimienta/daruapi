@@ -1,0 +1,916 @@
+[{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62cf"
+  },
+  "id": "01A",
+  "Sucursal": "HERMOSILLO",
+  "Homoclave": "HMO",
+  "Calle": "Guerrero",
+  "Número": "168 ",
+  "Referencia": "entre Hermenegildo Rangel Lugo y San Luis Potosí",
+  "Colonia": "Centro",
+  "CP": "83000",
+  "Ciudad": "Hermosillo",
+  "Estado": "Sonora",
+  "Teléfono": "(662) 109-0000",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Ramses Juarez",
+  "correo electrónico almacén": "ramses.juarez@ctin.com.mx",
+  "latitud": "29.0853042602539",
+  "longitud": "-110.954139709473"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62d0"
+  },
+  "id": "02A",
+  "Sucursal": "CIUDAD OBREGON",
+  "Homoclave": "OBR",
+  "Calle": "Zacatecas",
+  "Número": "860",
+  "Referencia": "Entre Rodolfo Elias Calles Y 6 De Abril",
+  "Colonia": "Centro",
+  "CP": "85000",
+  "Ciudad": "Cd. Obregón",
+  "Estado": "Sonora",
+  "Teléfono": "(644) 412-1501",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Adrian Acosta Hurtado",
+  "correo electrónico almacén": "almacen.obr@ctin.com.mx",
+  "latitud": "27.4929275512695",
+  "longitud": "-109.930404663086"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62d1"
+  },
+  "id": "03A",
+  "Sucursal": "LOS MOCHIS",
+  "Homoclave": "LMO",
+  "Calle": "Blvd. 10 de Mayo",
+  "Número": "125",
+  "Referencia": "Esquina con Allende",
+  "Colonia": "Las Fuentes",
+  "CP": "81223",
+  "Ciudad": "Los Mochis",
+  "Estado": "Sinaloa",
+  "Teléfono": "(668) 815-1016",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Ismael Adbeel Armenta Guerrero",
+  "correo electrónico almacén": "almacen.lmo@ctin.com.mx",
+  "latitud": "25.809663772583",
+  "longitud": "-108.98078918457"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62d2"
+  },
+  "id": "04A",
+  "Sucursal": "CULIACAN",
+  "Homoclave": "CLN",
+  "Calle": "Blvd. Emiliano Zapata",
+  "Número": "1013",
+  "Referencia": "Pte. entre Rio Batacudea y Rio Ometepec",
+  "Colonia": "Industrial Bravo ",
+  "CP": "80120",
+  "Ciudad": "Culiacán",
+  "Estado": "Sinaloa",
+  "Teléfono": "(667) 761-4244",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Jesus Arturo Salas Zavala",
+  "correo electrónico almacén": "almacen.cln@ctin.com.mx",
+  "latitud": "24.7940292358398",
+  "longitud": "-107.403076171875"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62d3"
+  },
+  "id": "05A",
+  "Sucursal": "DURANGO",
+  "Homoclave": "DGO",
+  "Calle": "Nazas",
+  "Número": "709-A",
+  "Referencia": "entre Dolores del Rio y E. Carrola Antuna",
+  "Colonia": "Valle del Guadiana",
+  "CP": "34166",
+  "Ciudad": "Durango",
+  "Estado": "Durango",
+  "Teléfono": "(618) 825-4100",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Juan Pablo Mathey Andrade",
+  "correo electrónico almacén": "juanpablo.mathey@ctin.com.mx",
+  "latitud": "24.004638671875",
+  "longitud": "-104.627990722656"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62d4"
+  },
+  "id": "06A",
+  "Sucursal": "TORREON",
+  "Homoclave": "TRN",
+  "Calle": "Juan Pablos",
+  "Número": "1160",
+  "Referencia": "entre las calles Artes gráficas  y  Alvarez",
+  "Colonia": " Centro",
+  "CP": "27000",
+  "Ciudad": "Torreon",
+  "Estado": "Coahuila",
+  "Teléfono": "(871) 793-8929",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Cristian Sanchez Prieto",
+  "correo electrónico almacén": "almacen.trn@ctin.com.mx",
+  "latitud": "25.5446605682373",
+  "longitud": "-103.440567016602"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62d5"
+  },
+  "id": "07A",
+  "Sucursal": "CHIHUAHUA",
+  "Homoclave": "CHI",
+  "Calle": "Cipres",
+  "Número": "1106",
+  "Referencia": "Entre Gonzalez Ortega y Vallarta",
+  "Colonia": "Granjas",
+  "CP": "31100",
+  "Ciudad": "Chihuahua",
+  "Estado": "Chihuahua",
+  "Teléfono": "(614) 414-8889",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Adrian Trejo Trejo",
+  "correo electrónico almacén": "adrian.trejo@ctin.com.mx",
+  "latitud": "28.6704769134522",
+  "longitud": "-106.103500366211"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62d6"
+  },
+  "id": "08A",
+  "Sucursal": "AGUASCALIENTES",
+  "Homoclave": "AGS",
+  "Calle": "Jardín de guadalupe",
+  "Número": "203",
+  "Referencia": "entre jardin del estudiante y Hernán González",
+  "Colonia": "Linda vista",
+  "CP": "20270",
+  "Ciudad": "Aguascalientes",
+  "Estado": "Aguascalientes",
+  "Teléfono": "(449) 978-3748",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Juan Gabriel Gonzalez Avila",
+  "correo electrónico almacén": "almacen.ags@ctin.com.mx",
+  "latitud": "21.867582321167",
+  "longitud": "-102.293441772461"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62d7"
+  },
+  "id": "09A",
+  "Sucursal": "QUERETARO",
+  "Homoclave": "QRO",
+  "Calle": "Florencio Rosas",
+  "Número": "5",
+  "Referencia": "Entre Benigno Bustamante y Corregidora Sur.",
+  "Colonia": "Villas del Sur ",
+  "CP": "76040",
+  "Ciudad": "Queretaro",
+  "Estado": "Queretaro",
+  "Teléfono": "(442) 214-0343",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Luis Alberto Chino Juarez",
+  "correo electrónico almacén": "almacen.qro@ctin.com.mx",
+  "latitud": "20.5856971740723",
+  "longitud": "-100.384056091309"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62d8"
+  },
+  "id": "10A",
+  "Sucursal": "SAN LUIS POTOSI",
+  "Homoclave": "SLP",
+  "Calle": "Mariano Otero",
+  "Número": "810",
+  "Referencia": "entre Cuauhtémoc y Melchor Ocampo",
+  "Colonia": "Los Alamos",
+  "CP": "78174",
+  "Ciudad": "San Luis Potosi",
+  "Estado": "San Luis Potosi",
+  "Teléfono": "(444) 833-7383",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Juan Alberto Acevedo Sanchez",
+  "correo electrónico almacén": "almacen.sanluis@ctin.com.mx",
+  "latitud": "22.1673717498779",
+  "longitud": "-100.981811523438"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62d9"
+  },
+  "id": "11A",
+  "Sucursal": "LEON",
+  "Homoclave": "LEO",
+  "Calle": "Blvd. Vicente Valtierra",
+  "Número": "2407",
+  "Referencia": "entre linaje y Blvd. Hilario Medina",
+  "Colonia": "La Carmona",
+  "CP": "37250",
+  "Ciudad": "León",
+  "Estado": "Guanajuato",
+  "Teléfono": "(477) 104-3030",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Juan Antonio Cubillo",
+  "correo electrónico almacén": "almacen.leon@ctin.com.mx",
+  "latitud": "21.1336135864258",
+  "longitud": "-101.662231445313"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62da"
+  },
+  "id": "13A",
+  "Sucursal": "GUADALAJARA",
+  "Homoclave": "GDL",
+  "Calle": "Av. 8 de Julio",
+  "Número": "2385",
+  "Colonia": "Industrial ",
+  "CP": "44940",
+  "Ciudad": "Guadalajara",
+  "Estado": "Jalisco",
+  "Teléfono": "(333) 619-1015",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Luis Armando Lomeli Falcon",
+  "correo electrónico almacén": "almacen.gdl@ctin.com.mx",
+  "latitud": "20.6420421600342",
+  "longitud": "-103.360626220703"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62db"
+  },
+  "id": "14A",
+  "Sucursal": "MORELIA",
+  "Homoclave": "MOR",
+  "Calle": "AV. Universidad",
+  "Número": "1900",
+  "Referencia": "esq. Privada Universidad",
+  "Colonia": "Real Universidad",
+  "CP": "58057",
+  "Ciudad": "Morelia",
+  "Estado": "Michoacan",
+  "Teléfono": "(443) 312-1882",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Samuel Garcia Espinoza",
+  "correo electrónico almacén": "almacen.morelia@ctin.com.mx",
+  "latitud": "19.6839656829834",
+  "longitud": "-101.214363098145"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62dc"
+  },
+  "id": "15A",
+  "Sucursal": "SALTILLO",
+  "Homoclave": "SLT",
+  "Calle": "Blvd. Isidro López Zertuche",
+  "Número": "1937",
+  "Referencia": "Entre Jesús Valdez Sánchez y Santa María",
+  "Colonia": "Universidad",
+  "CP": "25260",
+  "Ciudad": "Saltillo",
+  "Estado": "Coahuila",
+  "Teléfono": "(844) 430-8017",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Francisco Javier Gonzalez Martinez",
+  "correo electrónico almacén": "almacen.slt@ctin.com.mx",
+  "latitud": "25.4411506652832",
+  "longitud": "-100.999557495117"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62dd"
+  },
+  "id": "16A",
+  "Sucursal": "XALAPA",
+  "Homoclave": "XLP",
+  "Calle": "Ismael Chirsten",
+  "Número": "5",
+  "Referencia": "Esq. Rafael Aguirre",
+  "Colonia": "Rafael Lucio",
+  "CP": "91110",
+  "Ciudad": "Xalapa",
+  "Estado": "Veracruz",
+  "Teléfono": "(228) 843-5394",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Luis Rafael Sandoval Hernandez",
+  "correo electrónico almacén": "almacen.xlp@ctin.com.mx",
+  "latitud": "19.5599021911621",
+  "longitud": "-96.9250640869141"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62de"
+  },
+  "id": "17A",
+  "Sucursal": "VERACRUZ",
+  "Homoclave": "VER",
+  "Calle": "Jimenez",
+  "Número": "2921",
+  "Referencia": "entre Echeven y Velazquez de la Cadena",
+  "Colonia": "Centro",
+  "CP": "91700",
+  "Ciudad": "Veracruz",
+  "Estado": "Veracruz",
+  "Teléfono": "(229) 937-5827",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Moises Gamboa Gonzalez",
+  "correo electrónico almacén": "moises.gamboa@ctin.com.mx",
+  "latitud": "19.1907844543457",
+  "longitud": "-96.1472854614258"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62df"
+  },
+  "id": "18A",
+  "Sucursal": "COLIMA",
+  "Homoclave": "COL",
+  "Calle": "Mariano Arista",
+  "Número": "614",
+  "Referencia": " Entre Calle Independencia y la Armonía",
+  "Colonia": "La Armonía",
+  "CP": "28020",
+  "Ciudad": "Colima",
+  "Estado": "Colima",
+  "Teléfono": "(312) 314-7402",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Jonathan Alberto Medina Leon",
+  "correo electrónico almacén": "almacen.col@ctin.com.mx",
+  "latitud": "19.2592639923096",
+  "longitud": "-103.723937988281"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62e0"
+  },
+  "id": "19A",
+  "Sucursal": "COATZACOALCOS",
+  "Homoclave": "CTZ",
+  "Calle": "Díaz Mirón",
+  "Número": "522",
+  "Referencia": "entre Allende y 16 de Septiembre",
+  "Colonia": "Centro",
+  "CP": "96400",
+  "Ciudad": "Coatzacoalcos",
+  "Estado": "Veracruz",
+  "Teléfono": "(921) 212-7000",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Cesar Guadalupe Vazquez",
+  "correo electrónico almacén": "almacen.ctz@ctin.com.mx",
+  "latitud": "18.1502876281738",
+  "longitud": "-94.4179229736328"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62e1"
+  },
+  "id": "20A",
+  "Sucursal": "TAMPICO",
+  "Homoclave": "TAM",
+  "Calle": "Av. Tamaulipas",
+  "Número": "208",
+  "Referencia": "entre queretaro y sonora",
+  "Colonia": "unidad nacional",
+  "CP": "89410",
+  "Ciudad": "Tampico",
+  "Estado": "Tamaulipas",
+  "Teléfono": "(833) 132-5775",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Alejandro Moreno Garcia",
+  "correo electrónico almacén": "almacen.tam@ctin.com.mx",
+  "latitud": "22.2641792297363",
+  "longitud": "-97.8456192016602"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62e2"
+  },
+  "id": "21A",
+  "Sucursal": "PUEBLA",
+  "Homoclave": "PUE",
+  "Calle": "29 norte",
+  "Número": "614",
+  "Colonia": "Villa San Alejandro",
+  "CP": "72090",
+  "Ciudad": "Puebla",
+  "Estado": "Puebla",
+  "Teléfono": "(222) 237-7007",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Jorge Lopez Vazquez",
+  "correo electrónico almacén": "almacen.pue@ctin.com.mx",
+  "latitud": "19.0631256103516",
+  "longitud": "-98.2178115844727"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62e3"
+  },
+  "id": "22A",
+  "Sucursal": "VILLAHERMOSA",
+  "Homoclave": "VHA",
+  "Calle": "Prolongacion Paseo Usumacinta",
+  "Número": "103",
+  "Referencia": "Esquina Paseo de la Sierra",
+  "Colonia": "El Guayabal",
+  "CP": "86090",
+  "Ciudad": "Villahermosa",
+  "Estado": "Tabasco",
+  "Teléfono": "(993) 142-0272",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Miguel Angel Alor Molina",
+  "correo electrónico almacén": "almacen.vha@ctin.com.mx",
+  "latitud": "17.9752101898193",
+  "longitud": "-92.9244689941406"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62e4"
+  },
+  "id": "23A",
+  "Sucursal": "TUXTLA GUTIERREZ",
+  "Homoclave": "TXA",
+  "Calle": "24A Poniente Sur",
+  "Número": "233A",
+  "Referencia": "entre 1era y 2da Avenida Sur",
+  "Colonia": "Santa Elena",
+  "CP": "29060",
+  "Ciudad": "Tuxtla Gutierrez",
+  "Estado": "Chiapas",
+  "Teléfono": "(961) 125-1661",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Israel Hernandez Velasco",
+  "correo electrónico almacén": "almacen.txl@ctin.com.mx",
+  "latitud": "16.7539730072022",
+  "longitud": "-93.1383895874023"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62e5"
+  },
+  "id": "24A",
+  "Sucursal": "MONTERREY",
+  "Homoclave": "MTY",
+  "Calle": "Martin de Zavala",
+  "Número": "475",
+  "Colonia": "Centro",
+  "CP": " 64000",
+  "Ciudad": "Monterrey",
+  "Estado": "Nuevo León",
+  "Teléfono": "(818) 340-6360",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Julio Cesar Leal Medina",
+  "correo electrónico almacén": "almacen.mty@ctin.com.mx",
+  "latitud": "25.6654300689697",
+  "longitud": "-100.310165405273"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62e6"
+  },
+  "id": "25A",
+  "Sucursal": "TEPIC",
+  "Homoclave": "TPC",
+  "Calle": "Av. Prisciliano Sanchez",
+  "Número": "134 Sur",
+  "Referencia": "Entre las Calles Av. Benito Juarez  Y Miñón Col. Centro",
+  "Colonia": "Centro",
+  "CP": "63000",
+  "Ciudad": "Tepic",
+  "Estado": "Nayarit",
+  "Teléfono": "(311) 133-3399",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Jose Luis Espinosa Perez",
+  "correo electrónico almacén": "almacen.tepic@ctin.com.mx",
+  "latitud": "21.5119800567627",
+  "longitud": "-104.891639709473"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62e7"
+  },
+  "id": "26A",
+  "Sucursal": "MERIDA",
+  "Homoclave": "MID",
+  "Calle": "22",
+  "Número": "100",
+  "Referencia": " entre Calle 19 y Calle 21",
+  "Colonia": "Mexico",
+  "CP": "97125",
+  "Ciudad": "Mérida",
+  "Estado": "Yucatán",
+  "Teléfono": "(999) 944-7200",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Oscar Francisco Perez Rodriguez",
+  "correo electrónico almacén": "almacen.mer@ctin.com.mx",
+  "latitud": "21.0034618377686",
+  "longitud": "-89.6115341186523"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62e8"
+  },
+  "id": "27A",
+  "Sucursal": "OAXACA",
+  "Homoclave": "OAX",
+  "Calle": "Azucenas",
+  "Número": "113",
+  "Referencia": "E/ Heroica Escuela Naval Militar y Calle Sabinos",
+  "Colonia": "Reforma",
+  "CP": "68050",
+  "Ciudad": "Oaxaca",
+  "Estado": "Oaxaca",
+  "Teléfono": "(951) 518-4551",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Alejandro Rojas Jimenez",
+  "correo electrónico almacén": "almacen.oax@ctin.com.mx",
+  "latitud": "17.0805912017822",
+  "longitud": "-96.708366394043"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62e9"
+  },
+  "id": "28A",
+  "Sucursal": "MAZATLAN",
+  "Homoclave": "MAZ",
+  "Calle": "Lola Beltrán",
+  "Número": "307",
+  "Referencia": "entre Río Panuco y Río Presidio",
+  "Colonia": "Palos Prietos",
+  "CP": "82010",
+  "Ciudad": "Mazatlán",
+  "Estado": "Sinaloa",
+  "Teléfono": "(669) 954-0620",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Marco Antonio Preciado Gonzalez",
+  "correo electrónico almacén": "marco.preciado@ctin.com.mx",
+  "latitud": "23.2200126647949",
+  "longitud": "-106.417442321777"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62ea"
+  },
+  "id": "29A",
+  "Sucursal": "CUERNAVACA",
+  "Homoclave": "CUE",
+  "Calle": "Domingo Diez",
+  "Número": "503 - A",
+  "Referencia": "entre Aquiles Serdan y Allende",
+  "Colonia": "El Empleado",
+  "CP": "62270",
+  "Ciudad": "Cuernavaca",
+  "Estado": "Morelos",
+  "Teléfono": "(777) 313-2300",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Ivan Ortiz Clemente",
+  "correo electrónico almacén": "almacen.cue@ctin.com.mx",
+  "latitud": "18.937744140625",
+  "longitud": "-99.2351684570313"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62eb"
+  },
+  "id": "30A",
+  "Sucursal": "TOLUCA",
+  "Homoclave": "TOL",
+  "Calle": "Sebastian Lerdo de Tejada",
+  "Número": "722",
+  "Referencia": "entre Gonzalez Arratia y Leona Vicario",
+  "Colonia": "Barrio Santa Clara",
+  "CP": "50090",
+  "Ciudad": "Toluca",
+  "Estado": "Estado de México",
+  "Teléfono": "(722) 215-2030",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Jesus Guzman Alvarez",
+  "correo electrónico almacén": "almacen.toluca@ctin.com.mx",
+  "latitud": "19.2919330596924",
+  "longitud": "-99.6471710205078"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62ec"
+  },
+  "id": "31A",
+  "Sucursal": "PACHUCA",
+  "Homoclave": "PAC",
+  "Calle": "Josefa Ortiz de Dominguez",
+  "Número": "103",
+  "Referencia": "entre 16 de septiembre y Ramón G. Bofill",
+  "Colonia": "Santa Julia",
+  "CP": "42080",
+  "Ciudad": "Pachuca",
+  "Estado": "Hidalgo",
+  "Teléfono": "(771) 719 3134",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Arturo Besares Coria",
+  "correo electrónico almacén": "almacen.pac@ctin.com.mx",
+  "latitud": "20.1146621704102",
+  "longitud": "-98.7500534057617"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62ed"
+  },
+  "id": "33A",
+  "Sucursal": "CANCUN",
+  "Homoclave": "CUN",
+  "Calle": "Av. Francisco I. Madero ",
+  "Número": "91",
+  "Referencia": "Esq. Calle 91 SMZ 93, mz 14 lt 1 bodega 5",
+  "CP": "77517",
+  "Ciudad": "Cancun",
+  "Estado": "Quintana Roo",
+  "Teléfono": "(998) 888-6804",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Jose Antonio Gonzalez Lopez",
+  "correo electrónico almacén": "almacen.cun@ctin.com.mx",
+  "latitud": "21.1842575073242",
+  "longitud": "-86.868766784668"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62ee"
+  },
+  "id": "34A",
+  "Sucursal": "PALACIO DE LOS DEPORTES",
+  "Homoclave": "DFP",
+  "Calle": "Centeno",
+  "Número": "833-B",
+  "Referencia": "entre Churubusco y Resina",
+  "Colonia": "Granjas",
+  "CP": "8400",
+  "Ciudad": "Delegacion Iztacalco",
+  "Estado": "Ciudad de México",
+  "Teléfono": "(56) 498918",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Oscar Fernando Hernandez Mendoza",
+  "correo electrónico almacén": "oscar.hernandez@ctin.com.mx",
+  "latitud": "19.4035873413086",
+  "longitud": "-99.1030883789063"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62ef"
+  },
+  "id": "35A",
+  "Sucursal": "AZCAPOTZALCO",
+  "Homoclave": "DFA",
+  "Calle": "AV. Acalotenco",
+  "Número": "94",
+  "Referencia": " entre avenida de las Granjas y Santos Tomas de Aquino",
+  "Colonia": "San Sebastian ",
+  "CP": "2700",
+  "Ciudad": "Delegación Azcapotzalco",
+  "Estado": "Ciudad de México",
+  "Teléfono": "(55)556-16110",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Octavio Guarneros Rio De La Loza",
+  "correo electrónico almacén": "octavio.guarneros@ctin.com.mx",
+  "latitud": "19.4760570526123",
+  "longitud": "-99.2041244506836"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62f0"
+  },
+  "id": "38A",
+  "Sucursal": "ZACATECAS",
+  "Homoclave": "ZAC",
+  "Calle": "Francisco García Salinas",
+  "Número": "327",
+  "Referencia": "entre calles Carlos Lineo y B Lamarck.",
+  "Colonia": "Lomas del Convento",
+  "CP": "98609",
+  "Ciudad": "Zacatecas",
+  "Estado": "Zacatecas",
+  "Teléfono": "(492) 9279873",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Ernesto Alejandro Garcia Perez ",
+  "correo electrónico almacén": "soporte.zac@ctin.com.mx",
+  "latitud": "22.75390625",
+  "longitud": "-102.541679382324"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62f1"
+  },
+  "id": "40A",
+  "Sucursal": "TLALNEPANTLA",
+  "Homoclave": "DFT",
+  "Calle": "Antonio M. Rivera",
+  "Número": "26 Bodega 8",
+  "Referencia": "Entre Filiberto Gomez y Rio Lerma",
+  "Colonia": "Industrial",
+  "CP": "54030",
+  "Ciudad": "Tlalnepantla",
+  "Estado": "Estado de México",
+  "Teléfono": "(55) 556-52210",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Alecisis Josue Cuautli Hernandez",
+  "correo electrónico almacén": "alecsis.cuautli@ctin.com.mx",
+  "latitud": "19.5528526306152",
+  "longitud": "-99.2014694213867"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62f2"
+  },
+  "id": "41A",
+  "Sucursal": "ACAPULCO",
+  "Homoclave": "ACA",
+  "Calle": "Martín Alonso Pinzón",
+  "Número": "43",
+  "Referencia": "entre Enrique Navegante y Juan de la Costa",
+  "Colonia": "Fracc. Magallanes",
+  "CP": "39670",
+  "Ciudad": "Acapulco",
+  "Estado": "Guerrero",
+  "Teléfono": "(744) 4812210",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Carlos Salas Bahena",
+  "correo electrónico almacén": "almacen.aca@ctin.com.mx",
+  "latitud": "16.8635444641113",
+  "longitud": "-99.882568359375"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62f3"
+  },
+  "id": "42A",
+  "Sucursal": "IRAPUATO",
+  "Homoclave": "IRA",
+  "Calle": "Emilio Carranza",
+  "Número": "1156",
+  "Referencia": "asi esq. Con Blvd. Lázaro Cardenas",
+  "Colonia": "Moderna",
+  "CP": "36690",
+  "Ciudad": "Irapuato",
+  "Estado": "Guanajuato",
+  "Teléfono": "4626251540",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Jesus Emmanuel Espitia Vaca",
+  "correo electrónico almacén": "almacen.ira@ctin.com.mx",
+  "latitud": "20.6806297302246",
+  "longitud": "-101.358772277832"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62f4"
+  },
+  "id": "43A",
+  "Sucursal": "COACALCO",
+  "Homoclave": "DFC",
+  "Calle": "Av. Zarzaparrillas",
+  "Número": "2",
+  "Referencia": "esq. Vía José López Portillo",
+  "Colonia": "Villa de las Flores",
+  "CP": "55710",
+  "Ciudad": "Coacalco",
+  "Estado": "Estado de México",
+  "Teléfono": "(55) 1542-0000",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Julio Antonio Gonzalez Saldivar",
+  "correo electrónico almacén": "almacen1.coa@ctin.com.mx",
+  "latitud": "19.647289276123",
+  "longitud": "-99.0924835205078"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62f5"
+  },
+  "id": "45A",
+  "Sucursal": "TLAXCALA",
+  "Homoclave": "TXL",
+  "Calle": "Carretera Ocotlan-Santa Ana",
+  "Número": "502A",
+  "Colonia": "Ocotlan",
+  "CP": "90100",
+  "Ciudad": "Tlaxcala",
+  "Estado": "Tlaxcala",
+  "Teléfono": "(246) 466 8180",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Victor Diaz Juarez",
+  "correo electrónico almacén": "soporte.tlx@ctin.com.mx",
+  "latitud": "19.3171463012695",
+  "longitud": "-98.227653503418"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62f6"
+  },
+  "id": "46A",
+  "Sucursal": "CAMPECHE",
+  "Homoclave": "CAM",
+  "Calle": "Francisco I. Madero",
+  "Número": "245",
+  "Referencia": "Esquina Rio San Pedro",
+  "Colonia": "Villa del Rio",
+  "CP": "24010",
+  "Ciudad": "Campeche",
+  "Estado": "Campeche",
+  "Teléfono": "(981)8115581",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Genaro Andrés Poot Hernández",
+  "correo electrónico almacén": "almacen.cam@ctin.com.mx",
+  "latitud": "22.4015960693359",
+  "longitud": "-99.6019515991211"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62f7"
+  },
+  "id": "47A",
+  "Sucursal": "ACOXPA",
+  "Homoclave": "ACX",
+  "Calle": "Calzada Acoxpa",
+  "Número": "895",
+  "Referencia": "Entre Canal de Miramontes y Anillo Periferico",
+  "Colonia": "Residencial Villa Acoxpa ",
+  "CP": "14390",
+  "Ciudad": "Delegación Tlalpan",
+  "Estado": "Ciudad de México",
+  "Teléfono": "56 03 77 48",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Carlos Sanchez Najera",
+  "correo electrónico almacén": "almacen.acx@ctin.com.mx",
+  "latitud": "19.2887496948242",
+  "longitud": "-99.1180725097656"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62f8"
+  },
+  "id": "48A",
+  "Sucursal": "URUAPAN",
+  "Homoclave": "URP",
+  "Calle": "Paraguay",
+  "Número": "367",
+  "Referencia": "Entre calle Colombia y Latino",
+  "Colonia": "Los Angeles",
+  "CP": "60160",
+  "Ciudad": "Uruapan",
+  "Estado": "Michoacan",
+  "Teléfono": "(452) 5193330",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Rafael Abraham Silva Juarez",
+  "correo electrónico almacén": "almacen.urp@ctin.com.mx",
+  "latitud": "19.4010143280029",
+  "longitud": "-102.043807983398"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62f9"
+  },
+  "id": "49A",
+  "Sucursal": "CD. VICTORIA",
+  "Homoclave": "CDV",
+  "Calle": "Conrado Castillo",
+  "Número": "412",
+  "Referencia": "Entre 20 DE Noviembre Y Fermin Legorreta ",
+  "Colonia": "Pedro Jose Mendez",
+  "CP": "87048",
+  "Ciudad": "Ciudad Victoria",
+  "Estado": "Tamaulipas",
+  "Teléfono": "834 110 0560",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Juan Pablo Ortiz Arias",
+  "correo electrónico almacén": "almacen.cdv@ctin.com.mx",
+  "latitud": "23.7414836883545",
+  "longitud": "-99.1517562866211"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62fa"
+  },
+  "id": "51A",
+  "Sucursal": "CELAYA",
+  "Homoclave": "CEL",
+  "Calle": "Pino Suarez",
+  "Número": "803",
+  "Referencia": "Entre 2 de Aril y Privada Jose Maria",
+  "Colonia": "El Vergel",
+  "CP": "38078",
+  "Ciudad": "Celaya",
+  "Estado": "Guanajuato",
+  "Teléfono": "461 2153731",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "Jose Emilio Tula Tierrablanca",
+  "correo electrónico almacén": "almacen.celaya@ctin.com.mx",
+  "latitud": "20.5158958435059",
+  "longitud": "-100.804229736328"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e62fb"
+  },
+  "id": "D2A",
+  "Sucursal": "CEDIS HERMOSILLO",
+  "Homoclave": "D2A",
+  "Calle": "BOULEVARD QUIROGA ",
+  "Número": "114",
+  "Referencia": "PERIMETRAL Y JOSE MA. MENDOZ",
+  "Colonia": "EL LLANO",
+  "CP": "83210",
+  "Ciudad": "Hermosillo",
+  "Estado": "Sonora",
+  "Teléfono": "6622061463",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "RAMSES JUAREZ",
+  "correo electrónico almacén": "ramses.juarez@ctin.com.mx",
+  "latitud": "29.0894660949707",
+  "longitud": "-111.009147644043"
+},{
+  "_id": {
+    "$oid": "63ea277b02c8d3ede30e6bak"
+  },
+  "id": "53A",
+  "Sucursal": "CEDIS MONTERREY",
+  "Homoclave": "CMT",
+  "Calle": "Galeana Oriente",
+  "Número": "386",
+  "Referencia": "",
+  "Colonia": "El Lechugal",
+  "CP": "66376",
+  "Ciudad": "Santa Catarina",
+  "Estado": "Nuevo León",
+  "Teléfono": "8110926711",
+  "Correo grupal": "ecom@ctin.com.mx",
+  "Jefe de almacén": "José Antonio Treviño Orozco",
+  "correo electrónico almacén": "jose.trevino@ctin.com.mx",
+  "latitud": "20.5158958435059",
+  "longitud": "-100.804229736328"
+}]

@@ -10,7 +10,7 @@ export interface IWarehouse {
   estado: string;
   latitud: string;
   longitud: string;
-  suppliersProd: ISupplierProd;
+  suppliersProd: ISupplierProd[];
   products: ICartItem[];
   productShipments: IProductShipment[];
   shipments: IShipment[];

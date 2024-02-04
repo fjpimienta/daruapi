@@ -37,6 +37,19 @@ type Vigencia {
   ini: String
   fin: String
 }
+
+type ResponseCtsSupplierProd {
+  idProveedor: ID
+  codigo: String
+  price: Float
+  cantidad: Int
+  sale_price: Float
+  moneda: String
+  branchOffices: [BranchOffices]
+  category: Categorys
+  subCategory: Categorys
+}
+
 # Fin Productos Ct
 
 interface ResponseCt {

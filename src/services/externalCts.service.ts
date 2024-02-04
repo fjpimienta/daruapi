@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion, IResponseCtsJsonProducts, IEspecificacion, IExistenciaAlmacenCT } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion, IResponseCtsJsonProducts, IEspecificacion, IExistenciaAlmacenCT, IExistenciaAlmacen } from '../interfaces/suppliers/_CtsShippments.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 
 import logger from '../utils/logger';
@@ -8,6 +8,10 @@ import fetch from 'node-fetch';
 import { Client, AccessOptions } from 'basic-ftp';
 import fs from 'fs';
 const xml2js = require('xml2js');
+
+import existenciaProductoCt from './../../uploads/json/existenciaProductoCt.json';
+import almacenesCt from './../../uploads/json/ct_almacenes.json';
+import { IBranchOffices, ISupplierProd } from '../interfaces/product.interface';
 
 
 class ExternalCtsService extends ResolversOperationsService {
@@ -128,10 +132,25 @@ class ExternalCtsService extends ResolversOperationsService {
     };
   }
 
+  buscarAlmacenesConExistencia(existenciaProducto: ISupplierProd, existenciaProductoCt: IExistenciaAlmacen[]): IExistenciaAlmacen[] {
+    const { cantidad } = existenciaProducto;
+    const almacenesConExistencia = existenciaProductoCt.filter((almacen) => {
+      return almacen.existencia >= cantidad;
+    });
+    return almacenesConExistencia;
+  }
+
   async getExistenciaProductoCt(variables: IVariables) {
     try {
       const token = await this.getTokenCt();
-      const { codigoCt } = variables;
+      const { existenciaProducto } = variables;
+      if (!existenciaProducto) {
+        return {
+          status: true,
+          message: 'No hubo cambio en los almacenes. Verificar API.',
+          existenciaProductoCt: existenciaProducto,
+        };
+      }
       const options = {
         method: 'GET',
         headers: {
@@ -139,7 +158,7 @@ class ExternalCtsService extends ResolversOperationsService {
           'Content-Type': 'application/json',
         },
       };
-      const url = 'http://connect.ctonline.mx:3001/existencia/' + codigoCt;
+      const url = 'http://connect.ctonline.mx:3001/existencia/' + existenciaProducto.codigo;
       const result = await fetch(url, options);
       if (result.ok) {
         const data: IExistenciaAlmacenCT = await result.json();
@@ -149,10 +168,31 @@ class ExternalCtsService extends ResolversOperationsService {
           key,
           existencia: data[key].existencia,
         }));
+
+        if (existenciaProductoCt.length > 0) {
+          const existenciaProductoCtData = existenciaProductoCt;
+          const almacenesConExistencia = this.buscarAlmacenesConExistencia(existenciaProducto, existenciaProductoCtData);
+          const almacenesCompletos = almacenesConExistencia.map((almacen) => {
+            const almacenInfo = almacenesCt.find((info) => info.id === almacen.key);
+            if (almacenInfo) {
+              return {
+                id: almacen.key,
+                cantidad: almacen.existencia,
+                name: almacenInfo.Sucursal,
+                estado: almacenInfo.Estado,
+                cp: almacenInfo.CP,
+                latitud: almacenInfo.latitud,
+                longitud: almacenInfo.longitud,
+              };
+            }
+            return {} as IBranchOffices;
+          }).filter((almacen): almacen is IBranchOffices => almacen !== null);
+          existenciaProducto.branchOffices = almacenesCompletos;
+        }
         return {
           status: true,
           message: 'La información que hemos pedido se ha cargado correctamente',
-          existenciaProductoCt,
+          existenciaProductoCt: existenciaProducto,
         };
       } else {
         return {

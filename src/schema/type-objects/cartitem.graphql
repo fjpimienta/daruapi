@@ -121,6 +121,7 @@ type UnidadDeMedida {
 
 type BranchOffices {
   id: String
+  key: String
   name: String
   estado: String
   cantidad: Float

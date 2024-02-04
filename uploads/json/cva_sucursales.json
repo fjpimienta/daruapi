@@ -1,0 +1,278 @@
+[{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491b7"
+  },
+  "clave": "1",
+  "nombre": "GUADALAJARA",
+  "cp": 44900
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491b8"
+  },
+  "clave": "3",
+  "nombre": "MORELIA",
+  "cp": 58000
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491b9"
+  },
+  "clave": "4",
+  "nombre": "LEON",
+  "cp": 37200
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491ba"
+  },
+  "clave": "5",
+  "nombre": "CULIACAN",
+  "cp": 80200
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491bb"
+  },
+  "clave": "6",
+  "nombre": "QUERETARO",
+  "cp": 76148
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491bc"
+  },
+  "clave": "7",
+  "nombre": "TORREON",
+  "cp": 27000
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491bd"
+  },
+  "clave": "8",
+  "nombre": "TEPIC",
+  "cp": 63159
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491be"
+  },
+  "clave": "9",
+  "nombre": "MONTERREY",
+  "cp": 64650
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491bf"
+  },
+  "clave": "10",
+  "nombre": "PUEBLA",
+  "cp": 72060
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491c0"
+  },
+  "clave": "11",
+  "nombre": "VERACRUZ",
+  "cp": 91700
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491c1"
+  },
+  "clave": "12",
+  "nombre": "VILLAHERMOSA",
+  "cp": 86190
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491c2"
+  },
+  "clave": "13",
+  "nombre": "TUXTLA",
+  "cp": 29066
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491c3"
+  },
+  "clave": "14",
+  "nombre": "HERMOSILLO",
+  "cp": 83188
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491c4"
+  },
+  "clave": "18",
+  "nombre": "MERIDA",
+  "cp": 97000
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491c5"
+  },
+  "clave": "19",
+  "nombre": "CANCUN",
+  "cp": 77520
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491c6"
+  },
+  "clave": "23",
+  "nombre": "AGUASCALIENTES",
+  "cp": 20040
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491c7"
+  },
+  "clave": "24",
+  "nombre": "CDMX",
+  "cp": 6820
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491c8"
+  },
+  "clave": "26",
+  "nombre": "SAN LUIS POTOSI",
+  "cp": 78230
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491c9"
+  },
+  "clave": "27",
+  "nombre": "CHIHUAHUA",
+  "cp": 31105
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491ca"
+  },
+  "clave": "28",
+  "nombre": "DURANGO",
+  "cp": 34000
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491cb"
+  },
+  "clave": "29",
+  "nombre": "TOLUCA",
+  "cp": 50090
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491cc"
+  },
+  "clave": "31",
+  "nombre": "OAXACA",
+  "cp": 68000
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491cd"
+  },
+  "clave": "32",
+  "nombre": "LA PAZ",
+  "cp": 23000
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491ce"
+  },
+  "clave": "33",
+  "nombre": "TIJUANA",
+  "cp": 22430
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491cf"
+  },
+  "clave": "35",
+  "nombre": "COLIMA",
+  "cp": 28000
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491d0"
+  },
+  "clave": "36",
+  "nombre": "ZACATECAS",
+  "cp": 98000
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491d1"
+  },
+  "clave": "38",
+  "nombre": "CAMPECHE",
+  "cp": 24050
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491d2"
+  },
+  "clave": "39",
+  "nombre": "TAMPICO",
+  "cp": 89440
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491d3"
+  },
+  "clave": "40",
+  "nombre": "PACHUCA",
+  "cp": 42039
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491d4"
+  },
+  "clave": "43",
+  "nombre": "ACAPULCO",
+  "cp": 39355
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491d5"
+  },
+  "clave": "46",
+  "nombre": "CEDIS GUADALAJARA",
+  "cp": 45640
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491d6"
+  },
+  "clave": "47",
+  "nombre": "CUERNAVACA",
+  "cp": 62170
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491d7"
+  },
+  "clave": "51",
+  "nombre": "CEDIS CDMX CENTRO SUR",
+  "cp": 54913
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491d8"
+  },
+  "clave": "52",
+  "nombre": "ASPHALT",
+  "cp": 44900
+},
+{
+  "_id": {
+    "$oid": "647a3c6e8811204644b491d9"
+  },
+  "clave": "\n"
+}]

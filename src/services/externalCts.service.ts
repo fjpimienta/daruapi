@@ -1,17 +1,16 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion, IResponseCtsJsonProducts, IEspecificacion, IExistenciaAlmacenCT, IExistenciaAlmacen } from '../interfaces/suppliers/_CtsShippments.interface';
-import ResolversOperationsService from './resolvers-operaciones.service';
+import { IBranchOffices, ISupplierProd } from '../interfaces/product.interface';
 
 import logger from '../utils/logger';
 import fetch from 'node-fetch';
 import { Client, AccessOptions } from 'basic-ftp';
 import fs from 'fs';
 const xml2js = require('xml2js');
+import ResolversOperationsService from './resolvers-operaciones.service';
 
-import existenciaProductoCt from './../../uploads/json/existenciaProductoCt.json';
 import almacenesCt from './../../uploads/json/ct_almacenes.json';
-import { IBranchOffices, ISupplierProd } from '../interfaces/product.interface';
 
 
 class ExternalCtsService extends ResolversOperationsService {

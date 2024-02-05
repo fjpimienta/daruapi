@@ -8,7 +8,7 @@ import { IWarehouse } from '../interfaces/warehouses.interface';
 import { IEnvioCt, IGuiaConnect, IOrderCt, IOrderCtResponse, IProductOrderCt } from '../interfaces/suppliers/_CtsShippments.interface';
 import { IProductShipment } from '../interfaces/productShipment.interface';
 import { IEnvioCVA, IOrderCva, IProductoCva } from '../interfaces/suppliers/_CvasShippments.interface';
-import hRCvaCiudades from './../../uploads/json/cva_ciudades.json';
+import hRCvaCiudades from './../json/cva_ciudades.json';
 import { FF } from './../constants/constants';
 import ExternalCvasService from './externalCvas.service';
 import { IOrderCtConfirm } from '../interfaces/suppliers/orderctresponse.interface';

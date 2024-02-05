@@ -80,8 +80,9 @@ class DeliverysService extends ResolversOperationsService {
   async insert(context: IContextData) {
     let status = 'PEDIDO CREADO'
     const delivery = this.getVariables().delivery;
+    const idDelivery = await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 });
     if (delivery) {
-      delivery.id = await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 });
+      delivery.id = idDelivery;
       delivery.status = status;
       delivery.registerDate = new Date().toISOString();
       // Insertar Pedido Inicial
@@ -96,26 +97,32 @@ class DeliverysService extends ResolversOperationsService {
               return await {
                 status: resultCharge.status,
                 message: resultCharge.message,
-                delivery: resultCharge.createChargeOpenpay
+                createChargeOpenpay: resultCharge.createChargeOpenpay
               };
             } catch (error) {
               status = 'CARGO RECHAZADO';
               return await {
                 status: resultCharge.status,
                 message: resultCharge.message,
-                delivery: null
+                createChargeOpenpay: null
               };
             }
           });
         // Si el cargo es correcto actualizar estatus del pedido
         if (resultOpenpay && resultOpenpay.status) {
-          const delyveryUpdate: IDelivery = resultOpenpay.delivery as IDelivery;
+          const delyveryUpdate: IDelivery = result.item as IDelivery;
           delyveryUpdate.status = status;
+          delyveryUpdate.chargeOpenpay = resultOpenpay.createChargeOpenpay as IChargeOpenpay;
           delyveryUpdate.lastUpdate = new Date().toISOString();
-          const filter = { id: delivery?.id };
+          const filter = { id: idDelivery };
+          console.log('delyveryUpdate: ', delyveryUpdate);
           const resultUpdate = await this.update(this.collection, filter, delyveryUpdate, 'Pedido');
           if (resultUpdate && resultUpdate.status) {
-            return await resultUpdate;
+            return await {
+              status: resultUpdate.status,
+              message: resultUpdate.message,
+              delivery: delyveryUpdate
+            }
           }
           return await {
             status: resultUpdate.status,
@@ -129,8 +136,9 @@ class DeliverysService extends ResolversOperationsService {
         delyveryUpdate.statusError = !resultOpenpay.status;
         delyveryUpdate.messageError = resultOpenpay.message;
         delyveryUpdate.lastUpdate = new Date().toISOString();
-        const filter = { id: delivery?.id };
+        const filter = { id: idDelivery };
         const resultUpdate = await this.update(this.collection, filter, delyveryUpdate, 'Pedido');
+        console.log('resultUpdate con error: ', resultUpdate);
         if (resultUpdate && resultUpdate.status) {
           return await {
             status: resultOpenpay.status,

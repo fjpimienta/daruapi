@@ -4,10 +4,10 @@ import DeliverysService from '../../services/deliverys.service';
 const resolversDeliveryMutation: IResolvers = {
   Mutation: {
     async addDelivery(_, variables, context) {
-      return new DeliverysService(_, variables, context).insert();
+      return new DeliverysService(_, variables, context).insert(context);
     },
     async updateDelivery(_, variables, context) {
-      return new DeliverysService(_, variables, context).modify();
+      return new DeliverysService(_, variables, context).modify(context);
     },
     async deleteDelivery(_, variables, context) {
       return new DeliverysService(_, variables, context).delete();

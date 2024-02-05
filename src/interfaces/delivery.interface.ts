@@ -16,6 +16,7 @@ export interface IDelivery {
   discount: number;
   importe: number;
   registerDate?: string;
+  lastUpdate: String
   user: IUserBasic;
   chargeOpenpay: IChargeOpenpay
   warehouses: IWarehouse[];
@@ -27,4 +28,5 @@ export interface IDelivery {
   invoiceConfig?: IInvoiceConfig;
   statusError: boolean;
   messageError: string;
+  status?: string;
 }

@@ -6,6 +6,7 @@ input DeliveryInput {
   discount: Float!
   importe: Float!
   registerDate: String
+  lastUpdate: String
   user: UserInput!
   chargeOpenpay: ChargeOpenpayInput
   warehouses: [WarehouseInput]!
@@ -17,4 +18,5 @@ input DeliveryInput {
   invoiceConfig: InvoiceConfigInput
   statusError: Boolean
   messageError: String
+  status: String
 }

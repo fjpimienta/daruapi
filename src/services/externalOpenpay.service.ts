@@ -1,4 +1,5 @@
 import { IContextData } from '../interfaces/context-data.interface';
+import { IChargeOpenpay } from '../interfaces/suppliers/_Openpay.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import OpenPay from 'openpay';
@@ -400,7 +401,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         };
       }
 
-      const chargeOpenpay = await new Promise((resolve, reject) => {
+      const chargeOpenpay: IChargeOpenpay = await new Promise((resolve, reject) => {
         this.openpay.charges.get(idTransactionOpenpay, (error: any, response: any) => {
           if (error) {
             reject(error);

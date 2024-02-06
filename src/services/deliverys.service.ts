@@ -110,18 +110,18 @@ class DeliverysService extends ResolversOperationsService {
           });
         // Si el cargo es correcto actualizar estatus del pedido
         if (resultOpenpay && resultOpenpay.status) {
-          const delyveryUpdate: IDelivery = result.item as IDelivery;
-          delyveryUpdate.status = status;
-          delyveryUpdate.chargeOpenpay = resultOpenpay.createChargeOpenpay as IChargeOpenpay;
-          delyveryUpdate.lastUpdate = new Date().toISOString();
+          const deliveryUpdate: IDelivery = result.item as IDelivery;
+          deliveryUpdate.status = status;
+          deliveryUpdate.chargeOpenpay = resultOpenpay.createChargeOpenpay as IChargeOpenpay;
+          deliveryUpdate.lastUpdate = new Date().toISOString();
           const filter = { id: idDelivery };
-          console.log('delyveryUpdate: ', delyveryUpdate);
-          const resultUpdate = await this.update(this.collection, filter, delyveryUpdate, 'Pedido');
+          console.log('deliveryUpdate: ', deliveryUpdate);
+          const resultUpdate = await this.update(this.collection, filter, deliveryUpdate, 'Pedido');
           if (resultUpdate && resultUpdate.status) {
             return await {
               status: resultUpdate.status,
               message: resultUpdate.message,
-              delivery: delyveryUpdate
+              delivery: deliveryUpdate
             }
           }
           return await {
@@ -131,13 +131,13 @@ class DeliverysService extends ResolversOperationsService {
           }
         }
         // Si hay error en el cargo de Openpay
-        const delyveryUpdate: IDelivery = result.item as IDelivery;
-        delyveryUpdate.status = status;
-        delyveryUpdate.statusError = !resultOpenpay.status;
-        delyveryUpdate.messageError = resultOpenpay.message;
-        delyveryUpdate.lastUpdate = new Date().toISOString();
+        const deliveryUpdate: IDelivery = result.item as IDelivery;
+        deliveryUpdate.status = status;
+        deliveryUpdate.statusError = !resultOpenpay.status;
+        deliveryUpdate.messageError = resultOpenpay.message;
+        deliveryUpdate.lastUpdate = new Date().toISOString();
         const filter = { id: idDelivery };
-        const resultUpdate = await this.update(this.collection, filter, delyveryUpdate, 'Pedido');
+        const resultUpdate = await this.update(this.collection, filter, deliveryUpdate, 'Pedido');
         console.log('resultUpdate con error: ', resultUpdate);
         if (resultUpdate && resultUpdate.status) {
           return await {
@@ -167,136 +167,142 @@ class DeliverysService extends ResolversOperationsService {
 
   // Update Delivery
   async modify(context: IContextData) {
+    let status = 'AUTORIZANDO CARGO';
     const delivery = this.getVariables().delivery;
-    // Si no llega el delivery
-    if (!delivery || !this.checkData(delivery?.deliveryId || '')) {
-      return {
-        status: false,
-        message: `El Delivery no se ha especificado correctamente`,
-        delivery: null
-      };
-    }
-
-    // Comprobar que no existe el ID
-    if (await this.checkInDatabase(delivery?.deliveryId || '')) {
-      return {
-        status: false,
-        message: `El Delivery ya existe en la base de datos, intenta con otro almacen`,
-        delivery: null
-      };
-    }
-
-    // Variables
-    const warehouses: IWarehouse[] = delivery?.warehouses || [];
-    console.log('warehouses: ', warehouses);
-    const resultID = await this.nextId(this.collection);
-    let deliveryID = 0;
-    if (resultID.status && resultID.catId) {
-      deliveryID = parseInt(resultID.catId);
-    }
-    // Generar el Pedido con el provedor
-    const ordersCt: IOrderCt[] = [];
-    const ordersCva: IOrderCva[] = [];
-
-    for (const idWar in Object.keys(warehouses)) {
-      const warehouse: IWarehouse = warehouses[idWar];
-      console.log('warehouse: ', warehouse);
-      const supplier = warehouse.suppliersProd[0].idProveedor;
-      console.log('supplier: ', supplier);
-      const order = await this.setOrder(deliveryID, delivery, warehouse);
-      console.log('order: ', order);
-      switch (supplier) {
-        case 'ct':
-          ordersCt.push(order);
-          break;
-        case 'cva':
-          ordersCva.push(order);
-          break;
-        case 'ingram':
-          break;
-      }
-      const orderNew = await this.EfectuarPedidos(warehouse.suppliersProd[0].idProveedor, order, context)
-        .then(async (result) => {
-          return await result;
-        });
-      if (orderNew) {
-        switch (warehouse.suppliersProd[0].idProveedor) {
-          case 'ct':
-            let orderCtResponse: IOrderCtResponse;
-            let orderCtConfirm: IOrderCtConfirm = { folio: '' };
-            if (orderNew.estatus === 'Mal Pedido') {
-              orderCtResponse = orderNew;
-              orderCtConfirm.folio = 'NA';
-              break;
+    // Si el pago fue autorizado.
+    if (delivery) {
+      const idTransactionOpenpay = delivery.chargeOpenpay.id;
+      const resultOpenpay = await new ExternalOpenpayService({}, { idTransactionOpenpay }, context).oneCharge({ idTransactionOpenpay })
+        .then(async resultCharge => {
+          try {
+            if (resultCharge && resultCharge.chargeOpenpay) {
+              return await resultCharge;
             }
-
-            orderCtResponse = orderNew;
-            orderCtConfirm.folio = orderNew.pedidoWeb;
+            return await {
+              status: resultCharge.status,
+              message: resultCharge.message,
+              chargeOpenpay: null
+            };
+          } catch (error) {
+            console.log('error: ', error);
+            return await {
+              status: resultCharge.status,
+              message: resultCharge.message,
+              chargeOpenpay: null
+            };
+          }
+        });
+      let chargeOpenpay: IChargeOpenpay;
+      if (resultOpenpay && resultOpenpay.chargeOpenpay && resultOpenpay.chargeOpenpay.status === 'completed') {
+        chargeOpenpay = resultOpenpay.chargeOpenpay;
+        status = 'CARGO COMPLETADO';
+      } else {
+        chargeOpenpay = delivery.chargeOpenpay;
+        status = 'CARGO PENDIENTE';
+      }
+      // Realizar el Pedido
+      const id = parseInt(delivery.id);
+      const ordersCt: IOrderCt[] = [];
+      const ordersCva: IOrderCva[] = [];
+      const warehouses: IWarehouse[] = delivery?.warehouses || [];
+      console.log('warehouses: ', warehouses);
+      for (const idWar in Object.keys(warehouses)) {
+        const warehouse: IWarehouse = warehouses[idWar];
+        const supplier = warehouse.suppliersProd.idProveedor;
+        console.log('id: ', id);
+        console.log('delivery: ', delivery);
+        console.log('warehouse: ', warehouse);
+        const order = await this.setOrder(id, delivery, warehouse);
+        switch (supplier) {
+          case 'ct':
+            ordersCt.push(order);
             break;
           case 'cva':
-            let orderCvaResponse: IOrderCvaResponse;
-            if (orderNew.estado === 'ERROR') {
-              console.log('TO DO Buscar en otra sucursal');
-              // TO DO Buscar en otra sucursal.
-            }
-            orderCvaResponse = orderNew;
+            ordersCva.push(order);
+            break;
+          case 'ingram':
             break;
         }
+        console.log('order: ', order);
+        // status = 'PEDIDO SOLICITADO';
+        // const orderNew = await this.EfectuarPedidos(warehouse.suppliersProd.idProveedor, order, context)
+        //   .then(async (result) => {
+        //     return await result;
+        //   });
+        // console.log('orderNew: ', orderNew);
+        // if (orderNew) {
+        //   switch (warehouse.suppliersProd.idProveedor) {
+        //     case 'ct':
+        //       let orderCtResponse: IOrderCtResponse;
+        //       let orderCtConfirm: IOrderCtConfirm = { folio: '' };
+        //       if (orderNew.estatus === 'Mal Pedido') {
+        //         orderCtResponse = orderNew;
+        //         orderCtConfirm.folio = 'NA';
+        //         break;
+        //       }
+        //       orderCtResponse = orderNew;
+        //       orderCtConfirm.folio = orderNew.pedidoWeb;
+        //       break;
+        //     case 'cva':
+        //       let orderCvaResponse: IOrderCvaResponse;
+        //       if (orderNew.estado === 'ERROR') {
+        //         console.log('TO DO Buscar en otra sucursal');
+        //         // TO DO Buscar en otra sucursal.
+        //       }
+        //       orderCvaResponse = orderNew;
+        //       break;
+        //   }
+        // }
+      }
+      // Actualizar Delivery
+      const deliveryUpdate: IDelivery = delivery as IDelivery;
+      deliveryUpdate.status = status;
+      deliveryUpdate.ordersCt = ordersCt;
+      deliveryUpdate.ordersCva = ordersCva;
+      deliveryUpdate.chargeOpenpay = chargeOpenpay;
+      deliveryUpdate.lastUpdate = new Date().toISOString();
+      deliveryUpdate.status = status;
+      const filter = { id: id.toString() };
+      // console.log('status: ', status);
+      // console.log('deliveryUpdate: ', deliveryUpdate);
+      const resultUpdate = await this.updateForce(this.collection, filter, deliveryUpdate, 'Pedido');
+      // console.log('resultUpdate: ', resultUpdate);
+      if (resultUpdate && resultUpdate.status) {
+        // Si se guarda el envio, inactivar el cupon.
+        if (delivery && delivery?.user) {
+          const collection = COLLECTIONS.WELCOMES;
+          const filter = {
+            email: delivery?.user.email
+          }
+          const welcome = await this.getByField(collection, filter);
+          if (welcome && welcome.item) {
+            const id = { id: welcome.item.id };
+            const active = { active: false };
+            await this.update(collection, id, active, 'welcome');
+          }
+        }
+        return await {
+          status: resultUpdate.status,
+          message: resultUpdate.message,
+          delivery: deliveryUpdate
+        }
+      }
+      // Confirmar el Pedido
+      status = 'PEDIDO CONFIRMADO';
+      // Enviar el Pedido
+      status = 'PEDIDO ENVIADO';
+      return await {
+        status: resultUpdate.status,
+        message: resultUpdate.message,
+        delivery: delivery
       }
 
-      console.log('orderNew: ', orderNew);
-    }
-
-    // Generar el cobro con openpay
-
-    // Guardar la compra del cliente
-
-    const deliveryObject = {
-      id: await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 }),
-      deliveryId: delivery?.deliveryId,
-      cliente: delivery?.cliente,
-      cupon: delivery?.cupon,
-      discount: delivery?.discount,
-      importe: delivery?.importe,
-      lastUpdate: delivery?.lastUpdate,
-      user: delivery?.user,
-      chargeOpenpay: delivery?.chargeOpenpay,
-      warehouses: delivery?.warehouses,
-      ordersCt: delivery?.ordersCt,
-      ordersCva: delivery?.ordersCva,
-      orderCtResponse: delivery?.orderCtResponse,
-      orderCtConfirmResponse: delivery?.orderCtConfirmResponse,
-      orderCvaResponse: delivery?.orderCvaResponse,
-      invoiceConfig: delivery?.invoiceConfig,
-      statusError: delivery?.statusError,
-      messageError: delivery?.messageError,
-      registerDate: new Date().toISOString()
-    };
-
-    const filter = { id: delivery?.id };
-    const result = await this.update(this.collection, filter, deliveryObject, 'almacenes');
-
-    // Si se guarda el envio, inactivar el cupon.
-    if (result.status === true) {
-      if (delivery && delivery?.user) {
-        const collection = COLLECTIONS.WELCOMES;
-        const filter = {
-          email: delivery?.user.email
-        }
-        const welcome = await this.getByField(collection, filter);
-        if (welcome && welcome.item) {
-          const id = { id: welcome.item.id };
-          const active = { active: false };
-          await this.update(collection, id, active, 'welcome');
-        }
-      }
     }
     return {
-      status: result.status,
-      message: result.message,
-      delivery: result.item
+      status: false,
+      mesage: 'Problemas con el cargo, verificar datos.',
+      delivery: null
     };
-
   }
 
   // Eliminar item
@@ -370,7 +376,7 @@ class DeliverysService extends ResolversOperationsService {
     const user = delivery.user;
     if (user && user.addresses && user.addresses.length > 0) {
       const dir = user.addresses && user.addresses.length > 0 ? user.addresses[0] : null;
-      switch (warehouse.suppliersProd[0].idProveedor) {
+      switch (warehouse.suppliersProd.idProveedor) {
         case 'ct':
           const guiaConnect: IGuiaConnect = {
             generarGuia: true,
@@ -391,7 +397,6 @@ class DeliverysService extends ResolversOperationsService {
             telefono,
           };
           enviosCt.push(envioCt);
-
           const ProductosCt: IProductOrderCt[] = [];
           for (const idPS in Object.keys(warehouse.productShipments)) {
             const prod: IProductShipment = warehouse.productShipments[idPS];
@@ -403,7 +408,6 @@ class DeliverysService extends ResolversOperationsService {
             };
             ProductosCt.push(productCt);
           }
-
           const orderCtSupplier: IOrderCt = {
             idPedido: deliveryID,
             almacen: warehouse.productShipments[0].almacen,

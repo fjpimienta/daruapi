@@ -29,6 +29,7 @@ input AddressOpenpayInput {
 }
 
 input ChargeOpenpayInput {
+  id: String
   method: String
   source_id: String
   amount: Float
@@ -46,6 +47,7 @@ input ChargeOpenpayInput {
   use_3d_secure: Boolean
   card: CardOpenpayInput
   confirm: Boolean
+  status: String
 }
 
 input PaymentPlanOpenpayInput {

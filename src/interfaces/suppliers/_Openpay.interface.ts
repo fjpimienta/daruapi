@@ -34,6 +34,7 @@ export interface IAddressOpenpay {
 
 //#region "Charges"
 export interface IChargeOpenpay {
+  id: string;
   method: string;
   source_id: string;
   amount: number;
@@ -50,6 +51,7 @@ export interface IChargeOpenpay {
   send_email?: boolean;
   redirect_url?: string;
   use_3d_secure?: boolean;
+  status?: string;
 }
 
 export interface IBankAccountOpenpay {

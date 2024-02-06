@@ -130,7 +130,7 @@ class DeliverysService extends ResolversOperationsService {
             delivery: result.item
           }
         }
-        // Si hay error en el carco de Openpay
+        // Si hay error en el cargo de Openpay
         const delyveryUpdate: IDelivery = result.item as IDelivery;
         delyveryUpdate.status = status;
         delyveryUpdate.statusError = !resultOpenpay.status;

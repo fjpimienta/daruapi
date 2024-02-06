@@ -39,6 +39,7 @@ input ChargeOpenpayInput {
   capture: Boolean
   customer: CustomerOpenpayInput
   payment_plan: PaymentPlanOpenpayInput
+  payment_method: PaymentMethodOpenpayInput
   use_card_points: String
   send_email: Boolean
   redirect_url: String
@@ -49,6 +50,15 @@ input ChargeOpenpayInput {
 
 input PaymentPlanOpenpayInput {
   payments: Int
+}
+
+input PaymentMethodOpenpayInput {
+  type: String
+  url: String
+  agreement: String
+  bank: String
+  clabe: String
+  name: String
 }
 
 input CaptureChargeOpenpayInput {

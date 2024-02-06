@@ -44,6 +44,7 @@ export interface IChargeOpenpay {
   capture?: boolean;
   customer: ICustomerOpenpay;
   payment_plan?: IPaymentPlanOpenpay;
+  payment_method?: IPaymentMethodOpenpay;
   // metadata?: MetadataField[];
   use_card_points?: 'ONLY_POINTS' | 'MIXED' | 'NONE';
   send_email?: boolean;
@@ -60,6 +61,15 @@ export interface IBankAccountOpenpay {
 
 export interface IPaymentPlanOpenpay {
   payments: number;
+}
+
+export interface IPaymentMethodOpenpay {
+  type?: string;
+  url?: string;
+  agreement?: string;
+  bank?: string;
+  clabe?: string;
+  name?: string;
 }
 
 export interface ICaptureChargeOpenpay {

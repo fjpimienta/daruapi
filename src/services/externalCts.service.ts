@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion, IResponseCtsJsonProducts, IEspecificacion, IExistenciaAlmacenCT, IExistenciaAlmacen } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion, IResponseCtsJsonProducts, IEspecificacion, IExistenciaAlmacenCT, IExistenciaAlmacen, IOrderCt } from '../interfaces/suppliers/_CtsShippments.interface';
 import { IBranchOffices, ISupplierProd } from '../interfaces/product.interface';
 
 import logger from '../utils/logger';
@@ -313,11 +313,11 @@ class ExternalCtsService extends ResolversOperationsService {
         status: true,
         message: 'La información que hemos enviado se ha cargado correctamente',
         orderCt: {
-          pedidoWeb: data[0].respuestaCT.pedidoWeb,
-          fecha: data[0].respuestaCT.fecha,
-          tipoDeCambio: data[0].respuestaCT.tipoDeCambio,
-          estatus: data[0].respuestaCT.estatus,
-          errores: data[0].respuestaCT.errores,
+          pedidoWeb: data[0].orderCtResponse.pedidoWeb,
+          fecha: data[0].orderCtResponse.fecha,
+          tipoDeCambio: data[0].orderCtResponse.tipoDeCambio,
+          estatus: data[0].orderCtResponse.estatus,
+          errores: data[0].orderCtResponse.errores,
         }
       }
     }
@@ -383,18 +383,18 @@ class ExternalCtsService extends ResolversOperationsService {
 
     if (response.ok) {
       const listOrdersCt = data
-        .map((order: IOrderCtResponse) => ({
+        .map((order: IOrderCt) => ({
           idPedido: order.idPedido,
           almacen: order.almacen,
           tipoPago: order.tipoPago,
           guiaConnect: order.guiaConnect,
           envio: order.envio,
           productoCt: order.productoCt,
-          respuestaCT: order.respuestaCT
+          orderCtResponse: order.orderCtResponse
         }))
-        .sort((a: IOrderCtResponse, b: IOrderCtResponse) => {
-          const fechaA = a.respuestaCT && a.respuestaCT.length > 0 ? new Date(a.respuestaCT[0].fecha) : null;
-          const fechaB = b.respuestaCT && b.respuestaCT.length > 0 ? new Date(b.respuestaCT[0].fecha) : null;
+        .sort((a: IOrderCt, b: IOrderCt) => {
+          const fechaA = a.orderCtResponse ? new Date(a.orderCtResponse.fecha) : null;
+          const fechaB = b.orderCtResponse ? new Date(b.orderCtResponse.fecha) : null;
           return (fechaA?.getTime() ?? 0) - (fechaB?.getTime() ?? 0);
         });
 
@@ -475,7 +475,7 @@ class ExternalCtsService extends ResolversOperationsService {
         guiaConnect: data[0].guiaConnect,
         envio: data[0].envio,
         productoCt: data[0].producto,
-        respuestaCT: data[0].respuestaCT
+        orderCtResponse: data[0].orderCtResponse
       } : null
     };
   }

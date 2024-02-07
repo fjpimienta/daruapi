@@ -1,4 +1,4 @@
-type RespuestaCt {
+type OrderCtResponse {
   pedidoWeb: String!
   fecha: String!
   tipoDeCambio: Float!

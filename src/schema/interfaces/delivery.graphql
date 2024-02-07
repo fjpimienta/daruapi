@@ -12,9 +12,6 @@ interface Delivery {
   warehouses: [Warehouse]!
   ordersCt: [OrderCt]
   ordersCva: [OrderCva]
-  orderCtResponse: RespuestaCt
-  orderCtConfirmResponse: RespuestaConfirmCt
-  orderCvaResponse: RespuestaCva
   invoiceConfig: InvoiceConfigI
   statusError: Boolean
   messageError: String

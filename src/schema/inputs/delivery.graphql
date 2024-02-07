@@ -12,9 +12,6 @@ input DeliveryInput {
   warehouses: [WarehouseInput]!
   ordersCt: [OrderCtInput]
   ordersCva: [OrderCvaInput]
-  orderCtResponse: OrderCtResponseInput
-  orderCtConfirmResponse: OrderCtConfirmResponseInput
-  orderCvaResponse: OrderCvaResponseInput
   invoiceConfig: InvoiceConfigInput
   statusError: Boolean
   messageError: String

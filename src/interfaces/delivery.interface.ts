@@ -22,9 +22,6 @@ export interface IDelivery {
   warehouses: IWarehouse[];
   ordersCt?: IOrderCt[];
   ordersCva?: IOrderCva[];
-  orderCtResponse?: IOrderCtResponse;
-  orderCtConfirmResponse?: IOrderCtConfirmResponse;
-  orderCvaResponse?: IOrderCvaResponse;
   invoiceConfig?: IInvoiceConfig;
   statusError: boolean;
   messageError: string;

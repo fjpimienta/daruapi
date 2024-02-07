@@ -11,10 +11,11 @@ import { IEnvioCVA, IOrderCva, IProductoCva } from '../interfaces/suppliers/_Cva
 import hRCvaCiudades from './../json/cva_ciudades.json';
 import { FF } from './../constants/constants';
 import ExternalCvasService from './externalCvas.service';
-import { IOrderCtConfirm } from '../interfaces/suppliers/orderctresponse.interface';
+import { IErroresCT, IOrderCtConfirm, IOrderCtConfirmResponse } from '../interfaces/suppliers/orderctresponse.interface';
 import { IOrderCvaResponse } from '../interfaces/suppliers/ordercvaresponse.interface';
 import ExternalOpenpayService from './externalOpenpay.service';
 import { IChargeOpenpay } from '../interfaces/suppliers/_Openpay.interface';
+import ExternalCtsService from './externalCts.service';
 
 class DeliverysService extends ResolversOperationsService {
   collection = COLLECTIONS.DELIVERYS;
@@ -168,9 +169,16 @@ class DeliverysService extends ResolversOperationsService {
   // Update Delivery
   async modify(context: IContextData) {
     let status = 'AUTORIZANDO CARGO';
+    let statusError = false;
+    let messageError = '';
     const delivery = this.getVariables().delivery;
     // Si el pago fue autorizado.
     if (delivery) {
+      // console.log('delivery: ', delivery);
+      const id = parseInt(delivery.id);
+      const ordersCts: IOrderCt[] = [];
+      const ordersCvas: IOrderCva[] = [];
+      const warehouses: IWarehouse[] = delivery?.warehouses || [];
       const idTransactionOpenpay = delivery.chargeOpenpay.id;
       const resultOpenpay = await new ExternalOpenpayService({}, { idTransactionOpenpay }, context).oneCharge({ idTransactionOpenpay })
         .then(async resultCharge => {
@@ -184,7 +192,6 @@ class DeliverysService extends ResolversOperationsService {
               chargeOpenpay: null
             };
           } catch (error) {
-            console.log('error: ', error);
             return await {
               status: resultCharge.status,
               message: resultCharge.message,
@@ -193,78 +200,107 @@ class DeliverysService extends ResolversOperationsService {
           }
         });
       let chargeOpenpay: IChargeOpenpay;
-      if (resultOpenpay && resultOpenpay.chargeOpenpay && resultOpenpay.chargeOpenpay.status === 'completed') {
+      // if (resultOpenpay && resultOpenpay.chargeOpenpay && resultOpenpay.chargeOpenpay.status === 'completed') {
+      if (resultOpenpay && resultOpenpay.chargeOpenpay) {
         chargeOpenpay = resultOpenpay.chargeOpenpay;
         status = 'CARGO COMPLETADO';
+        // Realizar el Pedido
+        for (const idWar in Object.keys(warehouses)) {
+          const warehouse: IWarehouse = warehouses[idWar];
+          const supplier = warehouse.suppliersProd.idProveedor;
+          status = 'PEDIDO SOLICITADO';
+          switch (supplier) {
+            case 'ct':
+              const ordersCt = await this.setOrder(id, delivery, warehouse);
+              // const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
+              //   .then(async (result) => {
+              //     return await result;
+              //   });
+
+              // Prueba forazada
+              let errorCT: IErroresCT = {
+                errorCode: '999999',
+                errorMessage: 'Error en Pedido',
+                errorReference: ''
+              };
+              let erroresCT: IErroresCT[] = [];
+              erroresCT.push(errorCT);
+              const orderCtResponse = {
+                pedidoWeb: "W11-070392",
+                fecha: "2024-01-23T23:49:10.673Z",
+                tipoDeCambio: 17.44,
+                estatus: "Pendiente",
+                errores: erroresCT
+              }
+              ordersCt.orderCtResponse = orderCtResponse;
+              // Confirmar pedido
+              const orderCtConfirm: IOrderCtConfirm = { folio: orderCtResponse.pedidoWeb };
+              if (orderCtResponse.estatus === 'Mal Pedido') {
+                status = 'ERROR PEDIDO PROVEEDOR';
+                orderCtConfirm.folio = 'NA';
+                statusError = true;
+                messageError = orderCtResponse.errores[0].errorMessage;
+                break;
+              }
+              status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
+              // const orderCtConfirmResponse = await this.ConfirmarPedidos(supplier, orderCtConfirm, context);
+
+              // Prueba forazada
+              const orderCtConfirmResponse = {
+                okCode: "400",
+                okMessage: "¡No Ok, se procesó satisfactoriamente!",
+                okReference: "No Se ha confirmado el pedido y no se encuentran clientes con facturacion…"
+              }
+              if (orderCtConfirmResponse && orderCtConfirmResponse.okCode !== '2000') {
+                status = 'PEDIDO SIN CONFIRMAR POR EL PROVEEDOR';
+              }
+              ordersCt.orderCtConfirmResponse = orderCtConfirmResponse;
+              ordersCts.push(ordersCt);
+              break;
+            case 'cva':
+              status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
+              const ordersCva = await this.setOrder(id, delivery, warehouse);
+              const orderCvaResponse = await this.EfectuarPedidos(supplier, ordersCva, context)
+                .then(async (result) => {
+                  return await result;
+                });
+              ordersCva.orderCvaResponse = orderCvaResponse;
+              if (orderCvaResponse.estado === 'ERROR') {
+                status = 'ERROR PEDIDO PROVEEDOR';
+                statusError = true;
+                messageError = orderCvaResponse.error;
+              }
+              ordersCvas.push(ordersCva);
+              break;
+            case 'ingram':
+              break;
+          }
+        }
       } else {
         chargeOpenpay = delivery.chargeOpenpay;
         status = 'CARGO PENDIENTE';
       }
-      // Realizar el Pedido
-      const id = parseInt(delivery.id);
-      const ordersCt: IOrderCt[] = [];
-      const ordersCva: IOrderCva[] = [];
-      const warehouses: IWarehouse[] = delivery?.warehouses || [];
-      console.log('warehouses: ', warehouses);
-      for (const idWar in Object.keys(warehouses)) {
-        const warehouse: IWarehouse = warehouses[idWar];
-        const supplier = warehouse.suppliersProd.idProveedor;
-        console.log('id: ', id);
-        console.log('delivery: ', delivery);
-        console.log('warehouse: ', warehouse);
-        const order = await this.setOrder(id, delivery, warehouse);
-        switch (supplier) {
-          case 'ct':
-            ordersCt.push(order);
-            break;
-          case 'cva':
-            ordersCva.push(order);
-            break;
-          case 'ingram':
-            break;
-        }
-        console.log('order: ', order);
-        // status = 'PEDIDO SOLICITADO';
-        // const orderNew = await this.EfectuarPedidos(warehouse.suppliersProd.idProveedor, order, context)
-        //   .then(async (result) => {
-        //     return await result;
-        //   });
-        // console.log('orderNew: ', orderNew);
-        // if (orderNew) {
-        //   switch (warehouse.suppliersProd.idProveedor) {
-        //     case 'ct':
-        //       let orderCtResponse: IOrderCtResponse;
-        //       let orderCtConfirm: IOrderCtConfirm = { folio: '' };
-        //       if (orderNew.estatus === 'Mal Pedido') {
-        //         orderCtResponse = orderNew;
-        //         orderCtConfirm.folio = 'NA';
-        //         break;
-        //       }
-        //       orderCtResponse = orderNew;
-        //       orderCtConfirm.folio = orderNew.pedidoWeb;
-        //       break;
-        //     case 'cva':
-        //       let orderCvaResponse: IOrderCvaResponse;
-        //       if (orderNew.estado === 'ERROR') {
-        //         console.log('TO DO Buscar en otra sucursal');
-        //         // TO DO Buscar en otra sucursal.
-        //       }
-        //       orderCvaResponse = orderNew;
-        //       break;
-        //   }
-        // }
-      }
       // Actualizar Delivery
       const deliveryUpdate: IDelivery = delivery as IDelivery;
       deliveryUpdate.status = status;
-      deliveryUpdate.ordersCt = ordersCt;
-      deliveryUpdate.ordersCva = ordersCva;
+      deliveryUpdate.ordersCt = ordersCts;
+      deliveryUpdate.ordersCva = ordersCvas;
       deliveryUpdate.chargeOpenpay = chargeOpenpay;
       deliveryUpdate.lastUpdate = new Date().toISOString();
       deliveryUpdate.status = status;
+
+
+      return await {
+        status: false,
+        message: 'forzado, solo para pruebas',
+        delivery: deliveryUpdate
+      }
+
       const filter = { id: id.toString() };
-      // console.log('status: ', status);
-      // console.log('deliveryUpdate: ', deliveryUpdate);
+      console.log('status: ', status);
+      console.log('deliveryUpdate: ', deliveryUpdate);
+
+
       const resultUpdate = await this.updateForce(this.collection, filter, deliveryUpdate, 'Pedido');
       // console.log('resultUpdate: ', resultUpdate);
       if (resultUpdate && resultUpdate.status) {
@@ -286,15 +322,6 @@ class DeliverysService extends ResolversOperationsService {
           message: resultUpdate.message,
           delivery: deliveryUpdate
         }
-      }
-      // Confirmar el Pedido
-      status = 'PEDIDO CONFIRMADO';
-      // Enviar el Pedido
-      status = 'PEDIDO ENVIADO';
-      return await {
-        status: resultUpdate.status,
-        message: resultUpdate.message,
-        delivery: delivery
       }
 
     }
@@ -508,79 +535,88 @@ class DeliverysService extends ResolversOperationsService {
           });
         return await pedidosCva;
       case 'ct':
-      // const pedidosCt = await new ExternalCtsService({}, order, context).setOrderCt(order)
-      //   .then(async resultPedido => {
-      //     try {
-      //       if (!resultPedido.orderCt) {                              // Hay error en el pedido.
-      //         const ctResponse: OrderCtResponse = new OrderCtResponse();
-      //         ctResponse.estatus = 'Mal Pedido';
-      //         ctResponse.fecha = new Date(Date.now()).toString();
-      //         ctResponse.pedidoWeb = '';
-      //         ctResponse.tipoDeCambio = 0;
-      //         let errorCT: ErroresCT = new ErroresCT();
-      //         let erroresCT: ErroresCT[] = [];
-      //         errorCT.errorCode = '999999';
-      //         errorCT.errorMessage = resultPedido.message;
-      //         errorCT.errorReference = '';
-      //         erroresCT.push(errorCT);
-      //         ctResponse.errores = erroresCT;
-      //         return await ctResponse;
-      //       }
-      //       const ctResponse: OrderCtResponse = new OrderCtResponse();
-      //       ctResponse.estatus = resultPedido.orderCt.estatus;
-      //       ctResponse.fecha = resultPedido.orderCt.fecha;
-      //       ctResponse.pedidoWeb = resultPedido.orderCt.pedidoWeb;
-      //       ctResponse.tipoDeCambio = resultPedido.orderCt.tipoDeCambio;
-      //       ctResponse.errores = resultPedido.orderCt.errores;
-      //       return await ctResponse;
-      //     } catch (error) {
-      //       console.log('error: ', error);
-      //       throw await error;
-      //     }
-      //   });
-      // return await pedidosCt;
+        const pedidosCt = await new ExternalCtsService({}, order, context).setOrderCt(order)
+          .then(async resultPedido => {
+            try {
+              if (!resultPedido.orderCt) {                              // Hay error en el pedido.
+                let errorCT: IErroresCT = {
+                  errorCode: '999999',
+                  errorMessage: resultPedido.message,
+                  errorReference: ''
+                };
+                let erroresCT: IErroresCT[] = [];
+                erroresCT.push(errorCT);
+                const ctResponse: IOrderCtResponse = {
+                  estatus: 'Mal Pedido',
+                  fecha: new Date(Date.now()).toString(),
+                  pedidoWeb: '',
+                  tipoDeCambio: 0,
+                  errores: erroresCT
+                };
+                return await ctResponse;
+              }
+              const ctResponse: IOrderCtResponse = {
+                estatus: resultPedido.orderCt.estatus,
+                fecha: resultPedido.orderCt.fecha,
+                pedidoWeb: resultPedido.orderCt.pedidoWeb,
+                tipoDeCambio: resultPedido.orderCt.tipoDeCambio,
+                errores: resultPedido.orderCt.errores
+              };
+              return await ctResponse;
+            } catch (error) {
+              console.log('error: ', error);
+              let errorCT: IErroresCT = {
+                errorCode: '999999',
+                errorMessage: error as string,
+                errorReference: ''
+              };
+              let erroresCT: IErroresCT[] = [];
+              erroresCT.push(errorCT);
+              const ctResponse: IOrderCtResponse = {
+                estatus: 'Mal Pedido',
+                fecha: new Date(Date.now()).toString(),
+                pedidoWeb: '',
+                tipoDeCambio: 0,
+                errores: erroresCT
+              };
+              return await ctResponse;
+            }
+          });
+        return await pedidosCt;
     }
   }
 
-  async ConfirmarPedidos(supplierName: string) {
+  async ConfirmarPedidos(supplierName: string, orderCtConfirm: any, context: IContextData) {
     switch (supplierName) {
-      case 'cva':
-        return await {};
       case 'ct':
-      // const pedidosCt = await new ExternalCtsService({}, order, context).setOrderCt(order)
-      //   .then(async resultPedido => {
-      //     try {
-      //       if (!resultPedido.orderCt) {                              // Hay error en el pedido.
-
-      //         return await {};
-      //       }
-      //       const ctResponse: OrderCtResponse = new OrderCtResponse();
-      //       ctResponse.estatus = resultPedido.orderCt.estatus;
-      //       ctResponse.fecha = resultPedido.orderCt.fecha;
-      //       ctResponse.pedidoWeb = resultPedido.orderCt.pedidoWeb;
-      //       ctResponse.tipoDeCambio = resultPedido.orderCt.tipoDeCambio;
-      //       ctResponse.errores = resultPedido.orderCt.errores;
-      //       return await ctResponse;
-      //     } catch (error) {
-      //       console.log('error: ', error);
-      //       throw await error;
-      //     }
-      //   });
-      // return await pedidosCt;
+        if (orderCtConfirm.folio = 'NA') {
+          const ctConfirmResponse: IOrderCtConfirmResponse = {
+            okCode: '500',
+            okMessage: 'Error en pedido',
+            okReference: 'Denegado por el proveedor'
+          };
+          return await ctConfirmResponse;
+        }
+        const confirmpedidoCt = await new ExternalCtsService({}, orderCtConfirm, context).setConfirmOrderCt(orderCtConfirm.folio)
+          .then(async resultConfirm => {
+            try {
+              const ctConfirmResponse: IOrderCtConfirmResponse = {
+                okCode: resultConfirm.confirmOrderCt?.okCode,
+                okMessage: resultConfirm.confirmOrderCt?.okMessage,
+                okReference: resultConfirm.confirmOrderCt?.okReference
+              };
+              return await ctConfirmResponse;
+            } catch (error) {
+              const ctConfirmResponse: IOrderCtConfirmResponse = {
+                okCode: '500',
+                okMessage: error as string,
+                okReference: ''
+              };
+              return await ctConfirmResponse;
+            }
+          });
+        return await confirmpedidoCt;
     }
-    // const pedidosCt = await this.externalAuthService.confirmOrderCt(orderCtConfirm.folio)
-    //   .then(async resultConfirm => {
-    //     try {
-    //       const ctConfirmResponse: OrderCtConfirmResponse = new OrderCtConfirmResponse();
-    //       ctConfirmResponse.okCode = resultConfirm.okCode;
-    //       ctConfirmResponse.okMessage = resultConfirm.okMessage;
-    //       ctConfirmResponse.okReference = resultConfirm.okReference;
-    //       return await ctConfirmResponse;
-    //     } catch (error) {
-    //       throw await error;
-    //     }
-    //   });
-    // return await pedidosCt;
   }
 }
 

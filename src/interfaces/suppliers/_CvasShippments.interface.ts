@@ -1,3 +1,5 @@
+import { IOrderCvaResponse } from './ordercvaresponse.interface';
+
 export interface IProductCvaShippment {
   clave: string;
   cantidad: number;
@@ -19,6 +21,7 @@ export interface IOrderCva {
   Estado: string;
   Ciudad: string;
   Atencion: string;
+  orderCvaResponse?: IOrderCvaResponse;
 }
 
 export interface IProductoCva {

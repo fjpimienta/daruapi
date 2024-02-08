@@ -288,7 +288,8 @@ class DeliverysService extends ResolversOperationsService {
       deliveryUpdate.chargeOpenpay = chargeOpenpay;
       deliveryUpdate.lastUpdate = new Date().toISOString();
       deliveryUpdate.status = status;
-
+      deliveryUpdate.messageError = messageError;
+      deliveryUpdate.statusError = statusError;
 
       return await {
         status: false,

@@ -26,7 +26,6 @@ input CustomerOpenpayInput {
   address: AddressOpenpayInput
   id: String
   balance: String
-  bank_name: String
   creation_date: String
   status: String
   store: String

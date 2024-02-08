@@ -4,6 +4,14 @@ input CardOpenpayInput {
   expiration_year: String
   expiration_month: String
   cvv2: String
+  allows_charges: Boolean
+  allows_payouts: Boolean
+  bank_code: String
+  bank_name: String
+  creation_date: String
+  customer_id: String
+  id: String
+  type: String
 }
 
 input CustomerOpenpayInput {
@@ -16,6 +24,12 @@ input CustomerOpenpayInput {
   clabe: String
   bank_name: String
   address: AddressOpenpayInput
+  id: String
+  balance: String
+  bank_name: String
+  creation_date: String
+  status: String
+  store: String
 }
 
 input AddressOpenpayInput {

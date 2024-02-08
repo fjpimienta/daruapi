@@ -175,7 +175,7 @@ class DeliverysService extends ResolversOperationsService {
     // Si el pago fue autorizado.
     if (delivery) {
       // console.log('delivery: ', delivery);
-      const id = parseInt(delivery.id);
+      const id = delivery.id ? parseInt(delivery.id) : 0;
       const ordersCts: IOrderCt[] = [];
       const ordersCvas: IOrderCva[] = [];
       const warehouses: IWarehouse[] = delivery?.warehouses || [];

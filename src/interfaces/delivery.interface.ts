@@ -9,21 +9,21 @@ import { IUserBasic } from './user.interface';
 import { IWarehouse } from './warehouses.interface';
 
 export interface IDelivery {
-  id: string;
-  deliveryId: string;
-  cliente: string;
+  id?: string;
+  deliveryId?: string;
+  cliente?: string;
   cupon?: ICupon;
-  discount: number;
-  importe: number;
+  discount?: number;
+  importe?: number;
   registerDate?: string;
-  lastUpdate: String
+  lastUpdate?: String
   user: IUserBasic;
   chargeOpenpay: IChargeOpenpay
   warehouses: IWarehouse[];
   ordersCt?: IOrderCt[];
   ordersCva?: IOrderCva[];
   invoiceConfig?: IInvoiceConfig;
-  statusError: boolean;
-  messageError: string;
+  statusError?: boolean;
+  messageError?: string;
   status?: string;
 }

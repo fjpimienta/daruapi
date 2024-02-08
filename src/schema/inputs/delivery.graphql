@@ -1,14 +1,14 @@
 input DeliveryInput {
   id: ID
   deliveryId: String
-  cliente: String!
+  cliente: String
   cupon: CuponInput
-  discount: Float!
-  importe: Float!
+  discount: Float
+  importe: Float
   registerDate: String
   lastUpdate: String
   user: UserInput!
-  chargeOpenpay: ChargeOpenpayInput
+  chargeOpenpay: ChargeOpenpayInput!
   warehouses: [WarehouseInput]!
   ordersCt: [OrderCtInput]
   ordersCva: [OrderCvaInput]

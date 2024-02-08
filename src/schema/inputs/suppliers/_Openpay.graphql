@@ -61,6 +61,15 @@ input ChargeOpenpayInput {
   card: CardOpenpayInput
   confirm: Boolean
   status: String
+  authorization?: String
+  bank_account?: String
+  conciliated?: Boolean
+  creation_date?: String
+  customer_id?: String
+  error_message?: String
+  operation_date?: String
+  operation_type?: String
+  transaction_type?: String
 }
 
 input PaymentPlanOpenpayInput {

@@ -33,8 +33,8 @@ const resolversCvasQuery: IResolvers = {
     async listPaqueteriasCva(_, __, context) {
       return new ExternalCvasService(_, __, context).getListPaqueteriasCva();
     },
-    async pricesCvaProduct(_, variables, context) {
-      return new ExternalCvasService(_, variables, context).getPricesCvaProduct(variables);
+    async existenciaProductoCva(_, variables, context) {
+      return new ExternalCvasService(_, variables, context).getExistenciaProductoCva(variables);
     },
     async listPricesCva(_, variables, context) {
       return new ExternalCvasService(_, variables, context).getListPricesCva(variables);

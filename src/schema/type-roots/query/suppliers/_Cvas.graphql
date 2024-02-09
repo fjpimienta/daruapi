@@ -18,8 +18,8 @@ type Query {
   listSolucionesCva: ResultCvas
   listSucursalesCva: ResultCvas
   listPaqueteriasCva: ResultCvas
-  pricesCvaProduct(
-    codigoCva: String
+  existenciaProductoCva(
+    existenciaProducto: SupplierProdInput
   ): ResultCvas
   listPricesCva(
     groupName: String

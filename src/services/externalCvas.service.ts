@@ -1,7 +1,8 @@
 import { IContextData } from '../interfaces/context-data.interface';
-import { IGroupCva, IResponseProductCva } from '../interfaces/suppliers/_CvasShippments.interface';
+import { IBranchOffices } from '../interfaces/product.interface';
+import { IResponseProductCva } from '../interfaces/suppliers/_CvasShippments.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import fetch, { Response } from 'node-fetch';
+import fetch from 'node-fetch';
 
 const xml2js = require('xml2js');
 const decode = require('he');
@@ -389,6 +390,51 @@ class ExternalCvasService {
     }
   }
 
+  async getExistenciaProductoCva(variables: IVariables) {
+    const cliente = '73766';
+    const { existenciaProducto } = variables;
+    if (!existenciaProducto) {
+      return {
+        status: true,
+        message: 'No hubo cambio en los almacenes. Verificar API.',
+        existenciaProductoCt: existenciaProducto,
+      };
+    }
+    const codigoCva = existenciaProducto?.codigo;
+    const disponibilidadAlmacenes = existenciaProducto?.cantidad;
+    try {
+      let url = '';
+      if (codigoCva) {
+        url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&codigo=${codigoCva}&promos=1&porcentajes=1&sucursales=1&TotalSuc=1&MonedaPesos=1&tc=1&upc=1&dimen=1`;
+      }
+      const response = await fetch(url);
+      const xml = await response.text();
+      let data = await this.parseXmlToJson(xml, 'lista_precios.xml')
+      if (data) {
+        let branchOffices: IBranchOffices[] = [];
+        branchOffices = await this.setCvaAlmacenes(data, disponibilidadAlmacenes);
+        existenciaProducto.branchOffices = branchOffices;
+      }
+      return data
+        ? {
+          status: true,
+          message: 'La información que hemos pedido se ha cargado correctamente',
+          existenciaProductoCva: existenciaProducto
+        }
+        : {
+          status: false,
+          message: 'Producto no localizado en la lista de productos.',
+          existenciaProductoCva: null
+        };
+    } catch (error) {
+      return {
+        status: false,
+        message: 'Error en el servicio. Consultar con el Administrador.',
+        existenciaProductoCva: null
+      };
+    }
+  }
+
   async getPricesCvaProduct(variables: IVariables) {
     const cliente = '73766';
     const { codigoCva } = variables;
@@ -404,18 +450,18 @@ class ExternalCvasService {
         ? {
           status: true,
           message: 'La información que hemos pedido se ha cargado correctamente',
-          pricesCvaProduct: data
+          existenciaProductoCva: data
         }
         : {
           status: false,
           message: 'Producto no localizado en la lista de productos.',
-          pricesCvaProduct: null
+          existenciaProductoCva: null
         };
     } catch (error) {
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
-        pricesCvaProduct: null
+        existenciaProductoCva: null
       };
     }
   }
@@ -612,6 +658,267 @@ class ExternalCvasService {
     } catch (error) {
       throw new Error('El contenido XML no es válido');
     }
+  }
+
+  async setCvaAlmacenes(item: any, qty: number): Promise<any> {
+    const almacenes = await this.getListSucursalesCva();
+    const cvaAlmacenes = almacenes.listSucursalesCva;
+    console.log('cvaAlmacenes: ', cvaAlmacenes);
+    const branchOffices: IBranchOffices[] = [];
+    cvaAlmacenes.forEach((almacen: any) => {
+      let cantidad = 0;
+      const branchOffice: IBranchOffices = {
+        id: almacen.clave,
+        cantidad: qty,
+        name: almacen.nombre,
+        estado: almacen.nombre,
+        cp: almacen.cp,
+        latitud: '',
+        longitud: ''
+      };
+      switch (almacen.clave) {
+        case '1':
+          cantidad = parseInt(item.VENTAS_GUADALAJARA, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '3':
+          cantidad = parseInt(item.VENTAS_MORELIA, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '4':
+          cantidad = parseInt(item.VENTAS_LEON, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '5':
+          cantidad = parseInt(item.VENTAS_CULIACAN, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '6':
+          cantidad = parseInt(item.VENTAS_QUERETARO, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '7':
+          cantidad = parseInt(item.VENTAS_TORREON, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '8':
+          cantidad = parseInt(item.VENTAS_TEPIC, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '9':
+          cantidad = parseInt(item.VENTAS_MONTERREY, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '10':
+          cantidad = parseInt(item.VENTAS_PUEBLA, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '11':
+          cantidad = parseInt(item.VENTAS_VERACRUZ, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '12':
+          cantidad = parseInt(item.VENTAS_VILLAHERMOSA, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '13':
+          cantidad = parseInt(item.VENTAS_TUXTLA, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '14':
+          cantidad = parseInt(item.VENTAS_HERMOSILLO, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '18':
+          cantidad = parseInt(item.VENTAS_MERIDA, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '19':
+          cantidad = parseInt(item.VENTAS_CANCUN, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '23':
+          cantidad = parseInt(item.VENTAS_AGUASCALIENTES, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '24':
+          cantidad = parseInt(item.VENTAS_DF_TALLER, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '26':
+          cantidad = parseInt(item.VENTAS_SAN_LUIS_POTOSI, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '27':
+          cantidad = parseInt(item.VENTAS_CHIHUAHUA, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '28':
+          cantidad = parseInt(item.VENTAS_DURANGO, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '29':
+          cantidad = parseInt(item.VENTAS_TOLUCA, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '31':
+          cantidad = parseInt(item.VENTAS_OAXACA, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '32':
+          cantidad = parseInt(item.VENTAS_LAPAZ, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '33':
+          cantidad = parseInt(item.VENTAS_TIJUANA, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '35':
+          cantidad = parseInt(item.VENTAS_COLIMA, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '36':
+          cantidad = parseInt(item.VENTAS_ZACATECAS, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '38':
+          cantidad = parseInt(item.VENTAS_CAMPECHE, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '39':
+          cantidad = parseInt(item.VENTAS_TAMPICO, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '40':
+          cantidad = parseInt(item.VENTAS_PACHUCA, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '43':
+          cantidad = parseInt(item.VENTAS_ACAPULCO, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '46':
+          cantidad = parseInt(item.VENTAS_CEDISGUADALAJARA, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '47':
+          cantidad = parseInt(item.VENTAS_CUERNAVACA, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '51':
+          cantidad = parseInt(item.VENTAS_CEDISCDMX, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+          break;
+        case '52':
+          cantidad = parseInt(item.VENTAS_ASPHALT, 10);
+          if (cantidad >= qty) {
+            branchOffice.cantidad = cantidad;
+            branchOffices.push(branchOffice);
+          }
+
+          break;
+      }
+    });
+    return branchOffices;
   }
 
 }

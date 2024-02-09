@@ -38,7 +38,7 @@ type Vigencia {
   fin: String
 }
 
-type ResponseCtsSupplierProd {
+type ResponseSupplierProd {
   idProveedor: ID
   codigo: String
   price: Float

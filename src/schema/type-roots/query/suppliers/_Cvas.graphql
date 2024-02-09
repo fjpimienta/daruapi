@@ -18,7 +18,7 @@ type Query {
   listSolucionesCva: ResultCvas
   listSucursalesCva: ResultCvas
   listPaqueteriasCva: ResultCvas
-  listPricesCvaProduct(
+  pricesCvaProduct(
     codigoCva: String
   ): ResultCvas
   listPricesCva(

@@ -389,7 +389,7 @@ class ExternalCvasService {
     }
   }
 
-  async getListPricesCvaProduct(variables: IVariables) {
+  async getPricesCvaProduct(variables: IVariables) {
     const cliente = '73766';
     const { codigoCva } = variables;
     try {
@@ -400,28 +400,22 @@ class ExternalCvasService {
       const response = await fetch(url);
       const xml = await response.text();
       let data = await this.parseXmlToJson(xml, 'lista_precios.xml')
-      const dataArray = [];
-      if (data.length > 0) {
-      } else {
-        dataArray.push(data);
-        data = dataArray;
-      }
       return response.ok
         ? {
           status: true,
           message: 'La información que hemos pedido se ha cargado correctamente',
-          listPricesCva: data
+          pricesCvaProduct: data
         }
         : {
           status: false,
           message: 'Error en el servicio. Consultar con el Administrador.',
-          listPricesCva: null
+          pricesCvaProduct: null
         };
     } catch (error) {
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
-        listPricesCva: null
+        pricesCvaProduct: null
       };
     }
   }

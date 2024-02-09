@@ -200,8 +200,7 @@ class DeliverysService extends ResolversOperationsService {
           }
         });
       let chargeOpenpay: IChargeOpenpay;
-      // if (resultOpenpay && resultOpenpay.chargeOpenpay && resultOpenpay.chargeOpenpay.status === 'completed') {
-      if (resultOpenpay && resultOpenpay.chargeOpenpay) {
+      if (resultOpenpay && resultOpenpay.chargeOpenpay && resultOpenpay.chargeOpenpay.status === 'completed') {
         chargeOpenpay = resultOpenpay.chargeOpenpay;
         status = 'CARGO COMPLETADO';
         // Realizar el Pedido
@@ -212,26 +211,10 @@ class DeliverysService extends ResolversOperationsService {
           switch (supplier) {
             case 'ct':
               const ordersCt = await this.setOrder(id, delivery, warehouse);
-              // const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
-              //   .then(async (result) => {
-              //     return await result;
-              //   });
-
-              // Prueba forazada
-              let errorCT: IErroresCT = {
-                errorCode: '999999',
-                errorMessage: 'Error en Pedido',
-                errorReference: ''
-              };
-              let erroresCT: IErroresCT[] = [];
-              erroresCT.push(errorCT);
-              const orderCtResponse = {
-                pedidoWeb: "W11-070392",
-                fecha: "2024-01-23T23:49:10.673Z",
-                tipoDeCambio: 17.44,
-                estatus: "Pendiente",
-                errores: erroresCT
-              }
+              const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
+                .then(async (result) => {
+                  return await result;
+                });
               ordersCt.orderCtResponse = orderCtResponse;
               // Confirmar pedido
               const orderCtConfirm: IOrderCtConfirm = { folio: orderCtResponse.pedidoWeb };
@@ -243,14 +226,7 @@ class DeliverysService extends ResolversOperationsService {
                 break;
               }
               status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
-              // const orderCtConfirmResponse = await this.ConfirmarPedidos(supplier, orderCtConfirm, context);
-
-              // Prueba forazada
-              const orderCtConfirmResponse = {
-                okCode: "400",
-                okMessage: "¡No Ok, se procesó satisfactoriamente!",
-                okReference: "No Se ha confirmado el pedido y no se encuentran clientes con facturacion…"
-              }
+              const orderCtConfirmResponse = await this.ConfirmarPedidos(supplier, orderCtConfirm, context);
               if (orderCtConfirmResponse && orderCtConfirmResponse.okCode !== '2000') {
                 status = 'PEDIDO SIN CONFIRMAR POR EL PROVEEDOR';
               }
@@ -277,6 +253,10 @@ class DeliverysService extends ResolversOperationsService {
           }
         }
       } else {
+        if (resultOpenpay) {
+          statusError = true;
+          messageError = resultOpenpay.message;
+        }
         chargeOpenpay = delivery.chargeOpenpay;
         status = 'CARGO PENDIENTE';
       }
@@ -291,16 +271,9 @@ class DeliverysService extends ResolversOperationsService {
       deliveryUpdate.messageError = messageError;
       deliveryUpdate.statusError = statusError;
 
-      return await {
-        status: false,
-        message: 'forzado, solo para pruebas',
-        delivery: deliveryUpdate
-      }
-
       const filter = { id: id.toString() };
       console.log('status: ', status);
       console.log('deliveryUpdate: ', deliveryUpdate);
-
 
       const resultUpdate = await this.updateForce(this.collection, filter, deliveryUpdate, 'Pedido');
       // console.log('resultUpdate: ', resultUpdate);

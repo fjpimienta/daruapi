@@ -400,7 +400,7 @@ class ExternalCvasService {
       const response = await fetch(url);
       const xml = await response.text();
       let data = await this.parseXmlToJson(xml, 'lista_precios.xml')
-      return response.ok
+      return data
         ? {
           status: true,
           message: 'La información que hemos pedido se ha cargado correctamente',
@@ -408,7 +408,7 @@ class ExternalCvasService {
         }
         : {
           status: false,
-          message: 'Error en el servicio. Consultar con el Administrador.',
+          message: 'Producto no localizado en la lista de productos.',
           pricesCvaProduct: null
         };
     } catch (error) {

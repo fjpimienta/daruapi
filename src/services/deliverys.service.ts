@@ -368,7 +368,7 @@ class DeliverysService extends ResolversOperationsService {
 
   //#region Pedidos
 
-  private async setOrder(deliveryID: number, delivery: IDelivery, warehouse: IWarehouse,): Promise<any> {
+  private async setOrder(idDelivery: number, delivery: IDelivery, warehouse: IWarehouse,): Promise<any> {
     const user = delivery.user;
     if (user && user.addresses && user.addresses.length > 0) {
       const dir = user.addresses && user.addresses.length > 0 ? user.addresses[0] : null;
@@ -405,7 +405,7 @@ class DeliverysService extends ResolversOperationsService {
             ProductosCt.push(productCt);
           }
           const orderCtSupplier: IOrderCt = {
-            idPedido: deliveryID,
+            idPedido: idDelivery,
             almacen: warehouse.productShipments[0].almacen,
             tipoPago: '99',
             guiaConnect: guiaConnect,
@@ -458,11 +458,11 @@ class DeliverysService extends ResolversOperationsService {
             }
           }
           const orderCvaSupplier: IOrderCva = {
-            NumOC: 'DARU-' + deliveryID.toString().padStart(6, '0'),
+            NumOC: 'DARU-' + idDelivery.toString().padStart(6, '0'),
             Paqueteria: '4',
-            CodigoSucursal: warehouse.productShipments[0].cp,
+            CodigoSucursal: warehouse.id,
             PedidoBO: 'N',
-            Observaciones: 'Pedido de Prueba',
+            Observaciones: 'Pedido: DARU-' + idDelivery.toString().padStart(6, '0') + ' - ' + delivery.deliveryId,
             productos: ProductosCva,
             TipoFlete: FF,
             Calle: this.removeAccents(dir?.directions || ''),

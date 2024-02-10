@@ -24,15 +24,14 @@ class ExternalCvasService {
   async setOrderCva(variables: IVariables) {
     const { pedidoCva } = variables;
     const wsdl = 'PedidoWeb';
-    let soapProducts = '';
+    let soapProducts = '&lt;productos&gt;';
     pedidoCva?.productos?.forEach(product => {
-      soapProducts += `&lt;productos&gt;
-      &lt;producto&gt;
+      soapProducts += `&lt;producto&gt;
         &lt;clave&gt;${product.clave}&lt;/clave&gt;
         &lt;cantidad&gt;${product.cantidad}&lt;/cantidad&gt;
-    &lt;/producto&gt;
-    &lt;/productos&gt;`;
+    &lt;/producto&gt;`;
     });
+    soapProducts += '&lt;/productos&gt;';
     const soapDetail = `<XMLOC xsi:type="xsd:string">
         &lt;PEDIDO&gt;
         &lt;NumOC&gt;${pedidoCva?.NumOC}&lt;/NumOC&gt;
@@ -81,10 +80,17 @@ class ExternalCvasService {
     const content = await response.text();
     const data = await this.parseXmlToJson(content, wsdl);
 
-    if (response.ok) {
+    if (data) {
+      if (data.estado === 'ERROR') {
+        return {
+          status: false,
+          message: data.error,
+          orderCva: null
+        };
+      }
       return {
         status: true,
-        message: 'La información que hemos enviado se ha cargado correctamente',
+        message: 'El pedido se ha creado de forma correcta.',
         orderCva: {
           error: data.error,
           estado: data.estado,
@@ -95,7 +101,6 @@ class ExternalCvasService {
         }
       }
     }
-
     return {
       status: false,
       message: 'Error en el servicio. options: ' + JSON.stringify(options) + ', data: ' + JSON.stringify(data),

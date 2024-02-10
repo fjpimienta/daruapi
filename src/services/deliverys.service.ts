@@ -211,11 +211,13 @@ class DeliverysService extends ResolversOperationsService {
           switch (supplier) {
             case 'ct':
               const ordersCt = await this.setOrder(id, delivery, warehouse);
+              console.log('ordersCt: ', ordersCt);
               const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
                 .then(async (result) => {
                   return await result;
                 });
               ordersCt.orderCtResponse = orderCtResponse;
+              console.log('ordersCt.orderCtResponse: ', ordersCt.orderCtResponse);
               // Confirmar pedido
               const orderCtConfirm: IOrderCtConfirm = { folio: orderCtResponse.pedidoWeb };
               if (orderCtResponse.estatus === 'Mal Pedido') {
@@ -236,16 +238,19 @@ class DeliverysService extends ResolversOperationsService {
             case 'cva':
               status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
               const ordersCva = await this.setOrder(id, delivery, warehouse);
+              console.log('ordersCva: ', ordersCva);
               const orderCvaResponse = await this.EfectuarPedidos(supplier, ordersCva, context)
                 .then(async (result) => {
                   return await result;
                 });
+              console.log('orderCvaResponse: ', orderCvaResponse);
               ordersCva.orderCvaResponse = orderCvaResponse;
               if (orderCvaResponse.estado === 'ERROR') {
                 status = 'ERROR PEDIDO PROVEEDOR';
                 statusError = true;
                 messageError = orderCvaResponse.error;
               }
+              console.log('orderCvaResponse: ', orderCvaResponse);
               ordersCvas.push(ordersCva);
               break;
             case 'ingram':

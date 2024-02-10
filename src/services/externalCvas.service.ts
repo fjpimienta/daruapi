@@ -119,8 +119,8 @@ class ExternalCvasService {
     const data = await response.json();
     if (response.ok) {
       return {
-        status: true,
-        message: 'La información que hemos pedido se ha cargado correctamente',
+        status: data.result !== 'failed' ? true : false,
+        message: data.result !== 'failed' ? 'La información que hemos pedido se ha cargado correctamente' : data.message,
         shippingCvaRates: {
           result: data.result,
           cotizacion: data.cotizacion
@@ -663,7 +663,6 @@ class ExternalCvasService {
   async setCvaAlmacenes(item: any, qty: number): Promise<any> {
     const almacenes = await this.getListSucursalesCva();
     const cvaAlmacenes = almacenes.listSucursalesCva;
-    console.log('cvaAlmacenes: ', cvaAlmacenes);
     const branchOffices: IBranchOffices[] = [];
     cvaAlmacenes.forEach((almacen: any) => {
       let cantidad = 0;

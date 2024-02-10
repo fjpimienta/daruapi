@@ -470,7 +470,7 @@ class DeliverysService extends ResolversOperationsService {
           const orderCvaSupplier: IOrderCva = {
             NumOC: 'DARU-' + deliveryID.toString().padStart(6, '0'),
             Paqueteria: '4',
-            CodigoSucursal: warehouse.productShipments[0].almacen,
+            CodigoSucursal: warehouse.productShipments[0].cp,
             PedidoBO: 'N',
             Observaciones: 'Pedido de Prueba',
             productos: ProductosCva,

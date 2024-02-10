@@ -5,7 +5,7 @@ input WarehouseInput {
   estado: String
   latitud: String
   longitud: String
-  suppliersProd: [SupplierProdInput]
+  suppliersProd: SupplierProdInput
   products: [CartItemInput]
   productShipments: [ProductShipmentInput]
   shipments: [ShipmentInput]

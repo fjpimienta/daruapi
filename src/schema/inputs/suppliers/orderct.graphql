@@ -6,6 +6,8 @@ input OrderCtInput {
   envio: [EnvioCtInput]
   productoCt: [ProductoCtInput]
   cfdi: String
+  orderCtResponse: OrderCtResponseInput
+  orderCtConfirmResponse: OrderCtConfirmResponseInput
 }
 
 input GuiaConnectInput {

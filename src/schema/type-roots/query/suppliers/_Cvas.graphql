@@ -18,6 +18,9 @@ type Query {
   listSolucionesCva: ResultCvas
   listSucursalesCva: ResultCvas
   listPaqueteriasCva: ResultCvas
+  existenciaProductoCva(
+    existenciaProducto: SupplierProdInput
+  ): ResultCvas
   listPricesCva(
     groupName: String
   ): ResultCvas

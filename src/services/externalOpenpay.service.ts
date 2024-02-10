@@ -1,4 +1,5 @@
 import { IContextData } from '../interfaces/context-data.interface';
+import { IChargeOpenpay } from '../interfaces/suppliers/_Openpay.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import OpenPay from 'openpay';
@@ -399,7 +400,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         };
       }
 
-      const chargeOpenpay = await new Promise((resolve, reject) => {
+      const chargeOpenpay: IChargeOpenpay = await new Promise((resolve, reject) => {
         this.openpay.charges.get(idTransactionOpenpay, (error: any, response: any) => {
           if (error) {
             reject(error);
@@ -504,7 +505,10 @@ class ExternalOpenpayService extends ResolversOperationsService {
       case 1002:
         return 'La llamada no esta autenticada o la autenticación es incorrecta.';
       case 1003:
-        if (error.http_code===422) {
+        if (error.http_code === 422) {
+          if (error.error_code === 1003) {
+            return 'No es valida la vigencia del token de pago.';
+          }
           return 'El cargo a la tarjeta se encuentra en estado final.';
         }
         return 'La operación no se pudo completar por que el valor de uno o más de los parámetros no es correcto.';

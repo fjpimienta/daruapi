@@ -1,7 +1,7 @@
 import { IPaginationOptions } from './pagination-options.interface';
 import { IUser } from './user.interface';
 import { ICatalog } from './catalog.interface';
-import { IProduct } from './product.interface';
+import { IProduct, ISupplierProd } from './product.interface';
 import { IApiproveedor } from './apiproveedor.interface';
 import { ISupplier } from './suppliers/supplier.interface';
 import { ICountry } from './country.interface';
@@ -94,6 +94,7 @@ export interface IVariables {
   folio?: string;
   // Ct Volumen
   codigo?: string;
+  existenciaProducto?: ISupplierProd;
   // Cva Shipping
   paqueteria?: number;
   cp?: number;
@@ -108,6 +109,7 @@ export interface IVariables {
   // CVA Precios
   brandName?: string;
   groupName?: string;
+  codigoCva?: string;
   // Openpay
   idCardOpenpay?: string;
   cardOpenpay?: ICardOpenpay;

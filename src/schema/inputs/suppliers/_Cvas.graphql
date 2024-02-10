@@ -19,6 +19,7 @@ input OrderCvaInput {
   Estado: String
   Ciudad: String
   Atencion: String
+  orderCvaResponse: OrderCvaResponseInput
 }
 
 input ProductoCvaInput {

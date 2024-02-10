@@ -113,6 +113,7 @@ type SupplierProd {
   idProveedor: ID
   codigo: String
   price: Float
+  cantidad: Int
   sale_price: Float
   moneda: String
   branchOffices: [BranchOffices]
@@ -122,7 +123,6 @@ type SupplierProd {
 
 type BranchOffices {
   id: String
-  name: String
   estado: String
   cantidad: Float
   cp: String

@@ -1,3 +1,5 @@
+import { IOrderCtConfirmResponse } from './orderctresponse.interface';
+
 // Lista de Precios
 export interface IProductoCt {
   precio: number;
@@ -12,6 +14,17 @@ export interface IAlmacenes {
 
 export interface IAlmacen {
   [key: string]: number | IPromocion;
+}
+
+export interface IExistenciaAlmacen {
+  key: string;
+  existencia: number;
+}
+
+export interface IExistenciaAlmacenCT {
+  [key: string]: {
+    existencia: number;
+  };
 }
 
 export interface IAlmacenPromocion {
@@ -39,7 +52,7 @@ export interface IProductCtShippment {
 }
 
 // Ordenes
-export interface IOrderCtResponse extends IOrderCt {
+export interface IOrderCtResponseList extends IOrderCt {
   respuestaCT: IRespuestaCT[]
 }
 
@@ -49,6 +62,14 @@ export interface IRespuestaCT {
   tipoDeCambio: number;
   estatus: string;
   errores: [IErroresCts]
+}
+
+export interface IOrderCtResponse {
+  pedidoWeb: string;
+  fecha: string;
+  tipoDeCambio: number;
+  estatus: string;
+  errores: IErroresCts[]
 }
 
 export interface IErroresCts {
@@ -64,7 +85,9 @@ export interface IOrderCt {
   guiaConnect: IGuiaConnect;
   envio?: IEnvioCt[];
   productoCt?: IProductOrderCt[];
-  cfdi: string;
+  cfdi?: string;
+  orderCtResponse?: IOrderCtResponse;
+  orderCtConfirmResponse?: IOrderCtConfirmResponse;
 }
 
 export interface IGuiaConnect {

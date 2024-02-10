@@ -4,6 +4,14 @@ input CardOpenpayInput {
   expiration_year: String
   expiration_month: String
   cvv2: String
+  allows_charges: Boolean
+  allows_payouts: Boolean
+  bank_code: String
+  bank_name: String
+  creation_date: String
+  customer_id: String
+  id: String
+  type: String
 }
 
 input CustomerOpenpayInput {
@@ -16,6 +24,11 @@ input CustomerOpenpayInput {
   clabe: String
   bank_name: String
   address: AddressOpenpayInput
+  id: String
+  balance: String
+  creation_date: String
+  status: String
+  store: String
 }
 
 input AddressOpenpayInput {
@@ -29,6 +42,7 @@ input AddressOpenpayInput {
 }
 
 input ChargeOpenpayInput {
+  id: String
   method: String
   source_id: String
   amount: Float
@@ -39,16 +53,36 @@ input ChargeOpenpayInput {
   capture: Boolean
   customer: CustomerOpenpayInput
   payment_plan: PaymentPlanOpenpayInput
+  payment_method: PaymentMethodOpenpayInput
   use_card_points: String
   send_email: Boolean
   redirect_url: String
   use_3d_secure: Boolean
   card: CardOpenpayInput
   confirm: Boolean
+  status: String
+  authorization: String
+  bank_account: String
+  conciliated: Boolean
+  creation_date: String
+  customer_id: String
+  error_message: String
+  operation_date: String
+  operation_type: String
+  transaction_type: String
 }
 
 input PaymentPlanOpenpayInput {
   payments: Int
+}
+
+input PaymentMethodOpenpayInput {
+  type: String
+  url: String
+  agreement: String
+  bank: String
+  clabe: String
+  name: String
 }
 
 input CaptureChargeOpenpayInput {

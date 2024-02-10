@@ -116,7 +116,6 @@ class DeliverysService extends ResolversOperationsService {
           deliveryUpdate.chargeOpenpay = resultOpenpay.createChargeOpenpay as IChargeOpenpay;
           deliveryUpdate.lastUpdate = new Date().toISOString();
           const filter = { id: idDelivery };
-          console.log('deliveryUpdate: ', deliveryUpdate);
           const resultUpdate = await this.update(this.collection, filter, deliveryUpdate, 'Pedido');
           if (resultUpdate && resultUpdate.status) {
             return await {
@@ -174,7 +173,6 @@ class DeliverysService extends ResolversOperationsService {
     const delivery = this.getVariables().delivery;
     // Si el pago fue autorizado.
     if (delivery) {
-      // console.log('delivery: ', delivery);
       const id = delivery.id ? parseInt(delivery.id) : 0;
       const ordersCts: IOrderCt[] = [];
       const ordersCvas: IOrderCva[] = [];
@@ -211,13 +209,11 @@ class DeliverysService extends ResolversOperationsService {
           switch (supplier) {
             case 'ct':
               const ordersCt = await this.setOrder(id, delivery, warehouse);
-              console.log('ordersCt: ', ordersCt);
               const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
                 .then(async (result) => {
                   return await result;
                 });
               ordersCt.orderCtResponse = orderCtResponse;
-              console.log('ordersCt.orderCtResponse: ', ordersCt.orderCtResponse);
               // Confirmar pedido
               const orderCtConfirm: IOrderCtConfirm = { folio: orderCtResponse.pedidoWeb };
               if (orderCtResponse.estatus === 'Mal Pedido') {
@@ -238,19 +234,16 @@ class DeliverysService extends ResolversOperationsService {
             case 'cva':
               status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
               const ordersCva = await this.setOrder(id, delivery, warehouse);
-              console.log('ordersCva: ', ordersCva);
               const orderCvaResponse = await this.EfectuarPedidos(supplier, ordersCva, context)
                 .then(async (result) => {
                   return await result;
                 });
-              console.log('orderCvaResponse: ', orderCvaResponse);
               ordersCva.orderCvaResponse = orderCvaResponse;
               if (orderCvaResponse.estado === 'ERROR') {
                 status = 'ERROR PEDIDO PROVEEDOR';
                 statusError = true;
                 messageError = orderCvaResponse.error;
               }
-              console.log('orderCvaResponse: ', orderCvaResponse);
               ordersCvas.push(ordersCva);
               break;
             case 'ingram':
@@ -277,11 +270,8 @@ class DeliverysService extends ResolversOperationsService {
       deliveryUpdate.statusError = statusError;
 
       const filter = { id: id.toString() };
-      console.log('status: ', status);
-      console.log('deliveryUpdate: ', deliveryUpdate);
 
       const resultUpdate = await this.updateForce(this.collection, filter, deliveryUpdate, 'Pedido');
-      // console.log('resultUpdate: ', resultUpdate);
       if (resultUpdate && resultUpdate.status) {
         // Si se guarda el envio, inactivar el cupon.
         if (delivery && delivery?.user) {
@@ -495,7 +485,7 @@ class DeliverysService extends ResolversOperationsService {
   async EfectuarPedidos(supplierName: string, order: any, context: IContextData): Promise<any> {
     switch (supplierName) {
       case 'cva':
-        const pedidosCva = await new ExternalCvasService({}, order, context).setOrderCva(order)
+        const pedidosCva = await new ExternalCvasService({}, { pedidoCva: order }, context).setOrderCva({ pedidoCva: order })
           .then(async resultPedido => {
             try {
               const { orderCva } = resultPedido as { orderCva?: any };

@@ -1,6 +1,6 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion, IResponseCtsJsonProducts, IEspecificacion, IExistenciaAlmacenCT, IExistenciaAlmacen, IOrderCt } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion, IResponseCtsJsonProducts, IEspecificacion, IExistenciaAlmacenCT, IExistenciaAlmacen, IOrderCt, IOrderCtResponseList } from '../interfaces/suppliers/_CtsShippments.interface';
 import { IBranchOffices, ISupplierProd } from '../interfaces/product.interface';
 
 import logger from '../utils/logger';
@@ -383,18 +383,18 @@ class ExternalCtsService extends ResolversOperationsService {
 
     if (response.ok) {
       const listOrdersCt = data
-        .map((order: IOrderCt) => ({
+        .map((order: IOrderCtResponseList) => ({
           idPedido: order.idPedido,
           almacen: order.almacen,
           tipoPago: order.tipoPago,
           guiaConnect: order.guiaConnect,
           envio: order.envio,
           productoCt: order.productoCt,
-          orderCtResponse: order.orderCtResponse
+          respuestaCT: order.respuestaCT
         }))
-        .sort((a: IOrderCt, b: IOrderCt) => {
-          const fechaA = a.orderCtResponse ? new Date(a.orderCtResponse.fecha) : null;
-          const fechaB = b.orderCtResponse ? new Date(b.orderCtResponse.fecha) : null;
+        .sort((a: IOrderCtResponseList, b: IOrderCtResponseList) => {
+          const fechaA = a.respuestaCT && a.respuestaCT.length > 0 ? new Date(a.respuestaCT[0].fecha) : null;
+          const fechaB = b.respuestaCT && b.respuestaCT.length > 0 ? new Date(b.respuestaCT[0].fecha) : null;
           return (fechaA?.getTime() ?? 0) - (fechaB?.getTime() ?? 0);
         });
 

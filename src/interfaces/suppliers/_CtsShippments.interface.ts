@@ -52,6 +52,18 @@ export interface IProductCtShippment {
 }
 
 // Ordenes
+export interface IOrderCtResponseList extends IOrderCt {
+  respuestaCT: IRespuestaCT[]
+}
+
+export interface IRespuestaCT {
+  pedidoWeb: string;
+  fecha: string;
+  tipoDeCambio: number;
+  estatus: string;
+  errores: [IErroresCts]
+}
+
 export interface IOrderCtResponse {
   pedidoWeb: string;
   fecha: string;
@@ -73,7 +85,7 @@ export interface IOrderCt {
   guiaConnect: IGuiaConnect;
   envio?: IEnvioCt[];
   productoCt?: IProductOrderCt[];
-  cfdi: string;
+  cfdi?: string;
   orderCtResponse?: IOrderCtResponse;
   orderCtConfirmResponse?: IOrderCtConfirmResponse;
 }

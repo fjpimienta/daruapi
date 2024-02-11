@@ -209,26 +209,32 @@ class DeliverysService extends ResolversOperationsService {
           switch (supplier) {
             case 'ct':
               const ordersCt = await this.setOrder(id, delivery, warehouse);
-              const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
-                .then(async (result) => {
-                  return await result;
-                });
-              ordersCt.orderCtResponse = orderCtResponse;
-              // Confirmar pedido
-              const orderCtConfirm: IOrderCtConfirm = { folio: orderCtResponse.pedidoWeb };
-              if (orderCtResponse.estatus === 'Mal Pedido') {
-                status = 'ERROR PEDIDO PROVEEDOR';
-                orderCtConfirm.folio = 'NA';
-                statusError = true;
-                messageError = orderCtResponse.errores[0].errorMessage;
-                break;
+              console.log('ordersCt: ', ordersCt);
+              const CONFIRMAR_PEDIDO = process.env.CONFIRMAR_PEDIDO;
+              if (CONFIRMAR_PEDIDO === 'true') {
+                const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
+                  .then(async (result) => {
+                    return await result;
+                  });
+                ordersCt.orderCtResponse = orderCtResponse;
+                // Confirmar pedido
+                const orderCtConfirm: IOrderCtConfirm = { folio: orderCtResponse.pedidoWeb };
+                if (orderCtResponse.estatus === 'Mal Pedido') {
+                  status = 'ERROR PEDIDO PROVEEDOR';
+                  orderCtConfirm.folio = 'NA';
+                  statusError = true;
+                  messageError = orderCtResponse.errores[0].errorMessage;
+                  break;
+                }
+                // const CONFIRMAR_PEDIDO = process.env.CONFIRMAR_PEDIDO;
+                // if (CONFIRMAR_PEDIDO === 'true') {
+                status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
+                const orderCtConfirmResponse = await this.ConfirmarPedidos(supplier, orderCtConfirm, context);
+                if (orderCtConfirmResponse && orderCtConfirmResponse.okCode !== '2000') {
+                  status = 'PEDIDO SIN CONFIRMAR POR EL PROVEEDOR';
+                }
+                ordersCt.orderCtConfirmResponse = orderCtConfirmResponse;
               }
-              status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
-              const orderCtConfirmResponse = await this.ConfirmarPedidos(supplier, orderCtConfirm, context);
-              if (orderCtConfirmResponse && orderCtConfirmResponse.okCode !== '2000') {
-                status = 'PEDIDO SIN CONFIRMAR POR EL PROVEEDOR';
-              }
-              ordersCt.orderCtConfirmResponse = orderCtConfirmResponse;
               ordersCts.push(ordersCt);
               break;
             case 'cva':

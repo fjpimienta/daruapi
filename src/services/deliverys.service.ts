@@ -16,6 +16,7 @@ import { IOrderCvaResponse } from '../interfaces/suppliers/ordercvaresponse.inte
 import ExternalOpenpayService from './externalOpenpay.service';
 import { IChargeOpenpay } from '../interfaces/suppliers/_Openpay.interface';
 import ExternalCtsService from './externalCts.service';
+import logger from '../utils/logger';
 
 class DeliverysService extends ResolversOperationsService {
   collection = COLLECTIONS.DELIVERYS;
@@ -210,6 +211,8 @@ class DeliverysService extends ResolversOperationsService {
             case 'ct':
               const ordersCt = await this.setOrder(id, delivery, warehouse);
               console.log('ordersCt: ', ordersCt);
+              const dataString = JSON.stringify(ordersCt);
+              logger.info(`GraphQL Response: \n ${dataString} \n`);
               const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
                 .then(async (result) => {
                   return await result;
@@ -234,6 +237,8 @@ class DeliverysService extends ResolversOperationsService {
                 ordersCt.orderCtConfirmResponse = orderCtConfirmResponse;
               }
               ordersCts.push(ordersCt);
+              const dataString1 = JSON.stringify(ordersCts);
+              logger.info(`GraphQL Response: \n ${dataString1} \n`);
               console.log('ordersCts: ', ordersCts);
               break;
             case 'cva':
@@ -422,6 +427,8 @@ class DeliverysService extends ResolversOperationsService {
             producto: ProductosCt,
             cfdi: 'G01'
           };
+          const dataString = JSON.stringify(orderCtSupplier);
+          logger.info(`GraphQL Response: \n ${dataString} \n`);
           return orderCtSupplier;
         case 'cva':
           const enviosCva: IEnvioCVA[] = [];

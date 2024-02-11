@@ -1,0 +1,153 @@
+[{
+  "_id": {
+    "$oid": "647a3bce8811204644b4919e"
+  },
+  "clave": "86",
+  "descripcion": "AOM GLOBAL EXPRESS"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b4919f"
+  },
+  "clave": "10",
+  "descripcion": "AUTOBUSES ESTRELLA BLANCA"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491a0"
+  },
+  "clave": "7",
+  "descripcion": "DHL"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491a1"
+  },
+  "clave": "42",
+  "descripcion": "DIPAQ"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491a2"
+  },
+  "clave": "66",
+  "descripcion": "ENTREGA DE PROVEEDOR"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491a3"
+  },
+  "clave": "65",
+  "descripcion": "ENTREGA LOCAL"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491a4"
+  },
+  "clave": "6",
+  "descripcion": "ESTAFETA"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491a5"
+  },
+  "clave": "13",
+  "descripcion": "FEDEX"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491a6"
+  },
+  "clave": "2",
+  "descripcion": "FLECHA AMARILLA"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491a7"
+  },
+  "clave": "17",
+  "descripcion": "FLETES DEL SUR"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491a8"
+  },
+  "clave": "90",
+  "descripcion": "J&amp;T EXPRESS"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491a9"
+  },
+  "clave": "91",
+  "descripcion": "PAQUETERIA POR COBRAR A CLIENTE"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491aa"
+  },
+  "clave": "4",
+  "descripcion": "PAQUETEXPRESS"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491ab"
+  },
+  "clave": "88",
+  "descripcion": "REDPACK"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491ac"
+  },
+  "clave": "9",
+  "descripcion": "SENDA EXPRESS"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491ad"
+  },
+  "clave": "89",
+  "descripcion": "SMARTKARGO"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491ae"
+  },
+  "clave": "39",
+  "descripcion": "TRANSPORTADORA REGIONAL S.A DE C.V (DYPAQ)"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491af"
+  },
+  "clave": "75",
+  "descripcion": "TRANSPORTES BALLEZANOS"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491b0"
+  },
+  "clave": "85",
+  "descripcion": "TRASNPORTES PITIC"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491b1"
+  },
+  "clave": "12",
+  "descripcion": "UPS"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491b2"
+  },
+  "clave": "87",
+  "descripcion": "URUZ"
+},
+{
+  "_id": {
+    "$oid": "647a3bce8811204644b491b3"
+  },
+  "clave": "\n"
+}]

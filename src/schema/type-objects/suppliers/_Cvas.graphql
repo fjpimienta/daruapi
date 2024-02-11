@@ -118,6 +118,7 @@ type ResponsePaqueteriasCva {
 
 type ResponseProductCva {
   clave: String
+  ups: String
   codigo_fabricante: String
   descripcion: String
   solucion: String
@@ -173,4 +174,6 @@ type ResponseProductCva {
   VENTAS_VERACRUZ: Float
   VENTAS_ZACATECAS: Float
   ExsTotal: Float
+  dimensiones: String
+  peso: String
 }

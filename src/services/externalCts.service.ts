@@ -1,13 +1,16 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion, IResponseCtsJsonProducts, IEspecificacion } from '../interfaces/suppliers/_CtsShippments.interface';
-import ResolversOperationsService from './resolvers-operaciones.service';
+import { IAlmacenes, IOrderCtResponse, IProductoCt, IAlmacenPromocion, IPromocion, IResponseCtsJsonProducts, IEspecificacion, IExistenciaAlmacenCT, IExistenciaAlmacen, IOrderCt, IOrderCtResponseList } from '../interfaces/suppliers/_CtsShippments.interface';
+import { IBranchOffices, ISupplierProd } from '../interfaces/product.interface';
 
 import logger from '../utils/logger';
 import fetch from 'node-fetch';
 import { Client, AccessOptions } from 'basic-ftp';
 import fs from 'fs';
 const xml2js = require('xml2js');
+import ResolversOperationsService from './resolvers-operaciones.service';
+
+import almacenesCt from './../json/ct_almacenes.json';
 
 
 class ExternalCtsService extends ResolversOperationsService {
@@ -128,6 +131,84 @@ class ExternalCtsService extends ResolversOperationsService {
     };
   }
 
+  buscarAlmacenesConExistencia(existenciaProducto: ISupplierProd, existenciaProductoCt: IExistenciaAlmacen[]): IExistenciaAlmacen[] {
+    const { cantidad } = existenciaProducto;
+    const almacenesConExistencia = existenciaProductoCt.filter((almacen) => {
+      return almacen.existencia >= cantidad;
+    });
+    return almacenesConExistencia;
+  }
+
+  async getExistenciaProductoCt(variables: IVariables) {
+    try {
+      const token = await this.getTokenCt();
+      const { existenciaProducto } = variables;
+      if (!existenciaProducto) {
+        return {
+          status: true,
+          message: 'No hubo cambio en los almacenes. Verificar API.',
+          existenciaProductoCt: existenciaProducto,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'x-auth': token.tokenCt.token,
+          'Content-Type': 'application/json',
+        },
+      };
+      const url = 'http://connect.ctonline.mx:3001/existencia/' + existenciaProducto.codigo;
+      const result = await fetch(url, options);
+      if (result.ok) {
+        const data: IExistenciaAlmacenCT = await result.json();
+        const dataString = JSON.stringify(data);
+        logger.info(`GraphQL Response: ${dataString}`);
+        const existenciaProductoCt = Object.keys(data).map(key => ({
+          key,
+          existencia: data[key].existencia,
+        }));
+
+        if (existenciaProductoCt.length > 0) {
+          const existenciaProductoCtData = existenciaProductoCt;
+          const almacenesConExistencia = this.buscarAlmacenesConExistencia(existenciaProducto, existenciaProductoCtData);
+          const almacenesCompletos = almacenesConExistencia.map((almacen) => {
+            const almacenInfo = almacenesCt.find((info) => info.id === almacen.key);
+            if (almacenInfo) {
+              return {
+                id: almacen.key,
+                cantidad: almacen.existencia,
+                name: almacenInfo.Sucursal,
+                estado: almacenInfo.Estado,
+                cp: almacenInfo.CP,
+                latitud: almacenInfo.latitud,
+                longitud: almacenInfo.longitud,
+              };
+            }
+            return {} as IBranchOffices;
+          }).filter((almacen): almacen is IBranchOffices => almacen !== null);
+          existenciaProducto.branchOffices = almacenesCompletos;
+        }
+        return {
+          status: true,
+          message: 'La información que hemos pedido se ha cargado correctamente',
+          existenciaProductoCt: existenciaProducto,
+        };
+      } else {
+        return {
+          status: false,
+          message: 'Error en el servicio. url: ' + url + ', options: ' + options + ', result:' + result,
+          existenciaProductoCt: null,
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        existenciaProductoCt: null,
+      };
+    }
+  }
+
   async getStockProductsCt() {
     try {
       const token = await this.getTokenCt();
@@ -232,11 +313,11 @@ class ExternalCtsService extends ResolversOperationsService {
         status: true,
         message: 'La información que hemos enviado se ha cargado correctamente',
         orderCt: {
-          pedidoWeb: data[0].respuestaCT.pedidoWeb,
-          fecha: data[0].respuestaCT.fecha,
-          tipoDeCambio: data[0].respuestaCT.tipoDeCambio,
-          estatus: data[0].respuestaCT.estatus,
-          errores: data[0].respuestaCT.errores,
+          pedidoWeb: data[0].orderCtResponse.pedidoWeb,
+          fecha: data[0].orderCtResponse.fecha,
+          tipoDeCambio: data[0].orderCtResponse.tipoDeCambio,
+          estatus: data[0].orderCtResponse.estatus,
+          errores: data[0].orderCtResponse.errores,
         }
       }
     }
@@ -302,7 +383,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
     if (response.ok) {
       const listOrdersCt = data
-        .map((order: IOrderCtResponse) => ({
+        .map((order: IOrderCtResponseList) => ({
           idPedido: order.idPedido,
           almacen: order.almacen,
           tipoPago: order.tipoPago,
@@ -311,7 +392,7 @@ class ExternalCtsService extends ResolversOperationsService {
           productoCt: order.productoCt,
           respuestaCT: order.respuestaCT
         }))
-        .sort((a: IOrderCtResponse, b: IOrderCtResponse) => {
+        .sort((a: IOrderCtResponseList, b: IOrderCtResponseList) => {
           const fechaA = a.respuestaCT && a.respuestaCT.length > 0 ? new Date(a.respuestaCT[0].fecha) : null;
           const fechaB = b.respuestaCT && b.respuestaCT.length > 0 ? new Date(b.respuestaCT[0].fecha) : null;
           return (fechaA?.getTime() ?? 0) - (fechaB?.getTime() ?? 0);
@@ -394,7 +475,7 @@ class ExternalCtsService extends ResolversOperationsService {
         guiaConnect: data[0].guiaConnect,
         envio: data[0].envio,
         productoCt: data[0].producto,
-        respuestaCT: data[0].respuestaCT
+        orderCtResponse: data[0].orderCtResponse
       } : null
     };
   }

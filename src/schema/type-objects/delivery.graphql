@@ -1,21 +1,20 @@
 "Tipo de objeto para almacenar la informacion de las Products de los Productos"
-
 type Delivery {
   id: ID
-  deliveryId: String!
-  cliente: String!
+  deliveryId: String
+  cliente: String
   cupon: Cupon
-  discount: Float!
-  importe: Float!
+  discount: Float
+  importe: Float
   registerDate: String
+  lastUpdate: String
   user: User!
+  chargeOpenpay: ChargeOpenpay!
   warehouses: [Warehouse]!
   ordersCt: [OrderCt]
   ordersCva: [OrderCva]
-  orderCtResponse: RespuestaCt
-  orderCtConfirmResponse: RespuestaConfirmCt
-  orderCvaResponse: RespuestaCva
   invoiceConfig: InvoiceConfigI
   statusError: Boolean
   messageError: String
+  status: String
 }

@@ -6,7 +6,8 @@ type OrderCt {
   envio: [EnvioCt]
   productoCt: [ProductoCt]
   cfdi: String
-  respuestaCT: RespuestaCt
+  orderCtResponse: OrderCtResponse
+  orderCtConfirmResponse: RespuestaConfirmCt
 }
 
 type GuiaConnect {

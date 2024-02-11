@@ -2,5 +2,5 @@ type ResultOrderCt implements Result {
   info: ResultInfo
   status: Boolean!
   message: String!
-  respuestaCT: RespuestaCt
+  respuestaCT: OrderCtResponse
 }

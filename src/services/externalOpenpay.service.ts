@@ -1,4 +1,5 @@
 import { IContextData } from '../interfaces/context-data.interface';
+import { IChargeOpenpay } from '../interfaces/suppliers/_Openpay.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import OpenPay from 'openpay';
@@ -10,9 +11,9 @@ class ExternalOpenpayService extends ResolversOperationsService {
     super(root, variables, context);
 
     // Inicializar la instancia de OpenPay con tus credenciales
-    const MERCHANT_ID = process.env.OPENPAY_MERCHANT_ID ?? 'm6xdaknfuv0l7ytry0li';
-    const CLIENT_SECRET = process.env.OPENPAY_CLIENT_SECRET ?? 'sk_ccac7cdb1545480d9ace51adc96d20d9';
-    this.openpay = new OpenPay(MERCHANT_ID, CLIENT_SECRET, true);
+    const MERCHANT_ID = process.env.OPENPAY_MERCHANT_ID ?? 'mbhvpztgt3rqse7zvxrc';
+    const CLIENT_SECRET = process.env.OPENPAY_CLIENT_SECRET ?? 'sk_6a6bd967ab13459bb311f3d61fe03029';
+    this.openpay = new OpenPay(MERCHANT_ID, CLIENT_SECRET, false);
   }
 
   //#region Token
@@ -399,7 +400,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         };
       }
 
-      const chargeOpenpay = await new Promise((resolve, reject) => {
+      const chargeOpenpay: IChargeOpenpay = await new Promise((resolve, reject) => {
         this.openpay.charges.get(idTransactionOpenpay, (error: any, response: any) => {
           if (error) {
             reject(error);
@@ -504,7 +505,10 @@ class ExternalOpenpayService extends ResolversOperationsService {
       case 1002:
         return 'La llamada no esta autenticada o la autenticación es incorrecta.';
       case 1003:
-        if (error.http_code===422) {
+        if (error.http_code === 422) {
+          if (error.error_code === 1003) {
+            return 'No es valida la vigencia del token de pago.';
+          }
           return 'El cargo a la tarjeta se encuentra en estado final.';
         }
         return 'La operación no se pudo completar por que el valor de uno o más de los parámetros no es correcto.';

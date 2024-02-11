@@ -65,6 +65,7 @@ type ChargeOpenpay {
   payment_method: PaymentMethodOpenpay
   conciliated: Boolean
   customer: CustomerOpenpay
+  redirect_url: String
 }
 
 type PaymentMethodOpenpay {

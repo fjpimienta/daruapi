@@ -1,3 +1,5 @@
+import { IOrderCvaResponse } from './ordercvaresponse.interface';
+
 export interface IProductCvaShippment {
   clave: string;
   cantidad: number;
@@ -19,6 +21,7 @@ export interface IOrderCva {
   Estado: string;
   Ciudad: string;
   Atencion: string;
+  orderCvaResponse?: IOrderCvaResponse;
 }
 
 export interface IProductoCva {
@@ -32,6 +35,7 @@ export interface IGroupCva {
 
 export interface IResponseProductCva {
   clave: string;
+  upc: string;
   codigo_fabricante: string;
   descripcion: string;
   solucion: string;
@@ -87,4 +91,19 @@ export interface IResponseProductCva {
   VENTAS_VERACRUZ: number;
   VENTAS_ZACATECAS: number;
   ExsTotal: number;
+  dimensiones: string;
+  peso: string;
+}
+
+export interface IEnvioCVA {
+  nombre: string;
+  direccion: string;
+  entreCalles: string;
+  noExterior: string;
+  noInterior: string;
+  colonia: string;
+  estado: string;
+  ciudad: string;
+  codigoPostal: string;
+  telefono: string;
 }

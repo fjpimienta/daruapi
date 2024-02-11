@@ -1,5 +1,8 @@
 type Query {
   tokenCt: ResultCts
+  existenciaProductoCt(
+    existenciaProducto: SupplierProdInput
+  ): ResultCts
   stockProductsCt: ResultCts
   jsonProductsCt: ResultCts
   jsonProductsCtHP: ResultCts

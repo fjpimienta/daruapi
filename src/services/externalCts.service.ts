@@ -437,13 +437,9 @@ class ExternalCtsService extends ResolversOperationsService {
       status,
       message,
       statusOrdersCt: status ? {
-        idPedido: data.idPedido ? data.idPedido : '',
-        almacen: data.almacen ? data.almacen : '',
-        tipoPago: data.tipoPago ? data.tipoPago : '',
-        guiaConnect: data.guiaConnect ? data.guiaConnect : '',
-        envio: data.envio ? data.envio : '',
-        producto: data.producto ? data.producto : '',
-        respuestaCT: data.respuestaCT ? data.respuestaCT : ''
+        status: data.status ? data.status : '',
+        folio: data.folio ? data.folio : '',
+        guias: data.guias ? data.guias : []
       } : null
     };
   }

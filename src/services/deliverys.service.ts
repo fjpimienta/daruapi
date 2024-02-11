@@ -210,24 +210,22 @@ class DeliverysService extends ResolversOperationsService {
             case 'ct':
               const ordersCt = await this.setOrder(id, delivery, warehouse);
               console.log('ordersCt: ', ordersCt);
+              const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
+                .then(async (result) => {
+                  return await result;
+                });
+              ordersCt.orderCtResponse = orderCtResponse;
+              // Confirmar pedido
+              const orderCtConfirm: IOrderCtConfirm = { folio: orderCtResponse.pedidoWeb };
+              if (orderCtResponse.estatus === 'Mal Pedido') {
+                status = 'ERROR PEDIDO PROVEEDOR';
+                orderCtConfirm.folio = 'NA';
+                statusError = true;
+                messageError = orderCtResponse.errores[0].errorMessage;
+                break;
+              }
               const CONFIRMAR_PEDIDO = process.env.CONFIRMAR_PEDIDO;
               if (CONFIRMAR_PEDIDO === 'true') {
-                const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
-                  .then(async (result) => {
-                    return await result;
-                  });
-                ordersCt.orderCtResponse = orderCtResponse;
-                // Confirmar pedido
-                const orderCtConfirm: IOrderCtConfirm = { folio: orderCtResponse.pedidoWeb };
-                if (orderCtResponse.estatus === 'Mal Pedido') {
-                  status = 'ERROR PEDIDO PROVEEDOR';
-                  orderCtConfirm.folio = 'NA';
-                  statusError = true;
-                  messageError = orderCtResponse.errores[0].errorMessage;
-                  break;
-                }
-                // const CONFIRMAR_PEDIDO = process.env.CONFIRMAR_PEDIDO;
-                // if (CONFIRMAR_PEDIDO === 'true') {
                 status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
                 const orderCtConfirmResponse = await this.ConfirmarPedidos(supplier, orderCtConfirm, context);
                 if (orderCtConfirmResponse && orderCtConfirmResponse.okCode !== '2000') {
@@ -236,6 +234,7 @@ class DeliverysService extends ResolversOperationsService {
                 ordersCt.orderCtConfirmResponse = orderCtConfirmResponse;
               }
               ordersCts.push(ordersCt);
+              console.log('ordersCts: ', ordersCts);
               break;
             case 'cva':
               status = 'PEDIDO CONFIRMADO CON PROVEEDOR';

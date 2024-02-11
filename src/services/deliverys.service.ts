@@ -415,7 +415,7 @@ class DeliverysService extends ResolversOperationsService {
             tipoPago: '99',
             guiaConnect: guiaConnect,
             envio: enviosCt,
-            productoCt: ProductosCt,
+            producto: ProductosCt,
             cfdi: 'G01'
           };
           return orderCtSupplier;

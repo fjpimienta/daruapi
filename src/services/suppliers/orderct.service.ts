@@ -95,7 +95,7 @@ class OrdersCtService extends ResolversOperationsService {
       tipoPago: orderCt?.tipoPago,
       guiaConnect: orderCt?.guiaConnect,
       envio: orderCt?.envio,
-      productoCt: orderCt?.productoCt,
+      productoCt: orderCt?.producto,
       registerDate: new Date().toISOString()
     };
     const result = await this.add(this.collection, orderCtObject, 'orden ct');

@@ -389,7 +389,7 @@ class ExternalCtsService extends ResolversOperationsService {
           tipoPago: order.tipoPago,
           guiaConnect: order.guiaConnect,
           envio: order.envio,
-          productoCt: order.productoCt,
+          producto: order.producto,
           respuestaCT: order.respuestaCT
         }))
         .sort((a: IOrderCtResponseList, b: IOrderCtResponseList) => {

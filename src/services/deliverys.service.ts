@@ -201,6 +201,7 @@ class DeliverysService extends ResolversOperationsService {
       let chargeOpenpay: IChargeOpenpay;
       if (resultOpenpay && resultOpenpay.chargeOpenpay && resultOpenpay.chargeOpenpay.status === 'completed') {
         chargeOpenpay = resultOpenpay.chargeOpenpay;
+        logger.info(`modify.oneCharge.chargeOpenpay: \n ${JSON.stringify(chargeOpenpay)} \n`);
         status = 'CARGO COMPLETADO';
         // Realizar el Pedido
         for (const idWar in Object.keys(warehouses)) {
@@ -210,36 +211,35 @@ class DeliverysService extends ResolversOperationsService {
           switch (supplier) {
             case 'ct':
               const ordersCt = await this.setOrder(id, delivery, warehouse);
-              console.log('ordersCt: ', ordersCt);
-              const dataString = JSON.stringify(ordersCt);
-              logger.info(`GraphQL Response: \n ${dataString} \n`);
+              logger.info(`modify.setOrder.ordersCt: \n ${JSON.stringify(ordersCt)} \n`);
               const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
                 .then(async (result) => {
                   return await result;
                 });
+              logger.info(`modify.EfectuarPedidos.orderCtResponse: \n ${JSON.stringify(orderCtResponse)} \n`);
               ordersCt.orderCtResponse = orderCtResponse;
-              // Confirmar pedido
-              const orderCtConfirm: IOrderCtConfirm = { folio: orderCtResponse.pedidoWeb };
-              if (orderCtResponse.estatus === 'Mal Pedido') {
-                status = 'ERROR PEDIDO PROVEEDOR';
-                orderCtConfirm.folio = 'NA';
-                statusError = true;
-                messageError = orderCtResponse.errores[0].errorMessage;
-                break;
-              }
               const CONFIRMAR_PEDIDO = process.env.CONFIRMAR_PEDIDO;
               if (CONFIRMAR_PEDIDO === 'true') {
                 status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
+                // Confirmar pedido
+                const orderCtConfirm: IOrderCtConfirm = { folio: orderCtResponse.pedidoWeb };
+                if (orderCtResponse.estatus === 'Mal Pedido') {
+                  status = 'ERROR PEDIDO PROVEEDOR';
+                  orderCtConfirm.folio = 'NA';
+                  statusError = true;
+                  messageError = orderCtResponse.errores[0].errorMessage;
+                  break;
+                }
+                logger.info(`modify.orderCtConfirm: \n ${JSON.stringify(orderCtConfirm)} \n`);
                 const orderCtConfirmResponse = await this.ConfirmarPedidos(supplier, orderCtConfirm, context);
+                logger.info(`modify.ConfirmarPedidos.orderCtConfirmResponse: \n ${JSON.stringify(orderCtConfirmResponse)} \n`);
                 if (orderCtConfirmResponse && orderCtConfirmResponse.okCode !== '2000') {
                   status = 'PEDIDO SIN CONFIRMAR POR EL PROVEEDOR';
                 }
                 ordersCt.orderCtConfirmResponse = orderCtConfirmResponse;
               }
               ordersCts.push(ordersCt);
-              const dataString1 = JSON.stringify(ordersCts);
-              logger.info(`GraphQL Response: \n ${dataString1} \n`);
-              console.log('ordersCts: ', ordersCts);
+              logger.info(`modify.ordersCts[]: \n ${JSON.stringify(ordersCts)} \n`);
               break;
             case 'cva':
               status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
@@ -280,8 +280,9 @@ class DeliverysService extends ResolversOperationsService {
       deliveryUpdate.statusError = statusError;
 
       const filter = { id: id.toString() };
-
+      logger.info(`modify.deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
       const resultUpdate = await this.updateForce(this.collection, filter, deliveryUpdate, 'Pedido');
+      logger.info(`modify.updateForce.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
       if (resultUpdate && resultUpdate.status) {
         // Si se guarda el envio, inactivar el cupon.
         if (delivery && delivery?.user) {
@@ -296,6 +297,7 @@ class DeliverysService extends ResolversOperationsService {
             await this.update(collection, id, active, 'welcome');
           }
         }
+        logger.info(`deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
         return await {
           status: resultUpdate.status,
           message: resultUpdate.message,

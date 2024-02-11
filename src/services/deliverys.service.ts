@@ -210,16 +210,10 @@ class DeliverysService extends ResolversOperationsService {
             case 'ct':
               const ordersCt = await this.setOrder(id, delivery, warehouse);
               console.log('ordersCt: ', ordersCt);
-              // const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
-              //   .then(async (result) => {
-              //     return await result;
-              //   });
-              const orderCtResponse = {
-                estatus: 'Good',
-                pedidoWeb: 'NA',
-                errores: [{ errorMessage: 'Forzado' }],
-                delivery: null
-              }
+              const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
+                .then(async (result) => {
+                  return await result;
+                });
               ordersCt.orderCtResponse = orderCtResponse;
               // Confirmar pedido
               const orderCtConfirm: IOrderCtConfirm = { folio: orderCtResponse.pedidoWeb };
@@ -282,8 +276,7 @@ class DeliverysService extends ResolversOperationsService {
 
       const filter = { id: id.toString() };
 
-      // const resultUpdate = await this.updateForce(this.collection, filter, deliveryUpdate, 'Pedido');
-      const resultUpdate = await this.insert(context);
+      const resultUpdate = await this.updateForce(this.collection, filter, deliveryUpdate, 'Pedido');
       if (resultUpdate && resultUpdate.status) {
         // Si se guarda el envio, inactivar el cupon.
         if (delivery && delivery?.user) {

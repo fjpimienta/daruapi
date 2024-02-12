@@ -518,6 +518,7 @@ class DeliverysService extends ResolversOperationsService {
   }
 
   async EfectuarPedidos(supplierName: string, order: any, context: IContextData): Promise<any> {
+    process.env.PRODUCTION !== 'true' && logger.info(` \n Log para EfectuarPedidos \n`);
     switch (supplierName) {
       case 'cva':
         const pedidosCva = await new ExternalCvasService({}, { pedidoCva: order }, context).setOrderCva({ pedidoCva: order })
@@ -542,6 +543,7 @@ class DeliverysService extends ResolversOperationsService {
         const pedidosCt = await new ExternalCtsService({}, order, context).setOrderCt(order)
           .then(async resultPedido => {
             try {
+              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.resultPedido: \n ${JSON.stringify(resultPedido)} \n`);
               if (!resultPedido.orderCt) {                              // Hay error en el pedido.
                 let errorCT: IErroresCT = {
                   errorCode: '999999',

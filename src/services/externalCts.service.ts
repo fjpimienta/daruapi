@@ -276,6 +276,7 @@ class ExternalCtsService extends ResolversOperationsService {
   }
 
   async setOrderCt(variables: IVariables) {
+    process.env.PRODUCTION !== 'true' && logger.info(` \n Log para externalCts.setOrderCt \n`);
     const { idPedido, almacen, tipoPago, guiaConnect, envio, productoCt, cfdi } = variables;
     const token = await this.getTokenCt();
 
@@ -296,11 +297,13 @@ class ExternalCtsService extends ResolversOperationsService {
         cfdi
       })
     };
+    process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrderCt.options: \n ${JSON.stringify(options)} \n`);
 
     const url = 'http://connect.ctonline.mx:3001/pedido';
     const response = await fetch(url, options);
     process.env.PRODUCTION !== 'true' && logger.info(`setOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
+    process.env.PRODUCTION !== 'true' && logger.info(`setOrderCt.data: \n ${JSON.stringify(data)} \n`);
 
     if (response.ok) {
       return {

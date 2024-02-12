@@ -278,6 +278,7 @@ class ExternalCtsService extends ResolversOperationsService {
   async setOrderCt(variables: IVariables) {
     process.env.PRODUCTION !== 'true' && logger.info(` \n Log para externalCts.setOrderCt \n`);
     const { idPedido, almacen, tipoPago, guiaConnect, envio, productoCt, cfdi } = variables;
+    process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrderCt.productoCt: \n ${JSON.stringify(productoCt)} \n`);
     const token = await this.getTokenCt();
 
     const options = {

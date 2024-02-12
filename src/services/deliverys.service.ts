@@ -404,6 +404,8 @@ class DeliverysService extends ResolversOperationsService {
   //#region Pedidos
 
   private async setOrder(idDelivery: number, delivery: IDelivery, warehouse: IWarehouse,): Promise<any> {
+    process.env.PRODUCTION !== 'true' && logger.info(` \n Log para setOrder \n`);
+    process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.warehouse: \n ${JSON.stringify(warehouse)} \n`);
     const user = delivery.user;
     if (user && user.addresses && user.addresses.length > 0) {
       const dir = user.addresses && user.addresses.length > 0 ? user.addresses[0] : null;
@@ -439,6 +441,7 @@ class DeliverysService extends ResolversOperationsService {
             };
             ProductosCt.push(productCt);
           }
+          process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.ProductosCt: \n ${JSON.stringify(ProductosCt)} \n`);
           const orderCtSupplier: IOrderCt = {
             idPedido: idDelivery,
             almacen: warehouse.productShipments[0].almacen,
@@ -448,6 +451,7 @@ class DeliverysService extends ResolversOperationsService {
             producto: ProductosCt,
             cfdi: 'G01'
           };
+          process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.orderCtSupplier: \n ${JSON.stringify(orderCtSupplier)} \n`);
           return orderCtSupplier;
         case 'cva':
           const enviosCva: IEnvioCVA[] = [];

@@ -306,20 +306,19 @@ class ExternalCtsService extends ResolversOperationsService {
     const data = await response.json();
     process.env.PRODUCTION !== 'true' && logger.info(`setOrderCt.data: \n ${JSON.stringify(data)} \n`);
 
-    if (response.ok) {
+    if (data && data.length > 0 && data[0].respuestaCT && data[0].respuestaCT.errores && data[0].respuestaCT.errores.length > 0) {
       return {
         status: true,
         message: 'La información que hemos enviado se ha cargado correctamente',
         orderCt: {
-          pedidoWeb: data[0].orderCtResponse.pedidoWeb,
-          fecha: data[0].orderCtResponse.fecha,
-          tipoDeCambio: data[0].orderCtResponse.tipoDeCambio,
-          estatus: data[0].orderCtResponse.estatus,
-          errores: data[0].orderCtResponse.errores,
+          pedidoWeb: data[0].respuestaCT.pedidoWeb,
+          fecha: data[0].respuestaCT.fecha,
+          tipoDeCambio: data[0].respuestaCT.tipoDeCambio,
+          estatus: data[0].respuestaCT.estatus,
+          errores: data[0].respuestaCT.errores,
         }
       }
     }
-
     return {
       status: false,
       message: 'Error en el servicio. options: ' + JSON.stringify(options) + ', data: ' + JSON.stringify(data),
@@ -469,7 +468,7 @@ class ExternalCtsService extends ResolversOperationsService {
         guiaConnect: data[0].guiaConnect,
         envio: data[0].envio,
         productoCt: data[0].producto,
-        orderCtResponse: data[0].orderCtResponse
+        respuestaCT: data[0].respuestaCT
       } : null
     };
   }

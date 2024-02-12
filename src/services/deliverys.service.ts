@@ -49,37 +49,40 @@ class DeliverysService extends ResolversOperationsService {
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
     const order = { "id": -1 };
-    const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter, order);
+    const response = await this.list(this.collection, this.catalogName, page, itemsPage, filter, order);
     return {
-      info: result.info,
-      status: result.status,
-      message: result.message,
-      deliverys: result.items
+      info: response.info,
+      status: response.status,
+      message: response.message,
+      deliverys: response.items
     };
   }
 
   // Obtener detalles del item
   async details() {
-    const result = await this.getByDelivery(this.collection);
+    const response = await this.getByDelivery(this.collection);
+    process.env.PRODUCTION !== 'true' && logger.info(`delivery.details: \n ${JSON.stringify(response)} \n`);
     return {
-      status: result.status,
-      message: result.message,
-      delivery: result.item
+      status: response.status,
+      message: response.message,
+      delivery: response.item
     };
   }
 
   // Obtener el siguiente elemento
   async next() {
-    const result = await this.nextId(this.collection);
+    const response = await this.nextId(this.collection);
+    process.env.PRODUCTION !== 'true' && logger.info(`delivery.next: \n ${JSON.stringify(response)} \n`);
     return {
-      status: result.status,
-      message: result.message,
-      deliveryId: result.catId
+      status: response.status,
+      message: response.message,
+      deliveryId: response.catId
     };
   }
 
   // Insert Delivery
   async insert(context: IContextData) {
+    process.env.PRODUCTION !== 'true' && logger.info(` \n Log para delivery.insert \n`);
     let status = 'PEDIDO CREADO'
     const delivery = this.getVariables().delivery;
     const idDelivery = await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 });
@@ -144,24 +147,28 @@ class DeliverysService extends ResolversOperationsService {
         const resultUpdate = await this.update(this.collection, filter, deliveryUpdate, 'Pedido');
         process.env.PRODUCTION !== 'true' && logger.info(`insert.update.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
         if (resultUpdate && resultUpdate.status) {
+          process.env.PRODUCTION !== 'true' && logger.info(` \n ${resultOpenpay.message} \n`);
           return await {
             status: resultOpenpay.status,
             message: resultOpenpay.message,
             delivery: resultUpdate.item
           }
         }
+        process.env.PRODUCTION !== 'true' && logger.info(` \n ${resultOpenpay.message} \n`);
         return await {
           status: resultOpenpay.status,
           message: resultOpenpay.message,
           delivery: result.item
         }
       }
+      process.env.PRODUCTION !== 'true' && logger.info(` \n ${result.message} \n`);
       return {
         status: result.status,
         message: result.message,
         delivery: null
       };
     }
+    process.env.PRODUCTION !== 'true' && logger.info(` \n Compra no definida, verificar datos. \n`);
     return {
       status: false,
       mesage: 'Compra no definida, verificar datos.',
@@ -171,6 +178,7 @@ class DeliverysService extends ResolversOperationsService {
 
   // Update Delivery
   async modify(context: IContextData) {
+    process.env.PRODUCTION !== 'true' && logger.info(` \n Log para delivery.modify \n`);
     let status = 'AUTORIZANDO CARGO';
     let statusError = false;
     let messageError = '';
@@ -304,18 +312,21 @@ class DeliverysService extends ResolversOperationsService {
           }
         }
         process.env.PRODUCTION !== 'true' && logger.info(`deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
+        process.env.PRODUCTION !== 'true' && logger.info(` \n ${resultUpdate.message} \n`);
         return await {
           status: resultUpdate.status,
           message: resultUpdate.message,
           delivery: deliveryUpdate
         }
       }
+      process.env.PRODUCTION !== 'true' && logger.info(` \n Problemas con el cargo, verificar datos. \n`);
       return {
         status: false,
         mesage: 'Problemas con el cargo, verificar datos.',
         delivery: null
       };
     }
+    process.env.PRODUCTION !== 'true' && logger.info(` \n Problemas con el cargo, verificar datos. \n`);
     return {
       status: false,
       mesage: 'Problemas con el cargo, verificar datos.',

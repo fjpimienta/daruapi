@@ -251,6 +251,7 @@ class DeliverysService extends ResolversOperationsService {
                 ordersCt.orderCtConfirmResponse = orderCtConfirmResponse;
               }
               ordersCts.push(ordersCt);
+              process.env.PRODUCTION !== 'true' && logger.info(`modify.ordersCts: \n ${JSON.stringify(ordersCts)} \n`);
               break;
             case 'cva':
               status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
@@ -282,6 +283,7 @@ class DeliverysService extends ResolversOperationsService {
         status = 'CARGO PENDIENTE';
       }
       // Actualizar Delivery
+      process.env.PRODUCTION !== 'true' && logger.info(` \n Actualizar Delivery \n`);
       const deliveryUpdate: IDelivery = delivery as IDelivery;
       deliveryUpdate.status = status;
       deliveryUpdate.ordersCt = ordersCts;
@@ -292,8 +294,8 @@ class DeliverysService extends ResolversOperationsService {
       deliveryUpdate.messageError = messageError;
       deliveryUpdate.statusError = statusError;
 
-      const filter = { id: id.toString() };
       process.env.PRODUCTION !== 'true' && logger.info(`modify.deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
+      const filter = { id: id.toString() };
       const resultUpdate = await this.updateForce(this.collection, filter, deliveryUpdate, 'Pedido');
       process.env.PRODUCTION !== 'true' && logger.info(`modify.updateForce.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
       if (resultUpdate && resultUpdate.status) {
@@ -446,8 +448,6 @@ class DeliverysService extends ResolversOperationsService {
             producto: ProductosCt,
             cfdi: 'G01'
           };
-          const dataString = JSON.stringify(orderCtSupplier);
-          process.env.PRODUCTION !== 'true' && logger.info(`GraphQL Response: \n ${dataString} \n`);
           return orderCtSupplier;
         case 'cva':
           const enviosCva: IEnvioCVA[] = [];

@@ -39,7 +39,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     const data = await response.json();
     const dataString = JSON.stringify(data);
-    logger.info(`GraphQL Response: \n ${dataString} \n`);
+    process.env.PRODUCTION !== 'true' && logger.info(`GraphQL Response: \n ${dataString} \n`);
     const status = response.ok;
     const message = status ? 'El token se ha generado correctamente. data:' : 'Error en el servicio. ' + JSON.stringify(data);
 
@@ -109,7 +109,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const result = await fetch(url, options);
     const data = await result.json();
     const dataString = JSON.stringify(data);
-    logger.info(`GraphQL Response: \n ${dataString} \n`);
+    process.env.PRODUCTION !== 'true' && logger.info(`GraphQL Response: \n ${dataString} \n`);
 
     if (result.ok) {
       return {
@@ -162,7 +162,7 @@ class ExternalCtsService extends ResolversOperationsService {
       if (result.ok) {
         const data: IExistenciaAlmacenCT = await result.json();
         const dataString = JSON.stringify(data);
-        logger.info(`GraphQL Response: \n ${dataString} \n`);
+        process.env.PRODUCTION !== 'true' && logger.info(`GraphQL Response: \n ${dataString} \n`);
         const existenciaProductoCt = Object.keys(data).map(key => ({
           key,
           existencia: data[key].existencia,
@@ -227,7 +227,7 @@ class ExternalCtsService extends ResolversOperationsService {
       if (result.ok) {
         const data: IProductoCt[] = await result.json();
         const dataString = JSON.stringify(data);
-        logger.info(`GraphQL Response: \n ${dataString} \n`);
+        process.env.PRODUCTION !== 'true' && logger.info(`GraphQL Response: \n ${dataString} \n`);
 
         const stockProductsCt = data.map((product: IProductoCt) => {
           const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
@@ -306,7 +306,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const result = await fetch(url, options);
     const data = await result.json();
     const dataString = JSON.stringify(data);
-    logger.info(`GraphQL Response: \n ${dataString} \n`);
+    process.env.PRODUCTION !== 'true' && logger.info(`GraphQL Response: \n ${dataString} \n`);
 
     if (result.ok) {
       return {
@@ -348,7 +348,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const result = await fetch(url, options);
     const data = await result.json();
     const dataString = JSON.stringify(data);
-    logger.info(`GraphQL Response: \n ${dataString} \n`);
+    process.env.PRODUCTION !== 'true' && logger.info(`GraphQL Response: \n ${dataString} \n`);
 
     const status = result.ok;
     const message = status ? 'La información que hemos enviado se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
@@ -379,7 +379,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     const data = await response.json();
     const dataString = JSON.stringify(data);
-    logger.info(`GraphQL Response: \n ${dataString} \n`);
+    process.env.PRODUCTION !== 'true' && logger.info(`GraphQL Response: \n ${dataString} \n`);
 
     if (response.ok) {
       const listOrdersCt = data
@@ -428,7 +428,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const result = await fetch(url, options);
     const data = await result.json();
     const dataString = JSON.stringify(data);
-    logger.info(`GraphQL Response: \n ${dataString} \n`);
+    process.env.PRODUCTION !== 'true' && logger.info(`GraphQL Response: \n ${dataString} \n`);
 
     const status = result.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
@@ -460,7 +460,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const result = await fetch(url, options);
     const data = await result.json();
     const dataString = JSON.stringify(data);
-    logger.info(`GraphQL Response: \n ${dataString} \n`);
+    process.env.PRODUCTION !== 'true' && logger.info(`GraphQL Response: \n ${dataString} \n`);
 
     const status = result.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
@@ -496,7 +496,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const result = await fetch(url, options);
     const data = await result.json();
     const dataString = JSON.stringify(data);
-    logger.info(`GraphQL Response: \n ${dataString} \n`);
+    process.env.PRODUCTION !== 'true' && logger.info(`GraphQL Response: \n ${dataString} \n`);
 
     const status = result.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;

@@ -114,21 +114,17 @@ async function init(): Promise<void> {
     }
   });
 
-
-
-
-
   const httpServer: Server = createServer(app);
   const httpsServer: https.Server = https.createServer(httpsOptions, app);
   const PORT: number | string = process.env.PORT || 3002;
-  console.log('PORT: ', PORT);
-
   httpsServer.listen(PORT, () => {
-    logger.info('=================SERVER API GRAPHQL=====================');
-    logger.info(`STATUS: ${chalk.greenBright('ONLINE')}`);
-    logger.info(`MESSAGE: ${chalk.greenBright('API DARU - MarketPlace !!!')}`);
-    logger.info(`GraphQL Server => @: https://localhost:${PORT}/graphql`);
-    logger.info(`WS Connection => @: wss://localhost:${PORT}/graphql`);
+    if (process.env.PRODUCTION !== 'true') {
+      logger.info('=================SERVER API GRAPHQL=====================');
+      logger.info(`STATUS: ${chalk.greenBright('ONLINE')}`);
+      logger.info(`MESSAGE: ${chalk.greenBright('API DARU - MarketPlace !!!')}`);
+      logger.info(`GraphQL Server => @: https://localhost:${PORT}/graphql`);
+      logger.info(`WS Connection => @: wss://localhost:${PORT}/graphql`);
+    }
   });
 }
 

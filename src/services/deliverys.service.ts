@@ -83,12 +83,14 @@ class DeliverysService extends ResolversOperationsService {
     let status = 'PEDIDO CREADO'
     const delivery = this.getVariables().delivery;
     const idDelivery = await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 });
+    process.env.PRODUCTION !== 'true' && logger.info(`insert.asignDocumentId.idDelivery: \n ${JSON.stringify(idDelivery)} \n`);
     if (delivery) {
       delivery.id = idDelivery;
       delivery.status = status;
       delivery.registerDate = new Date().toISOString();
       // Insertar Pedido Inicial
       const result = await this.add(this.collection, delivery, 'delivery');
+      process.env.PRODUCTION !== 'true' && logger.info(`insert.add.result: \n ${JSON.stringify(result)} \n`);
       if (result && result.status) {
         // Realizar el Cargo al Cliente
         const chargeOpenpay: any = { chargeOpenpay: delivery.chargeOpenpay }
@@ -111,6 +113,7 @@ class DeliverysService extends ResolversOperationsService {
             }
           });
         // Si el cargo es correcto actualizar estatus del pedido
+        process.env.PRODUCTION !== 'true' && logger.info(`insert.createCharge.resultOpenpay: \n ${JSON.stringify(resultOpenpay)} \n`);
         if (resultOpenpay && resultOpenpay.status) {
           const deliveryUpdate: IDelivery = result.item as IDelivery;
           deliveryUpdate.status = status;
@@ -139,7 +142,7 @@ class DeliverysService extends ResolversOperationsService {
         deliveryUpdate.lastUpdate = new Date().toISOString();
         const filter = { id: idDelivery };
         const resultUpdate = await this.update(this.collection, filter, deliveryUpdate, 'Pedido');
-        console.log('resultUpdate con error: ', resultUpdate);
+        process.env.PRODUCTION !== 'true' && logger.info(`insert.update.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
         if (resultUpdate && resultUpdate.status) {
           return await {
             status: resultOpenpay.status,
@@ -172,6 +175,7 @@ class DeliverysService extends ResolversOperationsService {
     let statusError = false;
     let messageError = '';
     const delivery = this.getVariables().delivery;
+    process.env.PRODUCTION !== 'true' && logger.info(`modify.getVariables().delivery: \n ${JSON.stringify(delivery)} \n`);
     // Si el pago fue autorizado.
     if (delivery) {
       const id = delivery.id ? parseInt(delivery.id) : 0;
@@ -198,10 +202,10 @@ class DeliverysService extends ResolversOperationsService {
             };
           }
         });
+      process.env.PRODUCTION !== 'true' && logger.info(`modify.oneCharge.resultOpenpay: \n ${JSON.stringify(resultOpenpay)} \n`);
       let chargeOpenpay: IChargeOpenpay;
       if (resultOpenpay && resultOpenpay.chargeOpenpay && resultOpenpay.chargeOpenpay.status === 'completed') {
         chargeOpenpay = resultOpenpay.chargeOpenpay;
-        logger.info(`modify.oneCharge.chargeOpenpay: \n ${JSON.stringify(chargeOpenpay)} \n`);
         status = 'CARGO COMPLETADO';
         // Realizar el Pedido
         for (const idWar in Object.keys(warehouses)) {
@@ -211,12 +215,12 @@ class DeliverysService extends ResolversOperationsService {
           switch (supplier) {
             case 'ct':
               const ordersCt = await this.setOrder(id, delivery, warehouse);
-              logger.info(`modify.setOrder.ordersCt: \n ${JSON.stringify(ordersCt)} \n`);
+              process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.ordersCt: \n ${JSON.stringify(ordersCt)} \n`);
               const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
                 .then(async (result) => {
                   return await result;
                 });
-              logger.info(`modify.EfectuarPedidos.orderCtResponse: \n ${JSON.stringify(orderCtResponse)} \n`);
+              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderCtResponse: \n ${JSON.stringify(orderCtResponse)} \n`);
               ordersCt.orderCtResponse = orderCtResponse;
               const CONFIRMAR_PEDIDO = process.env.CONFIRMAR_PEDIDO;
               if (CONFIRMAR_PEDIDO === 'true') {
@@ -230,24 +234,25 @@ class DeliverysService extends ResolversOperationsService {
                   messageError = orderCtResponse.errores[0].errorMessage;
                   break;
                 }
-                logger.info(`modify.orderCtConfirm: \n ${JSON.stringify(orderCtConfirm)} \n`);
+                process.env.PRODUCTION !== 'true' && logger.info(`modify.orderCtConfirm: \n ${JSON.stringify(orderCtConfirm)} \n`);
                 const orderCtConfirmResponse = await this.ConfirmarPedidos(supplier, orderCtConfirm, context);
-                logger.info(`modify.ConfirmarPedidos.orderCtConfirmResponse: \n ${JSON.stringify(orderCtConfirmResponse)} \n`);
+                process.env.PRODUCTION !== 'true' && logger.info(`modify.ConfirmarPedidos.orderCtConfirmResponse: \n ${JSON.stringify(orderCtConfirmResponse)} \n`);
                 if (orderCtConfirmResponse && orderCtConfirmResponse.okCode !== '2000') {
                   status = 'PEDIDO SIN CONFIRMAR POR EL PROVEEDOR';
                 }
                 ordersCt.orderCtConfirmResponse = orderCtConfirmResponse;
               }
               ordersCts.push(ordersCt);
-              logger.info(`modify.ordersCts[]: \n ${JSON.stringify(ordersCts)} \n`);
               break;
             case 'cva':
               status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
               const ordersCva = await this.setOrder(id, delivery, warehouse);
+              process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.ordersCva: \n ${JSON.stringify(ordersCva)} \n`);
               const orderCvaResponse = await this.EfectuarPedidos(supplier, ordersCva, context)
                 .then(async (result) => {
                   return await result;
                 });
+              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderCvaResponse: \n ${JSON.stringify(orderCvaResponse)} \n`);
               ordersCva.orderCvaResponse = orderCvaResponse;
               if (orderCvaResponse.estado === 'ERROR') {
                 status = 'ERROR PEDIDO PROVEEDOR';
@@ -280,9 +285,9 @@ class DeliverysService extends ResolversOperationsService {
       deliveryUpdate.statusError = statusError;
 
       const filter = { id: id.toString() };
-      logger.info(`modify.deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
+      process.env.PRODUCTION !== 'true' && logger.info(`modify.deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
       const resultUpdate = await this.updateForce(this.collection, filter, deliveryUpdate, 'Pedido');
-      logger.info(`modify.updateForce.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
+      process.env.PRODUCTION !== 'true' && logger.info(`modify.updateForce.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
       if (resultUpdate && resultUpdate.status) {
         // Si se guarda el envio, inactivar el cupon.
         if (delivery && delivery?.user) {
@@ -291,13 +296,14 @@ class DeliverysService extends ResolversOperationsService {
             email: delivery?.user.email
           }
           const welcome = await this.getByField(collection, filter);
+          process.env.PRODUCTION !== 'true' && logger.info(`modify.getByField.welcome: \n ${JSON.stringify(welcome)} \n`);
           if (welcome && welcome.item) {
             const id = { id: welcome.item.id };
             const active = { active: false };
             await this.update(collection, id, active, 'welcome');
           }
         }
-        logger.info(`deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
+        process.env.PRODUCTION !== 'true' && logger.info(`deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
         return await {
           status: resultUpdate.status,
           message: resultUpdate.message,
@@ -430,7 +436,7 @@ class DeliverysService extends ResolversOperationsService {
             cfdi: 'G01'
           };
           const dataString = JSON.stringify(orderCtSupplier);
-          logger.info(`GraphQL Response: \n ${dataString} \n`);
+          process.env.PRODUCTION !== 'true' && logger.info(`GraphQL Response: \n ${dataString} \n`);
           return orderCtSupplier;
         case 'cva':
           const enviosCva: IEnvioCVA[] = [];

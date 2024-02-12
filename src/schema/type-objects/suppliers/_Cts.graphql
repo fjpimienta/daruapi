@@ -121,7 +121,7 @@ type ResponseCtsListOrders {
   tipoPago: String
   guiaConnect: GuiaConnect
   envio: [EnvioCt]
-  productoCt: [ProductCt]
+  producto: [ProductCt]
   respuestaCT: ResponseListOrdersCt
 }
 
@@ -163,6 +163,7 @@ type ResponseCtsStatus {
   status: String
   folio: String
   guias: [GuiasCt]
+  produco: [ProductCt]
 }
 
 type GuiasCt {

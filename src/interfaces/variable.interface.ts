@@ -88,7 +88,7 @@ export interface IVariables {
   tipoPago?: string;
   guiaConnect?: IGuiaConnect;
   envio?: IEnvioCt;
-  productoCt?: IProductoCt;
+  producto?: IProductoCt;
   cfdi?: string;
   // Ct Status
   folio?: string;

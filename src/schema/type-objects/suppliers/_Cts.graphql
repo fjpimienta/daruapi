@@ -163,6 +163,7 @@ type ResponseCtsStatus {
   status: String
   folio: String
   guias: [GuiasCt]
+  produco: [ProductCt]
 }
 
 type GuiasCt {

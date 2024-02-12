@@ -82,9 +82,9 @@ export interface IOrderCt {
   idPedido?: number;
   almacen?: string;
   tipoPago?: string;
-  guiaConnect: IGuiaConnect;
+  guiaConnect?: IGuiaConnect;
   envio?: IEnvioCt[];
-  productoCt?: IProductOrderCt[];
+  producto?: IProductOrderCt[];
   cfdi?: string;
   orderCtResponse?: IOrderCtResponse;
   orderCtConfirmResponse?: IOrderCtConfirmResponse;

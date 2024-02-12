@@ -433,7 +433,8 @@ class ExternalCtsService extends ResolversOperationsService {
       statusOrdersCt: status ? {
         status: data.status ? data.status : '',
         folio: data.folio ? data.folio : '',
-        guias: data.guias ? data.guias : []
+        guias: data.guias ? data.guias : [],
+        producto: data.producto ? data.producto : []
       } : null
     };
   }

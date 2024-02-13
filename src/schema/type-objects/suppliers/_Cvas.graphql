@@ -118,7 +118,7 @@ type ResponsePaqueteriasCva {
 
 type ResponseProductCva {
   clave: String
-  ups: String
+  upc: String
   codigo_fabricante: String
   descripcion: String
   solucion: String

@@ -502,7 +502,7 @@ class ExternalCvasService {
         }
       }
       const dataArray = [];
-      if (data && data.length < 0) {
+      if (data && data.clave) {
         dataArray.push(data);
         data = dataArray;
       }

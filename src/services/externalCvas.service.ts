@@ -475,35 +475,47 @@ class ExternalCvasService {
     const cliente = '73766';
     const { groupName } = variables;
     try {
-      let url = '';
-      if (groupName) {
-        url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&grupo=${groupName}&promos=1&porcentajes=1&sucursales=1&TotalSuc=1&MonedaPesos=1&tc=1&upc=1&dimen=1`;
+      if (!groupName) {
+        return {
+          status: false,
+          message: `No se ha especificado el valor de consulta.`,
+          listPricesCva: []
+        }
       }
+      let url = '';
+      url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&grupo=${groupName}&promos=1&porcentajes=1&sucursales=1&TotalSuc=1&MonedaPesos=1&tc=1&upc=1&dimen=1&subgpo=1`;
       const response = await fetch(url);
+      if (response.status < 200 || response.status >= 300) {
+        return {
+          status: false,
+          message: `Error en la consulta con el proveedor. <<status: ${response.status}>>`,
+          listPricesCva: []
+        }
+      }
       const xml = await response.text();
       let data = await this.parseXmlToJson(xml, 'lista_precios.xml')
-      const dataArray = []; // Aquí almacenaremos los elementos en un array
-      if (data.length > 0) {
-      } else {
+      if (!data) {
+        return {
+          status: false,
+          message: `No se encontraron datos de ${groupName}.`,
+          listPricesCva: []
+        }
+      }
+      const dataArray = [];
+      if (data && data.length < 0) {
         dataArray.push(data);
         data = dataArray;
       }
-      return response.ok
-        ? {
-          status: true,
-          message: 'La información que hemos pedido se ha cargado correctamente',
-          listPricesCva: data
-        }
-        : {
-          status: false,
-          message: 'Error en el servicio. Consultar con el Administrador.',
-          listPricesCva: null
-        };
+      return {
+        status: true,
+        message: 'La información que hemos pedido se ha cargado correctamente',
+        listPricesCva: data
+      }
     } catch (error) {
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
-        listPricesCva: null
+        listPricesCva: []
       };
     }
   }

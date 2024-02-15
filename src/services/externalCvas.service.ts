@@ -3,6 +3,7 @@ import { IBranchOffices } from '../interfaces/product.interface';
 import { IResponseProductCva } from '../interfaces/suppliers/_CvasShippments.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import fetch from 'node-fetch';
+import logger from '../utils/logger';
 
 const xml2js = require('xml2js');
 const decode = require('he');
@@ -160,6 +161,7 @@ class ExternalCvasService {
         }
       };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -223,6 +225,7 @@ class ExternalCvasService {
         };
       }
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -312,6 +315,7 @@ class ExternalCvasService {
           listBrandsCva: null
         };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -338,6 +342,7 @@ class ExternalCvasService {
           listGroupsCva: null
         };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -364,6 +369,7 @@ class ExternalCvasService {
           listSolucionesCva: null
         };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -390,6 +396,7 @@ class ExternalCvasService {
           listSucursalesCva: null
         };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -416,6 +423,7 @@ class ExternalCvasService {
           listPaqueteriasCva: null
         };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -461,6 +469,7 @@ class ExternalCvasService {
           existenciaProductoCva: null
         };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -492,6 +501,7 @@ class ExternalCvasService {
           existenciaProductoCva: null
         };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -541,6 +551,7 @@ class ExternalCvasService {
         listPricesCva: data
       }
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -702,6 +713,7 @@ class ExternalCvasService {
           throw new Error('Catálogo no válido');
       }
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       throw new Error('El contenido XML no es válido');
     }
   }

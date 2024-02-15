@@ -3,6 +3,7 @@ import { IBranchOffices } from '../interfaces/product.interface';
 import { IResponseProductCva } from '../interfaces/suppliers/_CvasShippments.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import fetch from 'node-fetch';
+import logger from '../utils/logger';
 
 const xml2js = require('xml2js');
 const decode = require('he');
@@ -110,33 +111,63 @@ class ExternalCvasService {
 
   async getShippingCvaRates(variables: IVariables) {
     const { paqueteria, cp, cp_sucursal, productosCva } = variables;
-    const token = await this.getTokenCva();
-    const options = {
-      method: 'POST',
-      headers: {
-        'accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token.tokenCva.token}`
-      },
-      body: JSON.stringify({ paqueteria, cp, cp_sucursal, productos: productosCva })
-    };
-    const response = await fetch('https://www.grupocva.com/api/paqueteria/', options);
-    const data = await response.json();
-    if (response.ok) {
+    try {
+      if (!paqueteria || !cp || !cp_sucursal || !productosCva) {
+        return {
+          status: false,
+          message: `Verificar los valores requeridos de paqueteria, cp, cp_sucursal y productos.`,
+          shippingCvaRates: {}
+        }
+      }
+      const token = await this.getTokenCva();
+      const options = {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token.tokenCva.token}`
+        },
+        body: JSON.stringify({ paqueteria, cp, cp_sucursal, productos: productosCva })
+      };
+      const response = await fetch('https://www.grupocva.com/api/paqueteria/', options);
+      if (response.status < 200 || response.status >= 300) {
+        return {
+          status: false,
+          message: `Error en la consulta con el proveedor. <<status: ${response.status}>>`,
+          shippingCvaRates: {}
+        }
+      }
+      const data = await response.json();
+      if (!data) {
+        return {
+          status: false,
+          message: `No es posible enviar a este CP: ${cp}.`,
+          shippingCvaRates: {}
+        }
+      }
+      if (data.result === 'failed') {
+        return {
+          status: false,
+          message: data.mensaje,
+          shippingCvaRates: {}
+        };
+      }
       return {
-        status: data.result !== 'failed' ? true : false,
-        message: data.result !== 'failed' ? 'La información que hemos pedido se ha cargado correctamente' : data.message,
+        status: true,
+        message: 'La cotizacion se ha generado correctamente',
         shippingCvaRates: {
           result: data.result,
           cotizacion: data.cotizacion
         }
       };
+    } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
+      return {
+        status: false,
+        message: 'Error en el servicio. Consultar con el Administrador.',
+        shippingCvaRates: null
+      };
     }
-    return {
-      status: false,
-      message: `Error en el servicio. ${JSON.stringify(data)}`,
-      shippingCvaRates: null
-    };
   }
 
   async getListOrdersCva() {
@@ -194,6 +225,7 @@ class ExternalCvasService {
         };
       }
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -283,6 +315,7 @@ class ExternalCvasService {
           listBrandsCva: null
         };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -309,6 +342,7 @@ class ExternalCvasService {
           listGroupsCva: null
         };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -335,6 +369,7 @@ class ExternalCvasService {
           listSolucionesCva: null
         };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -361,6 +396,7 @@ class ExternalCvasService {
           listSucursalesCva: null
         };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -387,6 +423,7 @@ class ExternalCvasService {
           listPaqueteriasCva: null
         };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -432,6 +469,7 @@ class ExternalCvasService {
           existenciaProductoCva: null
         };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -463,6 +501,7 @@ class ExternalCvasService {
           existenciaProductoCva: null
         };
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -512,6 +551,7 @@ class ExternalCvasService {
         listPricesCva: data
       }
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -673,6 +713,7 @@ class ExternalCvasService {
           throw new Error('Catálogo no válido');
       }
     } catch (error) {
+      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
       throw new Error('El contenido XML no es válido');
     }
   }

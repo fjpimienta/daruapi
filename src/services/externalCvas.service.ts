@@ -110,33 +110,62 @@ class ExternalCvasService {
 
   async getShippingCvaRates(variables: IVariables) {
     const { paqueteria, cp, cp_sucursal, productosCva } = variables;
-    const token = await this.getTokenCva();
-    const options = {
-      method: 'POST',
-      headers: {
-        'accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token.tokenCva.token}`
-      },
-      body: JSON.stringify({ paqueteria, cp, cp_sucursal, productos: productosCva })
-    };
-    const response = await fetch('https://www.grupocva.com/api/paqueteria/', options);
-    const data = await response.json();
-    if (response.ok) {
+    try {
+      if (!paqueteria || !cp || !cp_sucursal || !productosCva) {
+        return {
+          status: false,
+          message: `Verificar los valores requeridos de paqueteria, cp, cp_sucursal y productos.`,
+          shippingCvaRates: {}
+        }
+      }
+      const token = await this.getTokenCva();
+      const options = {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token.tokenCva.token}`
+        },
+        body: JSON.stringify({ paqueteria, cp, cp_sucursal, productos: productosCva })
+      };
+      const response = await fetch('https://www.grupocva.com/api/paqueteria/', options);
+      if (response.status < 200 || response.status >= 300) {
+        return {
+          status: false,
+          message: `Error en la consulta con el proveedor. <<status: ${response.status}>>`,
+          shippingCvaRates: {}
+        }
+      }
+      const data = await response.json();
+      if (!data) {
+        return {
+          status: false,
+          message: `No es posible enviar a este CP: ${cp}.`,
+          shippingCvaRates: {}
+        }
+      }
+      if (data.result === 'failed') {
+        return {
+          status: false,
+          message: data.mensaje,
+          shippingCvaRates: {}
+        };
+      }
       return {
-        status: data.result !== 'failed' ? true : false,
-        message: data.result !== 'failed' ? 'La información que hemos pedido se ha cargado correctamente' : data.message,
+        status: true,
+        message: 'La cotizacion se ha generado correctamente',
         shippingCvaRates: {
           result: data.result,
           cotizacion: data.cotizacion
         }
       };
+    } catch (error) {
+      return {
+        status: false,
+        message: 'Error en el servicio. Consultar con el Administrador.',
+        shippingCvaRates: null
+      };
     }
-    return {
-      status: false,
-      message: `Error en el servicio. ${JSON.stringify(data)}`,
-      shippingCvaRates: null
-    };
   }
 
   async getListOrdersCva() {

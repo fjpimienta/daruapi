@@ -146,9 +146,17 @@ class ExternalCvasService {
         }
       }
       if (data.result === 'failed') {
+        let messageError = '';
+        if ('mensaje' in data) {
+          messageError = data.mensaje;
+        } else if ('message' in data) {
+          messageError = data.message;
+        } else {
+          messageError = 'Error desconocido';
+        }
         return {
           status: false,
-          message: data.mensaje,
+          message: messageError,
           shippingCvaRates: {}
         };
       }

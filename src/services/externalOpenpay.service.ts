@@ -1,6 +1,7 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import { IChargeOpenpay } from '../interfaces/suppliers/_Openpay.interface';
 import { IVariables } from '../interfaces/variable.interface';
+import logger from '../utils/logger';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import OpenPay from 'openpay';
 
@@ -40,7 +41,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         createCustomerOpenpay,
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`createCustomer: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -68,7 +69,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         updateCustomerOpenpay,
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`updateCustomer: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -95,7 +96,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         message: 'Se ha eliminado el Cliente correctamente.',
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`deleteCustomer: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -131,7 +132,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         customerOpenpay,
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`oneCustomer: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -158,7 +159,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         listCustomersOpenpay,
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`listCustomers: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -188,7 +189,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         listCardsOpenpay,
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`listCards: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -216,7 +217,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         createCardOpenpay: token,
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`createCard: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -252,7 +253,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         cardOpenpay,
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`oneCard: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -279,7 +280,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         message: 'La tarjeta se ha eliminado correctamente.',
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`deleteCard: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -302,14 +303,13 @@ class ExternalOpenpayService extends ResolversOperationsService {
           }
         });
       });
-
       return {
         status: true,
         message: 'El cargo se ha creado correctamente.',
         createChargeOpenpay,
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`createCharge: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -345,7 +345,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         captureChargeOpenpay,
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`captureCharge: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -381,7 +381,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         refundChargeOpenpay,
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`refundCharge: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -417,7 +417,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         chargeOpenpay,
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`oneCharge: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -444,7 +444,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         listChargesOpenpay,
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`listCharges: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -459,26 +459,22 @@ class ExternalOpenpayService extends ResolversOperationsService {
   async createPayout(variables: IVariables) {
     try {
       const { payoutOpenpay } = variables;
-      console.log('payoutOpenpay: ', payoutOpenpay);
       const createPayoutOpenpay = await new Promise((resolve, reject) => {
         this.openpay.payouts.create(payoutOpenpay, (error: any, response: any) => {
           if (error) {
-            console.log('error: ', error);
             reject(error);
           } else {
-            console.log('createCharge/response: ', response);
             resolve(response);
           }
         });
       });
-      console.log('createCharge/createPayoutOpenpay: ', createPayoutOpenpay);
       return {
         status: true,
         message: 'El cargo se ha creado correctamente.',
         createPayoutOpenpay,
       };
     } catch (error: any) {
-      console.error('error: ', error);
+      process.env.PRODUCTION !== 'true' && logger.info(`createPayout: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -490,24 +486,63 @@ class ExternalOpenpayService extends ResolversOperationsService {
 
   //#region Metodos Adicionales
   decodeError(error: any) {
-    switch (error.error_code) {
+    // Verificar si el error es una cadena JSON válida
+    if (typeof error === 'string') {
+      // Intentar analizar la cadena como JSON
+      try {
+        const errorObj = JSON.parse(error);
+        return this.handleParsedError(errorObj);
+      } catch (parseError) {
+        // Si hay un error al analizar la cadena JSON, manejarla como cadena directamente
+        console.error('Error parsing JSON:', parseError);
+        return this.handleStringError(error);
+      }
+    } else if (typeof error === 'object') {
+      // Si el error ya es un objeto JavaScript, manejarlo directamente
+      return this.handleParsedError(error);
+    } else {
+      // Si el tipo de error no es una cadena ni un objeto, manejarlo aquí
+      console.error('Error inesperado:', error);
+      return 'Error inesperado';
+    }
+  }
+
+  handleStringError(error: string) {
+    console.log('Error string:', error);
+    // Aquí puedes manejar el error como una cadena directamente
+    // Por ejemplo, podrías buscar patrones en la cadena para determinar el tipo de error
+    // y devolver un mensaje adecuado en función de eso.
+    return 'Error desconocido';
+  }
+
+  handleParsedError(errorObj: any) {
+    const errorCode = errorObj.error_code;
+    const httpCode = errorObj.http_code;
+    const description = errorObj.description;
+
+    switch (errorCode) {
       case 1000:
         return 'Ocurrió un error interno en el servidor de Openpay.';
       case 1001:
-        if (error.description.includes('cvv2 length must be 3 digits')) {
+        if (httpCode === 400) {
+          return 'No es valida la vigencia del token de pago.';
+        }
+        if (description.includes('cvv2 length must be 3 digits')) {
           return 'El código de seguridad de la tarjeta (CVV2) debe ser de 3 digitos.';
-        } else if (error.description.includes('expiration_year')) {
+        } else if (description.includes('expiration_year')) {
           return 'El año debe ser de 2 digitos.';
-        } else if (error.description.includes('expiration_month')) {
+        } else if (description.includes('expiration_month')) {
           return 'El mes debe ser de 2 digitos. De 01 a 12';
-        } else if (error.description.includes('expiration_month length must be 2 digits')) {
+        } else if (description.includes('expiration_month length must be 2 digits')) {
           return 'El mes debe ser de 2 digitos. De 01 a 12';
+        } else if (description.includes('equired request body is missin')) {
+          return 'Falta el cuerpo de la solicitud requerida';
         }
       case 1002:
         return 'La llamada no esta autenticada o la autenticación es incorrecta.';
       case 1003:
-        if (error.http_code === 422) {
-          if (error.error_code === 1003) {
+        if (httpCode === 422) {
+          if (errorCode === 1003) {
             return 'No es valida la vigencia del token de pago.';
           }
           return 'El cargo a la tarjeta se encuentra en estado final.';
@@ -610,7 +645,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
       case 6003:
         return 'El servicio respondió con errores.';
       default:
-        return error.description;
+        return description;
     }
   }
 

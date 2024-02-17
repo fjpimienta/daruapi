@@ -1,4 +1,6 @@
 input CardOpenpayInput {
+  id: String
+  type: String
   card_number: String
   holder_name: String
   expiration_year: String
@@ -6,29 +8,26 @@ input CardOpenpayInput {
   cvv2: String
   allows_charges: Boolean
   allows_payouts: Boolean
-  bank_code: String
-  bank_name: String
   creation_date: String
+  bank_name: String
   customer_id: String
-  id: String
-  type: String
+  bank_code: String
 }
 
 input CustomerOpenpayInput {
-  external_id: String
+  id: String
+  creation_date: String
   name: String
   last_name: String
   email: String
   phone_number: String
-  requires_account: Boolean
-  clabe: String
   bank_name: String
-  address: AddressOpenpayInput
-  id: String
-  balance: String
-  creation_date: String
+  external_id: String
   status: String
-  store: String
+  balance: String
+  address: AddressOpenpayInput
+  store: StoreOpenpayInput
+  clabe: String
 }
 
 input AddressOpenpayInput {
@@ -41,35 +40,41 @@ input AddressOpenpayInput {
   country_code: String
 }
 
+input StoreOpenpayInput {
+  reference: String
+  barcode_url: String
+}
+
 input ChargeOpenpayInput {
   id: String
+  authorization: String
+  transaction_type: String
+  operation_type: String
   method: String
-  source_id: String
-  amount: Float
-  currency: String
-  description: String
+  creation_date: String
+  operation_date: String
   order_id: String
+  status: String
+  amount: Float
+  description: String
+  error_message: String
+  customer_id: String
+  currency: String
+  bank_account: BankAccountOpenpayInput
+  card: CardOpenpayInput
+  # card_points: CardPoints
+  payment_method: PaymentMethodOpenpayInput
+  conciliated: Boolean
+  customer: CustomerOpenpayInput
+  redirect_url: String
   device_session_id: String
   capture: Boolean
-  customer: CustomerOpenpayInput
+  source_id: String
   payment_plan: PaymentPlanOpenpayInput
-  payment_method: PaymentMethodOpenpayInput
   use_card_points: String
   send_email: Boolean
-  redirect_url: String
   use_3d_secure: Boolean
-  card: CardOpenpayInput
   confirm: Boolean
-  status: String
-  authorization: String
-  bank_account: String
-  conciliated: Boolean
-  creation_date: String
-  customer_id: String
-  error_message: String
-  operation_date: String
-  operation_type: String
-  transaction_type: String
 }
 
 input PaymentPlanOpenpayInput {
@@ -85,21 +90,22 @@ input PaymentMethodOpenpayInput {
   name: String
 }
 
-input CaptureChargeOpenpayInput {
-  amount: Float
-}
-
-input RefundChargeOpenpayInput {
-  description: String
-  amount: Float
-}
-
 input PayoutOpenpayInput {
+  # id: String
+  amount: String
+  # authorization: String
   method: String
-  bank_account: BankAccountOpenpayInput
-  amount: Float
+  # operation_type: String
+  # transaction_type: String
+  # status: String
+  # currency: String
+  # creation_date: String
+  # operation_date: String
   description: String
+  # error_message: String
   order_id: String
+  bank_account: BankAccountOpenpayInput
+  # customer_id: String
 }
 
 input BankAccountOpenpayInput {
@@ -107,4 +113,13 @@ input BankAccountOpenpayInput {
   holder_name: String
   alias: String
   bank_name: String
+}
+
+input CaptureChargeOpenpayInput {
+  amount: Float
+}
+
+input RefundChargeOpenpayInput {
+  description: String
+  amount: Float
 }

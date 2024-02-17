@@ -1,24 +1,33 @@
-//#region "card"
 export interface ICardOpenpay {
+  id?: string;
+  type?: string;
   card_number: string;
   holder_name: string;
   expiration_year: string;
   expiration_month: string;
   cvv2: string;
+  allows_charges?: boolean;
+  allows_payouts?: boolean;
+  creation_date: string;
+  bank_name?: string;
+  customer_id?: string;
+  bank_code?: string;
 }
-//#endregion
 
-//#region "Customers"
 export interface ICustomerOpenpay {
-  external_id: string;
+  id: string;
+  creation_date?: string;
   name: string;
   last_name: string;
   email: string;
-  phone_number: string;
-  requires_account: boolean;
-  clabe: string;
-  bank_name: string;
+  phone_number?: string;
+  bank_name?: string;
+  external_id?: string;
+  status?: string;
+  balance?: string;
   address: IAddressOpenpay;
+  store?: IStoreOpenpay;
+  clabe: string;
 }
 
 export interface IAddressOpenpay {
@@ -30,35 +39,42 @@ export interface IAddressOpenpay {
   city: string;
   country_code: string;
 }
-//#region 
 
-//#region "Charges"
-export interface IChargeOpenpay {
-  id: string;
-  method: string;
-  source_id: string;
-  amount: number;
-  currency?: string;
-  description: string;
-  order_id?: string;
-  device_session_id: string;
-  capture?: boolean;
-  customer: ICustomerOpenpay;
-  payment_plan?: IPaymentPlanOpenpay;
-  payment_method?: IPaymentMethodOpenpay;
-  // metadata?: MetadataField[];
-  use_card_points?: 'ONLY_POINTS' | 'MIXED' | 'NONE';
-  send_email?: boolean;
-  redirect_url?: string;
-  use_3d_secure?: boolean;
-  status?: string;
+export interface IStoreOpenpay {
+  reference: string;
+  barcode_url: string;
 }
 
-export interface IBankAccountOpenpay {
-  clabe: string;
-  holder_name: string;
-  alias: string;
-  bank_name: string;
+export interface IChargeOpenpay {
+  id: string;
+  authorization: string;
+  transaction_type: string;
+  operation_type: string;
+  method: string;
+  creation_date: string;
+  operation_date: string;
+  order_id: string;
+  status: string;
+  amount: number;
+  description: string;
+  error_message: string;
+  customer_id: string;
+  currency?: string;
+  bank_account?: IBankAccountOpenpay;
+  card?: ICardOpenpay;
+  // card_points: CardPoints;
+  payment_method?: IPaymentMethodOpenpay;
+  conciliated: string;
+  customer: ICustomerOpenpay;
+  redirect_url?: string;
+  device_session_id?: string;
+  capture?: boolean;
+  source_id?: string;
+  payment_plan?: IPaymentPlanOpenpay;
+  use_card_points?: 'ONLY_POINTS' | 'MIXED' | 'NONE';
+  send_email?: boolean;
+  use_3d_secure?: boolean;
+  confirm?: boolean;
 }
 
 export interface IPaymentPlanOpenpay {
@@ -74,6 +90,31 @@ export interface IPaymentMethodOpenpay {
   name?: string;
 }
 
+export interface IPayoutOpenpay {
+  id: string;
+  amount: string;
+  authorization: string;
+  method: string;
+  operation_type: string;
+  transaction_type: string;
+  status: string;
+  currency: string;
+  creation_date: string;
+  operation_date: string;
+  description: string;
+  error_message: string;
+  order_id: string;
+  bank_account: IBankAccountOpenpay;
+  customer_id: string;
+}
+
+export interface IBankAccountOpenpay {
+  clabe: string;
+  holder_name: string;
+  alias: string;
+  bank_name: string;
+}
+
 export interface ICaptureChargeOpenpay {
   amount: number;
 }
@@ -82,12 +123,3 @@ export interface IRefundChargeOpenpay {
   amount: number;
   description: string;
 }
-
-export interface IPayoutOpenpay {
-  method: string;
-  bank_account: IBankAccountOpenpay;
-  amount: number;
-  description: string;
-  order_id: string;
-}
-//#endregion

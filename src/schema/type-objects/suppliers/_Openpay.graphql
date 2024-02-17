@@ -5,6 +5,7 @@ type CardOpenpay {
   holder_name: String
   expiration_year: String
   expiration_month: String
+  cvv2: String
   allows_charges: Boolean
   allows_payouts: Boolean
   creation_date: String
@@ -66,7 +67,19 @@ type ChargeOpenpay {
   conciliated: Boolean
   customer: CustomerOpenpay
   redirect_url: String
+  # device_session_id: String
+  # capture: Boolean
+  # source_id: String
+  # payment_plan: PaymentPlanOpenpayInput
+  # use_card_points: String
+  # send_email: Boolean
+  # use_3d_secure: Boolean
+  # confirm: Boolean
 }
+
+# input PaymentPlanOpenpayInput {
+#   payments: Int
+# }
 
 type PaymentMethodOpenpay {
   type: String
@@ -91,7 +104,7 @@ type PayoutOpenpay {
   description: String
   error_message: String
   order_id: String
-  bank_account: BankAccountOpenpay,
+  bank_account: BankAccountOpenpay
   customer_id: String
 }
 

@@ -525,6 +525,9 @@ class ExternalOpenpayService extends ResolversOperationsService {
         return 'Ocurrió un error interno en el servidor de Openpay.';
       case 1001:
         if (httpCode === 400) {
+          if (description.includes('ustomer.email no puede estar vac')) {
+            return 'Es necesario incluir el correo en el Cliente.';
+          } 
           return 'No es valida la vigencia del token de pago.';
         }
         if (description.includes('cvv2 length must be 3 digits')) {

@@ -121,6 +121,7 @@ class DeliverysService extends ResolversOperationsService {
           const deliveryUpdate: IDelivery = result.item as IDelivery;
           deliveryUpdate.status = status;
           deliveryUpdate.chargeOpenpay = resultOpenpay.createChargeOpenpay as IChargeOpenpay;
+          deliveryUpdate.chargeOpenpay.redirect_url = process.env.CHECKOUTURL  + deliveryUpdate.chargeOpenpay.order_id + '&id=' + deliveryUpdate.chargeOpenpay.id;
           deliveryUpdate.lastUpdate = new Date().toISOString();
           const filter = { id: idDelivery };
           const resultUpdate = await this.update(this.collection, filter, deliveryUpdate, 'Pedido');

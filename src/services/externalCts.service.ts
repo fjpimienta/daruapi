@@ -421,8 +421,8 @@ class ExternalCtsService extends ResolversOperationsService {
 
     const url = `http://connect.ctonline.mx:3001/pedido/estatus/${folio}`;
     const response = await fetch(url, options);
-    process.env.PRODUCTION !== 'true' && logger.info(`getStatusOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
+    process.env.PRODUCTION !== 'true' && logger.info(`getStatusOrderCt.response.data: \n ${JSON.stringify(data)} \n`);
 
     const status = response.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;

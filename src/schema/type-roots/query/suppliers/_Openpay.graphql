@@ -44,4 +44,8 @@ type Query {
   createPayoutOpenpay(
     payoutOpenpay: PayoutOpenpayInput
   ): ResultOpenpay
+  payoutOpenpay(
+    idPayoutOpenpay: String
+  ): ResultOpenpay
+  listPayoutsOpenpay: ResultOpenpay
 }

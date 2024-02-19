@@ -1,5 +1,5 @@
 import { IContextData } from '../interfaces/context-data.interface';
-import { IChargeOpenpay } from '../interfaces/suppliers/_Openpay.interface';
+import { IChargeOpenpay, IPayoutOpenpay } from '../interfaces/suppliers/_Openpay.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import logger from '../utils/logger';
 import ResolversOperationsService from './resolvers-operaciones.service';
@@ -393,19 +393,20 @@ class ExternalOpenpayService extends ResolversOperationsService {
   async oneCharge(variables: IVariables) {
     try {
       const { idTransactionOpenpay } = variables;
-
       if (!idTransactionOpenpay) {
         return {
           status: false,
           message: 'Se requiere el ID del Cargo para buscarlo.',
         };
       }
-
+      console.log('idTransactionOpenpay: ', idTransactionOpenpay);
       const chargeOpenpay: IChargeOpenpay = await new Promise((resolve, reject) => {
         this.openpay.charges.get(idTransactionOpenpay, (error: any, response: any) => {
           if (error) {
+            console.log('error: ', error);
             reject(error);
           } else {
+            console.log('response: ', response);
             resolve(response);
           }
         });
@@ -482,6 +483,69 @@ class ExternalOpenpayService extends ResolversOperationsService {
       };
     }
   }
+
+  async onePayout(variables: IVariables) {
+    try {
+      const { idPayoutOpenpay } = variables;
+      if (!idPayoutOpenpay) {
+        return {
+          status: false,
+          message: 'Se requiere el ID del Pago para buscarlo.',
+        };
+      }
+      console.log('idPayoutOpenpay: ', idPayoutOpenpay);
+      const payoutOpenpay: IPayoutOpenpay = await new Promise((resolve, reject) => {
+        this.openpay.payouts.get(idPayoutOpenpay, (error: any, response: any) => {
+          if (error) {
+            console.log('error: ', error);
+            reject(error);
+          } else {
+            console.log('response: ', response);
+            resolve(response);
+          }
+        });
+      });
+      return {
+        status: true,
+        message: 'El cargo se ha consultado correctamente.',
+        payoutOpenpay,
+      };
+    } catch (error: any) {
+      process.env.PRODUCTION !== 'true' && logger.info(`onePayout: \n ${JSON.stringify(error)} \n`);
+      let description = this.decodeError(error);
+      return {
+        status: false,
+        message: description,
+      };
+    }
+  }
+
+  async listPayouts() {
+    try {
+      const listPayoutsOpenpay = await new Promise((resolve, reject) => {
+        this.openpay.charges.list({}, (error: any, response: any) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+
+      return {
+        status: true,
+        message: 'La lista de pagos se ha creado correctamente.',
+        listPayoutsOpenpay,
+      };
+    } catch (error: any) {
+      process.env.PRODUCTION !== 'true' && logger.info(`listPayouts: \n ${JSON.stringify(error)} \n`);
+      let description = this.decodeError(error);
+      return {
+        status: false,
+        message: description,
+      };
+    }
+  }
   //#endregion
 
   //#region Metodos Adicionales
@@ -527,7 +591,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         if (httpCode === 400) {
           if (description.includes('ustomer.email no puede estar vac')) {
             return 'Es necesario incluir el correo en el Cliente.';
-          } 
+          }
           return 'No es valida la vigencia del token de pago.';
         }
         if (description.includes('cvv2 length must be 3 digits')) {

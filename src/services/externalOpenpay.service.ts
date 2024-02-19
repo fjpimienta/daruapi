@@ -399,14 +399,11 @@ class ExternalOpenpayService extends ResolversOperationsService {
           message: 'Se requiere el ID del Cargo para buscarlo.',
         };
       }
-      console.log('idTransactionOpenpay: ', idTransactionOpenpay);
       const chargeOpenpay: IChargeOpenpay = await new Promise((resolve, reject) => {
         this.openpay.charges.get(idTransactionOpenpay, (error: any, response: any) => {
           if (error) {
-            console.log('error: ', error);
             reject(error);
           } else {
-            console.log('response: ', response);
             resolve(response);
           }
         });
@@ -493,14 +490,11 @@ class ExternalOpenpayService extends ResolversOperationsService {
           message: 'Se requiere el ID del Pago para buscarlo.',
         };
       }
-      console.log('idPayoutOpenpay: ', idPayoutOpenpay);
       const payoutOpenpay: IPayoutOpenpay = await new Promise((resolve, reject) => {
         this.openpay.payouts.get(idPayoutOpenpay, (error: any, response: any) => {
           if (error) {
-            console.log('error: ', error);
             reject(error);
           } else {
-            console.log('response: ', response);
             resolve(response);
           }
         });
@@ -572,7 +566,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
   }
 
   handleStringError(error: string) {
-    console.log('Error string:', error);
+    process.env.PRODUCTION !== 'true' && logger.info(`handleStringError.Error string: \n ${JSON.stringify(error)} \n`);
     // Aquí puedes manejar el error como una cadena directamente
     // Por ejemplo, podrías buscar patrones en la cadena para determinar el tipo de error
     // y devolver un mensaje adecuado en función de eso.

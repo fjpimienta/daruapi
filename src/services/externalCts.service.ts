@@ -305,17 +305,30 @@ class ExternalCtsService extends ResolversOperationsService {
     process.env.PRODUCTION !== 'true' && logger.info(`setOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
     process.env.PRODUCTION !== 'true' && logger.info(`setOrderCt.data: \n ${JSON.stringify(data)} \n`);
-
-    if (data && data.length > 0 && data[0].respuestaCT && data[0].respuestaCT.errores && data[0].respuestaCT.errores.length > 0) {
-      return {
-        status: true,
-        message: 'La información que hemos enviado se ha cargado correctamente',
-        orderCt: {
-          pedidoWeb: data[0].respuestaCT.pedidoWeb,
-          fecha: data[0].respuestaCT.fecha,
-          tipoDeCambio: data[0].respuestaCT.tipoDeCambio,
-          estatus: data[0].respuestaCT.estatus,
-          errores: data[0].respuestaCT.errores,
+    if (data && data.length > 0 && data[0].respuestaCT) {
+      if (data[0].respuestaCT.errores && data[0].respuestaCT.errores.length <= 0) {
+        return {
+          status: true,
+          message: 'El pedido se ha creado de manera satisfactoria',
+          orderCt: {
+            pedidoWeb: data[0].respuestaCT.pedidoWeb,
+            fecha: data[0].respuestaCT.fecha,
+            tipoDeCambio: data[0].respuestaCT.tipoDeCambio,
+            estatus: data[0].respuestaCT.estatus,
+            errores: data[0].respuestaCT.errores,
+          }
+        }
+      } else {
+        return {
+          status: false,
+          message: 'Hay un error en la generacion del pedido.',
+          orderCt: {
+            pedidoWeb: data[0].respuestaCT.pedidoWeb,
+            fecha: data[0].respuestaCT.fecha,
+            tipoDeCambio: data[0].respuestaCT.tipoDeCambio,
+            estatus: data[0].respuestaCT.estatus,
+            errores: data[0].respuestaCT.errores,
+          }
         }
       }
     }

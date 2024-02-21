@@ -88,6 +88,7 @@ type PaymentMethodOpenpay {
   bank: String
   clabe: String
   name: String
+  url_spei: String
 }
 
 type PayoutOpenpay {

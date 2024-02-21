@@ -211,13 +211,16 @@ class ExternalCvasService {
             listOrdersCva: null
           };
         }
-        const dataArray = []; // Aquí almacenaremos los elementos en un array
-        if (data.length > 0) {
-        } else {
-          dataArray.push(data);
-          data = dataArray;
-        }
-        const pedidos = data;
+        const dataArray = Array.isArray(data) ? data : [data];
+        const pedidos = dataArray.map(pedido => ({
+          ...pedido,
+          FechaAsignado: this.convertirFecha(pedido.FechaAsignado)
+        }));
+        pedidos.sort((a: any, b: any) => {
+          const fechaA = a.FechaAsignado.split('/').reverse().join('');
+          const fechaB = b.FechaAsignado.split('/').reverse().join('');
+          return fechaB.localeCompare(fechaA);
+        });
         if (pedidos && result.ok) {
           return {
             status: true,
@@ -240,6 +243,12 @@ class ExternalCvasService {
         listBrandsCva: null
       };
     }
+  }
+
+  convertirFecha(fecha: string): string {
+    const partes = fecha.split('/');
+    const fechaConvertida = `${partes[0].padStart(2, '0')}/${partes[1].padStart(2, '0')}/${partes[2]}`;
+    return fechaConvertida;
   }
 
   async getConsultaOrderCva(variables: IVariables) {
@@ -268,6 +277,7 @@ class ExternalCvasService {
     const response = await fetch('https://www.grupocva.com/pedidos_web/pedidos_ws_cva.php', options);
     const content = await response.text();
     const data = await this.parseXmlToJson(content, wsdl);
+    console.log('data: ', data);
     const pedidos = data;
     if (response.ok) {
       return {

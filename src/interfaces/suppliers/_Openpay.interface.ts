@@ -88,6 +88,7 @@ export interface IPaymentMethodOpenpay {
   bank?: string;
   clabe?: string;
   name?: string;
+  url_spei?: string;
 }
 
 export interface IPayoutOpenpay {

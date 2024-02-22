@@ -823,7 +823,7 @@ class ExternalCvasService {
           }
           break;
         case '12':
-          cantidad = parseInt(item.VENTAS_VILLAHERMOSA, 10);
+          cantidad = parseInt(item.disponible, 10);
           if (cantidad >= qty) {
             branchOffice.cantidad = cantidad;
             branchOffices.push(branchOffice);
@@ -963,7 +963,7 @@ class ExternalCvasService {
           }
           break;
         case '46':
-          cantidad = parseInt(item.VENTAS_CEDISGUADALAJARA, 10);
+          cantidad = parseInt(item.disponibleCD, 10);
           if (cantidad >= qty) {
             branchOffice.cantidad = cantidad;
             branchOffices.push(branchOffice);

@@ -68,6 +68,7 @@ export interface IResponseProductCva {
   VENTAS_CANCUN: number;
   VENTAS_CHIHUAHUA: number;
   VENTAS_COLIMA: number;
+  VENTAS_CEDISGUADALAJARA: number;
   VENTAS_CUERNAVACA: number;
   VENTAS_CULIACAN: number;
   VENTAS_DF_TALLER: number;

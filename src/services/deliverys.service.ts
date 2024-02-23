@@ -121,7 +121,7 @@ class DeliverysService extends ResolversOperationsService {
           const deliveryUpdate: IDelivery = result.item as IDelivery;
           deliveryUpdate.status = status;
           deliveryUpdate.chargeOpenpay = resultOpenpay.createChargeOpenpay as IChargeOpenpay;
-          deliveryUpdate.chargeOpenpay.redirect_url = process.env.CHECKOUTURL  + deliveryUpdate.chargeOpenpay.order_id + '&id=' + deliveryUpdate.chargeOpenpay.id;
+          deliveryUpdate.chargeOpenpay.redirect_url = process.env.CHECKOUTURL + deliveryUpdate.chargeOpenpay.order_id + '&id=' + deliveryUpdate.chargeOpenpay.id;
           deliveryUpdate.lastUpdate = new Date().toISOString();
           const filter = { id: idDelivery };
           const resultUpdate = await this.update(this.collection, filter, deliveryUpdate, 'Pedido');
@@ -246,7 +246,7 @@ class DeliverysService extends ResolversOperationsService {
                 process.env.PRODUCTION !== 'true' && logger.info(`modify.orderCtConfirm: \n ${JSON.stringify(orderCtConfirm)} \n`);
                 const orderCtConfirmResponse = await this.ConfirmarPedidos(supplier, orderCtConfirm, context);
                 process.env.PRODUCTION !== 'true' && logger.info(`modify.ConfirmarPedidos.orderCtConfirmResponse: \n ${JSON.stringify(orderCtConfirmResponse)} \n`);
-                if (orderCtConfirmResponse && orderCtConfirmResponse.okCode !== '2000') {
+                if (!orderCtConfirmResponse) {
                   status = 'PEDIDO SIN CONFIRMAR POR EL PROVEEDOR';
                 }
                 ordersCt.orderCtConfirmResponse = orderCtConfirmResponse;
@@ -608,7 +608,10 @@ class DeliverysService extends ResolversOperationsService {
           };
           return await ctConfirmResponse;
         }
-        const confirmpedidoCt = await new ExternalCtsService({}, orderCtConfirm, context).setConfirmOrderCt(orderCtConfirm.folio)
+        const folioCt = {
+          "folio": orderCtConfirm.folio
+        }
+        const confirmpedidoCt = await new ExternalCtsService({}, orderCtConfirm, context).setConfirmOrderCt(folioCt)
           .then(async resultConfirm => {
             try {
               const ctConfirmResponse: IOrderCtConfirmResponse = {

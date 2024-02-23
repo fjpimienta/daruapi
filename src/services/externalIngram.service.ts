@@ -300,6 +300,13 @@ class ExternalIngramService extends ResolversOperationsService {
     }
   }
 
+  async setOrderIngram(variables: IVariables){
+    console.log('variables: ', variables);
+  }
+
+  async getListOrderIngram() {
+
+  }
 }
 
 export default ExternalIngramService;

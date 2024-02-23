@@ -24,16 +24,18 @@ class ExternalCvasService {
 
   async setOrderCva(variables: IVariables) {
     const { pedidoCva } = variables;
-    const wsdl = 'PedidoWeb';
-    let soapProducts = '&lt;productos&gt;';
-    pedidoCva?.productos?.forEach(product => {
-      soapProducts += `&lt;producto&gt;
+    try {
+
+      const wsdl = 'PedidoWeb';
+      let soapProducts = '&lt;productos&gt;';
+      pedidoCva?.productos?.forEach(product => {
+        soapProducts += `&lt;producto&gt;
         &lt;clave&gt;${product.clave}&lt;/clave&gt;
         &lt;cantidad&gt;${product.cantidad}&lt;/cantidad&gt;
     &lt;/producto&gt;`;
-    });
-    soapProducts += '&lt;/productos&gt;';
-    const soapDetail = `<XMLOC xsi:type="xsd:string">
+      });
+      soapProducts += '&lt;/productos&gt;';
+      const soapDetail = `<XMLOC xsi:type="xsd:string">
         &lt;PEDIDO&gt;
         &lt;NumOC&gt;${pedidoCva?.NumOC}&lt;/NumOC&gt;
         &lt;Paqueteria&gt;${pedidoCva?.Paqueteria}&lt;/Paqueteria&gt;
@@ -53,18 +55,18 @@ class ExternalCvasService {
         &lt;/PEDIDO&gt;
     </XMLOC>`;
 
-    const token = await this.getTokenCva();
+      const token = await this.getTokenCva();
 
-    const options = {
-      method: 'POST',
-      headers: {
-        'Accept-Charset': 'UTF-8',
-        'Content-Type': 'text/xml; charset=utf-8'
-      },
-      params: {
-        "wsdl": wsdl
-      },
-      body: `<?xml version="1.0" encoding="utf-8"?>
+      const options = {
+        method: 'POST',
+        headers: {
+          'Accept-Charset': 'UTF-8',
+          'Content-Type': 'text/xml; charset=utf-8'
+        },
+        params: {
+          "wsdl": wsdl
+        },
+        body: `<?xml version="1.0" encoding="utf-8"?>
       <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
         <soap:Body>
           <${wsdl} xmlns="urn:PedidoWebwsdl#PedidoWeb">
@@ -74,39 +76,47 @@ class ExternalCvasService {
           </${wsdl}>
         </soap:Body>
       </soap:Envelope>`
-    };
+      };
 
-    const url = 'https://www.grupocva.com/pedidos_web/pedidos_ws_cva.php';
-    const response = await fetch(url, options);
-    const content = await response.text();
-    const data = await this.parseXmlToJson(content, wsdl);
-
-    if (data) {
-      if (data.estado === 'ERROR') {
+      const url = 'https://www.grupocva.com/pedidos_web/pedidos_ws_cva.php';
+      const response = await fetch(url, options);
+      logger.info(`setOrderCva.data: \n ${JSON.stringify(response)} \n`);
+      const content = await response.text();
+      const data = await this.parseXmlToJson(content, wsdl);
+      if (data) {
+        if (data.estado === 'ERROR') {
+          return {
+            status: false,
+            message: data.error,
+            orderCva: null
+          };
+        }
         return {
-          status: false,
-          message: data.error,
-          orderCva: null
-        };
-      }
-      return {
-        status: true,
-        message: 'El pedido se ha creado de forma correcta.',
-        orderCva: {
-          error: data.error,
-          estado: data.estado,
-          pedido: data.pedido,
-          total: data.total,
-          agentemail: data.agentemail,
-          almacenmail: data.almacenmail
+          status: true,
+          message: 'El pedido se ha creado de forma correcta.',
+          orderCva: {
+            error: data.error,
+            estado: data.estado,
+            pedido: data.pedido,
+            total: data.total,
+            agentemail: data.agentemail,
+            almacenmail: data.almacenmail
+          }
         }
       }
+      return {
+        status: false,
+        message: 'Error en el servicio. options: ' + JSON.stringify(options) + ', data: ' + JSON.stringify(data),
+        orderCva: null
+      };
+    } catch (error) {
+      logger.info(`setOrderCva.error: \n ${JSON.stringify(error)} \n`);
+      return {
+        status: false,
+        message: 'Error en el servicio. Consultar con el Administrador.',
+        orderCva: null
+      };
     }
-    return {
-      status: false,
-      message: 'Error en el servicio. options: ' + JSON.stringify(options) + ', data: ' + JSON.stringify(data),
-      orderCva: null
-    };
   }
 
   async getShippingCvaRates(variables: IVariables) {
@@ -130,6 +140,7 @@ class ExternalCvasService {
         body: JSON.stringify({ paqueteria, cp, cp_sucursal, productos: productosCva })
       };
       const response = await fetch('https://www.grupocva.com/api/paqueteria/', options);
+      logger.info(`getShippingCvaRates.data: \n ${JSON.stringify(response)} \n`);
       if (response.status < 200 || response.status >= 300) {
         return {
           status: false,
@@ -275,9 +286,9 @@ class ExternalCvasService {
         </soap:Envelope>`
     };
     const response = await fetch('https://www.grupocva.com/pedidos_web/pedidos_ws_cva.php', options);
+    logger.info(`getConsultaOrderCva.data: \n ${JSON.stringify(response)} \n`);
     const content = await response.text();
     const data = await this.parseXmlToJson(content, wsdl);
-    console.log('data: ', data);
     const pedidos = data;
     if (response.ok) {
       return {
@@ -333,7 +344,7 @@ class ExternalCvasService {
           listBrandsCva: null
         };
     } catch (error) {
-      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
+      logger.info(`getListBrandsCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -360,7 +371,7 @@ class ExternalCvasService {
           listGroupsCva: null
         };
     } catch (error) {
-      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
+      logger.info(`getListGroupsCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -387,7 +398,7 @@ class ExternalCvasService {
           listSolucionesCva: null
         };
     } catch (error) {
-      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
+      logger.info(`getListSolucionesCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -414,7 +425,7 @@ class ExternalCvasService {
           listSucursalesCva: null
         };
     } catch (error) {
-      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
+      logger.info(`getListSucursalesCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -468,6 +479,7 @@ class ExternalCvasService {
         url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&codigo=${codigoCva}&promos=1&porcentajes=1&sucursales=1&TotalSuc=1&MonedaPesos=1&tc=1&upc=1&dimen=1`;
       }
       const response = await fetch(url);
+      logger.info(`getExistenciaProductoCva.data: \n ${JSON.stringify(response)} \n`);
       const xml = await response.text();
       let data = await this.parseXmlToJson(xml, 'lista_precios.xml')
       if (data) {
@@ -487,7 +499,7 @@ class ExternalCvasService {
           existenciaProductoCva: null
         };
     } catch (error) {
-      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
+      logger.info(`getExistenciaProductoCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -505,6 +517,7 @@ class ExternalCvasService {
         url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&codigo=${codigoCva}&promos=1&porcentajes=1&sucursales=1&TotalSuc=1&MonedaPesos=1&tc=1&upc=1&dimen=1`;
       }
       const response = await fetch(url);
+      logger.info(`getPricesCvaProduct.data: \n ${JSON.stringify(response)} \n`);
       const xml = await response.text();
       let data = await this.parseXmlToJson(xml, 'lista_precios.xml')
       return data
@@ -519,7 +532,7 @@ class ExternalCvasService {
           existenciaProductoCva: null
         };
     } catch (error) {
-      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
+      logger.info(`getPricesCvaProduct.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -542,6 +555,7 @@ class ExternalCvasService {
       let url = '';
       url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&grupo=${groupName}&promos=1&porcentajes=1&sucursales=1&TotalSuc=1&MonedaPesos=1&tc=1&upc=1&dimen=1&subgpo=1`;
       const response = await fetch(url);
+      logger.info(`getListPricesCva.data: \n ${JSON.stringify(response)} \n`);
       if (response.status < 200 || response.status >= 300) {
         return {
           status: false,
@@ -569,7 +583,7 @@ class ExternalCvasService {
         listPricesCva: data
       }
     } catch (error) {
-      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
+      logger.info(`getListPricesCva.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: 'Error en el servicio. Consultar con el Administrador.',
@@ -731,7 +745,7 @@ class ExternalCvasService {
           throw new Error('Catálogo no válido');
       }
     } catch (error) {
-      logger.info(`getListPaqueteriasCva.error: \n ${JSON.stringify(error)} \n`);
+      logger.info(`parseXmlToJson.error: \n ${JSON.stringify(error)} \n`);
       throw new Error('El contenido XML no es válido');
     }
   }

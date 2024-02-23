@@ -37,7 +37,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
     const url = 'http://connect.ctonline.mx:3001/cliente/token';
     const response = await fetch(url, options);
-    process.env.PRODUCTION !== 'true' && logger.info(`getTokenCt.response: \n ${JSON.stringify(response)} \n`);
+    logger.info(`getTokenCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
     const status = response.ok;
     const message = status ? 'El token se ha generado correctamente. data:' : 'Error en el servicio. ' + JSON.stringify(data);
@@ -106,7 +106,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
     const url = 'http://connect.ctonline.mx:3001/paqueteria/cotizacion';
     const response = await fetch(url, options);
-    process.env.PRODUCTION !== 'true' && logger.info(`setShippingCtRates.response: \n ${JSON.stringify(response)} \n`);
+    logger.info(`setShippingCtRates.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
 
     if (response.ok) {
@@ -157,7 +157,7 @@ class ExternalCtsService extends ResolversOperationsService {
       };
       const url = 'http://connect.ctonline.mx:3001/existencia/' + existenciaProducto.codigo;
       const response = await fetch(url, options);
-      process.env.PRODUCTION !== 'true' && logger.info(`getExistenciaProductoCt.response: \n ${JSON.stringify(response)} \n`);
+      logger.info(`getExistenciaProductoCt.response: \n ${JSON.stringify(response)} \n`);
       if (response.ok) {
         const data: IExistenciaAlmacenCT = await response.json();
         const existenciaProductoCt = Object.keys(data).map(key => ({
@@ -220,7 +220,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
       const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
       const response = await fetch(url, options);
-      process.env.PRODUCTION !== 'true' && logger.info(`getStockProductsCt.response: \n ${JSON.stringify(response)} \n`);
+      logger.info(`getStockProductsCt.response: \n ${JSON.stringify(response)} \n`);
 
       if (response.ok) {
         const data: IProductoCt[] = await response.json();
@@ -276,9 +276,7 @@ class ExternalCtsService extends ResolversOperationsService {
   }
 
   async setOrderCt(variables: IVariables) {
-    process.env.PRODUCTION !== 'true' && logger.info(` \n Log para externalCts.setOrderCt \n`);
     const { idPedido, almacen, tipoPago, guiaConnect, envio, producto, cfdi } = variables;
-    process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrderCt.productoCt: \n ${JSON.stringify(producto)} \n`);
     const token = await this.getTokenCt();
 
     const options = {
@@ -298,13 +296,10 @@ class ExternalCtsService extends ResolversOperationsService {
         cfdi
       })
     };
-    process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrderCt.options: \n ${JSON.stringify(options)} \n`);
-
     const url = 'http://connect.ctonline.mx:3001/pedido';
     const response = await fetch(url, options);
-    process.env.PRODUCTION !== 'true' && logger.info(`setOrderCt.response: \n ${JSON.stringify(response)} \n`);
+    logger.info(`setOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-    process.env.PRODUCTION !== 'true' && logger.info(`setOrderCt.data: \n ${JSON.stringify(data)} \n`);
     if (data && data.length > 0 && data[0].respuestaCT) {
       if (data[0].respuestaCT.errores && data[0].respuestaCT.errores.length <= 0) {
         return {
@@ -356,7 +351,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
     const url = `http://connect.ctonline.mx:3001/pedido/confirmar`;
     const response = await fetch(url, options);
-    process.env.PRODUCTION !== 'true' && logger.info(`setConfirmOrderCt.response: \n ${JSON.stringify(response)} \n`);
+    logger.info(`setConfirmOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
 
     const status = response.ok;
@@ -386,7 +381,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
     const url = 'http://connect.ctonline.mx:3001/pedido/listar';
     const response = await fetch(url, options);
-    process.env.PRODUCTION !== 'true' && logger.info(`getListOrderCt.response: \n ${JSON.stringify(response)} \n`);
+    logger.info(`getListOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
 
     if (response.ok) {
@@ -435,7 +430,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const url = `http://connect.ctonline.mx:3001/pedido/estatus/${folio}`;
     const response = await fetch(url, options);
     const data = await response.json();
-    process.env.PRODUCTION !== 'true' && logger.info(`getStatusOrderCt.response.data: \n ${JSON.stringify(data)} \n`);
+    logger.info(`getStatusOrderCt.response.data: \n ${JSON.stringify(data)} \n`);
 
     const status = response.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
@@ -466,7 +461,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
     const url = `http://connect.ctonline.mx:3001/pedido/detalle/${folio}`;
     const response = await fetch(url, options);
-    process.env.PRODUCTION !== 'true' && logger.info(`getDetailOrderCt.response: \n ${JSON.stringify(response)} \n`);
+    logger.info(`getDetailOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
 
     const status = response.ok;
@@ -501,7 +496,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
     const url = `http://connect.ctonline.mx:3001/paqueteria/volumetria/${codigo}`;
     const response = await fetch(url, options);
-    process.env.PRODUCTION !== 'true' && logger.info(`getVolProductCt.response: \n ${JSON.stringify(response)} \n`);
+    logger.info(`getVolProductCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
 
     const status = response.ok;

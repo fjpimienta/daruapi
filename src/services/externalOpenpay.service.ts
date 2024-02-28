@@ -411,7 +411,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
 
       return {
         status: true,
-        message: 'El cargo se ha localizado correctamente.',
+        message: 'El cargo se ha realizado correctamente.',
         chargeOpenpay,
       };
     } catch (error: any) {

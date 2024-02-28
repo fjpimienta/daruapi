@@ -472,19 +472,18 @@ class ExternalCvasService {
       };
     }
     const codigoCva = existenciaProducto?.codigo;
-    const disponibilidadAlmacenes = existenciaProducto?.cantidad;
     try {
       let url = '';
       if (codigoCva) {
         url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&codigo=${codigoCva}&promos=1&porcentajes=1&sucursales=1&TotalSuc=1&MonedaPesos=1&tc=1&upc=1&dimen=1`;
       }
       const response = await fetch(url);
-      logger.info(`getExistenciaProductoCva.data: \n ${JSON.stringify(response)} \n`);
+      logger.info(`getExistenciaProductoCva.response: \n ${JSON.stringify(response)} \n`);
       const xml = await response.text();
       let data = await this.parseXmlToJson(xml, 'lista_precios.xml')
       if (data) {
         let branchOffices: IBranchOffices[] = [];
-        branchOffices = await this.setCvaAlmacenes(data, disponibilidadAlmacenes);
+        branchOffices = await this.setCvaAlmacenes(data, 1);
         existenciaProducto.branchOffices = branchOffices;
       }
       return data

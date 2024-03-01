@@ -125,7 +125,7 @@ class ExternalIngramService extends ResolversOperationsService {
       const url = `${apiUrl}/?pageNumber=1&pageSize=10000&type=IM::any`;
       const response = await fetch(url, optionsIngram);
       const responseJson = await response.json();
-      if (response.statusText === 'OK') {
+      if (response.statusText === 'OK' && responseJson.catalog.length > 0) {
         return await {
           status: true,
           message: `Se ha generado la lista de productos.`,
@@ -158,7 +158,7 @@ class ExternalIngramService extends ResolversOperationsService {
         let partsNumber: IProductsQuery[] = [];
         const pricesIngram: IPricesIngram[] = [];
         for (const prod of productosIngram.ingramProducts) {
-          if (prod.stockAvailableYN === "Y" || prod.vendorName.toUpperCase() !== "APPLE TEST") {
+          if (prod.vendorName.toUpperCase() !== "APPLE TEST") {
             i += 1;
             partsNumber.push({ ingramPartNumber: prod.ingramPartNumber });
             if (i % 50 === 0) {
@@ -217,7 +217,7 @@ class ExternalIngramService extends ResolversOperationsService {
       return {
         status: false,
         message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
-        ingramProduct: null,
+        pricesIngram: null,
       };
     }
   }
@@ -300,7 +300,7 @@ class ExternalIngramService extends ResolversOperationsService {
     }
   }
 
-  async setOrderIngram(variables: IVariables){
+  async setOrderIngram(variables: IVariables) {
     console.log('variables: ', variables);
   }
 

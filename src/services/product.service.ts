@@ -553,11 +553,26 @@ class ProductsService extends ResolversOperationsService {
           }
         }
       }
-      // Guardar siempre y cuando tenga imagenes
-      if (product && product.pictures && product.pictures.length > 0) {
-        productsAdd.push(product);
+      // Si no hay imagenes, colocar unas por default
+      if (product && !product.pictures) {
+        product.pictures = [];
+        product.sm_pictures = [];
+        const pict: IPicture = {
+          width: "500",
+          height: "500",
+          url: "https://daru.mx/files/logo.png"
+        };
+        product.pictures.push(pict);
+        const pictSm: IPicture = {
+          width: "250",
+          height: "250",
+          url: "https://daru.mx/files/logo.png"
+        };
+        product.sm_pictures.push(pictSm);
       }
+      productsAdd.push(product);
     }
+
     // Guardar los elementos nuevos
     if (productsAdd.length > 0) {
       const result = await this.addList(this.collection, productsAdd || [], 'products');

@@ -39,6 +39,14 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`getTokenCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
+    logger.info(`getTokenCt.data: \n ${JSON.stringify(data)} \n`);
+    if (data && data.codigo && data.codigo === '5033') {
+      return {
+        status: false,
+        message: data.referencia,
+        tokenCt: null
+      };
+    }
     const status = response.ok;
     const message = status ? 'El token se ha generado correctamente. data:' : 'Error en el servicio. ' + JSON.stringify(data);
 
@@ -91,6 +99,13 @@ class ExternalCtsService extends ResolversOperationsService {
   async setShippingCtRates(variables: IVariables) {
     const { destinoCt, productosCt } = variables;
     const token = await this.getTokenCt();
+    if (token && !token.status) {
+      return {
+        status: token.status,
+        message: token.message,
+        shippingCtRates: null
+      };
+    }
 
     const options = {
       method: 'POST',
@@ -140,6 +155,13 @@ class ExternalCtsService extends ResolversOperationsService {
   async getExistenciaProductoCt(variables: IVariables) {
     try {
       const token = await this.getTokenCt();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          existenciaProductoCt: null,
+        };
+      }
       const { existenciaProducto } = variables;
       if (!existenciaProducto) {
         return {
@@ -209,7 +231,13 @@ class ExternalCtsService extends ResolversOperationsService {
   async getStockProductsCt() {
     try {
       const token = await this.getTokenCt();
-
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          stockProductsCt: null,
+        };
+      }
       const options = {
         method: 'GET',
         headers: {
@@ -278,7 +306,13 @@ class ExternalCtsService extends ResolversOperationsService {
   async setOrderCt(variables: IVariables) {
     const { idPedido, almacen, tipoPago, guiaConnect, envio, producto, cfdi } = variables;
     const token = await this.getTokenCt();
-
+    if (token && !token.status) {
+      return {
+        status: token.status,
+        message: token.message,
+        orderCt: null,
+      };
+    }
     const options = {
       method: 'POST',
       headers: {
@@ -337,7 +371,13 @@ class ExternalCtsService extends ResolversOperationsService {
   async setConfirmOrderCt(variables: IVariables) {
     const { folio } = variables;
     const token = await this.getTokenCt();
-
+    if (token && !token.status) {
+      return {
+        status: token.status,
+        message: token.message,
+        confirmOrderCt: null,
+      };
+    }
     const options = {
       method: 'POST',
       headers: {
@@ -370,7 +410,13 @@ class ExternalCtsService extends ResolversOperationsService {
 
   async getListOrderCt() {
     const token = await this.getTokenCt();
-
+    if (token && !token.status) {
+      return {
+        status: token.status,
+        message: token.message,
+        listOrdersCt: null,
+      };
+    }
     const options = {
       method: 'GET',
       headers: {
@@ -418,7 +464,13 @@ class ExternalCtsService extends ResolversOperationsService {
   async getStatusOrderCt(variables: IVariables) {
     const { folio } = variables;
     const token = await this.getTokenCt();
-
+    if (token && !token.status) {
+      return {
+        status: token.status,
+        message: token.message,
+        statusOrdersCt: null,
+      };
+    }
     const options = {
       method: 'GET',
       headers: {
@@ -450,7 +502,13 @@ class ExternalCtsService extends ResolversOperationsService {
   async getDetailOrderCt(variables: IVariables) {
     const { folio } = variables;
     const token = await this.getTokenCt();
-
+    if (token && !token.status) {
+      return {
+        status: token.status,
+        message: token.message,
+        detailOrdersCt: null,
+      };
+    }
     const options = {
       method: 'GET',
       headers: {
@@ -485,7 +543,13 @@ class ExternalCtsService extends ResolversOperationsService {
   async getVolProductCt(variables: IVariables) {
     const { codigo } = variables;
     const token = await this.getTokenCt();
-
+    if (token && !token.status) {
+      return {
+        status: token.status,
+        message: token.message,
+        volProductCt: null,
+      };
+    }
     const options = {
       method: 'GET',
       headers: {

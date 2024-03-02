@@ -600,7 +600,7 @@ class DeliverysService extends ResolversOperationsService {
   async ConfirmarPedidos(supplierName: string, orderCtConfirm: any, context: IContextData) {
     switch (supplierName) {
       case 'ct':
-        if (orderCtConfirm.folio = 'NA') {
+        if (orderCtConfirm.folio === 'NA') {
           const ctConfirmResponse: IOrderCtConfirmResponse = {
             okCode: '500',
             okMessage: 'Error en pedido',
@@ -608,10 +608,7 @@ class DeliverysService extends ResolversOperationsService {
           };
           return await ctConfirmResponse;
         }
-        const folioCt = {
-          "folio": orderCtConfirm.folio
-        }
-        const confirmpedidoCt = await new ExternalCtsService({}, orderCtConfirm, context).setConfirmOrderCt(folioCt)
+        const confirmpedidoCt = await new ExternalCtsService({}, orderCtConfirm, context).setConfirmOrderCt(orderCtConfirm)
           .then(async resultConfirm => {
             try {
               const ctConfirmResponse: IOrderCtConfirmResponse = {
@@ -619,6 +616,7 @@ class DeliverysService extends ResolversOperationsService {
                 okMessage: resultConfirm.confirmOrderCt?.okMessage,
                 okReference: resultConfirm.confirmOrderCt?.okReference
               };
+              logger.info(`ConfirmarPedidos.ctConfirmResponse: \n ${JSON.stringify(ctConfirmResponse)} \n`);
               return await ctConfirmResponse;
             } catch (error) {
               const ctConfirmResponse: IOrderCtConfirmResponse = {

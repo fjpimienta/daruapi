@@ -334,6 +334,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`setOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
+    logger.info(`setOrderCt.data: \n ${JSON.stringify(data)} \n`);
     if (data && data.length > 0 && data[0].respuestaCT) {
       if (data[0].respuestaCT.errores && data[0].respuestaCT.errores.length <= 0) {
         return {
@@ -393,6 +394,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`setConfirmOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
+    logger.info(`setConfirmOrderCt.data: \n ${JSON.stringify(data)} \n`);
 
     const status = response.ok;
     const message = status ? 'La información que hemos enviado se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;

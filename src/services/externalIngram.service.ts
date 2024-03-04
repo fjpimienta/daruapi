@@ -250,6 +250,59 @@ class ExternalIngramService extends ResolversOperationsService {
     };
   }
 
+  async getExistenciaProductoIngram(variables: IVariables) {
+    try {
+      const { existenciaProducto } = variables;
+      const products = [];
+      products.push({ ingramPartNumber: existenciaProducto?.codigo });
+      console.log('variables: ', variables);
+      console.log('products: ', products);
+      const token = await this.getTokenIngram();
+      const apiUrl = 'https://api.ingrammicro.com:443/sandbox/resellers/v6/catalog/priceandavailability';
+      const optionsIngram = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'IM-CustomerNumber': '20-840450',
+          'IM-CountryCode': 'MX',
+          'IM-CorrelationID': 'fbac82ba-cf0a-4bcf-fc03-0c5084',
+          'IM-SenderID': 'DARU DEV',
+          'Authorization': 'Bearer ' + token.tokenIngram.access_token,
+        },
+        body: JSON.stringify({
+          'products': products
+        }),
+        redirect: 'manual' as RequestRedirect
+      };
+      console.log('optionsIngram: ', optionsIngram);
+      const url = `${apiUrl}?includeAvailability=true&includePricing=true&includeProductAttributes=true`;
+      console.log('url: ', url);
+      const response = await fetch(url, optionsIngram);
+      console.log('response: ', response);
+      const responseJson = await response.json();
+      console.log('responseJson: ', responseJson);
+      if (response.statusText === 'OK' || response.status === 207) {
+        return {
+          status: true,
+          message: `Se ha generado la disponbilidad de precios de productos.`,
+          existenciaProductoIngram: responseJson,
+        };
+      } else {
+        return {
+          status: false,
+          message: `No se ha generado la lista de precios de productos.`,
+          existenciaProductoIngram: [],
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        existenciaProductoIngram: [],
+      };
+    }
+  }
+
   async getPricesIngramBloque(productsQuery: IProductsQuery[]) {
     try {
       // Consultar precio y disponibilidad por bloques de 100.

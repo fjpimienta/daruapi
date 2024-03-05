@@ -15,6 +15,9 @@ const resolversIngramQuery: IResolvers = {
     async pricesIngram(_, variables, context) {
       return new ExternalIngramService(_, variables, context).getPricesIngram(variables);
     },
+    async existenciaProductoIngram(_, variables, context) {
+      return new ExternalIngramService(_, variables, context).getExistenciaProductoIngram(variables);
+    },
     async catalogIngram(_, variables, context) {
       return new ExternalIngramService(_, variables, context).getCatalogIngram(variables);
     },

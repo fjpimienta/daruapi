@@ -1,11 +1,11 @@
 type ResultIngram implements Result {
     status: Boolean!
     message: String!
-
     tokenIngram: TokenIngram
     ingramProduct: IngramProduct
     ingramProducts: [IngramProduct]
     pricesIngram: [ResponsePricesIngram]
+    existenciaProductoIngram: ResponseSupplierProd
     catalogIngram: ResponseCatalogoIngram
     catalogIngrams: [ResponseCatalogoIngram]
 }

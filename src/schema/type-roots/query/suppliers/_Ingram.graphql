@@ -6,6 +6,9 @@ type Query {
     upc: String
   ): ResultIngram
   ingramProducts: ResultIngram
+  existenciaProductoIngram(
+    existenciaProducto: SupplierProdInput
+  ): ResultIngram
   pricesIngram(
     allRecords: Boolean = false
   ): ResultIngram

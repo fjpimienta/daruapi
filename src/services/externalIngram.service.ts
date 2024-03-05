@@ -6,6 +6,7 @@ import logger from '../utils/logger';
 import fetch from 'node-fetch';
 import { IIngramProduct, IPricesIngram, IProductsQuery } from '../interfaces/suppliers/_Ingram.interface';
 import { COLLECTIONS } from '../config/constants';
+import { IBranchOffices } from '../interfaces/product.interface';
 
 class ExternalIngramService extends ResolversOperationsService {
   collection = COLLECTIONS.INGRAM_PRODUCTS;
@@ -253,10 +254,9 @@ class ExternalIngramService extends ResolversOperationsService {
   async getExistenciaProductoIngram(variables: IVariables) {
     try {
       const { existenciaProducto } = variables;
+      const existenciaProductoIngram = { ...existenciaProducto };
       const products = [];
       products.push({ ingramPartNumber: existenciaProducto?.codigo });
-      console.log('variables: ', variables);
-      console.log('products: ', products);
       const token = await this.getTokenIngram();
       const apiUrl = 'https://api.ingrammicro.com:443/sandbox/resellers/v6/catalog/priceandavailability';
       const optionsIngram = {
@@ -274,18 +274,35 @@ class ExternalIngramService extends ResolversOperationsService {
         }),
         redirect: 'manual' as RequestRedirect
       };
-      console.log('optionsIngram: ', optionsIngram);
       const url = `${apiUrl}?includeAvailability=true&includePricing=true&includeProductAttributes=true`;
-      console.log('url: ', url);
       const response = await fetch(url, optionsIngram);
-      console.log('response: ', response);
       const responseJson = await response.json();
-      console.log('responseJson: ', responseJson);
+      for (const product of responseJson) {
+        let branchOffices: IBranchOffices[] = [];
+        if (product.availability && product.availability.availabilityByWarehouse) {
+          for (const warehouse of product.availability.availabilityByWarehouse) {
+            if (warehouse.quantityAvailable > 1) {
+              const branchOffice: IBranchOffices = {
+                id: warehouse.warehouseId,
+                name: warehouse.location,
+                estado: warehouse.location,
+                cantidad: warehouse.quantityAvailable,
+                cp: '',
+                latitud: '',
+                longitud: ''
+              }
+              branchOffices.push(branchOffice);
+            }
+          }
+        }
+        existenciaProductoIngram.branchOffices = branchOffices;
+      }
+      // Generar
       if (response.statusText === 'OK' || response.status === 207) {
         return {
           status: true,
           message: `Se ha generado la disponbilidad de precios de productos.`,
-          existenciaProductoIngram: responseJson,
+          existenciaProductoIngram,
         };
       } else {
         return {

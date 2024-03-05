@@ -6,6 +6,7 @@ import logger from '../utils/logger';
 import fetch from 'node-fetch';
 import { IIngramProduct, IPricesIngram, IProductsQuery } from '../interfaces/suppliers/_Ingram.interface';
 import { COLLECTIONS } from '../config/constants';
+import { IBranchOffices } from '../interfaces/product.interface';
 
 class ExternalIngramService extends ResolversOperationsService {
   collection = COLLECTIONS.INGRAM_PRODUCTS;
@@ -248,6 +249,75 @@ class ExternalIngramService extends ResolversOperationsService {
       message: result.message,
       catalogIngrams: result.items
     };
+  }
+
+  async getExistenciaProductoIngram(variables: IVariables) {
+    try {
+      const { existenciaProducto } = variables;
+      const existenciaProductoIngram = { ...existenciaProducto };
+      const products = [];
+      products.push({ ingramPartNumber: existenciaProducto?.codigo });
+      const token = await this.getTokenIngram();
+      const apiUrl = 'https://api.ingrammicro.com:443/sandbox/resellers/v6/catalog/priceandavailability';
+      const optionsIngram = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'IM-CustomerNumber': '20-840450',
+          'IM-CountryCode': 'MX',
+          'IM-CorrelationID': 'fbac82ba-cf0a-4bcf-fc03-0c5084',
+          'IM-SenderID': 'DARU DEV',
+          'Authorization': 'Bearer ' + token.tokenIngram.access_token,
+        },
+        body: JSON.stringify({
+          'products': products
+        }),
+        redirect: 'manual' as RequestRedirect
+      };
+      const url = `${apiUrl}?includeAvailability=true&includePricing=true&includeProductAttributes=true`;
+      const response = await fetch(url, optionsIngram);
+      const responseJson = await response.json();
+      for (const product of responseJson) {
+        let branchOffices: IBranchOffices[] = [];
+        if (product.availability && product.availability.availabilityByWarehouse) {
+          for (const warehouse of product.availability.availabilityByWarehouse) {
+            if (warehouse.quantityAvailable > 1) {
+              const branchOffice: IBranchOffices = {
+                id: warehouse.warehouseId,
+                name: warehouse.location,
+                estado: warehouse.location,
+                cantidad: warehouse.quantityAvailable,
+                cp: '',
+                latitud: '',
+                longitud: ''
+              }
+              branchOffices.push(branchOffice);
+            }
+          }
+        }
+        existenciaProductoIngram.branchOffices = branchOffices;
+      }
+      // Generar
+      if (response.statusText === 'OK' || response.status === 207) {
+        return {
+          status: true,
+          message: `Se ha generado la disponbilidad de precios de productos.`,
+          existenciaProductoIngram,
+        };
+      } else {
+        return {
+          status: false,
+          message: `No se ha generado la lista de precios de productos.`,
+          existenciaProductoIngram: [],
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        existenciaProductoIngram: [],
+      };
+    }
   }
 
   async getPricesIngramBloque(productsQuery: IProductsQuery[]) {

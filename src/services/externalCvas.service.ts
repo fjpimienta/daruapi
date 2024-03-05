@@ -468,7 +468,7 @@ class ExternalCvasService {
       return {
         status: true,
         message: 'No hubo cambio en los almacenes. Verificar API.',
-        existenciaProductoCt: existenciaProducto,
+        existenciaProductoCva: existenciaProducto,
       };
     }
     const codigoCva = existenciaProducto?.codigo;

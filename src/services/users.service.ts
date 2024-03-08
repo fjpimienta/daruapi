@@ -168,7 +168,7 @@ class UsersService extends ResolversOperationsService {
     // Conocer el id del usuario
     const filter = { id: user?.id };
 
-    const result = await this.update(this.collection, filter, user || {}, 'usuarios');
+    const result = await this.updateForce(this.collection, filter, user || {}, 'usuarios');
     return {
       status: result.status,
       message: result.message,

@@ -70,6 +70,8 @@ export interface IAdditionalInformation {
 export interface IIngramProduct {
   ingramPartNumber: string;
   vendorPartNumber: string;
+  category: String
+  subCategory: String
   upc: string;
   customerPartNumber: string;
   productAuthorized: string;

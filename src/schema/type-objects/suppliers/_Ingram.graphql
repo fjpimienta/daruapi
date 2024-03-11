@@ -6,6 +6,8 @@ type TokenIngram {
 
 type IngramProduct {
   ingramPartNumber: String
+  category: String
+  subCategory: String
   vendorPartNumber: String
   upc: String
   customerPartNumber: String

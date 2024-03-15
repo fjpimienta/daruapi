@@ -28,11 +28,11 @@ class ExternalCtsService extends ResolversOperationsService {
    * @returns TokenCt: Objeto enviado por Ct minutos.
    */
   async getTokenCt() {
-    return {
-      status: true,
-      message: '',
-      tokenCt: ''
-    };
+    // return {
+    //   status: true,
+    //   message: '',
+    //   tokenCt: ''
+    // };
 
     const options = {
       method: 'POST',

@@ -323,9 +323,6 @@ class ExternalCtsService extends ResolversOperationsService {
       };
 
       const listProductsCt = await this.getProductsXml();
-      logger.info(`getListProductsCt.listProductsCt.length: \n ${JSON.stringify(listProductsCt.length)} \n`);
-      // logger.info(`getListProductsCt.listProductsCt[1]: \n ${JSON.stringify(listProductsCt[1])} \n`);
-      logger.info(`getListProductsCt.listProductsCt[listProductsCt.length-1]: \n ${JSON.stringify(listProductsCt[listProductsCt.length - 1])} \n`);
 
       const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
       const response = await fetch(url, options);
@@ -357,10 +354,6 @@ class ExternalCtsService extends ResolversOperationsService {
             almacenes,
           };
         });
-        // logger.info(`stockProductsCt: \n ${JSON.stringify(stockProductsCt)} \n`);
-        logger.info(`stockProductsCt.length: \n ${JSON.stringify(stockProductsCt.length)} \n`);
-        // logger.info(`stockProductsCt[1]: \n ${JSON.stringify(stockProductsCt[1])} \n`);
-        logger.info(`stockProductsCt[stockProductsCt.length-1]: \n ${JSON.stringify(stockProductsCt[stockProductsCt.length - 1])} \n`);
 
         const excludedCategories = [
           'Caretas', 'Cubrebocas', 'Desinfectantes', 'Equipo', 'Termómetros', 'Acceso', 'Accesorios para seguridad', 'Camaras Deteccion',
@@ -379,13 +372,25 @@ class ExternalCtsService extends ResolversOperationsService {
         const productos: Product[] = [];
         let i = 1;
         let j = 1;
+
+        logger.info(`getListProductsCt.listProductsCt.length: \n ${JSON.stringify(listProductsCt.length)} \n`);
+        // logger.info(`getListProductsCt.listProductsCt[1]: \n ${JSON.stringify(listProductsCt[1])} \n`);
+        logger.info(`getListProductsCt.listProductsCt[listProductsCt.length-1]: \n ${JSON.stringify(listProductsCt[listProductsCt.length - 1])} \n`);
+  
+        // logger.info(`stockProductsCt: \n ${JSON.stringify(stockProductsCt)} \n`);
+        logger.info(`stockProductsCt.length: \n ${JSON.stringify(stockProductsCt.length)} \n`);
+        // logger.info(`stockProductsCt[1]: \n ${JSON.stringify(stockProductsCt[1])} \n`);
+        logger.info(`stockProductsCt[stockProductsCt.length-1]: \n ${JSON.stringify(stockProductsCt[stockProductsCt.length - 1])} \n`);
+
+        logger.info(`Before for listProductsCt: \n`);
         for (const product of listProductsCt) {
+          logger.info(`iterando listProductsCt: \n`);
           i += 1;
           if (i === 1) {
             logger.info(`product: \n ${JSON.stringify(product)} \n`);
           }
           if (!excludedCategories.includes(product.subcategoria)) {
-            stockProductsCt.forEach(async productFtp => {
+            for (const productFtp of stockProductsCt) {
               j += 1;
               if (j === 1) {
                 logger.info(`productFtp: \n ${JSON.stringify(productFtp)} \n`);
@@ -397,7 +402,20 @@ class ExternalCtsService extends ResolversOperationsService {
                   productos.push(itemData);
                 }
               }
-            });
+            }
+            // stockProductsCt.forEach(async productFtp => {
+            //   j += 1;
+            //   if (j === 1) {
+            //     logger.info(`productFtp: \n ${JSON.stringify(productFtp)} \n`);
+            //   }
+            //   if (product.clave === productFtp.codigo) {
+            //     const productTmp: IProductoCt = this.convertirPromocion(product);
+            //     const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
+            //     if (itemData.id !== undefined) {
+            //       productos.push(itemData);
+            //     }
+            //   }
+            // });
           }
         }
         logger.info(`getListProductsCt.productos: \n ${JSON.stringify(productos)} \n`);

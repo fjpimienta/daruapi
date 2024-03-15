@@ -375,7 +375,7 @@ class ExternalCtsService extends ResolversOperationsService {
           };
         });
         logger.info(`before.stockProductsCt: \n`);
-        if (stockProductsCt) {
+        if (stockProductsCt && stockProductsCt.length > 0) {
           logger.info(`stockProductsCt: \n`);
           // logger.info(`stockProductsCt: \n ${JSON.stringify(stockProductsCt)} \n`);
           logger.info(`stockProductsCt.length: \n ${JSON.stringify(stockProductsCt.length)} \n`);
@@ -411,16 +411,16 @@ class ExternalCtsService extends ResolversOperationsService {
               // }
               if (!excludedCategories.includes(product.subcategoria)) {
                 logger.info(`if(!excludedCategories.includes(product.subcategoria)): \n`);
-                for (const productFtp of stockProductsCt) {
-                  j += 1;
-                  if (j === 1) {
-                    logger.info(`productFtp: \n ${JSON.stringify(productFtp)} \n`);
-                  }
-                  if (product.clave === productFtp.codigo) {
-                    const productTmp: IProductoCt = this.convertirPromocion(product);
-                    const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
-                    if (itemData.id !== undefined) {
-                      productos.push(itemData);
+                logger.info(`stockProductsCt[1]: \n ${JSON.stringify(stockProductsCt[1])} \n`);
+                if (stockProductsCt && stockProductsCt.length > 0) {
+                  logger.info(`stockProductsCt && stockProductsCt.length > 0: \n`);
+                  for (const productFtp of stockProductsCt) {
+                    if (product.clave === productFtp.codigo) {
+                      const productTmp: IProductoCt = this.convertirPromocion(product);
+                      const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
+                      if (itemData.id !== undefined) {
+                        productos.push(itemData);
+                      }
                     }
                   }
                 }

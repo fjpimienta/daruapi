@@ -525,7 +525,7 @@ class ExternalCtsService extends ResolversOperationsService {
     if (productosCtXmlHp && productosCtXmlHp.status && productosCtXmlHp.jsonProductsCtHP && productosCtXmlHp.jsonProductsCtHP.length > 0) {
       productsCtFtp = productsCtFtp.concat(productosCtXmlHp.jsonProductsCtHP);
     }
-    return await productsCtFtp;
+    return productsCtFtp;
   }
 
   async setProduct(proveedor: string, item: any, productJson: any = null, imagenes: any = null, stockMinimo: number, exchangeRate: number) {

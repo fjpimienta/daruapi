@@ -402,10 +402,11 @@ class ExternalCtsService extends ResolversOperationsService {
             i += 1;
             if (product) {
               logger.info(`si hay product de listProductsCt: \n`);
-              if (i === 1) {
-                logger.info(`product: \n ${JSON.stringify(product)} \n`);
-              }
+              // if (i === 1) {
+              //   logger.info(`product: \n ${JSON.stringify(product)} \n`);
+              // }
               if (!excludedCategories.includes(product.subcategoria)) {
+                logger.info(`if(!excludedCategories.includes(product.subcategoria)): \n`);
                 for (const productFtp of stockProductsCt) {
                   j += 1;
                   if (j === 1) {

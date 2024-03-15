@@ -323,14 +323,16 @@ class ExternalCtsService extends ResolversOperationsService {
       };
 
       const listProductsCt = await this.getProductsXml();
-      logger.info(`getListProductsCt.listProductsCt: \n ${JSON.stringify(listProductsCt)} \n`);
+      logger.info(`getListProductsCt.listProductsCt.length: \n ${JSON.stringify(listProductsCt.length)} \n`);
+      logger.info(`getListProductsCt.listProductsCt[1]: \n ${JSON.stringify(listProductsCt[1])} \n`);
+      logger.info(`getListProductsCt.listProductsCt[listProductsCt.length-1]: \n ${JSON.stringify(listProductsCt[listProductsCt.length - 1])} \n`);
 
       const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
       const response = await fetch(url, options);
 
       if (response.ok) {
         const data: IProductoCt[] = await response.json();
-        logger.info(`getListProductsCt.promociones.data: \n ${JSON.stringify(response)} \n`);
+        logger.info(`getListProductsCt.promociones.data: \n ${JSON.stringify(data)} \n`);
         const stockProductsCt = data.map((product: IProductoCt) => {
           const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
             const almacenPromocion: IAlmacenPromocion[] = [];
@@ -355,7 +357,11 @@ class ExternalCtsService extends ResolversOperationsService {
             almacenes,
           };
         });
-
+        logger.info(`stockProductsCt: \n ${JSON.stringify(stockProductsCt)} \n`);
+        logger.info(`stockProductsCt.length: \n ${JSON.stringify(stockProductsCt.length)} \n`);
+        logger.info(`stockProductsCt[1]: \n ${JSON.stringify(stockProductsCt[1])} \n`);
+        logger.info(`stockProductsCt[stockProductsCt.length-1]: \n ${JSON.stringify(stockProductsCt[stockProductsCt.length - 1])} \n`);
+  
         let i = 1;
         const excludedCategories = [
           'Caretas', 'Cubrebocas', 'Desinfectantes', 'Equipo', 'Termómetros', 'Acceso', 'Accesorios para seguridad', 'Camaras Deteccion',

@@ -317,6 +317,70 @@ class ExternalCtsService extends ResolversOperationsService {
         return {
           status: token.status,
           message: token.message,
+          listProductsCt: null,
+        };
+      }
+  
+      const listProductsCt = await this.getProductsXml();
+      if (!listProductsCt) {
+        return {
+          status: false,
+          message: 'No se pudieron obtener los productos.',
+          listProductsCt: null,
+        };
+      }
+  
+      const config = await new ConfigsService({}, { id: '1' }, { db: this.db }).details();
+      const stockMinimo = config.config.minimum_offer;
+      const exchangeRate = config.config.exchange_rate;
+      const excludedCategories = [
+        'Caretas', 'Cubrebocas', 'Desinfectantes', 'Equipo', 'Termómetros', 'Acceso', 'Accesorios para seguridad',
+        'Camaras Deteccion', 'Control de Acceso', 'Sensores', 'Tarjetas de Acceso', 'Timbres', 'Administrativo',
+        'Contabilidad', 'Nóminas', 'Timbres Fiscales', 'Análogos', 'Video Conferencia', 'Accesorios de Papeleria',
+        'Articulos de Escritura', 'Basico de Papeleria', 'Cabezales', 'Cuadernos', 'Papel', 'Papelería', 'Camaras Deteccion',
+        'Apple', 'Accesorios para Apple', 'Adaptadores para Apple', 'Audífonos para Apple', 'Cables Lightning', 'iMac',
+        'iPad', 'MacBook'
+      ];
+  
+      const productos: Product[] = [];
+  
+      for (const product of listProductsCt) {
+        if (!excludedCategories.includes(product.subcategoria)) {
+          for (const productFtp of product.almacenes) {
+            if (product.clave === productFtp.codigo) {
+              const productTmp: IProductoCt = this.convertirPromocion(product);
+              const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
+              if (itemData.id !== undefined) {
+                productos.push(itemData);
+              }
+            }
+          }
+        }
+      }
+  
+      return {
+        status: true,
+        message: 'Productos listos para agregar.',
+        listProductsCt,
+        productos,
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio: ' + (error.message || JSON.stringify(error)),
+        listProductsCt: null,
+      };
+    }
+  }
+  
+
+  async getListProductsCtBack() {
+    try {
+      const token = await this.getTokenCt();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
           stockProductsCt: null,
         };
       }

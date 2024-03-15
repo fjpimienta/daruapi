@@ -324,7 +324,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
       const listProductsCt = await this.getProductsXml();
       logger.info(`getListProductsCt.listProductsCt.length: \n ${JSON.stringify(listProductsCt.length)} \n`);
-      logger.info(`getListProductsCt.listProductsCt[1]: \n ${JSON.stringify(listProductsCt[1])} \n`);
+      // logger.info(`getListProductsCt.listProductsCt[1]: \n ${JSON.stringify(listProductsCt[1])} \n`);
       logger.info(`getListProductsCt.listProductsCt[listProductsCt.length-1]: \n ${JSON.stringify(listProductsCt[listProductsCt.length - 1])} \n`);
 
       const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
@@ -332,7 +332,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
       if (response.ok) {
         const data: IProductoCt[] = await response.json();
-        logger.info(`getListProductsCt.promociones.data: \n ${JSON.stringify(data)} \n`);
+        // logger.info(`getListProductsCt.promociones.data: \n ${JSON.stringify(data)} \n`);
         const stockProductsCt = data.map((product: IProductoCt) => {
           const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
             const almacenPromocion: IAlmacenPromocion[] = [];
@@ -357,12 +357,11 @@ class ExternalCtsService extends ResolversOperationsService {
             almacenes,
           };
         });
-        logger.info(`stockProductsCt: \n ${JSON.stringify(stockProductsCt)} \n`);
+        // logger.info(`stockProductsCt: \n ${JSON.stringify(stockProductsCt)} \n`);
         logger.info(`stockProductsCt.length: \n ${JSON.stringify(stockProductsCt.length)} \n`);
-        logger.info(`stockProductsCt[1]: \n ${JSON.stringify(stockProductsCt[1])} \n`);
+        // logger.info(`stockProductsCt[1]: \n ${JSON.stringify(stockProductsCt[1])} \n`);
         logger.info(`stockProductsCt[stockProductsCt.length-1]: \n ${JSON.stringify(stockProductsCt[stockProductsCt.length - 1])} \n`);
-  
-        let i = 1;
+
         const excludedCategories = [
           'Caretas', 'Cubrebocas', 'Desinfectantes', 'Equipo', 'Termómetros', 'Acceso', 'Accesorios para seguridad', 'Camaras Deteccion',
           'Control de Acceso', 'Sensores', 'Tarjetas de Acceso', 'Timbres', 'Administrativo', 'Contabilidad', 'Nóminas', 'Timbres Fiscales',
@@ -378,9 +377,19 @@ class ExternalCtsService extends ResolversOperationsService {
         const stockMinimo = config.config.minimum_offer;
         const exchangeRate = config.config.exchange_rate;
         const productos: Product[] = [];
+        let i = 1;
+        let j = 1;
         for (const product of listProductsCt) {
+          i += 1;
+          if (i === 1) {
+            logger.info(`product: \n ${JSON.stringify(product)} \n`);
+          }
           if (!excludedCategories.includes(product.subcategoria)) {
             stockProductsCt.forEach(async productFtp => {
+              j += 1;
+              if (j === 1) {
+                logger.info(`productFtp: \n ${JSON.stringify(productFtp)} \n`);
+              }
               if (product.clave === productFtp.codigo) {
                 const productTmp: IProductoCt = this.convertirPromocion(product);
                 const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);

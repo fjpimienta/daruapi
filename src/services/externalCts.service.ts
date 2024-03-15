@@ -370,67 +370,73 @@ class ExternalCtsService extends ResolversOperationsService {
             almacenes,
           };
         });
+        logger.info(`before.stockProductsCt: \n`);
+        if (stockProductsCt) {
+          logger.info(`stockProductsCt: \n`);
+          // logger.info(`stockProductsCt: \n ${JSON.stringify(stockProductsCt)} \n`);
+          logger.info(`stockProductsCt.length: \n ${JSON.stringify(stockProductsCt.length)} \n`);
+          // logger.info(`stockProductsCt[1]: \n ${JSON.stringify(stockProductsCt[1])} \n`);
+          logger.info(`stockProductsCt[stockProductsCt.length-1]: \n ${JSON.stringify(stockProductsCt[stockProductsCt.length - 1])} \n`);
 
-        // logger.info(`stockProductsCt: \n ${JSON.stringify(stockProductsCt)} \n`);
-        logger.info(`stockProductsCt.length: \n ${JSON.stringify(stockProductsCt.length)} \n`);
-        // logger.info(`stockProductsCt[1]: \n ${JSON.stringify(stockProductsCt[1])} \n`);
-        logger.info(`stockProductsCt[stockProductsCt.length-1]: \n ${JSON.stringify(stockProductsCt[stockProductsCt.length - 1])} \n`);
+          const excludedCategories = [
+            'Caretas', 'Cubrebocas', 'Desinfectantes', 'Equipo', 'Termómetros', 'Acceso', 'Accesorios para seguridad', 'Camaras Deteccion',
+            'Control de Acceso', 'Sensores', 'Tarjetas de Acceso', 'Timbres', 'Administrativo', 'Contabilidad', 'Nóminas', 'Timbres Fiscales',
+            'Análogos', 'Video Conferencia', 'Accesorios de Papeleria', 'Articulos de Escritura',
+            'Basico de Papeleria', 'Cabezales', 'Cuadernos', 'Papel', 'Papelería', 'Camaras Deteccion',
+            'Apple', 'Accesorios para Apple', 'Adaptadores para Apple', 'Audífonos para Apple', 'Cables Lightning', 'iMac', 'iPad', 'MacBook'
+          ];
 
-        const excludedCategories = [
-          'Caretas', 'Cubrebocas', 'Desinfectantes', 'Equipo', 'Termómetros', 'Acceso', 'Accesorios para seguridad', 'Camaras Deteccion',
-          'Control de Acceso', 'Sensores', 'Tarjetas de Acceso', 'Timbres', 'Administrativo', 'Contabilidad', 'Nóminas', 'Timbres Fiscales',
-          'Análogos', 'Video Conferencia', 'Accesorios de Papeleria', 'Articulos de Escritura',
-          'Basico de Papeleria', 'Cabezales', 'Cuadernos', 'Papel', 'Papelería', 'Camaras Deteccion',
-          'Apple', 'Accesorios para Apple', 'Adaptadores para Apple', 'Audífonos para Apple', 'Cables Lightning', 'iMac', 'iPad', 'MacBook'
-        ];
+          const db = this.db;
+          const config = await new ConfigsService({}, { id: '1' }, { db }).details();
+          // TODO Recuperar de la API los precios y continuar.
+          logger.info(`getListProductsCt.config: \n ${JSON.stringify(config)} \n`);
+          const stockMinimo = config.config.minimum_offer;
+          const exchangeRate = config.config.exchange_rate;
+          const productos: Product[] = [];
+          let i = 1;
+          let j = 1;
 
-        const db = this.db;
-        const config = await new ConfigsService({}, { id: '1' }, { db }).details();
-        // TODO Recuperar de la API los precios y continuar.
-        logger.info(`getListProductsCt.config: \n ${JSON.stringify(config)} \n`);
-        const stockMinimo = config.config.minimum_offer;
-        const exchangeRate = config.config.exchange_rate;
-        const productos: Product[] = [];
-        let i = 1;
-        let j = 1;
-
-        logger.info(`Before for listProductsCt: \n`);
-        for (const product of listProductsCt) {
-          logger.info(`iterando listProductsCt: \n`);
-          i += 1;
-          if (i === 1) {
-            logger.info(`product: \n ${JSON.stringify(product)} \n`);
-          }
-          if (!excludedCategories.includes(product.subcategoria)) {
-            for (const productFtp of stockProductsCt) {
-              j += 1;
-              if (j === 1) {
-                logger.info(`productFtp: \n ${JSON.stringify(productFtp)} \n`);
+          logger.info(`Before for listProductsCt: \n`);
+          for (const product of listProductsCt) {
+            logger.info(`iterando listProductsCt: \n`);
+            i += 1;
+            if (product) {
+              logger.info(`si hay product de listProductsCt: \n`);
+              if (i === 1) {
+                logger.info(`product: \n ${JSON.stringify(product)} \n`);
               }
-              if (product.clave === productFtp.codigo) {
-                const productTmp: IProductoCt = this.convertirPromocion(product);
-                const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
-                if (itemData.id !== undefined) {
-                  productos.push(itemData);
+              if (!excludedCategories.includes(product.subcategoria)) {
+                for (const productFtp of stockProductsCt) {
+                  j += 1;
+                  if (j === 1) {
+                    logger.info(`productFtp: \n ${JSON.stringify(productFtp)} \n`);
+                  }
+                  if (product.clave === productFtp.codigo) {
+                    const productTmp: IProductoCt = this.convertirPromocion(product);
+                    const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
+                    if (itemData.id !== undefined) {
+                      productos.push(itemData);
+                    }
+                  }
                 }
+                // stockProductsCt.forEach(async productFtp => {
+                //   j += 1;
+                //   if (j === 1) {
+                //     logger.info(`productFtp: \n ${JSON.stringify(productFtp)} \n`);
+                //   }
+                //   if (product.clave === productFtp.codigo) {
+                //     const productTmp: IProductoCt = this.convertirPromocion(product);
+                //     const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
+                //     if (itemData.id !== undefined) {
+                //       productos.push(itemData);
+                //     }
+                //   }
+                // });
               }
             }
-            // stockProductsCt.forEach(async productFtp => {
-            //   j += 1;
-            //   if (j === 1) {
-            //     logger.info(`productFtp: \n ${JSON.stringify(productFtp)} \n`);
-            //   }
-            //   if (product.clave === productFtp.codigo) {
-            //     const productTmp: IProductoCt = this.convertirPromocion(product);
-            //     const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
-            //     if (itemData.id !== undefined) {
-            //       productos.push(itemData);
-            //     }
-            //   }
-            // });
           }
+          logger.info(`getListProductsCt.productos: \n ${JSON.stringify(productos)} \n`);
         }
-        logger.info(`getListProductsCt.productos: \n ${JSON.stringify(productos)} \n`);
         return await {
           status: true,
           message: 'Productos listos para agregar.',
@@ -518,7 +524,7 @@ class ExternalCtsService extends ResolversOperationsService {
     if (productosCtXmlHp && productosCtXmlHp.status && productosCtXmlHp.jsonProductsCtHP && productosCtXmlHp.jsonProductsCtHP.length > 0) {
       productsCtFtp = productsCtFtp.concat(productosCtXmlHp.jsonProductsCtHP);
     }
-    return productsCtFtp;
+    return await productsCtFtp;
   }
 
   async setProduct(proveedor: string, item: any, productJson: any = null, imagenes: any = null, stockMinimo: number, exchangeRate: number) {

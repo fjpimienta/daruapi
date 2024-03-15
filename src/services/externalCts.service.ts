@@ -330,9 +330,13 @@ class ExternalCtsService extends ResolversOperationsService {
 
       const listProductsCt = await this.getProductsXml();
 
-      logger.info(`getListProductsCt.listProductsCt.length: \n ${JSON.stringify(listProductsCt.length)} \n`);
-      // logger.info(`getListProductsCt.listProductsCt[1]: \n ${JSON.stringify(listProductsCt[1])} \n`);
-      logger.info(`getListProductsCt.listProductsCt[listProductsCt.length-1]: \n ${JSON.stringify(listProductsCt[listProductsCt.length - 1])} \n`);
+      if (listProductsCt) {
+        logger.info(`getListProductsCt.listProductsCt.length: \n ${JSON.stringify(listProductsCt.length)} \n`);
+        // logger.info(`getListProductsCt.listProductsCt[1]: \n ${JSON.stringify(listProductsCt[1])} \n`);
+        logger.info(`getListProductsCt.listProductsCt[listProductsCt.length-1]: \n ${JSON.stringify(listProductsCt[listProductsCt.length - 1])} \n`);
+      } else {
+        logger.info('getListProductsCt.listProductsCt is undefined');
+      }
 
       // return {
       //   status: false,

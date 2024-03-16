@@ -385,7 +385,7 @@ class ExternalCtsService extends ResolversOperationsService {
                     for (const productFtp of stockProductsCt) {
                       if (product.clave === productFtp.codigo) {
                         const productTmp: IProductoCt = this.convertirPromocion(product);
-                        const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
+                        const itemData: Product = await this.setProduct('ct', productFtp, productTmp, null, stockMinimo, exchangeRate);
                         if (itemData.id !== undefined) {
                           productos.push(itemData);
                         }

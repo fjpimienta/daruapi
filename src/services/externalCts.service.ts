@@ -134,7 +134,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`setShippingCtRates.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-
+    logger.info(`setShippingCtRates.data: \n ${JSON.stringify(data)} \n`);
     if (response.ok) {
       return {
         status: true,
@@ -193,6 +193,7 @@ class ExternalCtsService extends ResolversOperationsService {
       logger.info(`getExistenciaProductoCt.response: \n ${JSON.stringify(response)} \n`);
       if (response.ok) {
         const data: IExistenciaAlmacenCT = await response.json();
+        logger.info(`getExistenciaProductoCt.data: \n ${JSON.stringify(data)} \n`);
         const existenciaProductoCt = Object.keys(data).map(key => ({
           key,
           existencia: data[key].existencia,
@@ -262,6 +263,7 @@ class ExternalCtsService extends ResolversOperationsService {
       logger.info(`getStockProductsCt.response: \n ${JSON.stringify(response)} \n`);
       if (response.ok) {
         const data: IProductoCt[] = await response.json();
+        logger.info(`getStockProductsCt.data: \n ${JSON.stringify(data)} \n`);
         const stockProductsCt = data.map((product: IProductoCt) => {
           const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
             const almacenPromocion: IAlmacenPromocion[] = [];
@@ -327,81 +329,47 @@ class ExternalCtsService extends ResolversOperationsService {
       const listProductsCt = await this.getProductsXml();
 
       if (listProductsCt) {
-        const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
-        const response = await fetch(url, options);
-        // logger.info(`getListProductsCt.promociones.response: \n ${JSON.stringify(response)} \n`);
-        if (response.ok) {
-          const productos: Product[] = [];
-          const data: IProductoCt[] = await response.json();
-          // logger.info(`getListProductsCt.promociones.data: \n ${JSON.stringify(data)} \n`);
-          // const stockProductsCt = await data.map((product: IProductoCt) => {
-          //   const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
-          //     const almacenPromocion: IAlmacenPromocion[] = [];
-          //     for (const key in almacenItem) {
-          //       if (key !== 'almacenes') {
-          //         const valor = almacenItem[key as keyof IAlmacenes];
-          //         if (typeof valor === 'number') {
-          //           almacenPromocion.push({
-          //             key,
-          //             value: valor,
-          //             promocionString: JSON.stringify(almacenItem)
-          //           });
-          //         }
-          //         // Puedes manejar el caso de IPromocion si es necesario
-          //       }
-          //     }
-          //     return { almacenPromocion };
-          //   });
-
-          //   return {
-          //     ...product,
-          //     almacenes,
-          //   };
-          // });
-          const stockProductsCt = (await this.getStockProductsCt()).stockProductsCt;
-
-          if (stockProductsCt && stockProductsCt.length > 0) {
-            const excludedCategories = [
-              'Caretas', 'Cubrebocas', 'Desinfectantes', 'Equipo', 'Termómetros', 'Acceso', 'Accesorios para seguridad', 'Camaras Deteccion',
-              'Control de Acceso', 'Sensores', 'Tarjetas de Acceso', 'Timbres', 'Administrativo', 'Contabilidad', 'Nóminas', 'Timbres Fiscales',
-              'Análogos', 'Video Conferencia', 'Accesorios de Papeleria', 'Articulos de Escritura',
-              'Basico de Papeleria', 'Cabezales', 'Cuadernos', 'Papel', 'Papelería', 'Camaras Deteccion',
-              'Apple', 'Accesorios para Apple', 'Adaptadores para Apple', 'Audífonos para Apple', 'Cables Lightning', 'iMac', 'iPad', 'MacBook'
-            ];
-            const db = this.db;
-            const config = await new ConfigsService({}, { id: '1' }, { db }).details();
-            const stockMinimo = config.config.minimum_offer;
-            const exchangeRate = config.config.exchange_rate;
-            // logger.info(`getListProductsCt.productos: \n ${JSON.stringify(productos)} \n`);
-            for (const product of listProductsCt) {
-              if (!excludedCategories.includes(product.subcategoria)) {
-                if (stockProductsCt && stockProductsCt.length > 0) {
-                  for (const productFtp of stockProductsCt) {
-                    if (product.clave === productFtp.codigo) {
-                      const productTmp: IProductoCt = this.convertirPromocion(productFtp);
-                      const itemData: Product = await this.setProduct('ct', productTmp, product, null, stockMinimo, exchangeRate);
-                      if (itemData.id !== undefined) {
-                        productos.push(itemData);
-                      }
+        const productos: Product[] = [];
+        const stockProductsCt = (await this.getStockProductsCt()).stockProductsCt;
+        if (stockProductsCt && stockProductsCt.length > 0) {
+          const excludedCategories = [
+            'Caretas', 'Cubrebocas', 'Desinfectantes', 'Equipo', 'Termómetros', 'Acceso', 'Accesorios para seguridad', 'Camaras Deteccion',
+            'Control de Acceso', 'Sensores', 'Tarjetas de Acceso', 'Timbres', 'Administrativo', 'Contabilidad', 'Nóminas', 'Timbres Fiscales',
+            'Análogos', 'Video Conferencia', 'Accesorios de Papeleria', 'Articulos de Escritura',
+            'Basico de Papeleria', 'Cabezales', 'Cuadernos', 'Papel', 'Papelería', 'Camaras Deteccion',
+            'Apple', 'Accesorios para Apple', 'Adaptadores para Apple', 'Audífonos para Apple', 'Cables Lightning', 'iMac', 'iPad', 'MacBook'
+          ];
+          const db = this.db;
+          const config = await new ConfigsService({}, { id: '1' }, { db }).details();
+          const stockMinimo = config.config.minimum_offer;
+          const exchangeRate = config.config.exchange_rate;
+          for (const product of listProductsCt) {
+            if (!excludedCategories.includes(product.subcategoria)) {
+              if (stockProductsCt && stockProductsCt.length > 0) {
+                for (const productFtp of stockProductsCt) {
+                  if (product.clave === productFtp.codigo) {
+                    const productTmp: IProductoCt = this.convertirPromocion(productFtp);
+                    const itemData: Product = await this.setProduct('ct', productTmp, product, null, stockMinimo, exchangeRate);
+                    if (itemData.id !== undefined) {
+                      productos.push(itemData);
                     }
                   }
                 }
               }
             }
-            // logger.info(`getListProductsCt.productos: \n ${JSON.stringify(productos)} \n`);
           }
           return await {
             status: true,
             message: `Productos listos para agregar.`,
             listProductsCt: productos
           }
-        } else {
-          return {
-            status: false,
-            message: 'No se pudieron recuperar los productos del proveedor.',
-            listProductsCt: null,
-          };
         }
+        return await {
+          status: false,
+          message: `No se encontratos los productos del proveedor.`,
+          listProductsCt: productos
+        }
+
       } else {
         logger.info('No se pudieron recuperar los productos via FTP');
         return {
@@ -507,7 +475,6 @@ class ExternalCtsService extends ResolversOperationsService {
       const branchOfficesCt: BranchOffices[] = [];
       let featured = false;
       for (const element of item.almacenes) {
-        logger.info(`getListProductsCt.setProduct.element: \n ${JSON.stringify(element)} \n`);
         const almacen = this.getAlmacenCant(element);
         if (almacen.cantidad >= stockMinimo) {
           disponible += almacen.cantidad;
@@ -669,7 +636,6 @@ class ExternalCtsService extends ResolversOperationsService {
 
   getAlmacenCant(branch: any): BranchOffices {
     const almacen = new BranchOffices();
-    logger.info(`getListProductsCt.getAlmacenCant.branch.almacen: \n ${JSON.stringify(branch.almacen)} \n`);
     const almacenEstado = this.getCtAlmacenes(branch.almacen.key);
     almacen.id = almacenEstado.id.toString();
     almacen.name = almacenEstado.Sucursal;
@@ -823,7 +789,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`getListOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-
+    logger.info(`getListOrderCt.data: \n ${JSON.stringify(data)} \n`);
     if (response.ok) {
       const listOrdersCt = data
         .map((order: IOrderCtResponseList) => ({
@@ -875,8 +841,9 @@ class ExternalCtsService extends ResolversOperationsService {
 
     const url = `http://connect.ctonline.mx:3001/pedido/estatus/${folio}`;
     const response = await fetch(url, options);
+    logger.info(`getStatusOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-    logger.info(`getStatusOrderCt.response.data: \n ${JSON.stringify(data)} \n`);
+    logger.info(`getStatusOrderCt.data: \n ${JSON.stringify(data)} \n`);
 
     const status = response.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
@@ -915,7 +882,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`getDetailOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-
+    logger.info(`getDetailOrderCt.data: \n ${JSON.stringify(data)} \n`);
     const status = response.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
 
@@ -956,7 +923,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`getVolProductCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-
+    logger.info(`getVolProductCt.data: \n ${JSON.stringify(data)} \n`);
     const status = response.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
 

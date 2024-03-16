@@ -371,33 +371,27 @@ class ExternalCtsService extends ResolversOperationsService {
               'Basico de Papeleria', 'Cabezales', 'Cuadernos', 'Papel', 'Papelería', 'Camaras Deteccion',
               'Apple', 'Accesorios para Apple', 'Adaptadores para Apple', 'Audífonos para Apple', 'Cables Lightning', 'iMac', 'iPad', 'MacBook'
             ];
-
             const db = this.db;
             const config = await new ConfigsService({}, { id: '1' }, { db }).details();
-            // TODO Recuperar de la API los precios y continuar.
             const stockMinimo = config.config.minimum_offer;
             const exchangeRate = config.config.exchange_rate;
-
             // logger.info(`getListProductsCt.productos: \n ${JSON.stringify(productos)} \n`);
-
             for (const product of listProductsCt) {
-              if (product) {
-                if (!excludedCategories.includes(product.subcategoria)) {
-                  if (stockProductsCt && stockProductsCt.length > 0) {
-                    for (const productFtp of stockProductsCt) {
-                      if (product.clave === productFtp.codigo) {
-                        const productTmp: IProductoCt = this.convertirPromocion(productFtp);
-                        const itemData: Product = await this.setProduct('ct', productTmp, product, null, stockMinimo, exchangeRate);
-                        if (itemData.id !== undefined) {
-                          productos.push(itemData);
-                        }
+              if (!excludedCategories.includes(product.subcategoria)) {
+                if (stockProductsCt && stockProductsCt.length > 0) {
+                  for (const productFtp of stockProductsCt) {
+                    if (product.clave === productFtp.codigo) {
+                      const productTmp: IProductoCt = this.convertirPromocion(productFtp);
+                      const itemData: Product = await this.setProduct('ct', productTmp, product, null, stockMinimo, exchangeRate);
+                      if (itemData.id !== undefined) {
+                        productos.push(itemData);
                       }
                     }
                   }
                 }
               }
             }
-            logger.info(`getListProductsCt.productos: \n ${JSON.stringify(productos)} \n`);
+            // logger.info(`getListProductsCt.productos: \n ${JSON.stringify(productos)} \n`);
           }
           return await {
             status: true,
@@ -512,8 +506,6 @@ class ExternalCtsService extends ResolversOperationsService {
 
     disponible = 0;
     salePrice = 0;
-    logger.info(`getListProductsCt.setProduct.item: \n ${JSON.stringify(item)} \n`);
-    logger.info(`getListProductsCt.setProduct.productJson: \n ${JSON.stringify(productJson)} \n`);
     if (item && item.almacenes && item.almacenes.length > 0) {
       const branchOfficesCt: BranchOffices[] = [];
       let featured = false;

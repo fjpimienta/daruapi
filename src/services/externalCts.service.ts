@@ -551,7 +551,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
     disponible = 0;
     salePrice = 0;
-    if (item.almacenes.length > 0) {
+    if (item && item.almacenes && item.almacenes.length > 0) {
       const branchOfficesCt: BranchOffices[] = [];
       let featured = false;
       for (const element of item.almacenes) {

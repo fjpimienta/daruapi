@@ -377,6 +377,12 @@ class ExternalCtsService extends ResolversOperationsService {
             // TODO Recuperar de la API los precios y continuar.
             const stockMinimo = config.config.minimum_offer;
             const exchangeRate = config.config.exchange_rate;
+            logger.info(`getListProductsCt.stockProductsCt[0]: \n ${JSON.stringify(stockProductsCt[0])} \n`);
+            logger.info(`getListProductsCt.stockProductsCt[stockProductsCt.length-1]: \n ${JSON.stringify(stockProductsCt[stockProductsCt.length-1])} \n`);
+            logger.info(`getListProductsCt.listProductsCt[0]: \n ${JSON.stringify(listProductsCt[0])} \n`);
+            logger.info(`getListProductsCt.listProductsCt[listProductsCt.length-1]: \n ${JSON.stringify(listProductsCt[listProductsCt.length-1])} \n`);
+
+            // logger.info(`getListProductsCt.productos: \n ${JSON.stringify(productos)} \n`);
 
             for (const product of listProductsCt) {
               if (product) {
@@ -384,7 +390,7 @@ class ExternalCtsService extends ResolversOperationsService {
                   if (stockProductsCt && stockProductsCt.length > 0) {
                     for (const productFtp of stockProductsCt) {
                       if (product.clave === productFtp.codigo) {
-                        const productTmp: IProductoCt = this.convertirPromocion(product);
+                        const productTmp: IProductoCt = this.convertirPromocion(productFtp);
                         const itemData: Product = await this.setProduct('ct', productFtp, productTmp, null, stockMinimo, exchangeRate);
                         if (itemData.id !== undefined) {
                           productos.push(itemData);
@@ -426,7 +432,7 @@ class ExternalCtsService extends ResolversOperationsService {
     }
   }
 
-  convertirPromocion(product: IProductoCt): IProductoCt {
+  convertirPromocion(product: any): IProductoCt {
     try {
       const data = product;
       if (data.almacenes.length > 0) {

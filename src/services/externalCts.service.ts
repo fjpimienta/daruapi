@@ -516,6 +516,7 @@ class ExternalCtsService extends ResolversOperationsService {
       const branchOfficesCt: BranchOffices[] = [];
       let featured = false;
       for (const element of item.almacenes) {
+        logger.info(`getListProductsCt.setProduct.element: \n ${JSON.stringify(element)} \n`);
         const almacen = this.getAlmacenCant(element);
         if (almacen.cantidad >= stockMinimo) {
           disponible += almacen.cantidad;
@@ -677,6 +678,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
   getAlmacenCant(branch: any): BranchOffices {
     const almacen = new BranchOffices();
+    logger.info(`getListProductsCt.getAlmacenCant.branch.almacen: \n ${JSON.stringify(branch.almacen)} \n`);
     const almacenEstado = this.getCtAlmacenes(branch.almacen.key);
     almacen.id = almacenEstado.id.toString();
     almacen.name = almacenEstado.Sucursal;

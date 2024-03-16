@@ -330,131 +330,89 @@ class ExternalCtsService extends ResolversOperationsService {
 
       const listProductsCt = await this.getProductsXml();
 
-      if (listProductsCt) {
-        logger.info(`getListProductsCt.listProductsCt.length: \n ${JSON.stringify(listProductsCt.length)} \n`);
-        // logger.info(`getListProductsCt.listProductsCt[1]: \n ${JSON.stringify(listProductsCt[1])} \n`);
-        logger.info(`getListProductsCt.listProductsCt[listProductsCt.length-1]: \n ${JSON.stringify(listProductsCt[listProductsCt.length - 1])} \n`);
-      } else {
-        logger.info('getListProductsCt.listProductsCt is undefined');
-      }
-
-
-
-      // return {
-      //   status: false,
-      //   message: 'Cierre forzoso',
-      //   listProductsCt: { id: '1', name: 'name', slug: 'slug', short_desc: '' },
-      // };
-
-      const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
-      const response = await fetch(url, options);
-
-      if (response.ok) {
-        const data: IProductoCt[] = await response.json();
-        // logger.info(`getListProductsCt.promociones.data: \n ${JSON.stringify(data)} \n`);
-        const stockProductsCt = await data.map((product: IProductoCt) => {
-          const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
-            const almacenPromocion: IAlmacenPromocion[] = [];
-            for (const key in almacenItem) {
-              if (key !== 'almacenes') {
-                const valor = almacenItem[key as keyof IAlmacenes];
-                if (typeof valor === 'number') {
-                  almacenPromocion.push({
-                    key,
-                    value: valor,
-                    promocionString: JSON.stringify(almacenItem)
-                  });
+      if (listProductsCt && listProductsCt.length > 0) {
+        const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
+        const response = await fetch(url, options);
+        if (response.ok) {
+          const data: IProductoCt[] = await response.json();
+          // logger.info(`getListProductsCt.promociones.data: \n ${JSON.stringify(data)} \n`);
+          const stockProductsCt = await data.map((product: IProductoCt) => {
+            const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
+              const almacenPromocion: IAlmacenPromocion[] = [];
+              for (const key in almacenItem) {
+                if (key !== 'almacenes') {
+                  const valor = almacenItem[key as keyof IAlmacenes];
+                  if (typeof valor === 'number') {
+                    almacenPromocion.push({
+                      key,
+                      value: valor,
+                      promocionString: JSON.stringify(almacenItem)
+                    });
+                  }
+                  // Puedes manejar el caso de IPromocion si es necesario
                 }
-                // Puedes manejar el caso de IPromocion si es necesario
               }
-            }
-            return { almacenPromocion };
+              return { almacenPromocion };
+            });
+
+            return {
+              ...product,
+              almacenes,
+            };
           });
 
-          return {
-            ...product,
-            almacenes,
-          };
-        });
+          if (stockProductsCt && stockProductsCt.length > 0) {
+            const excludedCategories = [
+              'Caretas', 'Cubrebocas', 'Desinfectantes', 'Equipo', 'Termómetros', 'Acceso', 'Accesorios para seguridad', 'Camaras Deteccion',
+              'Control de Acceso', 'Sensores', 'Tarjetas de Acceso', 'Timbres', 'Administrativo', 'Contabilidad', 'Nóminas', 'Timbres Fiscales',
+              'Análogos', 'Video Conferencia', 'Accesorios de Papeleria', 'Articulos de Escritura',
+              'Basico de Papeleria', 'Cabezales', 'Cuadernos', 'Papel', 'Papelería', 'Camaras Deteccion',
+              'Apple', 'Accesorios para Apple', 'Adaptadores para Apple', 'Audífonos para Apple', 'Cables Lightning', 'iMac', 'iPad', 'MacBook'
+            ];
 
-        logger.info(`before.stockProductsCt: \n`);
-        if (stockProductsCt && stockProductsCt.length > 0) {
-          logger.info(`stockProductsCt: \n`);
-          // logger.info(`stockProductsCt: \n ${JSON.stringify(stockProductsCt)} \n`);
-          logger.info(`stockProductsCt.length: \n ${JSON.stringify(stockProductsCt.length)} \n`);
-          // logger.info(`stockProductsCt[1]: \n ${JSON.stringify(stockProductsCt[1])} \n`);
-          logger.info(`stockProductsCt[stockProductsCt.length-1]: \n ${JSON.stringify(stockProductsCt[stockProductsCt.length - 1])} \n`);
+            const db = this.db;
+            const config = await new ConfigsService({}, { id: '1' }, { db }).details();
+            // TODO Recuperar de la API los precios y continuar.
+            const stockMinimo = config.config.minimum_offer;
+            const exchangeRate = config.config.exchange_rate;
+            const productos: Product[] = [];
 
-          const excludedCategories = [
-            'Caretas', 'Cubrebocas', 'Desinfectantes', 'Equipo', 'Termómetros', 'Acceso', 'Accesorios para seguridad', 'Camaras Deteccion',
-            'Control de Acceso', 'Sensores', 'Tarjetas de Acceso', 'Timbres', 'Administrativo', 'Contabilidad', 'Nóminas', 'Timbres Fiscales',
-            'Análogos', 'Video Conferencia', 'Accesorios de Papeleria', 'Articulos de Escritura',
-            'Basico de Papeleria', 'Cabezales', 'Cuadernos', 'Papel', 'Papelería', 'Camaras Deteccion',
-            'Apple', 'Accesorios para Apple', 'Adaptadores para Apple', 'Audífonos para Apple', 'Cables Lightning', 'iMac', 'iPad', 'MacBook'
-          ];
-
-          const db = this.db;
-          const config = await new ConfigsService({}, { id: '1' }, { db }).details();
-          // TODO Recuperar de la API los precios y continuar.
-          logger.info(`getListProductsCt.config: \n ${JSON.stringify(config)} \n`);
-          const stockMinimo = config.config.minimum_offer;
-          const exchangeRate = config.config.exchange_rate;
-          const productos: Product[] = [];
-
-          logger.info(`Before for listProductsCt: \n`);
-          for (const product of listProductsCt) {
-            logger.info(`iterando listProductsCt: \n`);
-            if (product) {
-              logger.info(`si hay product de listProductsCt: \n`);
-              if (!excludedCategories.includes(product.subcategoria)) {
-                logger.info(`if(!excludedCategories.includes(product.subcategoria)): \n`);
-                logger.info(`stockProductsCt[1]: \n ${JSON.stringify(stockProductsCt[1])} \n`);
-                if (stockProductsCt && stockProductsCt.length > 0) {
-                  logger.info(`stockProductsCt && stockProductsCt.length > 0: \n`);
-                  for (const productFtp of stockProductsCt) {
-                    logger.info(`for (const productFtp of stockProductsCt): \n`);
-                    logger.info(`getListProductsCt.product: \n ${JSON.stringify(product)} \n`);
-                    logger.info(`getListProductsCt.product.clave: \n ${JSON.stringify(product.clave)} \n`);
-                    logger.info(`getListProductsCt.productFtp: \n ${JSON.stringify(productFtp)} \n`);
-                    logger.info(`getListProductsCt.productFtp.codigo: \n ${JSON.stringify(productFtp.codigo)} \n`);
-                    if (product.clave === productFtp.codigo) {
-                      const productTmp: IProductoCt = this.convertirPromocion(product);
-                      logger.info(`getListProductsCt.productTmp: \n ${JSON.stringify(productTmp)} \n`);
-                      const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
-                      logger.info(`getListProductsCt.itemData: \n ${JSON.stringify(itemData)} \n`);
-                      if (itemData.id !== undefined) {
-                        productos.push(itemData);
+            for (const product of listProductsCt) {
+              if (product) {
+                if (!excludedCategories.includes(product.subcategoria)) {
+                  if (stockProductsCt && stockProductsCt.length > 0) {
+                    for (const productFtp of stockProductsCt) {
+                      if (product.clave === productFtp.codigo) {
+                        const productTmp: IProductoCt = this.convertirPromocion(product);
+                        const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
+                        if (itemData.id !== undefined) {
+                          productos.push(itemData);
+                        }
                       }
                     }
                   }
                 }
-                // stockProductsCt.forEach(async productFtp => {
-                //   j += 1;
-                //   if (j === 1) {
-                //     logger.info(`productFtp: \n ${JSON.stringify(productFtp)} \n`);
-                //   }
-                //   if (product.clave === productFtp.codigo) {
-                //     const productTmp: IProductoCt = this.convertirPromocion(product);
-                //     const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
-                //     if (itemData.id !== undefined) {
-                //       productos.push(itemData);
-                //     }
-                //   }
-                // });
               }
             }
+            logger.info(`getListProductsCt.productos: \n ${JSON.stringify(productos)} \n`);
           }
-          logger.info(`getListProductsCt.productos: \n ${JSON.stringify(productos)} \n`);
-        }
-        return await {
-          status: true,
-          message: 'Productos listos para agregar.',
-          listProductsCt
+          return await {
+            status: true,
+            message: 'Productos listos para agregar.',
+            listProductsCt
+          }
+        } else {
+          return {
+            status: false,
+            message: 'Error en el servicio. ',
+            listProductsCt: null,
+          };
         }
       } else {
+        logger.info('getListProductsCt.listProductsCt is undefined');
         return {
           status: false,
-          message: 'Error en el servicio. ',
+          message: 'No se encuentran productos con el proveedor.',
           listProductsCt: null,
         };
       }

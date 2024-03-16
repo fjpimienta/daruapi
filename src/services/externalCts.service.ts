@@ -333,10 +333,11 @@ class ExternalCtsService extends ResolversOperationsService {
       if (listProductsCt) {
         const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
         const response = await fetch(url, options);
-        logger.info(`getListProductsCt.promociones.response: \n ${JSON.stringify(response)} \n`);
+        // logger.info(`getListProductsCt.promociones.response: \n ${JSON.stringify(response)} \n`);
         if (response.ok) {
+          const productos: Product[] = [];
           const data: IProductoCt[] = await response.json();
-          logger.info(`getListProductsCt.promociones.data: \n ${JSON.stringify(data)} \n`);
+          // logger.info(`getListProductsCt.promociones.data: \n ${JSON.stringify(data)} \n`);
           const stockProductsCt = await data.map((product: IProductoCt) => {
             const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
               const almacenPromocion: IAlmacenPromocion[] = [];
@@ -376,7 +377,6 @@ class ExternalCtsService extends ResolversOperationsService {
             // TODO Recuperar de la API los precios y continuar.
             const stockMinimo = config.config.minimum_offer;
             const exchangeRate = config.config.exchange_rate;
-            const productos: Product[] = [];
 
             for (const product of listProductsCt) {
               if (product) {
@@ -386,7 +386,9 @@ class ExternalCtsService extends ResolversOperationsService {
                       if (product.clave === productFtp.codigo) {
                         const productTmp: IProductoCt = this.convertirPromocion(product);
                         const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
+                        logger.info(`getListProductsCt.promociones.itemData.id: \n ${JSON.stringify(itemData.id)} \n`);
                         if (itemData.id !== undefined) {
+                          logger.info(`getListProductsCt.promociones.itemData: \n ${JSON.stringify(itemData)} \n`);
                           productos.push(itemData);
                         }
                       }
@@ -399,13 +401,13 @@ class ExternalCtsService extends ResolversOperationsService {
           }
           return await {
             status: true,
-            message: `Productos listos para agregar (getListProductsCt.listProductsCt). \n`,
-            listProductsCt
+            message: `Productos listos para agregar.`,
+            listProductsCt: productos
           }
         } else {
           return {
             status: false,
-            message: 'Error en el servicio. ',
+            message: 'No se pudieron recuperar los productos del proveedor.',
             listProductsCt: null,
           };
         }

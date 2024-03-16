@@ -260,13 +260,11 @@ class ExternalCtsService extends ResolversOperationsService {
       const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
       const response = await fetch(url, options);
       logger.info(`getStockProductsCt.response: \n ${JSON.stringify(response)} \n`);
-
       if (response.ok) {
         const data: IProductoCt[] = await response.json();
         const stockProductsCt = data.map((product: IProductoCt) => {
           const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
             const almacenPromocion: IAlmacenPromocion[] = [];
-
             for (const key in almacenItem) {
               if (key !== 'almacenes') {
                 const valor = almacenItem[key as keyof IAlmacenes];
@@ -282,13 +280,11 @@ class ExternalCtsService extends ResolversOperationsService {
             }
             return { almacenPromocion };
           });
-
           return {
             ...product,
             almacenes,
           };
         });
-
         return {
           status: true,
           message: 'La información que hemos pedido se ha cargado correctamente',
@@ -297,7 +293,7 @@ class ExternalCtsService extends ResolversOperationsService {
       } else {
         return {
           status: false,
-          message: 'Error en el servicio. ',
+          message: 'Error en el servicio. No se recuperaron las promociones.',
           stockProductsCt: null,
         };
       }
@@ -338,30 +334,31 @@ class ExternalCtsService extends ResolversOperationsService {
           const productos: Product[] = [];
           const data: IProductoCt[] = await response.json();
           // logger.info(`getListProductsCt.promociones.data: \n ${JSON.stringify(data)} \n`);
-          const stockProductsCt = await data.map((product: IProductoCt) => {
-            const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
-              const almacenPromocion: IAlmacenPromocion[] = [];
-              for (const key in almacenItem) {
-                if (key !== 'almacenes') {
-                  const valor = almacenItem[key as keyof IAlmacenes];
-                  if (typeof valor === 'number') {
-                    almacenPromocion.push({
-                      key,
-                      value: valor,
-                      promocionString: JSON.stringify(almacenItem)
-                    });
-                  }
-                  // Puedes manejar el caso de IPromocion si es necesario
-                }
-              }
-              return { almacenPromocion };
-            });
+          // const stockProductsCt = await data.map((product: IProductoCt) => {
+          //   const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
+          //     const almacenPromocion: IAlmacenPromocion[] = [];
+          //     for (const key in almacenItem) {
+          //       if (key !== 'almacenes') {
+          //         const valor = almacenItem[key as keyof IAlmacenes];
+          //         if (typeof valor === 'number') {
+          //           almacenPromocion.push({
+          //             key,
+          //             value: valor,
+          //             promocionString: JSON.stringify(almacenItem)
+          //           });
+          //         }
+          //         // Puedes manejar el caso de IPromocion si es necesario
+          //       }
+          //     }
+          //     return { almacenPromocion };
+          //   });
 
-            return {
-              ...product,
-              almacenes,
-            };
-          });
+          //   return {
+          //     ...product,
+          //     almacenes,
+          //   };
+          // });
+          const stockProductsCt = (await this.getStockProductsCt()).stockProductsCt;
 
           if (stockProductsCt && stockProductsCt.length > 0) {
             const excludedCategories = [

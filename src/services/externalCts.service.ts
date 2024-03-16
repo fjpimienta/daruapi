@@ -419,7 +419,9 @@ class ExternalCtsService extends ResolversOperationsService {
                     logger.info(`getListProductsCt.productFtp.codigo: \n ${JSON.stringify(productFtp.codigo)} \n`);
                     if (product.clave === productFtp.codigo) {
                       const productTmp: IProductoCt = this.convertirPromocion(product);
+                      logger.info(`getListProductsCt.productTmp: \n ${JSON.stringify(productTmp)} \n`);
                       const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
+                      logger.info(`getListProductsCt.itemData: \n ${JSON.stringify(itemData)} \n`);
                       if (itemData.id !== undefined) {
                         productos.push(itemData);
                       }
@@ -468,46 +470,42 @@ class ExternalCtsService extends ResolversOperationsService {
   convertirPromocion(product: IProductoCt): IProductoCt {
     try {
       const data = product;
-
-      const almacenes: IAlmacenes[] = data.almacenes.map((almacenData: any) => {
-        const almacenPromocion = almacenData.almacenPromocion[0];
-
-        const promocionString = almacenPromocion ? almacenPromocion.promocionString : null;
-
-        let promocionObj: IPromocion = { precio: 0, porciento: 0, vigente: { ini: '', fin: '' } };
-        if (promocionString) {
-          const promocionData = JSON.parse(promocionString).promocion;
-          if (promocionData) {
-            promocionObj = {
-              precio: promocionData.precio || 0,
-              porciento: promocionData.porciento || 0,
-              vigente: {
-                ini: promocionData.vigente ? promocionData.vigente.ini : '',
-                fin: promocionData.vigente ? promocionData.vigente.fin : '',
-              },
-            };
+      if (data.almacenes.length > 0) {
+        const almacenes: IAlmacenes[] = data.almacenes.map((almacenData: any) => {
+          const almacenPromocion = almacenData.almacenPromocion[0];
+          const promocionString = almacenPromocion ? almacenPromocion.promocionString : null;
+          let promocionObj: IPromocion = { precio: 0, porciento: 0, vigente: { ini: '', fin: '' } };
+          if (promocionString) {
+            const promocionData = JSON.parse(promocionString).promocion;
+            if (promocionData) {
+              promocionObj = {
+                precio: promocionData.precio || 0,
+                porciento: promocionData.porciento || 0,
+                vigente: {
+                  ini: promocionData.vigente ? promocionData.vigente.ini : '',
+                  fin: promocionData.vigente ? promocionData.vigente.fin : '',
+                },
+              };
+            }
           }
-        }
-
-        const almacenObj: IAlmacen = {
-          key: almacenPromocion ? almacenPromocion.key : '',
-          value: almacenPromocion ? almacenPromocion.value : 0,
+          const almacenObj: IAlmacen = {
+            key: almacenPromocion ? almacenPromocion.key : '',
+            value: almacenPromocion ? almacenPromocion.value : 0,
+          };
+          return {
+            promociones: promocionObj ? [promocionObj] : [],
+            almacen: almacenObj,
+          };
+        });
+        const producto: IProductoCt = {
+          precio: data.precio,
+          moneda: data.moneda,
+          almacenes,
+          codigo: data.codigo,
         };
-
-        return {
-          promociones: promocionObj ? [promocionObj] : [],
-          almacen: almacenObj,
-        };
-      });
-
-      const producto: IProductoCt = {
-        precio: data.precio,
-        moneda: data.moneda,
-        almacenes,
-        codigo: data.codigo,
-      };
-
-      return producto;
+        return producto;
+      }
+      return product;
     } catch (error) {
       console.error('Error al convertir el objeto JSON:', error);
       return product;

@@ -317,70 +317,6 @@ class ExternalCtsService extends ResolversOperationsService {
         return {
           status: token.status,
           message: token.message,
-          listProductsCt: null,
-        };
-      }
-  
-      const listProductsCt = await this.getProductsXml();
-      if (!listProductsCt) {
-        return {
-          status: false,
-          message: 'No se pudieron obtener los productos.',
-          listProductsCt: null,
-        };
-      }
-  
-      const config = await new ConfigsService({}, { id: '1' }, { db: this.db }).details();
-      const stockMinimo = config.config.minimum_offer;
-      const exchangeRate = config.config.exchange_rate;
-      const excludedCategories = [
-        'Caretas', 'Cubrebocas', 'Desinfectantes', 'Equipo', 'Termómetros', 'Acceso', 'Accesorios para seguridad',
-        'Camaras Deteccion', 'Control de Acceso', 'Sensores', 'Tarjetas de Acceso', 'Timbres', 'Administrativo',
-        'Contabilidad', 'Nóminas', 'Timbres Fiscales', 'Análogos', 'Video Conferencia', 'Accesorios de Papeleria',
-        'Articulos de Escritura', 'Basico de Papeleria', 'Cabezales', 'Cuadernos', 'Papel', 'Papelería', 'Camaras Deteccion',
-        'Apple', 'Accesorios para Apple', 'Adaptadores para Apple', 'Audífonos para Apple', 'Cables Lightning', 'iMac',
-        'iPad', 'MacBook'
-      ];
-  
-      const productos: Product[] = [];
-  
-      for (const product of listProductsCt) {
-        if (!excludedCategories.includes(product.subcategoria)) {
-          for (const productFtp of product.almacenes) {
-            if (product.clave === productFtp.codigo) {
-              const productTmp: IProductoCt = this.convertirPromocion(product);
-              const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
-              if (itemData.id !== undefined) {
-                productos.push(itemData);
-              }
-            }
-          }
-        }
-      }
-  
-      return {
-        status: true,
-        message: 'Productos listos para agregar.',
-        listProductsCt,
-        productos,
-      };
-    } catch (error: any) {
-      return {
-        status: false,
-        message: 'Error en el servicio: ' + (error.message || JSON.stringify(error)),
-        listProductsCt: null,
-      };
-    }
-  }
-  
-
-  async getListProductsCtBack() {
-    try {
-      const token = await this.getTokenCt();
-      if (token && !token.status) {
-        return {
-          status: token.status,
-          message: token.message,
           stockProductsCt: null,
         };
       }
@@ -401,6 +337,8 @@ class ExternalCtsService extends ResolversOperationsService {
       } else {
         logger.info('getListProductsCt.listProductsCt is undefined');
       }
+
+
 
       // return {
       //   status: false,
@@ -438,6 +376,7 @@ class ExternalCtsService extends ResolversOperationsService {
             almacenes,
           };
         });
+
         logger.info(`before.stockProductsCt: \n`);
         if (stockProductsCt && stockProductsCt.length > 0) {
           logger.info(`stockProductsCt: \n`);
@@ -461,24 +400,19 @@ class ExternalCtsService extends ResolversOperationsService {
           const stockMinimo = config.config.minimum_offer;
           const exchangeRate = config.config.exchange_rate;
           const productos: Product[] = [];
-          let i = 1;
-          let j = 1;
 
           logger.info(`Before for listProductsCt: \n`);
           for (const product of listProductsCt) {
             logger.info(`iterando listProductsCt: \n`);
-            i += 1;
             if (product) {
               logger.info(`si hay product de listProductsCt: \n`);
-              // if (i === 1) {
-              //   logger.info(`product: \n ${JSON.stringify(product)} \n`);
-              // }
               if (!excludedCategories.includes(product.subcategoria)) {
                 logger.info(`if(!excludedCategories.includes(product.subcategoria)): \n`);
                 logger.info(`stockProductsCt[1]: \n ${JSON.stringify(stockProductsCt[1])} \n`);
                 if (stockProductsCt && stockProductsCt.length > 0) {
                   logger.info(`stockProductsCt && stockProductsCt.length > 0: \n`);
                   for (const productFtp of stockProductsCt) {
+                    logger.info(`for (const productFtp of stockProductsCt): \n`);
                     if (product.clave === productFtp.codigo) {
                       const productTmp: IProductoCt = this.convertirPromocion(product);
                       const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);

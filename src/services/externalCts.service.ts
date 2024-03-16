@@ -330,12 +330,13 @@ class ExternalCtsService extends ResolversOperationsService {
 
       const listProductsCt = await this.getProductsXml();
 
-      if (listProductsCt && listProductsCt.length > 0) {
+      if (listProductsCt) {
         const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
         const response = await fetch(url, options);
+        logger.info(`getListProductsCt.promociones.response: \n ${JSON.stringify(response)} \n`);
         if (response.ok) {
           const data: IProductoCt[] = await response.json();
-          // logger.info(`getListProductsCt.promociones.data: \n ${JSON.stringify(data)} \n`);
+          logger.info(`getListProductsCt.promociones.data: \n ${JSON.stringify(data)} \n`);
           const stockProductsCt = await data.map((product: IProductoCt) => {
             const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
               const almacenPromocion: IAlmacenPromocion[] = [];
@@ -398,7 +399,7 @@ class ExternalCtsService extends ResolversOperationsService {
           }
           return await {
             status: true,
-            message: 'Productos listos para agregar.',
+            message: `Productos listos para agregar (getListProductsCt.listProductsCt). \n`,
             listProductsCt
           }
         } else {
@@ -409,10 +410,10 @@ class ExternalCtsService extends ResolversOperationsService {
           };
         }
       } else {
-        logger.info('getListProductsCt.listProductsCt is undefined');
+        logger.info('No se pudieron recuperar los productos via FTP');
         return {
           status: false,
-          message: 'No se encuentran productos con el proveedor.',
+          message: 'No se pudieron recuperar los productos via FTP.',
           listProductsCt: null,
         };
       }

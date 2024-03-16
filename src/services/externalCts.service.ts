@@ -413,6 +413,10 @@ class ExternalCtsService extends ResolversOperationsService {
                   logger.info(`stockProductsCt && stockProductsCt.length > 0: \n`);
                   for (const productFtp of stockProductsCt) {
                     logger.info(`for (const productFtp of stockProductsCt): \n`);
+                    logger.info(`getListProductsCt.product: \n ${JSON.stringify(product)} \n`);
+                    logger.info(`getListProductsCt.product.clave: \n ${JSON.stringify(product.clave)} \n`);
+                    logger.info(`getListProductsCt.productFtp: \n ${JSON.stringify(productFtp)} \n`);
+                    logger.info(`getListProductsCt.productFtp.codigo: \n ${JSON.stringify(productFtp.codigo)} \n`);
                     if (product.clave === productFtp.codigo) {
                       const productTmp: IProductoCt = this.convertirPromocion(product);
                       const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);

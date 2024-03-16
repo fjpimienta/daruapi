@@ -386,9 +386,7 @@ class ExternalCtsService extends ResolversOperationsService {
                       if (product.clave === productFtp.codigo) {
                         const productTmp: IProductoCt = this.convertirPromocion(product);
                         const itemData: Product = await this.setProduct('ct', productTmp, productFtp, null, stockMinimo, exchangeRate);
-                        logger.info(`getListProductsCt.promociones.itemData.id: \n ${JSON.stringify(itemData.id)} \n`);
                         if (itemData.id !== undefined) {
-                          logger.info(`getListProductsCt.promociones.itemData: \n ${JSON.stringify(itemData)} \n`);
                           productos.push(itemData);
                         }
                       }
@@ -512,6 +510,8 @@ class ExternalCtsService extends ResolversOperationsService {
 
     disponible = 0;
     salePrice = 0;
+    logger.info(`getListProductsCt.setProduct.item: \n ${JSON.stringify(item)} \n`);
+    logger.info(`getListProductsCt.setProduct.productJson: \n ${JSON.stringify(productJson)} \n`);
     if (item && item.almacenes && item.almacenes.length > 0) {
       const branchOfficesCt: BranchOffices[] = [];
       let featured = false;

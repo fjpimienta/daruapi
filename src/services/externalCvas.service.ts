@@ -854,6 +854,8 @@ class ExternalCvasService extends ResolversOperationsService {
           itemData.especificaciones.push(especP);
         }
       }
+    } else {
+      itemData.id === undefined;
     }
     return itemData;
   }

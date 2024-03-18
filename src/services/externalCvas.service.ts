@@ -855,7 +855,7 @@ class ExternalCvasService extends ResolversOperationsService {
         }
       }
     } else {
-      itemData.id === undefined;
+      itemData.id = undefined;
     }
     return itemData;
   }

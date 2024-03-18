@@ -2,6 +2,7 @@ type ResultIngram implements Result {
     status: Boolean!
     message: String!
     tokenIngram: TokenIngram
+    listProductsIngram: [Product]
     ingramProduct: IngramProduct
     ingramProducts: [IngramProduct]
     pricesIngram: [ResponsePricesIngram]

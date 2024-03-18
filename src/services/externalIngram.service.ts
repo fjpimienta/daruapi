@@ -4,16 +4,21 @@ import ResolversOperationsService from './resolvers-operaciones.service';
 
 import logger from '../utils/logger';
 import fetch from 'node-fetch';
-import { IIngramProduct, IPricesIngram, IProductsQuery } from '../interfaces/suppliers/_Ingram.interface';
+import { AvailabilityByWarehouse, IIngramProduct, IPricesIngram, IProductsQuery } from '../interfaces/suppliers/_Ingram.interface';
 import { COLLECTIONS } from '../config/constants';
 import { IBranchOffices } from '../interfaces/product.interface';
+import { BranchOffices, Brands, Categorys, Descuentos, Picture, Product, Promociones, SupplierProd, UnidadDeMedida } from '../models/product.models';
+import { Db } from 'mongodb';
+import ConfigsService from './config.service';
+import slugify from 'slugify';
 
 class ExternalIngramService extends ResolversOperationsService {
   collection = COLLECTIONS.INGRAM_PRODUCTS;
   catalogName = 'Productos Ingram';
-
+  private db: Db;
   constructor(root: object, variables: object, context: IContextData) {
     super(root, variables, context);
+    this.db = context.db!;
   }
 
   async getTokenIngram() {
@@ -105,6 +110,245 @@ class ExternalIngramService extends ResolversOperationsService {
         ingramProduct: null,
       };
     }
+  }
+
+  async getListProductsIngram(): Promise<{
+    status: boolean;
+    message: string;
+    listProductsIngram: Product[] | [];
+  }> {
+    const db = this.db;
+    const allRecords = { allRecords: true };
+    const productos: Product[] = [];
+    const config = await new ConfigsService({}, { id: '1' }, { db }).details();
+    const stockMinimo = config.config.minimum_offer;
+    const exchangeRate = config.config.exchange_rate;
+    const productosIngram = await (await this.getPricesIngram(allRecords)).pricesIngram;
+    const catalogIngrams = await (await this.getCatalogIngrams()).catalogIngrams;
+    if (productosIngram && productosIngram.length <= 0) {
+      return await {
+        status: false,
+        message: 'No se han encontrado los precios de los productos.',
+        listProductsIngram: []
+      }
+    }
+    if (catalogIngrams && catalogIngrams.length <= 0) {
+      return await {
+        status: false,
+        message: 'No se han encontrado los precios de los productos.',
+        listProductsIngram: []
+      }
+    }
+    if (productosIngram) {
+      for (const prodIngram of productosIngram) {
+        if (prodIngram.availability && prodIngram.availability.availabilityByWarehouse) {
+          const warehouses: AvailabilityByWarehouse[] = [];
+          for (const almacen of prodIngram.availability.availabilityByWarehouse) {
+            if (almacen.quantityAvailable >= stockMinimo) {
+              const warehouse: AvailabilityByWarehouse = {
+                warehouseId: almacen.warehouseId,
+                location: almacen.location,
+                quantityAvailable: almacen.quantityAvailable,
+                quantityBackordered: almacen.quantityBackordered,
+                backOrderInfo: almacen.backOrderInfo as { quantity: number; etaDate: string } | undefined
+              };
+              warehouses.push(warehouse);
+            }
+          }
+          if (warehouses.length > 0) {
+            if (prodIngram.availability.availabilityByWarehouse.length !== warehouses.length) {
+              prodIngram.availability.availabilityByWarehouse = warehouses.map(warehouse => ({
+                warehouseId: warehouse.warehouseId,
+                location: warehouse.location,
+                quantityAvailable: warehouse.quantityAvailable,
+                quantityBackordered: warehouse.quantityBackordered,
+                backOrderInfo: Array.isArray(warehouse.backOrderInfo) ? warehouse.backOrderInfo : []
+              }));
+              // Si el producto cumple con los requisitos lo agrega.
+              const catalogIngram = catalogIngrams.find(cat => {
+                return cat.imSKU.trim() === prodIngram.ingramPartNumber.trim();
+              });
+              if (catalogIngram) {
+                if (prodIngram.availability && prodIngram.availability.availabilityByWarehouse
+                  && prodIngram.availability.availabilityByWarehouse.length > 0) {
+                  const itemData: Product = await this.setProduct('ingram', prodIngram, catalogIngram, null, stockMinimo, exchangeRate);
+                  if (itemData.id !== undefined) {
+                    productos.push(itemData);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return await {
+      status: true,
+      message: 'Productos listos para agregar.',
+      listProductsIngram: productos
+    }
+  }
+
+  async setProduct(proveedor: string, item: any, productJson: any = null, imagenes: any = null, stockMinimo: number, exchangeRate: number) {
+    const utilidad: number = 1.08;
+    const iva: number = 1.16;
+    const itemData = new Product();
+    const unidad = new UnidadDeMedida();
+    const b = new Brands();
+    const c = new Categorys();
+    const s = new SupplierProd();
+    const bo = new BranchOffices();
+    const i = new Picture();
+    const is = new Picture();
+    const desc = new Descuentos();
+    const promo = new Promociones();
+    let disponible = 0;
+    let price = 0;
+    let salePrice = 0;
+
+    try {
+      disponible = 0;
+      salePrice = 0;
+      if (item.availability && item.availability.availabilityByWarehouse && item.availability.availabilityByWarehouse.length > 0) {
+        const branchOfficesIngram: BranchOffices[] = [];
+        let featured = false;
+        for (const element of item.availability.availabilityByWarehouse) {
+          const almacen = this.getAlmacenIngram(element);
+          if (almacen.cantidad >= stockMinimo) {
+            disponible += almacen.cantidad;
+            branchOfficesIngram.push(almacen);
+          }
+        }
+        if (branchOfficesIngram.length > 0) {
+          // TO-DO Promociones
+          price = 0;
+          salePrice = 0;
+          itemData.id = item.vendorPartNumber.trim();
+          itemData.name = productJson.descriptionLine1.trim();
+          itemData.slug = slugify(productJson.descriptionLine1.trim(), { lower: true });
+          itemData.short_desc = productJson.descriptionLine1.trim() + '. ' + productJson.descriptionLine2.trim();
+          if (item.discounts && item.discounts.length > 0) {
+            if (item.discounts[0].specialPricingMinQuantity > 0 && item.discounts[0].specialPricingDiscount > 0) {
+              salePrice = item.discounts[0].specialPricingDiscount
+            }
+          }
+          if (item.pricing.customerPrice > 0) {
+            price = item.pricing.customerPrice;           // Vienen dos precios customerPrice y retailPrice
+            if (item.moneda === 'USD') {
+              itemData.price = parseFloat((price * exchangeRate * utilidad * iva).toFixed(2));
+              itemData.sale_price = parseFloat((salePrice * exchangeRate * utilidad * iva).toFixed(2));
+            } else {
+              itemData.price = parseFloat((price * utilidad * iva).toFixed(2));
+              itemData.sale_price = parseFloat((salePrice * utilidad * iva).toFixed(2));
+            }
+          } else {
+            itemData.price = price;
+            itemData.sale_price = salePrice;
+          }
+          itemData.exchangeRate = exchangeRate;
+          itemData.review = 0;
+          itemData.ratings = 0;
+          itemData.until = this.getFechas(new Date());
+          itemData.top = false;
+          itemData.featured = featured;
+          itemData.new = false;
+          itemData.sold = '';
+          itemData.stock = disponible;
+          itemData.sku = item.vendorNumber.trim();
+          itemData.upc = item.upc;
+          itemData.partnumber = item.vendorPartNumber.trim();
+          unidad.id = 'PZ';
+          unidad.name = 'Pieza';
+          unidad.slug = 'pieza';
+          itemData.unidadDeMedida = unidad;
+          // Categorias
+          itemData.category = [];
+          if (item.category) {
+            const c = new Categorys();
+            c.name = item.category;
+            c.slug = slugify(item.category, { lower: true });
+            itemData.category.push(c);
+          } else {
+            const c = new Categorys();
+            c.name = '';
+            c.slug = '';
+            itemData.category.push(c);
+          }
+          // SubCategorias
+          itemData.subCategory = [];
+          if (item.subCategory) {
+            const c1 = new Categorys();
+            c1.name = item.subCategory;
+            c1.slug = slugify(item.subCategory, { lower: true });
+            itemData.subCategory.push(c1);
+          } else {
+            const c1 = new Categorys();
+            c1.name = '';
+            c1.slug = '';
+            itemData.subCategory.push(c1);
+          }
+          // Marcas
+          itemData.brand = item.vendorName.replace(/[^\w\s]/gi, '').toLowerCase();
+          itemData.brands = [];
+          b.name = item.vendorName.replace(/[^\w\s]/gi, '');
+          b.slug = slugify(b.name, { lower: true });
+          itemData.brands.push(b);
+          s.idProveedor = proveedor;
+          s.codigo = productJson.imSKU.trim();
+          s.cantidad = stockMinimo;
+          s.price = price;
+          s.sale_price = salePrice;
+          s.moneda = item.pricing.currencyCode === 'MXP' ? 'MXN' : 'USD';
+          // TO-DO Promociones
+          s.moneda = item.pricing.currencyCode;
+          s.branchOffices = branchOfficesIngram;
+          s.category = new Categorys();
+          s.subCategory = new Categorys();
+          if (item.category) {
+            s.category.slug = slugify(item.category, { lower: true });;
+            s.category.name = item.category;
+          }
+          if (item.subCategory) {
+            s.subCategory.slug = slugify(item.subCategory, { lower: true });;
+            s.subCategory.name = item.subCategory;
+          }
+          itemData.suppliersProd = s;
+          itemData.variants = [];
+        }
+      }
+      return itemData;
+    } catch (error) {
+      return itemData;
+    }
+
+  }
+
+  getAlmacenIngram(branch: any): BranchOffices {
+    const almacen = new BranchOffices();
+    almacen.id = branch.warehouseId.toString();
+    almacen.name = branch.location;
+    const parts = branch.location.split('-');
+    if (parts.length > 1) {
+      almacen.estado = branch.Estado;
+    } else {
+      almacen.estado = branch.Estado;
+    }
+    almacen.cp = '';
+    almacen.latitud = '';
+    almacen.longitud = '';
+    almacen.cantidad = branch.quantityAvailable;
+    return almacen;
+  }
+
+  getFechas(fecha: Date) {
+    let dtS = '';
+    let monthS = '';
+    const year = fecha.getFullYear();
+    const month = (fecha.getMonth() + 1);
+    const dt = fecha.getDate();
+    dtS = dt < 10 ? '0' + dt : dt.toString();
+    monthS = month < 10 ? '0' + month : month.toString();
+    return year + '-' + monthS + '-' + dtS;
   }
 
   async getIngramProducts() {

@@ -464,13 +464,12 @@ class ExternalCtsService extends ResolversOperationsService {
     let i: Picture = new Picture();
     let is: Picture = new Picture();
     let desc: Descuentos = new Descuentos();
-
     let disponible = 0;
     let price = 0;
     let salePrice = 0;
-
     disponible = 0;
     salePrice = 0;
+    itemData.id = undefined;
     if (item && item.almacenes && item.almacenes.length > 0) {
       const branchOfficesCt: BranchOffices[] = [];
       let featured = false;

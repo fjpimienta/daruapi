@@ -209,6 +209,7 @@ class ExternalIngramService extends ResolversOperationsService {
     try {
       disponible = 0;
       salePrice = 0;
+      itemData.id = undefined;
       if (item.availability && item.availability.availabilityByWarehouse && item.availability.availabilityByWarehouse.length > 0) {
         const branchOfficesIngram: BranchOffices[] = [];
         let featured = false;

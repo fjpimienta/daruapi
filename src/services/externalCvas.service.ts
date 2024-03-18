@@ -709,7 +709,6 @@ class ExternalCvasService extends ResolversOperationsService {
         listProductsCva: []
       }
     }
-
   }
 
   async setProduct(proveedor: string, item: any, productJson: any = null, imagenes: any = null, almacenes: any[], stockMinimo: number, exchangeRate: number) {
@@ -725,9 +724,9 @@ class ExternalCvasService extends ResolversOperationsService {
     const promo = new Promociones();
     let disponible = 0;
     let salePrice = 0;
-
     salePrice = 0;
     disponible = 0;
+    itemData.id = undefined;
     let branchOffices: BranchOffices[] = [];
     if (item.ExsTotal >= stockMinimo) {                  // Si existencias totales.
       let featured = false;
@@ -854,8 +853,6 @@ class ExternalCvasService extends ResolversOperationsService {
           itemData.especificaciones.push(especP);
         }
       }
-    } else {
-      itemData.id = undefined;
     }
     return itemData;
   }

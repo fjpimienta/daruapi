@@ -118,13 +118,15 @@ class ExternalIngramService extends ResolversOperationsService {
     listProductsIngram: Product[] | [];
   }> {
     const db = this.db;
-    const allRecords = { allRecords: true };
+    const allRecords = { allRecords: false };
     const productos: Product[] = [];
     const config = await new ConfigsService({}, { id: '1' }, { db }).details();
     const stockMinimo = config.config.minimum_offer;
     const exchangeRate = config.config.exchange_rate;
     const productosIngram = await (await this.getPricesIngram(allRecords)).pricesIngram;
-    const catalogIngrams = await (await this.getCatalogIngrams()).catalogIngrams;
+    console.log('productosIngram: ', productosIngram?.length);
+    const catalogIngrams = await (await this.getCatalogIngrams()).ingramProduct;
+    console.log('catalogIngrams: ', catalogIngrams?.length);
     if (productosIngram && productosIngram.length <= 0) {
       return await {
         status: false,
@@ -135,28 +137,33 @@ class ExternalIngramService extends ResolversOperationsService {
     if (catalogIngrams && catalogIngrams.length <= 0) {
       return await {
         status: false,
-        message: 'No se han encontrado los precios de los productos.',
+        message: 'No se han encontrado los productos del proveedor en nuestra base de datos.',
         listProductsIngram: []
       }
     }
     if (productosIngram) {
+      console.log('productosIngram: ', productosIngram[0]);
+      console.log('productosIngram: ', productosIngram[productosIngram.length-1]);
+      console.log('catalogIngrams: ', catalogIngrams[0]);
+      console.log('catalogIngrams: ', catalogIngrams[productosIngram.length-1]);
+
       for (const prodIngram of productosIngram) {
-        if (prodIngram.availability && prodIngram.availability.availabilityByWarehouse && prodIngram.vendorPartNumber !== '') {
+        const { availability } = prodIngram;
+        if (availability && availability.availabilityByWarehouse) {
           const warehouses: AvailabilityByWarehouse[] = [];
-          for (const almacen of prodIngram.availability.availabilityByWarehouse) {
+          for (const almacen of availability.availabilityByWarehouse) {
             if (almacen.quantityAvailable >= stockMinimo) {
-              const warehouse: AvailabilityByWarehouse = {
+              warehouses.push({
                 warehouseId: almacen.warehouseId,
                 location: almacen.location,
                 quantityAvailable: almacen.quantityAvailable,
                 quantityBackordered: almacen.quantityBackordered,
                 backOrderInfo: almacen.backOrderInfo as { quantity: number; etaDate: string } | undefined
-              };
-              warehouses.push(warehouse);
+              });
             }
           }
           if (warehouses.length > 0) {
-            if (prodIngram.availability.availabilityByWarehouse.length !== warehouses.length) {
+            if (availability.availabilityByWarehouse.length !== warehouses.length) {
               prodIngram.availability.availabilityByWarehouse = warehouses.map(warehouse => ({
                 warehouseId: warehouse.warehouseId,
                 location: warehouse.location,
@@ -164,17 +171,12 @@ class ExternalIngramService extends ResolversOperationsService {
                 quantityBackordered: warehouse.quantityBackordered,
                 backOrderInfo: Array.isArray(warehouse.backOrderInfo) ? warehouse.backOrderInfo : []
               }));
-              // Si el producto cumple con los requisitos lo agrega.
-              const catalogIngram = catalogIngrams.find(cat => {
-                return cat.imSKU.trim() === prodIngram.ingramPartNumber.trim();
-              });
-              if (catalogIngram) {
-                if (prodIngram.availability && prodIngram.availability.availabilityByWarehouse
-                  && prodIngram.availability.availabilityByWarehouse.length > 0) {
-                  const itemData: Product = await this.setProduct('ingram', prodIngram, catalogIngram, null, stockMinimo, exchangeRate);
-                  if (itemData.id !== undefined) {
-                    productos.push(itemData);
-                  }
+              const catalogIngram = catalogIngrams.find(cat => cat.imSKU.trim() === prodIngram.ingramPartNumber.trim());
+              if (catalogIngram && availability.availabilityByWarehouse && availability.availabilityByWarehouse.length > 0) {
+                // console.log('catalogIngram: ', catalogIngram);
+                const itemData: Product = await this.setProduct('ingram', prodIngram, catalogIngram, null, stockMinimo, exchangeRate);
+                if (itemData.id !== undefined && itemData.partnumber !== '') {
+                  productos.push(itemData);
                 }
               }
             }
@@ -182,6 +184,50 @@ class ExternalIngramService extends ResolversOperationsService {
         }
       }
     }
+
+    // if (productosIngram) {
+    //   for (const prodIngram of productosIngram) {
+    //     if (prodIngram.availability && prodIngram.availability.availabilityByWarehouse && prodIngram.vendorPartNumber !== '') {
+    //       const warehouses: AvailabilityByWarehouse[] = [];
+    //       for (const almacen of prodIngram.availability.availabilityByWarehouse) {
+    //         if (almacen.quantityAvailable >= stockMinimo) {
+    //           const warehouse: AvailabilityByWarehouse = {
+    //             warehouseId: almacen.warehouseId,
+    //             location: almacen.location,
+    //             quantityAvailable: almacen.quantityAvailable,
+    //             quantityBackordered: almacen.quantityBackordered,
+    //             backOrderInfo: almacen.backOrderInfo as { quantity: number; etaDate: string } | undefined
+    //           };
+    //           warehouses.push(warehouse);
+    //         }
+    //       }
+    //       if (warehouses.length > 0) {
+    //         if (prodIngram.availability.availabilityByWarehouse.length !== warehouses.length) {
+    //           prodIngram.availability.availabilityByWarehouse = warehouses.map(warehouse => ({
+    //             warehouseId: warehouse.warehouseId,
+    //             location: warehouse.location,
+    //             quantityAvailable: warehouse.quantityAvailable,
+    //             quantityBackordered: warehouse.quantityBackordered,
+    //             backOrderInfo: Array.isArray(warehouse.backOrderInfo) ? warehouse.backOrderInfo : []
+    //           }));
+    //           // Si el producto cumple con los requisitos lo agrega.
+    //           const catalogIngram = catalogIngrams.find(cat => {
+    //             return cat.imSKU.trim() === prodIngram.ingramPartNumber.trim();
+    //           });
+    //           if (catalogIngram) {
+    //             if (prodIngram.availability && prodIngram.availability.availabilityByWarehouse
+    //               && prodIngram.availability.availabilityByWarehouse.length > 0) {
+    //               const itemData: Product = await this.setProduct('ingram', prodIngram, catalogIngram, null, stockMinimo, exchangeRate);
+    //               if (itemData.id !== undefined) {
+    //                 productos.push(itemData);
+    //               }
+    //             }
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
     return await {
       status: true,
       message: 'Productos listos para agregar.',
@@ -499,12 +545,12 @@ class ExternalIngramService extends ResolversOperationsService {
 
   async getCatalogIngrams() {
     // Extraer solo los productos disponibles en Ingram.
-    const filter: object = { "stockAvailableYN": "Y" }
+    const filter: object = { }
     const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
     return {
       status: result.status,
       message: result.message,
-      catalogIngrams: result.items
+      ingramProduct: result.items
     };
   }
 

@@ -289,11 +289,19 @@ class ExternalIngramService extends ResolversOperationsService {
             itemData.subCategory.push(c1);
           }
           // Marcas
-          itemData.brand = item.vendorName.replace(/[^\w\s]/gi, '').toLowerCase();
-          itemData.brands = [];
-          b.name = item.vendorName.replace(/[^\w\s]/gi, '');
-          b.slug = slugify(b.name, { lower: true });
-          itemData.brands.push(b);
+          if (item.vendorName) {
+            itemData.brand = item.vendorName.replace(/[^\w\s]/gi, '').toLowerCase();
+            itemData.brands = [];
+            b.name = item.vendorName.replace(/[^\w\s]/gi, '');
+            b.slug = slugify(b.name, { lower: true });
+            itemData.brands.push(b);  
+          } else {
+            itemData.brand = 'SM';
+            itemData.brands = [];
+            b.name = 'SM';
+            b.slug = slugify(b.name, { lower: true });
+            itemData.brands.push(b);  
+          }
           s.idProveedor = proveedor;
           s.codigo = productJson.imSKU.trim();
           s.cantidad = stockMinimo;

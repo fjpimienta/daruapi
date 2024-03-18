@@ -458,17 +458,12 @@ class ExternalCtsService extends ResolversOperationsService {
     let itemData: Product = new Product();
     let unidad: UnidadDeMedida = new UnidadDeMedida();
     let b: Brands = new Brands();
-    let c: Categorys = new Categorys();
     let s: SupplierProd = new SupplierProd();
-    let bo: BranchOffices = new BranchOffices();
     let i: Picture = new Picture();
     let is: Picture = new Picture();
     let desc: Descuentos = new Descuentos();
     let disponible = 0;
-    let price = 0;
     let salePrice = 0;
-    disponible = 0;
-    salePrice = 0;
     itemData.id = undefined;
     if (item && item.almacenes && item.almacenes.length > 0) {
       const branchOfficesCt: BranchOffices[] = [];
@@ -566,13 +561,11 @@ class ExternalCtsService extends ResolversOperationsService {
       s.idProveedor = proveedor;
       s.codigo = productJson.clave;
       s.cantidad = stockMinimo;
+      s.price = parseFloat(item.precio);
       if (itemData.promociones && (
         itemData.promociones.disponible_en_promocion > 0 || itemData.promociones.porciento > 0)) {
-        const precioPromocion = (parseFloat(item.precio) - (parseFloat(item.precio) * itemData.promociones.porciento / 100)).toFixed(2);
-        s.price = parseFloat(item.precio);
         s.sale_price = parseFloat(item.almacenes[0].promociones[0].precio);
       } else {
-        s.price = parseFloat(item.precio);
         s.sale_price = 0;
       }
       s.moneda = item.moneda;

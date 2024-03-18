@@ -3,6 +3,7 @@ type Query {
   existenciaProductoCt(
     existenciaProducto: SupplierProdInput
   ): ResultCts
+  listProductsCt: ResultCts
   stockProductsCt: ResultCts
   jsonProductsCt: ResultCts
   jsonProductsCtHP: ResultCts

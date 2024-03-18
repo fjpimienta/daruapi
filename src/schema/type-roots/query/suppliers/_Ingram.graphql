@@ -1,5 +1,6 @@
 type Query {
   tokenIngram: ResultIngram
+  listProductsIngram: ResultIngram
   ingramProduct(
     ingramPartNumber: String
     vendorPartNumber: String

@@ -408,11 +408,13 @@ class ExternalIngramService extends ResolversOperationsService {
             partsNumber.push({ ingramPartNumber: prod.ingramPartNumber });
             if (i % 50 === 0) {
               const productPrices = await this.getPricesIngramBloque(partsNumber)
-              for (const prodPrices of productPrices.pricesIngram) {
-                if (allRecords) {
-                  pricesIngram.push(prodPrices);
-                } else if (prodPrices.availability && ['A', 'B', 'C'].includes(prodPrices.productClass)) {
-                  pricesIngram.push(prodPrices);
+              if (productPrices && productPrices.pricesIngram && productPrices.pricesIngram.length > 0) {
+                for (const prodPrices of productPrices.pricesIngram) {
+                  if (allRecords) {
+                    pricesIngram.push(prodPrices);
+                  } else if (prodPrices.availability && ['A', 'B', 'C'].includes(prodPrices.productClass)) {
+                    pricesIngram.push(prodPrices);
+                  }
                 }
               }
               partsNumber = [];
@@ -422,9 +424,11 @@ class ExternalIngramService extends ResolversOperationsService {
         // Verificar si quedan productos pendientes.
         if (partsNumber.length > 0) {
           const productPrices = await this.getPricesIngramBloque(partsNumber);
-          for (const prodPrices of productPrices.pricesIngram) {
-            if (prodPrices.availability) {
-              pricesIngram.push(prodPrices);
+          if (productPrices && productPrices.pricesIngram && productPrices.pricesIngram.length > 0) {
+            for (const prodPrices of productPrices.pricesIngram) {
+              if (prodPrices.availability) {
+                pricesIngram.push(prodPrices);
+              }
             }
           }
         }

@@ -141,7 +141,7 @@ class ExternalIngramService extends ResolversOperationsService {
     }
     if (productosIngram) {
       for (const prodIngram of productosIngram) {
-        if (prodIngram.availability && prodIngram.availability.availabilityByWarehouse) {
+        if (prodIngram.availability && prodIngram.availability.availabilityByWarehouse && prodIngram.vendorPartNumber !== '') {
           const warehouses: AvailabilityByWarehouse[] = [];
           for (const almacen of prodIngram.availability.availabilityByWarehouse) {
             if (almacen.quantityAvailable >= stockMinimo) {
@@ -294,13 +294,13 @@ class ExternalIngramService extends ResolversOperationsService {
             itemData.brands = [];
             b.name = item.vendorName.replace(/[^\w\s]/gi, '');
             b.slug = slugify(b.name, { lower: true });
-            itemData.brands.push(b);  
+            itemData.brands.push(b);
           } else {
             itemData.brand = 'SM';
             itemData.brands = [];
             b.name = 'SM';
             b.slug = slugify(b.name, { lower: true });
-            itemData.brands.push(b);  
+            itemData.brands.push(b);
           }
           s.idProveedor = proveedor;
           s.codigo = productJson.imSKU.trim();

@@ -197,3 +197,14 @@ export interface ICatalogIngram {
   rebateAppliedToCostYN: string;
   substituteIMPartNumber: string;
 }
+
+export interface AvailabilityByWarehouse {
+  warehouseId: number;
+  location: string;
+  quantityAvailable: number;
+  quantityBackordered: number;
+  backOrderInfo?: {
+    quantity: number;
+    etaDate: string;
+  };
+}

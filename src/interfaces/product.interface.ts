@@ -18,6 +18,7 @@ export interface IProduct {
   partnumber: string;
   sku: string;
   upc: string;
+  ean: string;
   category: ICategorys[];
   subCategory: ICategorys[];
   brand: string;
@@ -33,10 +34,10 @@ export interface IProduct {
   descuentos: IDescuentos;
   promociones: IPromociones;
   registerDate?: String;
-  especificaciones: IEspecificaciones;
+  especificaciones: IEspecificacion[];
 }
 
-export interface IEspecificaciones {
+export interface IEspecificacion {
   tipo: String;
   valor: String;
 }

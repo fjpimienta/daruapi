@@ -118,15 +118,13 @@ class ExternalIngramService extends ResolversOperationsService {
     listProductsIngram: Product[] | [];
   }> {
     const db = this.db;
-    const allRecords = { allRecords: false };
+    const allRecords = { allRecords: true };
     const productos: Product[] = [];
     const config = await new ConfigsService({}, { id: '1' }, { db }).details();
     const stockMinimo = config.config.minimum_offer;
     const exchangeRate = config.config.exchange_rate;
     const productosIngram = await (await this.getPricesIngram(allRecords)).pricesIngram;
-    console.log('productosIngram: ', productosIngram?.length);
     const catalogIngrams = await (await this.getCatalogIngrams()).ingramProduct;
-    console.log('catalogIngrams: ', catalogIngrams?.length);
     if (productosIngram && productosIngram.length <= 0) {
       return await {
         status: false,
@@ -142,11 +140,6 @@ class ExternalIngramService extends ResolversOperationsService {
       }
     }
     if (productosIngram) {
-      console.log('productosIngram: ', productosIngram[0]);
-      console.log('productosIngram: ', productosIngram[productosIngram.length-1]);
-      console.log('catalogIngrams: ', catalogIngrams[0]);
-      console.log('catalogIngrams: ', catalogIngrams[productosIngram.length-1]);
-
       for (const prodIngram of productosIngram) {
         const { availability } = prodIngram;
         if (availability && availability.availabilityByWarehouse) {
@@ -173,7 +166,6 @@ class ExternalIngramService extends ResolversOperationsService {
               }));
               const catalogIngram = catalogIngrams.find(cat => cat.imSKU.trim() === prodIngram.ingramPartNumber.trim());
               if (catalogIngram && availability.availabilityByWarehouse && availability.availabilityByWarehouse.length > 0) {
-                // console.log('catalogIngram: ', catalogIngram);
                 const itemData: Product = await this.setProduct('ingram', prodIngram, catalogIngram, null, stockMinimo, exchangeRate);
                 if (itemData.id !== undefined && itemData.partnumber !== '') {
                   productos.push(itemData);
@@ -545,7 +537,7 @@ class ExternalIngramService extends ResolversOperationsService {
 
   async getCatalogIngrams() {
     // Extraer solo los productos disponibles en Ingram.
-    const filter: object = { }
+    const filter: object = {}
     const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
     return {
       status: result.status,

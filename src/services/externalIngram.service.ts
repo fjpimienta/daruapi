@@ -176,50 +176,6 @@ class ExternalIngramService extends ResolversOperationsService {
         }
       }
     }
-
-    // if (productosIngram) {
-    //   for (const prodIngram of productosIngram) {
-    //     if (prodIngram.availability && prodIngram.availability.availabilityByWarehouse && prodIngram.vendorPartNumber !== '') {
-    //       const warehouses: AvailabilityByWarehouse[] = [];
-    //       for (const almacen of prodIngram.availability.availabilityByWarehouse) {
-    //         if (almacen.quantityAvailable >= stockMinimo) {
-    //           const warehouse: AvailabilityByWarehouse = {
-    //             warehouseId: almacen.warehouseId,
-    //             location: almacen.location,
-    //             quantityAvailable: almacen.quantityAvailable,
-    //             quantityBackordered: almacen.quantityBackordered,
-    //             backOrderInfo: almacen.backOrderInfo as { quantity: number; etaDate: string } | undefined
-    //           };
-    //           warehouses.push(warehouse);
-    //         }
-    //       }
-    //       if (warehouses.length > 0) {
-    //         if (prodIngram.availability.availabilityByWarehouse.length !== warehouses.length) {
-    //           prodIngram.availability.availabilityByWarehouse = warehouses.map(warehouse => ({
-    //             warehouseId: warehouse.warehouseId,
-    //             location: warehouse.location,
-    //             quantityAvailable: warehouse.quantityAvailable,
-    //             quantityBackordered: warehouse.quantityBackordered,
-    //             backOrderInfo: Array.isArray(warehouse.backOrderInfo) ? warehouse.backOrderInfo : []
-    //           }));
-    //           // Si el producto cumple con los requisitos lo agrega.
-    //           const catalogIngram = catalogIngrams.find(cat => {
-    //             return cat.imSKU.trim() === prodIngram.ingramPartNumber.trim();
-    //           });
-    //           if (catalogIngram) {
-    //             if (prodIngram.availability && prodIngram.availability.availabilityByWarehouse
-    //               && prodIngram.availability.availabilityByWarehouse.length > 0) {
-    //               const itemData: Product = await this.setProduct('ingram', prodIngram, catalogIngram, null, stockMinimo, exchangeRate);
-    //               if (itemData.id !== undefined) {
-    //                 productos.push(itemData);
-    //               }
-    //             }
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
     return await {
       status: true,
       message: 'Productos listos para agregar.',

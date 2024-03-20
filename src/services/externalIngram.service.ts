@@ -424,7 +424,7 @@ class ExternalIngramService extends ResolversOperationsService {
           if (!vendedoresExcluidos.includes(prod.vendorName.toUpperCase())) {
             i += 1;
             partsNumber.push({ ingramPartNumber: prod.imSKU });
-            if (i % 100 === 0) {
+            if (i % 50 === 0) {
               // console.log('partsNumber: ', partsNumber);
               const productPrices = await this.getPricesIngramBloque(partsNumber)
               // console.log('productPrices.pricesIngram.length: ', productPrices.pricesIngram.length);

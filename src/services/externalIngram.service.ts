@@ -427,7 +427,7 @@ class ExternalIngramService extends ResolversOperationsService {
             if (i % 100 === 0) {
               // console.log('partsNumber: ', partsNumber);
               const productPrices = await this.getPricesIngramBloque(partsNumber)
-              console.log('productPrices.pricesIngram.length: ', productPrices.pricesIngram.length);
+              // console.log('productPrices.pricesIngram.length: ', productPrices.pricesIngram.length);
               // console.log('productPrices.pricesIngram[0]: ', productPrices.pricesIngram[0]);
               if (productPrices && productPrices.pricesIngram && productPrices.pricesIngram.length > 0) {
                 for (const prodPrices of productPrices.pricesIngram) {
@@ -443,9 +443,9 @@ class ExternalIngramService extends ResolversOperationsService {
           const productPrices = await this.getPricesIngramBloque(partsNumber);
           if (productPrices && productPrices.pricesIngram && productPrices.pricesIngram.length > 0) {
             for (const prodPrices of productPrices.pricesIngram) {
-              console.log('productPrices.pricesIngram[0]: ', productPrices.pricesIngram[0]);
-              console.log('productPrices.pricesIngram[1]: ', productPrices.pricesIngram[1]);
-              console.log('productPrices.pricesIngram[2]: ', productPrices.pricesIngram[2]);
+              // console.log('productPrices.pricesIngram[0]: ', productPrices.pricesIngram[0]);
+              // console.log('productPrices.pricesIngram[1]: ', productPrices.pricesIngram[1]);
+              // console.log('productPrices.pricesIngram[2]: ', productPrices.pricesIngram[2]);
               if (prodPrices.availability) {
                 pricesIngram.push(prodPrices);
               }

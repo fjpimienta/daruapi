@@ -233,14 +233,14 @@ class ExternalIngramService extends ResolversOperationsService {
           itemData.name = productJson.descriptionLine1.trim();
           itemData.slug = slugify(productJson.descriptionLine1.trim(), { lower: true });
           itemData.short_desc = productJson.descriptionLine1.trim() + '. ' + productJson.descriptionLine2.trim();
-          if (item.discounts && item.discounts.length > 0) {
-            if (item.discounts[0].specialPricingMinQuantity > 0 && item.discounts[0].specialPricingDiscount > 0) {
-              salePrice = item.discounts[0].specialPricingDiscount
-            }
+          if (item.discounts && item.discounts.length > 0 && item.discounts[0].specialPricing
+            && item.discounts[0].specialPricing.length > 0 && item.discounts[0].specialPricing[0].specialPricingAvailableQuantity > 0) {
+            const specialPricingDiscount = item.discounts[0].specialPricing[0].specialPricingDiscount;
+            salePrice = item.pricing.customerPrice - specialPricingDiscount;
           }
           if (item.pricing.customerPrice > 0) {
             price = item.pricing.customerPrice;           // Vienen dos precios customerPrice y retailPrice
-            if (item.moneda === 'USD') {
+            if (item.pricing.currencyCode === 'USD') {
               itemData.price = parseFloat((price * exchangeRate * utilidad * iva).toFixed(2));
               itemData.sale_price = parseFloat((salePrice * exchangeRate * utilidad * iva).toFixed(2));
             } else {
@@ -419,14 +419,15 @@ class ExternalIngramService extends ResolversOperationsService {
         let i = 0;
         let partsNumber: IProductsQuery[] = [];
         const pricesIngram: IPricesIngram[] = [];
+        const vendedoresExcluidos = ["APPLE ACCS RETAIL", "APPLE IPAD RETAIL"];
         for (const prod of productosIngram) {
-          if (prod.vendorName.toUpperCase() !== "APPLE TEST") {
+          if (!vendedoresExcluidos.includes(prod.vendorName.toUpperCase())) {
             i += 1;
             partsNumber.push({ ingramPartNumber: prod.imSKU });
-            if (i % 50 === 0) {
+            if (i % 100 === 0) {
               // console.log('partsNumber: ', partsNumber);
               const productPrices = await this.getPricesIngramBloque(partsNumber)
-              // console.log('productPrices: ', productPrices);
+              console.log('productPrices.pricesIngram.length: ', productPrices.pricesIngram.length);
               // console.log('productPrices.pricesIngram[0]: ', productPrices.pricesIngram[0]);
               if (productPrices && productPrices.pricesIngram && productPrices.pricesIngram.length > 0) {
                 for (const prodPrices of productPrices.pricesIngram) {
@@ -442,6 +443,9 @@ class ExternalIngramService extends ResolversOperationsService {
           const productPrices = await this.getPricesIngramBloque(partsNumber);
           if (productPrices && productPrices.pricesIngram && productPrices.pricesIngram.length > 0) {
             for (const prodPrices of productPrices.pricesIngram) {
+              console.log('productPrices.pricesIngram[0]: ', productPrices.pricesIngram[0]);
+              console.log('productPrices.pricesIngram[1]: ', productPrices.pricesIngram[1]);
+              console.log('productPrices.pricesIngram[2]: ', productPrices.pricesIngram[2]);
               if (prodPrices.availability) {
                 pricesIngram.push(prodPrices);
               }

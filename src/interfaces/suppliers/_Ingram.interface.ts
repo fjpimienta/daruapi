@@ -198,7 +198,7 @@ export interface ICatalogIngram {
   substituteIMPartNumber: string;
 }
 
-export interface AvailabilityByWarehouse {
+export interface IAvailabilityByWarehouse {
   warehouseId: number;
   location: string;
   quantityAvailable: number;
@@ -207,4 +207,36 @@ export interface AvailabilityByWarehouse {
     quantity: number;
     etaDate: string;
   };
+}
+
+export interface IOrderIngram {
+  customerOrderNumber: string;
+  endCustomerOrderNumber: string;
+  notes: string;
+  shipToInfo: IShipToInfoInput;
+  lines: ILinesInput[];
+  additionalAttributes: IAdditionalAttributesInput[];
+}
+
+export interface IShipToInfoInput {
+  contact: string;
+  companyName: string;
+  addressLine1: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  countryCode: string;
+  phoneNumber: string;
+  email: string;
+}
+
+export interface ILinesInput {
+  customerLineNumber: string;
+  ingramPartNumber: string;
+  quantity: number;
+}
+
+export interface IAdditionalAttributesInput {
+  attributeName: string;
+  attributeValue: string;
 }

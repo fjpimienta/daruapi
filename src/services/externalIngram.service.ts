@@ -4,7 +4,7 @@ import ResolversOperationsService from './resolvers-operaciones.service';
 
 import logger from '../utils/logger';
 import fetch from 'node-fetch';
-import { AvailabilityByWarehouse, IIngramProduct, IPricesIngram, IProductsQuery } from '../interfaces/suppliers/_Ingram.interface';
+import { IAvailabilityByWarehouse, IIngramProduct, IPricesIngram, IProductsQuery } from '../interfaces/suppliers/_Ingram.interface';
 import { COLLECTIONS } from '../config/constants';
 import { IBranchOffices } from '../interfaces/product.interface';
 import { BranchOffices, Brands, Categorys, Descuentos, Picture, Product, Promociones, SupplierProd, UnidadDeMedida } from '../models/product.models';
@@ -123,8 +123,13 @@ class ExternalIngramService extends ResolversOperationsService {
     const config = await new ConfigsService({}, { id: '1' }, { db }).details();
     const stockMinimo = config.config.minimum_offer;
     const exchangeRate = config.config.exchange_rate;
-    const productosIngram = await (await this.getPricesIngram(allRecords)).pricesIngram;
+    // const productosIngram = await (await this.getPricesIngram(allRecords)).pricesIngram;
+    // const productosIngram = await (await this.getPricesIngram(allRecords)).pricesIngram;
+
     const catalogIngrams = await (await this.getCatalogIngrams()).ingramProduct;
+    // console.log('catalogIngrams: ', catalogIngrams?.length);
+    const productosIngram = await (await this.getPricesIngrams(catalogIngrams)).pricesIngram;
+    // console.log('productosIngram: ', productosIngram?.length);
     if (productosIngram && productosIngram.length <= 0) {
       return await {
         status: false,
@@ -140,10 +145,16 @@ class ExternalIngramService extends ResolversOperationsService {
       }
     }
     if (productosIngram) {
+      // console.log('productosIngram[0]: ', productosIngram[0]);
+      // console.log('catalogIngrams[0]: ', catalogIngrams[0]);
+      // console.log('productosIngram[1]: ', productosIngram[1]);
+      // console.log('catalogIngrams[1]: ', catalogIngrams[1]);
+      // console.log('productosIngram[1]: ', productosIngram[2]);
+      // console.log('catalogIngrams[2]: ', catalogIngrams[2]);
       for (const prodIngram of productosIngram) {
         const { availability } = prodIngram;
         if (availability && availability.availabilityByWarehouse) {
-          const warehouses: AvailabilityByWarehouse[] = [];
+          const warehouses: IAvailabilityByWarehouse[] = [];
           for (const almacen of availability.availabilityByWarehouse) {
             if (almacen.quantityAvailable >= stockMinimo) {
               warehouses.push({
@@ -399,6 +410,83 @@ class ExternalIngramService extends ResolversOperationsService {
     }
   }
 
+  async getPricesIngrams(catalog: any[]) {
+    try {
+      // Get todos los productos.
+      const productosIngram = catalog;
+      if (productosIngram && productosIngram.length > 0) {
+        // Generar bloques de 50 productos.
+        let i = 0;
+        let partsNumber: IProductsQuery[] = [];
+        const pricesIngram: IPricesIngram[] = [];
+        for (const prod of productosIngram) {
+          if (prod.vendorName.toUpperCase() !== "APPLE TEST") {
+            i += 1;
+            partsNumber.push({ ingramPartNumber: prod.imSKU });
+            if (i % 50 === 0) {
+              // console.log('partsNumber: ', partsNumber);
+              const productPrices = await this.getPricesIngramBloque(partsNumber)
+              // console.log('productPrices: ', productPrices);
+              // console.log('productPrices.pricesIngram[0]: ', productPrices.pricesIngram[0]);
+              if (productPrices && productPrices.pricesIngram && productPrices.pricesIngram.length > 0) {
+                for (const prodPrices of productPrices.pricesIngram) {
+                  pricesIngram.push(prodPrices);
+                }
+              }
+              partsNumber = [];
+            }
+          }
+        }
+        // Verificar si quedan productos pendientes.
+        if (partsNumber.length > 0) {
+          const productPrices = await this.getPricesIngramBloque(partsNumber);
+          if (productPrices && productPrices.pricesIngram && productPrices.pricesIngram.length > 0) {
+            for (const prodPrices of productPrices.pricesIngram) {
+              if (prodPrices.availability) {
+                pricesIngram.push(prodPrices);
+              }
+            }
+          }
+        }
+        if (pricesIngram.length > 0) {
+          // Agregar categorias y subcategorias
+          for (const priceItem of pricesIngram) {
+            const item = productosIngram.find((x: IIngramProduct) => x.vendorPartNumber === priceItem.vendorPartNumber);
+            if (item) {
+              priceItem.category = item.category ? item.category : '';
+              priceItem.subCategory = item.subCategory ? item.subCategory : '';
+              priceItem.newProduct = item.newProduct === 'true' ? true : false;
+            }
+          }
+          // Fin Agregar
+          return {
+            status: true,
+            message: `Se ha generado la lista de precios de productos.`,
+            pricesIngram
+          };
+        } else {
+          return {
+            status: false,
+            message: `No se han encontrado productos.`,
+            pricesIngram: null,
+          };
+        }
+      } else {
+        return {
+          status: false,
+          message: `No se ha generado la lista de precios de productos.`,
+          pricesIngram: null,
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        pricesIngram: null,
+      };
+    }
+  }
+
   async getPricesIngram(variables: IVariables) {
     try {
       // Get todos los productos.
@@ -626,7 +714,71 @@ class ExternalIngramService extends ResolversOperationsService {
   }
 
   async setOrderIngram(variables: IVariables) {
-    console.log('variables: ', variables);
+    // console.log('variables: ', variables);
+    try {
+      if (!variables.pedidoIngram) {
+        return {
+          status: false,
+          message: `No se pudo guardar la orden: pedidoIngram no está definido`,
+          orderIngram: null,
+        };
+      }
+      const bodyIngram = {
+        customerOrderNumber: variables.pedidoIngram.customerOrderNumber,
+        endCustomerOrderNumber: variables.pedidoIngram.endCustomerOrderNumber,
+        shipToInfo: variables.pedidoIngram.shipToInfo,
+        lines: variables.pedidoIngram.lines,
+        additionalAttributes: variables.pedidoIngram.additionalAttributes
+      }
+      // console.log('bodyIngram: ', bodyIngram);
+      if (!bodyIngram) {
+        return {
+          status: false,
+          message: `No se puedo guardar la orden: ${bodyIngram}`,
+          orderIngram: null,
+        };
+      }
+      const token = await this.getTokenIngram();
+      const apiUrl = 'https://api.ingrammicro.com:443/sandbox/resellers/v6/orders';
+      const optionsIngram = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'IM-CustomerNumber': '20-840450',
+          'IM-CountryCode': 'MX',
+          'IM-CorrelationID': 'fbac82ba-cf0a-4bcf-fc03-0c5084',
+          'IM-SenderID': 'DARU DEV',
+          'Authorization': 'Bearer ' + token.tokenIngram.access_token
+        },
+        body: JSON.stringify(bodyIngram),
+        redirect: 'manual' as RequestRedirect
+      };
+      const url = `${apiUrl}`;
+      // console.log('optionsIngram: ', optionsIngram);
+      const response = await fetch(url, optionsIngram);
+      // console.log('response: ', response);
+      const responseJson = await response.json();
+      // console.log('responseJson: ', responseJson);
+      if (response.statusText === 'OK') {
+        return {
+          status: true,
+          message: `Se ha creado la orden de forma correcta.`,
+          orderIngram: responseJson,
+        };
+      } else {
+        return {
+          status: false,
+          message: `Hubo un problema en la generacion de la orden`,
+          orderIngram: null,
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        orderIngram: null,
+      };
+    }
   }
 
   async getListOrderIngram() {

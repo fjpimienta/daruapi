@@ -209,3 +209,69 @@ type ResponseCatalogoIngram {
   rebateAppliedToCostYN: String
   substituteIMPartNumber: String
 }
+
+type ResponseOrderIngram {
+  customerOrderNumber: String
+  endCustomerOrderNumber: String
+  billToAddressId: String
+  orderSplit: Boolean
+  processedPartially: Boolean
+  purchaseOrderTotal: Float
+  resellerInfo: String
+  shipToInfo: ShipToInfo
+  orders: [Orders]
+}
+
+type ShipToInfo {
+  contact: String
+  companyName: String
+  addressLine1: String
+  city: String
+  state: String
+  postalCode: String
+  countryCode: String
+}
+
+type Orders {
+  numberOfLinesWithSuccess: Int
+  numberOfLinesWithError: Int
+  numberOfLinesWithWarning: Int
+  ingramOrderNumber: String
+  ingramOrderDate: String
+  notes: String
+  orderType: String
+  orderTotal: Float
+  freightCharges: Float
+  totalTax: Float
+  currencyCode: String
+  lines: [Lines]
+  links: [Links]
+}
+
+type Lines {
+  subOrderNumber: String
+  ingramLineNumber: String
+  customerLineNumber: String
+  lineStatus: String
+  ingramPartNumber: String
+  unitPrice: Float
+  extendedUnitPrice: Float
+  quantityOrdered: Float
+  quantityConfirmed: Float
+  quantityBackOrdered: Float
+  notes: String
+  shipmentDetails: ShipmentDetails
+}
+
+type ShipmentDetails {
+  carrierCode: String
+  carrierName: String
+  shipFromWarehouseId: String
+  shipFromLocation: String
+}
+
+type Links {
+  topic: String
+  href: String
+  type: String
+}

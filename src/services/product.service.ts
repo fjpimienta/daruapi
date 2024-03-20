@@ -529,6 +529,18 @@ class ProductsService extends ResolversOperationsService {
               partNumber: product.partnumber
             }
             const productLocal = await new ProductsService({}, variableLoc, context).getProductField();
+            if (productLocal.productField && productLocal.productField.category) {
+              product.category = productLocal.productField.category
+            }
+            if (productLocal.productField && productLocal.productField.subCategory) {
+              product.subCategory = productLocal.productField.subCategory
+            }
+            if (productLocal.productField && productLocal.productField.brand) {
+              product.brand = productLocal.productField.brand
+            }
+            if (productLocal.productField && productLocal.productField.brands) {
+              product.brands = productLocal.productField.brands
+            }
             if (productLocal.productField && productLocal.productField.pictures && productLocal.productField.pictures.length > 0) {
               product.pictures = [];
               product.sm_pictures = [];

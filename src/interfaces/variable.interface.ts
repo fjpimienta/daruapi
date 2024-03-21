@@ -19,6 +19,7 @@ import { ICaptureChargeOpenpay, ICardOpenpay, IChargeOpenpay, ICustomerOpenpay, 
 import { IWelcome } from './welcome.interface';
 import { ICupon } from './cupon.interface';
 import { IIcommktContact } from './suppliers/_Icommkt.interface';
+import { IOrderIngram } from './suppliers/_Ingram.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -62,6 +63,8 @@ export interface IVariables {
   ordersCt?: IOrderCt[];
   orderCva?: IOrderCva;
   ordersCva?: IOrderCva[];
+  orderIngram?: IOrderIngram;
+  orderIngrams?: IOrderIngram[];
   name?: string;
   typeApi?: string;
   nameApi?: string;
@@ -135,6 +138,7 @@ export interface IVariables {
   upc?: string;
   allRecords?: Boolean;
   imSKU?: string;
+  pedidoIngram?: IOrderIngram;
   // products
   partNumber?: string;
   // icommkt

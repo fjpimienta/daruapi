@@ -17,4 +17,7 @@ type Query {
     imSKU: String
   ): ResultIngram
   catalogIngrams: ResultIngram
+  orderIngram(
+    pedidoIngram: OrderIngramInput
+  ): ResultIngram
 }

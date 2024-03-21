@@ -8,7 +8,8 @@ const resolversIngramQuery: IResolvers = {
     },
     async listProductsIngram(_, __, context) {
       return new ExternalIngramService(_, __, context).getListProductsIngram();
-    },    async ingramProduct(_, variables, context) {
+    },
+    async ingramProduct(_, variables, context) {
       return new ExternalIngramService(_, variables, context).getIngramProduct(variables);
     },
     async ingramProducts(_, variables, context) {
@@ -26,9 +27,9 @@ const resolversIngramQuery: IResolvers = {
     async catalogIngrams(_, variables, context) {
       return new ExternalIngramService(_, variables, context).getCatalogIngrams();
     },
-    // async orderIngram(_, variables, context) {
-    //   return new ExternalIngramService(_, variables, context).setOrderIngram(variables);
-    // }
+    async orderIngram(_, variables, context) {
+      return new ExternalIngramService(_, variables, context).setOrderIngram(variables);
+    }
   }
 };
 

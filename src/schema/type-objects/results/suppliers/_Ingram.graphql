@@ -9,4 +9,5 @@ type ResultIngram implements Result {
     existenciaProductoIngram: ResponseSupplierProd
     catalogIngram: ResponseCatalogoIngram
     catalogIngrams: [ResponseCatalogoIngram]
+    orderIngram: [ResponseOrderIngram]
 }

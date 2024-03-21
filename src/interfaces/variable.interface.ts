@@ -138,6 +138,7 @@ export interface IVariables {
   upc?: string;
   allRecords?: Boolean;
   imSKU?: string;
+  idOrderIngram?: string;
   pedidoIngram?: IOrderIngram;
   // products
   partNumber?: string;

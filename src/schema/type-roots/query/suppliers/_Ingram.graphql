@@ -20,4 +20,7 @@ type Query {
   orderIngram(
     pedidoIngram: OrderIngramInput
   ): ResultIngram
+  orderOneIngram(
+    idOrderIngram: String
+  ): ResultIngram
 }

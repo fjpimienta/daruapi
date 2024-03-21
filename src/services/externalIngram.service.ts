@@ -761,6 +761,7 @@ class ExternalIngramService extends ResolversOperationsService {
       const response = await fetch(url, optionsIngram);
       logger.info(`setOrderCva.response: \n ${JSON.stringify(response)} \n`);
       const responseJson = await response.json();
+      console.log('responseJson: ', responseJson);
       if (response.status >= 200 && response.status < 300 && response.statusText === 'Created') {
         return {
           status: true,
@@ -783,7 +784,53 @@ class ExternalIngramService extends ResolversOperationsService {
     }
   }
 
-  async getListOrderIngram() {
+  async getOrderIngram(variables: IVariables) {
+    try {
+      const { idOrderIngram } = variables;
+      const token = await this.getTokenIngram();
+      const apiUrl = 'https://api.ingrammicro.com:443/sandbox/resellers/v6/orders';
+      const optionsIngram = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'IM-CustomerNumber': '20-840450',
+          'IM-CountryCode': 'MX',
+          'IM-CorrelationID': 'fbac82ba-cf0a-4bcf-fc03-0c5084',
+          'IM-SenderID': 'DARU DEV',
+          'Authorization': 'Bearer ' + token.tokenIngram.access_token,
+        },
+        redirect: 'manual' as RequestRedirect
+      };
+      const url = `${apiUrl}/${idOrderIngram}`;
+      console.log('url: ', url);
+      const response = await fetch(url, optionsIngram);
+      console.log('response: ', response);
+      const responseJson = await response.json();
+      console.log('responseJson: ', responseJson);
+      // Generar
+      if (response.statusText === 'OK' || response.status === 207) {
+        return {
+          status: true,
+          message: `Se ha recuperado la orden ${idOrderIngram} de forma correcta.`,
+          orderOneIngram: responseJson
+        };
+      } else {
+        return {
+          status: false,
+          message: `No se ha encontrado la orden ${idOrderIngram}. Favor de verificar.`,
+          orderOneIngram: {}
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        orderOneIngram: {}
+      };
+    }
+  }
+
+  async getListOrdesrIngram() {
 
   }
 }

@@ -217,9 +217,16 @@ type ResponseOrderIngram {
   orderSplit: Boolean
   processedPartially: Boolean
   purchaseOrderTotal: Float
-  resellerInfo: String
+  resellerInfo: ResellerInfo
   shipToInfo: ShipToInfo
   orders: [Orders]
+}
+
+type ResellerInfo {
+  contact: String
+  companyName: String
+  email: String
+  phoneNumber: String
 }
 
 type ShipToInfo {

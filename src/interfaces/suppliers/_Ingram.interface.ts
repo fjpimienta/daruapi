@@ -213,9 +213,17 @@ export interface IOrderIngram {
   customerOrderNumber: string;
   endCustomerOrderNumber: string;
   notes: string;
+  resellerInfo: IResellerInfo;
   shipToInfo: IShipToInfoInput;
   lines: ILinesInput[];
   additionalAttributes: IAdditionalAttributesInput[];
+}
+
+export interface IResellerInfo {
+  contact: string;
+  companyName: string;
+  email: string;
+  phoneNumber: string;
 }
 
 export interface IShipToInfoInput {

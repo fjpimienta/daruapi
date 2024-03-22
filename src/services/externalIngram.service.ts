@@ -761,7 +761,6 @@ class ExternalIngramService extends ResolversOperationsService {
       const response = await fetch(url, optionsIngram);
       logger.info(`setOrderCva.response: \n ${JSON.stringify(response)} \n`);
       const responseJson = await response.json();
-      console.log('responseJson: ', responseJson);
       if (response.status >= 200 && response.status < 300 && response.statusText === 'Created') {
         return {
           status: true,
@@ -802,13 +801,12 @@ class ExternalIngramService extends ResolversOperationsService {
         redirect: 'manual' as RequestRedirect
       };
       const url = `${apiUrl}/${idOrderIngram}`;
-      console.log('url: ', url);
       const response = await fetch(url, optionsIngram);
-      console.log('response: ', response);
+      // console.log('response: ', response);
       const responseJson = await response.json();
       console.log('responseJson: ', responseJson);
       // Generar
-      if (response.statusText === 'OK' || response.status === 207) {
+      if (response.statusText === 'OK' || (response.status >= 200 && response.status < 299)) {
         return {
           status: true,
           message: `Se ha recuperado la orden ${idOrderIngram} de forma correcta.`,

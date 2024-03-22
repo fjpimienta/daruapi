@@ -211,22 +211,34 @@ type ResponseCatalogoIngram {
 }
 
 type ResponseOrderIngram {
+  ingramOrderNumber: String
+  ingramOrderDate: String
+  orderType: String
   customerOrderNumber: String
   endCustomerOrderNumber: String
-  billToAddressId: String
-  orderSplit: Boolean
-  processedPartially: Boolean
-  purchaseOrderTotal: Float
-  resellerInfo: ResellerInfo
+  orderStatus: String
+  orderTotal: Float
+  orderSubTotal: Float
+  freightCharges: Float
+  currencyCode: String
+  totalWeight: Float
+  totalTax: Float
+  paymentTerms: String
+  billToInfo: BillToInfo
   shipToInfo: ShipToInfo
-  orders: [Orders]
+  lines: [Lines]
 }
 
-type ResellerInfo {
+type BillToInfo {
   contact: String
   companyName: String
-  email: String
-  phoneNumber: String
+  addressLine1: String
+  addressLine2: String
+  addressLine3: String
+  city: String
+  state: String
+  postalCode: String
+  countryCode: String
 }
 
 type ShipToInfo {
@@ -237,6 +249,61 @@ type ShipToInfo {
   state: String
   postalCode: String
   countryCode: String
+}
+
+type Lines {
+  subOrderNumber: String
+  ingramOrderLineNumber: String
+  customerLineNumber: String
+  lineStatus: String
+  ingramPartNumber: String
+  vendorPartNumber: String
+  vendorName: String
+  partDescription: String
+  unitWeight: Float
+  weightUom: String
+  unitPrice: Float
+  upcCode: String
+  extendedUnitPrice: Float
+  taxAmount: Float
+  currencyCode: String
+  quantityOrdered: Float
+  quantityConfirmed: Float
+  quantityBackOrdered: Float
+  promisedDeliveryDate: String
+  shipmentDetails: [ShipmentDetails]
+  additionalAttributes: [AdditionalAttributes]
+}
+
+type ShipmentDetails {
+  carrierCode: String
+  carrierName: String
+  shipFromWarehouseId: String
+  shipFromLocation: String
+}
+
+type AdditionalAttributes {
+  attributeName: String
+  attributeValue: String
+}
+
+type ResponseCreateOrderIngram {
+    customerOrderNumber: String
+    endCustomerOrderNumber: String
+    billToAddressId: String
+    orderSplit: String
+    processedPartially: String
+    purchaseOrderTotal: Float
+    resellerInfo: ResellerInfo
+    shipToInfo: ShipToInfo
+    orders: [Orders]
+}
+
+type ResellerInfo {
+  contact: String
+  companyName: String
+  email: String
+  phoneNumber: String
 }
 
 type Orders {
@@ -253,28 +320,6 @@ type Orders {
   currencyCode: String
   lines: [Lines]
   links: [Links]
-}
-
-type Lines {
-  subOrderNumber: String
-  ingramLineNumber: String
-  customerLineNumber: String
-  lineStatus: String
-  ingramPartNumber: String
-  unitPrice: Float
-  extendedUnitPrice: Float
-  quantityOrdered: Float
-  quantityConfirmed: Float
-  quantityBackOrdered: Float
-  notes: String
-  shipmentDetails: ShipmentDetails
-}
-
-type ShipmentDetails {
-  carrierCode: String
-  carrierName: String
-  shipFromWarehouseId: String
-  shipFromLocation: String
 }
 
 type Links {

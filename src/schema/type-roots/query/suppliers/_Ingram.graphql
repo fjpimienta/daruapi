@@ -23,4 +23,5 @@ type Query {
   orderOneIngram(
     idOrderIngram: String
   ): ResultIngram
+  orderListIngram: ResultIngram
 }

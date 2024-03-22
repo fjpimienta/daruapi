@@ -32,6 +32,9 @@ const resolversIngramQuery: IResolvers = {
     },
     async orderOneIngram(_, variables, context) {
       return new ExternalIngramService(_, variables, context).getOrderIngram(variables);
+    },
+    async orderListIngram(_, variables, context) {
+      return new ExternalIngramService(_, variables, context).getOrderListIngram();
     }
   }
 };

@@ -802,10 +802,8 @@ class ExternalIngramService extends ResolversOperationsService {
       };
       const url = `${apiUrl}/${idOrderIngram}`;
       const response = await fetch(url, optionsIngram);
-      // console.log('response: ', response);
+      logger.info(`getOrderIngram.response: \n ${JSON.stringify(response)} \n`);
       const responseJson = await response.json();
-      console.log('responseJson: ', responseJson);
-      // Generar
       if (response.statusText === 'OK' || (response.status >= 200 && response.status < 299)) {
         return {
           status: true,
@@ -828,9 +826,49 @@ class ExternalIngramService extends ResolversOperationsService {
     }
   }
 
-  async getListOrdesrIngram() {
-
+  async getOrderListIngram() {
+    try {
+      const token = await this.getTokenIngram();
+      const apiUrl = 'https://api.ingrammicro.com:443/sandbox/resellers/v6/orders/search';
+      const optionsIngram = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'IM-CustomerNumber': '20-840450',
+          'IM-CountryCode': 'MX',
+          'IM-CorrelationID': 'fbac82ba-cf0a-4bcf-fc03-0c5084',
+          'IM-SenderID': 'DARU DEV',
+          'Authorization': 'Bearer ' + token.tokenIngram.access_token,
+        },
+        redirect: 'manual' as RequestRedirect
+      };
+      const url = `${apiUrl}`;
+      const response = await fetch(url, optionsIngram);
+      logger.info(`getOrderListIngram.response: \n ${JSON.stringify(response)} \n`);
+      const responseJson = await response.json();
+      // Generar
+      if (response.statusText === 'OK' || (response.status >= 200 && response.status < 299)) {
+        return {
+          status: true,
+          message: `Se ha recuperado la lista de ordenes de forma correcta.`,
+          orderListIngram: responseJson.orders
+        };
+      } else {
+        return {
+          status: false,
+          message: `No se ha encontrado ninguna orden. Favor de verificar.`,
+          orderListIngram: {}
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        orderListIngram: {}
+      };
+    }
   }
+
 }
 
 export default ExternalIngramService;

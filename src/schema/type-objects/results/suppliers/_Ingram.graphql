@@ -11,4 +11,5 @@ type ResultIngram implements Result {
     catalogIngrams: [ResponseCatalogoIngram]
     orderIngram: ResponseCreateOrderIngram
     orderOneIngram: ResponseOrderIngram
+    orderListIngram: [ResponseOrderListIngram]
 }

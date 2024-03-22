@@ -327,3 +327,23 @@ type Links {
   href: String
   type: String
 }
+
+
+type ResponseOrderListIngram {
+  ingramOrderNumber: String
+  ingramOrderDate: String
+  customerOrderNumber: String
+  endCustomerOrderNumber: String
+  vendorName: String
+  orderTotal: Float
+  orderStatus: String
+  links: Links
+  subOrders: [SubOrders]
+}
+
+type SubOrders {
+  subOrderNumber: String
+  subOrderTotal: Float
+  subOrderStatus: String
+  links: Links
+}

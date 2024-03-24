@@ -28,6 +28,24 @@ class DashboardsService extends ResolversOperationsService {
     }
   }
 
+  async getImportBySupplierByMonth() {
+    try {
+      const filter = {};
+      const result = await this.importBySupplierByMonthDashboar(this.collection, filter);
+      return {
+        status: result.status,
+        message: result.message,
+        importBySupplierByMonth: result.items
+      };        
+    } catch (error) {
+      return await {
+        status: false,
+        message: 'Error en la carga del importe mensual por proveedor.',
+        importBySupplierByMonth: null
+      };
+    }
+  }
+
 }
 
 export default DashboardsService;

@@ -1,3 +1,4 @@
 type Query {
   importBySupplier: ResultDashboard
+  importBySupplierByMonth: ResultDashboard
 }

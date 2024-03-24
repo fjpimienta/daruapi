@@ -1,4 +1,10 @@
 type DashSupplierImport {
-  supplier: String!
-  import: Float!
+  supplierId: String!
+  totalAmount: Float!
+}
+
+type DashMonthImport {
+  year: String!
+  monthName: String!
+  totalAmount: Float!
 }

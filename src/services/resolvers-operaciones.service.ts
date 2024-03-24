@@ -526,6 +526,52 @@ class ResolversOperationsService {
       };
     }
   }
+
+  //#region Dashboards
+  // Listar informacion de Productos
+  protected async importBySupplierDashboar(
+    collection: string,
+    filter: object = { active: { $ne: false } }
+  ) {
+    try {
+      // Agregamos la etapa de agregación para encontrar el registro con el menor "sale_price" por "partnumber"
+      const aggregate = [
+        {
+          $unwind: {
+            path: '$warehouses',
+            preserveNullAndEmptyArrays: false
+          }
+        },
+        {
+          $group: {
+            _id: '$warehouses.suppliersProd.idProveedor',
+            importe: { $sum: '$importe' }
+          }
+        },
+        {
+          $project: {
+            supplier: '$_id',
+            import: '$importe'
+          }
+        }
+      ];
+      return {
+        status: true,
+        message: `Lista de  cargada correctamente`,
+        items: findElementsProducts(this.getDB(), collection, aggregate)
+      };
+    } catch (error) {
+      return {
+        info: null,
+        status: false,
+        message: `Lista de no cargada correctamente: ${error}`,
+        items: []
+      };
+    }
+  }
+
+  //#endregion Dashboards
+
 }
 
 export default ResolversOperationsService;

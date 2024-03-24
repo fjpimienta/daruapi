@@ -1,0 +1,5 @@
+type ResultDashboard implements Result {
+  status: Boolean!
+  message: String!
+  importBySupplier: [DashSupplierImport!]!
+}

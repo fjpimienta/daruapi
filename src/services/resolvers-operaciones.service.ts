@@ -531,11 +531,11 @@ class ResolversOperationsService {
   // Listar importes por proveedor
   protected async importBySupplierDashboar(
     collection: string,
-    filter: object = { active: { $ne: false } }
+    filter: string = ''
   ) {
     try {
       // Agregamos la etapa de agregación para encontrar el registro con el menor "sale_price" por "partnumber"
-      const aggregate = [
+      let pipeline: any[] = [
         {
           $unwind: {
             path: '$warehouses',
@@ -555,10 +555,16 @@ class ResolversOperationsService {
           }
         }
       ];
+      // Agregar el filtro solo si se proporciona un proveedor
+      if (filter !== '') {
+        pipeline.unshift({
+          $match: { 'warehouses.suppliersProd.idProveedor': filter }
+        });
+      }
       return {
         status: true,
         message: `Lista de  cargada correctamente`,
-        items: findElementsProducts(this.getDB(), collection, aggregate)
+        items: findElementsProducts(this.getDB(), collection, pipeline)
       };
     } catch (error) {
       return {
@@ -573,11 +579,11 @@ class ResolversOperationsService {
   // Listar importes por proveedor
   protected async importBySupplierByMonthDashboar(
     collection: string,
-    filter: object = { active: { $ne: false } }
+    filter: string = ''
   ) {
     try {
       // Agregamos la etapa de agregación para encontrar el registro con el menor "sale_price" por "partnumber"
-      const aggregate = [
+      let pipeline: any[] = [
         {
           $addFields: {
             registerDate: {
@@ -696,10 +702,16 @@ class ResolversOperationsService {
           }
         }
       ];
+      // Agregar el filtro solo si se proporciona un proveedor
+      if (filter !== '') {
+        pipeline.unshift({
+          $match: { 'warehouses.suppliersProd.idProveedor': filter }
+        });
+      }
       return {
         status: true,
         message: `Lista de  cargada correctamente`,
-        items: findElementsProducts(this.getDB(), collection, aggregate)
+        items: findElementsProducts(this.getDB(), collection, pipeline)
       };
     } catch (error) {
       return {

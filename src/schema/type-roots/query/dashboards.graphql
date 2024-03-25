@@ -1,4 +1,8 @@
 type Query {
-  importBySupplier: ResultDashboard
-  importBySupplierByMonth: ResultDashboard
+  importBySupplier(
+    supplierId: String
+  ): ResultDashboard
+  importBySupplierByMonth(
+    supplierId: String
+  ): ResultDashboard
 }

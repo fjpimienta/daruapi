@@ -46,6 +46,7 @@ export interface IVariables {
   shopProduct?: IShopProduct;
   supplier?: ISupplier;
   suppliers?: ISupplier[];
+  supplierId?: string;
   apiproveedor?: IApiproveedor;
   c_pais?: string;
   country?: ICountry;

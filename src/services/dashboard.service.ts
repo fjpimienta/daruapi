@@ -1,6 +1,5 @@
 import { COLLECTIONS } from '../config/constants';
 import { IContextData } from '../interfaces/context-data.interface';
-import { asignDocumentId } from '../lib/db-operations';
 import ResolversOperationsService from './resolvers-operaciones.service';
 
 class DashboardsService extends ResolversOperationsService {
@@ -12,8 +11,8 @@ class DashboardsService extends ResolversOperationsService {
 
   async getImportBySupplier() {
     try {
-      const filter = {};
-      const result = await this.importBySupplierDashboar(this.collection, filter);
+      const supplierId = this.getVariables().supplierId;
+      const result = await this.importBySupplierDashboar(this.collection, supplierId);
       return {
         status: result.status,
         message: result.message,
@@ -29,9 +28,9 @@ class DashboardsService extends ResolversOperationsService {
   }
 
   async getImportBySupplierByMonth() {
+    const supplierId = this.getVariables().supplierId;
     try {
-      const filter = {};
-      const result = await this.importBySupplierByMonthDashboar(this.collection, filter);
+      const result = await this.importBySupplierByMonthDashboar(this.collection, supplierId);
       return {
         status: result.status,
         message: result.message,

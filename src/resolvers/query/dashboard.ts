@@ -8,6 +8,9 @@ const resolversDashboardsQuery: IResolvers = {
     },
     async importBySupplierByMonth(_, variables, context) {
       return new DashboardsService(_, variables, context).getImportBySupplierByMonth();
+    },
+    async importBySupplierByWeek(_, variables, context) {
+      return new DashboardsService(_, variables, context).getImportBySupplierByWeek();
     }
   },
 };

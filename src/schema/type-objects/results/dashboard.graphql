@@ -3,4 +3,5 @@ type ResultDashboard implements Result {
   message: String!
   importBySupplier: [DashSupplierImport!]!
   importBySupplierByMonth: [DashMonthImport!]!
+  importBySupplierByWeek: [DashWeekImport!]!
 }

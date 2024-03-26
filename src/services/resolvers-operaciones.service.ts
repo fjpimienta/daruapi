@@ -579,7 +579,7 @@ class ResolversOperationsService {
   // Listar importes por proveedor
   protected async importBySupplierByMonthDashboar(
     collection: string,
-    filter: string = ''
+    supplierId: string = ''
   ) {
     try {
       // Agregamos la etapa de agregación para encontrar el registro con el menor "sale_price" por "partnumber"
@@ -703,9 +703,9 @@ class ResolversOperationsService {
         }
       ];
       // Agregar el filtro solo si se proporciona un proveedor
-      if (filter !== '') {
+      if (supplierId !== '') {
         pipeline.unshift({
-          $match: { 'warehouses.suppliersProd.idProveedor': filter }
+          $match: { 'warehouses.suppliersProd.idProveedor': supplierId }
         });
       }
       return {
@@ -723,6 +723,115 @@ class ResolversOperationsService {
     }
   }
 
+  protected async importBySupplierByWeekDashboar(
+    collection: string,
+    supplierId: string = '',
+    weekNumber: number = 0 // Por defecto, la primera semana
+  ) {
+    try {
+      // Agregamos la etapa de agregación para encontrar el registro con el menor "sale_price" por "partnumber"
+      let pipeline: any[] = [
+        {
+          $addFields: {
+            registerDate: {
+              $dateFromString: {
+                dateString: '$registerDate',
+                format: '%Y-%m-%dT%H:%M:%S.%LZ'
+              }
+            },
+            year: { $year: { $toDate: '$registerDate' } },
+            month: { $month: { $toDate: '$registerDate' } },
+            weekOfYear: { $week: { $toDate: '$registerDate' } }
+          }
+        },
+        {
+          $unwind: {
+            path: '$warehouses',
+            preserveNullAndEmptyArrays: false
+          }
+        },
+        {
+          $group: {
+            _id: {
+              supplierId: '$warehouses.suppliersProd.idProveedor',
+              year: '$year',
+              month: '$month',
+              weekOfYear: '$weekOfYear',
+            },
+            totalAmount: { $sum: '$importe' },
+          }
+        },
+        {
+          $addFields: {
+            monthName: {
+              $switch: {
+                branches: [
+                  { case: { $eq: ['$_id.month', 1] }, then: 'Enero' },
+                  { case: { $eq: ['$_id.month', 2] }, then: 'Febrero' },
+                  { case: { $eq: ['$_id.month', 3] }, then: 'Marzo' },
+                  { case: { $eq: ['$_id.month', 4] }, then: 'Abril' },
+                  { case: { $eq: ['$_id.month', 5] }, then: 'Mayo' },
+                  { case: { $eq: ['$_id.month', 6] }, then: 'Junio' },
+                  { case: { $eq: ['$_id.month', 7] }, then: 'Julio' },
+                  { case: { $eq: ['$_id.month', 8] }, then: 'Agosto' },
+                  { case: { $eq: ['$_id.month', 9] }, then: 'Septiembre' },
+                  { case: { $eq: ['$_id.month', 10] }, then: 'Octubre' },
+                  { case: { $eq: ['$_id.month', 11] }, then: 'Noviembre' },
+                  { case: { $eq: ['$_id.month', 12] }, then: 'Diciembre' },
+                ],
+                default: 'No válido',
+              },
+            },
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            supplierId: '$_id.supplierId',
+            year: '$_id.year',
+            monthName: 1,
+            weekOfYear: '$_id.weekOfYear',
+            totalAmount: 1,
+          }
+        },
+        {
+          $sort: {
+            year: 1,
+            monthName: 1,
+            weekOfYear: 1,
+          }
+        }
+      ];
+  
+      // Agregar el filtro solo si se proporciona un proveedor
+      if (supplierId !== '') {
+        pipeline.unshift({
+          $match: { 'warehouses.suppliersProd.idProveedor': supplierId }
+        });
+      }
+  
+      // Agregar la etapa de filtro por número de semana
+      if (weekNumber > 0) {
+        pipeline.unshift({
+          $match: { 'weekOfYear': weekNumber }
+        });
+      }
+  
+      return {
+        status: true,
+        message: `Lista cargada correctamente`,
+        items: findElementsProducts(this.getDB(), collection, pipeline)
+      };
+    } catch (error) {
+      return {
+        info: null,
+        status: false,
+        message: `Lista no cargada correctamente: ${error}`,
+        items: []
+      };
+    }
+  }
+  
   //#endregion Dashboards
 
 }

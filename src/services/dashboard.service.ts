@@ -45,6 +45,25 @@ class DashboardsService extends ResolversOperationsService {
     }
   }
 
+  async getImportBySupplierByWeek() {
+    const supplierId = this.getVariables().supplierId;
+    const weekNumber = this.getVariables().weekNumber;
+    try {
+      const result = await this.importBySupplierByWeekDashboar(this.collection, supplierId, weekNumber);
+      return {
+        status: result.status,
+        message: result.message,
+        importBySupplierByWeek: result.items
+      };        
+    } catch (error) {
+      return await {
+        status: false,
+        message: 'Error en la carga del importe mensual por proveedor.',
+        importBySupplierByWeek: null
+      };
+    }
+  }
+
 }
 
 export default DashboardsService;

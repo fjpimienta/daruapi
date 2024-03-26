@@ -47,6 +47,7 @@ export interface IVariables {
   supplier?: ISupplier;
   suppliers?: ISupplier[];
   supplierId?: string;
+  weekNumber?: number;
   apiproveedor?: IApiproveedor;
   c_pais?: string;
   country?: ICountry;

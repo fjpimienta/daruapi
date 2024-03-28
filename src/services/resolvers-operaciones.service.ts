@@ -725,25 +725,7 @@ class ResolversOperationsService {
               }
             },
             year: { $year: { $toDate: '$registerDate' } },
-            monthName: {
-              $switch: {
-                branches: [
-                  { case: { $eq: [{ $month: { $toDate: '$registerDate' } }, 1] }, then: 'Enero' },
-                  { case: { $eq: [{ $month: { $toDate: '$registerDate' } }, 2] }, then: 'Febrero' },
-                  { case: { $eq: [{ $month: { $toDate: '$registerDate' } }, 3] }, then: 'Marzo' },
-                  { case: { $eq: [{ $month: { $toDate: '$registerDate' } }, 4] }, then: 'Abril' },
-                  { case: { $eq: [{ $month: { $toDate: '$registerDate' } }, 5] }, then: 'Mayo' },
-                  { case: { $eq: [{ $month: { $toDate: '$registerDate' } }, 6] }, then: 'Junio' },
-                  { case: { $eq: [{ $month: { $toDate: '$registerDate' } }, 7] }, then: 'Julio' },
-                  { case: { $eq: [{ $month: { $toDate: '$registerDate' } }, 8] }, then: 'Agosto' },
-                  { case: { $eq: [{ $month: { $toDate: '$registerDate' } }, 9] }, then: 'Septiembre' },
-                  { case: { $eq: [{ $month: { $toDate: '$registerDate' } }, 10] }, then: 'Octubre' },
-                  { case: { $eq: [{ $month: { $toDate: '$registerDate' } }, 11] }, then: 'Noviembre' },
-                  { case: { $eq: [{ $month: { $toDate: '$registerDate' } }, 12] }, then: 'Diciembre' },
-                ],
-                default: 'No válido',
-              },
-            },
+            month: { $month: { $toDate: '$registerDate' } },
             weekOfYear: { $week: { $toDate: '$registerDate' } }
           }
         },
@@ -758,47 +740,52 @@ class ResolversOperationsService {
             _id: {
               supplierId: '$warehouses.suppliersProd.idProveedor',
               year: '$year',
-              monthName: '$monthName',
+              month: '$month',
+              weekOfYear: '$weekOfYear',
             },
             totalAmount: { $sum: '$importe' },
           }
         },
         {
-          $sort: {
-            '_id.year': 1,
-            '_id.monthName': 1,
-          }
-        },
-        {
-          $group: {
-            _id: {
-              year: '$_id.year',
-              monthName: '$_id.monthName',
+          $addFields: {
+            monthName: {
+              $switch: {
+                branches: [
+                  { case: { $eq: ['$_id.month', 1] }, then: 'Enero' },
+                  { case: { $eq: ['$_id.month', 2] }, then: 'Febrero' },
+                  { case: { $eq: ['$_id.month', 3] }, then: 'Marzo' },
+                  { case: { $eq: ['$_id.month', 4] }, then: 'Abril' },
+                  { case: { $eq: ['$_id.month', 5] }, then: 'Mayo' },
+                  { case: { $eq: ['$_id.month', 6] }, then: 'Junio' },
+                  { case: { $eq: ['$_id.month', 7] }, then: 'Julio' },
+                  { case: { $eq: ['$_id.month', 8] }, then: 'Agosto' },
+                  { case: { $eq: ['$_id.month', 9] }, then: 'Septiembre' },
+                  { case: { $eq: ['$_id.month', 10] }, then: 'Octubre' },
+                  { case: { $eq: ['$_id.month', 11] }, then: 'Noviembre' },
+                  { case: { $eq: ['$_id.month', 12] }, then: 'Diciembre' },
+                ],
+                default: 'No válido',
+              },
             },
-            suppliers: {
-              $push: {
-                supplierId: '$_id.supplierId',
-                totalAmount: '$totalAmount',
-              }
-            },
-            totalAmount: { $sum: '$totalAmount' },
-          }
-        },
-        {
-          $sort: {
-            '_id.year': 1,
-            '_id.monthName': 1,
           }
         },
         {
           $project: {
             _id: 0,
+            supplierId: '$_id.supplierId',
             year: '$_id.year',
-            monthName: '$_id.monthName',
+            monthName: 1,
+            weekOfYear: '$_id.weekOfYear',
             totalAmount: 1,
-            suppliers: 1,
           }
         },
+        {
+          $sort: {
+            year: 1,
+            monthName: 1,
+            weekOfYear: 1,
+          }
+        }
       ];
 
       // Agregar el filtro solo si se proporciona un proveedor

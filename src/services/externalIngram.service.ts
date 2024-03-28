@@ -694,6 +694,7 @@ class ExternalIngramService extends ResolversOperationsService {
       };
       const url = `${apiUrl}?includeAvailability=true&includePricing=true&includeProductAttributes=true`;
       const response = await fetch(url, optionsIngram);
+      logger.info(`getPricesIngramBloque.response: \n ${JSON.stringify(response)} \n`);
       const responseJson = await response.json();
       if (response.statusText === 'OK' || response.status === 207) {
         return {
@@ -718,7 +719,6 @@ class ExternalIngramService extends ResolversOperationsService {
   }
 
   async setOrderIngram(variables: IVariables) {
-    // console.log('variables: ', variables);
     try {
       if (!variables.pedidoIngram) {
         return {
@@ -730,12 +730,12 @@ class ExternalIngramService extends ResolversOperationsService {
       const bodyIngram = {
         customerOrderNumber: variables.pedidoIngram.customerOrderNumber,
         endCustomerOrderNumber: variables.pedidoIngram.endCustomerOrderNumber,
+        resellerInfo: variables.pedidoIngram.resellerInfo,
         shipToInfo: variables.pedidoIngram.shipToInfo,
         lines: variables.pedidoIngram.lines,
         additionalAttributes: variables.pedidoIngram.additionalAttributes
       }
-      // console.log('bodyIngram: ', bodyIngram);
-      if (!bodyIngram) {
+      if (!bodyIngram.customerOrderNumber || !bodyIngram.endCustomerOrderNumber) {
         return {
           status: false,
           message: `No se puedo guardar la orden: ${bodyIngram}`,
@@ -758,12 +758,10 @@ class ExternalIngramService extends ResolversOperationsService {
         redirect: 'manual' as RequestRedirect
       };
       const url = `${apiUrl}`;
-      // console.log('optionsIngram: ', optionsIngram);
       const response = await fetch(url, optionsIngram);
-      // console.log('response: ', response);
+      logger.info(`setOrderCva.response: \n ${JSON.stringify(response)} \n`);
       const responseJson = await response.json();
-      // console.log('responseJson: ', responseJson);
-      if (response.statusText === 'OK') {
+      if (response.status >= 200 && response.status < 300 && response.statusText === 'Created') {
         return {
           status: true,
           message: `Se ha creado la orden de forma correcta.`,
@@ -772,7 +770,7 @@ class ExternalIngramService extends ResolversOperationsService {
       } else {
         return {
           status: false,
-          message: `Hubo un problema en la generacion de la orden`,
+          message: `Hubo un problema en la generacion de la orden ${JSON.stringify(response)}`,
           orderIngram: null,
         };
       }
@@ -785,9 +783,92 @@ class ExternalIngramService extends ResolversOperationsService {
     }
   }
 
-  async getListOrderIngram() {
-
+  async getOrderIngram(variables: IVariables) {
+    try {
+      const { idOrderIngram } = variables;
+      const token = await this.getTokenIngram();
+      const apiUrl = 'https://api.ingrammicro.com:443/sandbox/resellers/v6/orders';
+      const optionsIngram = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'IM-CustomerNumber': '20-840450',
+          'IM-CountryCode': 'MX',
+          'IM-CorrelationID': 'fbac82ba-cf0a-4bcf-fc03-0c5084',
+          'IM-SenderID': 'DARU DEV',
+          'Authorization': 'Bearer ' + token.tokenIngram.access_token,
+        },
+        redirect: 'manual' as RequestRedirect
+      };
+      const url = `${apiUrl}/${idOrderIngram}`;
+      const response = await fetch(url, optionsIngram);
+      logger.info(`getOrderIngram.response: \n ${JSON.stringify(response)} \n`);
+      const responseJson = await response.json();
+      if (response.statusText === 'OK' || (response.status >= 200 && response.status < 299)) {
+        return {
+          status: true,
+          message: `Se ha recuperado la orden ${idOrderIngram} de forma correcta.`,
+          orderOneIngram: responseJson
+        };
+      } else {
+        return {
+          status: false,
+          message: `No se ha encontrado la orden ${idOrderIngram}. Favor de verificar.`,
+          orderOneIngram: {}
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        orderOneIngram: {}
+      };
+    }
   }
+
+  async getOrderListIngram() {
+    try {
+      const token = await this.getTokenIngram();
+      const apiUrl = 'https://api.ingrammicro.com:443/sandbox/resellers/v6/orders/search';
+      const optionsIngram = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'IM-CustomerNumber': '20-840450',
+          'IM-CountryCode': 'MX',
+          'IM-CorrelationID': 'fbac82ba-cf0a-4bcf-fc03-0c5084',
+          'IM-SenderID': 'DARU DEV',
+          'Authorization': 'Bearer ' + token.tokenIngram.access_token,
+        },
+        redirect: 'manual' as RequestRedirect
+      };
+      const url = `${apiUrl}`;
+      const response = await fetch(url, optionsIngram);
+      logger.info(`getOrderListIngram.response: \n ${JSON.stringify(response)} \n`);
+      const responseJson = await response.json();
+      // Generar
+      if (response.statusText === 'OK' || (response.status >= 200 && response.status < 299)) {
+        return {
+          status: true,
+          message: `Se ha recuperado la lista de ordenes de forma correcta.`,
+          orderListIngram: responseJson.orders
+        };
+      } else {
+        return {
+          status: false,
+          message: `No se ha encontrado ninguna orden. Favor de verificar.`,
+          orderListIngram: {}
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        orderListIngram: {}
+      };
+    }
+  }
+
 }
 
 export default ExternalIngramService;

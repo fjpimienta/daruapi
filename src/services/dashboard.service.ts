@@ -28,9 +28,11 @@ class DashboardsService extends ResolversOperationsService {
   }
 
   async getImportBySupplierByMonth() {
+    const year = this.getVariables().year;
+    const month = this.getVariables().month;
     const supplierId = this.getVariables().supplierId;
     try {
-      const result = await this.importBySupplierByMonthDashboar(this.collection, supplierId);
+      const result = await this.importBySupplierByMonthDashboar(this.collection, year, month, supplierId);
       return {
         status: result.status,
         message: result.message,

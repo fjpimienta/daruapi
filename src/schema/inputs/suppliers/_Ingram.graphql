@@ -30,9 +30,17 @@ input OrderIngramInput {
   customerOrderNumber: String
   endCustomerOrderNumber: String
   notes: String
+  resellerInfo: ResellerInfoInput
   shipToInfo: ShipToInfoInput
   lines: [LinesInput]
   additionalAttributes: [AdditionalAttributesInput]
+}
+
+input ResellerInfoInput {
+  contact: String
+  companyName: String
+  email: String
+  phoneNumber: String
 }
 
 input ShipToInfoInput {

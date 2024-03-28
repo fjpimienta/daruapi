@@ -1,0 +1,19 @@
+type DashSupplierImport {
+  supplierId: String!
+  totalAmount: Float!
+}
+
+type DashMonthImport {
+  supplierId: String!
+  year: String!
+  monthName: String!
+  totalAmount: Float!
+}
+
+type DashWeekImport {
+  supplierId: String!
+  year: String!
+  monthName: String!
+  weekOfYear: String!
+  totalAmount: Float!
+}

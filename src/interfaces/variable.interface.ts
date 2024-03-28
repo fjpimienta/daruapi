@@ -46,6 +46,8 @@ export interface IVariables {
   shopProduct?: IShopProduct;
   supplier?: ISupplier;
   suppliers?: ISupplier[];
+  supplierId?: string;
+  weekNumber?: number;
   apiproveedor?: IApiproveedor;
   c_pais?: string;
   country?: ICountry;
@@ -138,6 +140,7 @@ export interface IVariables {
   upc?: string;
   allRecords?: Boolean;
   imSKU?: string;
+  idOrderIngram?: string;
   pedidoIngram?: IOrderIngram;
   // products
   partNumber?: string;

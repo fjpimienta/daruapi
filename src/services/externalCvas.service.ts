@@ -85,7 +85,7 @@ class ExternalCvasService extends ResolversOperationsService {
 
       const url = 'https://www.grupocva.com/pedidos_web/pedidos_ws_cva.php';
       const response = await fetch(url, options);
-      logger.info(`setOrderCva.data: \n ${JSON.stringify(response)} \n`);
+      logger.info(`setOrderCva.response: \n ${JSON.stringify(response)} \n`);
       const content = await response.text();
       const data = await this.parseXmlToJson(content, wsdl);
       if (data) {

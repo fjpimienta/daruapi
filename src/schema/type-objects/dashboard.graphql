@@ -4,10 +4,10 @@ type DashSupplierImport {
 }
 
 type DashMonthImport {
-  supplierId: String!
-  year: String!
+  year: Int!
   monthName: String!
   totalAmount: Float!
+  suppliers: [SupplierDash!]!
 }
 
 type DashWeekImport {
@@ -15,5 +15,10 @@ type DashWeekImport {
   year: String!
   monthName: String!
   weekOfYear: String!
+  totalAmount: Float!
+}
+
+type SupplierDash {
+  supplierId: String!
   totalAmount: Float!
 }

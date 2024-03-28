@@ -145,6 +145,9 @@ export interface IVariables {
   // products
   partNumber?: string;
   // icommkt
-  icommkContactInput?: IIcommktContact
-  icommkContactInputs?: [IIcommktContact]
+  icommkContactInput?: IIcommktContact;
+  icommkContactInputs?: [IIcommktContact];
+  // searchs
+  year?: number;
+  month?: string;
 }

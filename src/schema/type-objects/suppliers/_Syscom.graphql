@@ -3,3 +3,63 @@ type TokenSyscom {
   expires_in: String
   access_token: String
 }
+
+type ProductsSyscom {
+  producto_id: String
+  modelo: String
+  total_existencia: Int
+  titulo: String
+  marca: String
+  sat_key: String
+  img_portada: String
+  link_privado: String
+  categorias: [Categoria]
+  pvol: String
+  marca_logo: String
+  link: String
+  iconos: [String]
+  peso: String
+  unidad_de_medida: UnidadDeMedida
+  alto: String
+  largo: String
+  ancho: String
+  precios: Precios
+  existencia: Existencia
+}
+
+type Categoria {
+  id: String
+  nombre: String
+  nivel: Int
+}
+
+type UnidadDeMedida {
+  codigo_unidad: String
+  nombre: String
+  clave_unidad_sat: String
+}
+
+type Precios {
+  precio_1: String
+  precio_especial: String
+  precio_descuento: String
+  precio_lista: String
+}
+
+type ExistenciaAsterisco {
+  a: Int
+  b: Int
+  c: Int
+  d: Int
+  e: Int
+}
+
+type ExistenciaDetalle {
+  detalle1: String
+}
+
+type Existencia {
+  nuevo: Int
+  asterisco: ExistenciaAsterisco
+  detalle: [ExistenciaDetalle]
+}

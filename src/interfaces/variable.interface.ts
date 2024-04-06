@@ -150,4 +150,6 @@ export interface IVariables {
   // searchs
   year?: number;
   month?: string;
+  // syscom
+  
 }

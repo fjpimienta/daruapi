@@ -1,0 +1,5 @@
+type ResultSyscom implements Result {
+  status: Boolean!
+  message: String!
+  tokenSyscom: TokenSyscom
+}

@@ -1,5 +1,13 @@
 type Query {
   tokenSyscom: ResultSyscom
+  oneBrandSyscom(
+    brandName: String
+  ): ResultSyscom
+  listBrandsSyscom: ResultSyscom
+  oneCategorySyscom(
+    categoryId: String
+  ): ResultSyscom
+  listCategorysSyscom: ResultSyscom
   listProductsSyscomByBrand(
     brandName: String
   ): ResultSyscom

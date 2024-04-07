@@ -57,6 +57,190 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
+  async getOneBrandSyscom(brand: string = '') {
+    try {
+      const brandName = this.getVariables().brandName || brand;
+      if (!brandName || brandName === '') {
+        return {
+          status: false,
+          message: 'Se requiere especificar la marca',
+          oneBrandSyscom: null,
+        };
+      }
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          oneBrandSyscom: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/marcas/' + brandName;
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getOneBrandSyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          oneBrandSyscom: null
+        };
+      }
+      return {
+        status: true,
+        message: `La marca ${brandName} se ha generado correctamente`,
+        oneBrandSyscom: data
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        oneBrandSyscom: null,
+      };
+    }
+  }
+
+  async getListBrandsSyscom() {
+    try {
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          listBrandsSyscom: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/marcas/';
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getListBrandsSyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          listBrandsSyscom: null
+        };
+      }
+      return {
+        status: true,
+        message: `Las marcas se han generado correctamente`,
+        listBrandsSyscom: data
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        listBrandsSyscom: null,
+      };
+    }
+  }
+
+  async getOneCategorySyscom(idCategory: string = '') {
+    try {
+      const categoryId = this.getVariables().categoryId || idCategory;
+      if (!categoryId || categoryId === '') {
+        return {
+          status: false,
+          message: 'Se requiere especificar la categoria',
+          oneCategorySyscom: null,
+        };
+      }
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          oneCategorySyscom: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/categorias/' + categoryId;
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getOneCategorySyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          oneCategorySyscom: null
+        };
+      }
+      return {
+        status: true,
+        message: `La categoria ${categoryId} se ha generado correctamente`,
+        oneCategorySyscom: data
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        oneCategorySyscom: null,
+      };
+    }
+  }
+
+  async getListCategorySyscom() {
+    try {
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          listCategorysSyscom: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/categorias/';
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getListCategorySyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          listCategorysSyscom: null
+        };
+      }
+      return {
+        status: true,
+        message: `Las categorias se han generado correctamente`,
+        listCategorysSyscom: data
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        listCategorysSyscom: null,
+      };
+    }
+  }
+
   async getListProductsSyscomByBrand(brand: string = '') {
     try {
       const brandName = this.getVariables().brandName || brand;

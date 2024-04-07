@@ -151,5 +151,5 @@ export interface IVariables {
   year?: number;
   month?: string;
   // syscom
-  
+  categoryId?: string; 
 }

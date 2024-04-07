@@ -6,6 +6,18 @@ const resolversSyscomQuery: IResolvers = {
     async tokenSyscom(_, __, context) {
       return new ExternalSyscomService(_, __, context).getTokenSyscom();
     },
+    async oneBrandSyscom(_, __, context) {
+      return new ExternalSyscomService(_, __, context).getOneBrandSyscom();
+    },
+    async listBrandsSyscom(_, __, context) {
+      return new ExternalSyscomService(_, __, context).getListBrandsSyscom();
+    },
+    async oneCategorySyscom(_, __, context) {
+      return new ExternalSyscomService(_, __, context).getOneCategorySyscom();
+    },
+    async listCategorysSyscom(_, __, context) {
+      return new ExternalSyscomService(_, __, context).getListCategorySyscom();
+    },
     async listProductsSyscomByBrand(_, __, context) {
       return new ExternalSyscomService(_, __, context).getListProductsSyscomByBrand();
     },

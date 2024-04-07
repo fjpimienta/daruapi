@@ -2,6 +2,10 @@ type ResultSyscom implements Result {
   status: Boolean!
   message: String!
   tokenSyscom: TokenSyscom
+  oneBrandSyscom: MarcaDetalle
+  listBrandsSyscom: [Marca]
+  oneCategorySyscom: CategoriaDetalle
+  listCategorysSyscom: [Categoria]
   listProductsSyscomByBrand: [ProductsSyscom]
   listProductsSyscom: [Product]
 }

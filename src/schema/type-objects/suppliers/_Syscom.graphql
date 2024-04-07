@@ -63,3 +63,30 @@ type Existencia {
   asterisco: ExistenciaAsterisco
   detalle: [ExistenciaDetalle]
 }
+
+type Marca {
+  id: String
+  nombre: String
+}
+
+type MarcaDetalle {
+  descripcion: String
+  titulo: String
+  logo: String
+  categorias: [CategoriaImagen]
+}
+
+type CategoriaImagen {
+  id: String
+  nombre: String
+  nivel: Int
+  imagen: String
+}
+
+type CategoriaDetalle {
+  id: String
+  nombre: String
+  nivel: String
+  origen: [Categoria]
+  subcategorias: [Categoria]
+}

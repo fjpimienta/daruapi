@@ -3,4 +3,5 @@ type ResultSyscom implements Result {
   message: String!
   tokenSyscom: TokenSyscom
   listProductsSyscomByBrand: [ProductsSyscom]
+  listProductsSyscom: [Product]
 }

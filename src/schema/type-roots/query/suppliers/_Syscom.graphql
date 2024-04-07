@@ -3,4 +3,5 @@ type Query {
   listProductsSyscomByBrand(
     brandName: String
   ): ResultSyscom
+  listProductsSyscom: ResultSyscom
 }

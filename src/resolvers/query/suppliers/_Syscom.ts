@@ -9,6 +9,9 @@ const resolversSyscomQuery: IResolvers = {
     async listProductsSyscomByBrand(_, __, context) {
       return new ExternalSyscomService(_, __, context).getListProductsSyscomByBrand();
     },
+    async listProductsSyscom(_, __, context) {
+      return new ExternalSyscomService(_, __, context).getListProductsSyscom();
+    },
   }
 };
 

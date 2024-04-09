@@ -5,10 +5,10 @@ import logger from '../utils/logger';
 import fetch from 'node-fetch';
 import { COLLECTIONS } from '../config/constants';
 import { Db } from 'mongodb';
-import { BranchOffices, Brands, Categorys, Descuentos, Especificacion, Picture, Product, SupplierProd, UnidadDeMedida } from '../models/product.models';
+import { BranchOffices, Brands, Categorys, Descuentos, Picture, Product, SupplierProd, UnidadDeMedida } from '../models/product.models';
 import ConfigsService from './config.service';
-import { IPromociones } from '../interfaces/product.interface';
 import slugify from 'slugify';
+import { IMetodoPagoItemDetalle, IMetodoPagoSyscom } from '../interfaces/suppliers/_Syscom.interface';
 
 class ExternalSyscomService extends ResolversOperationsService {
   collection = COLLECTIONS.INGRAM_PRODUCTS;
@@ -27,8 +27,8 @@ class ExternalSyscomService extends ResolversOperationsService {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          client_id: 'EI20OXsIzHJUkJdWK1ekemWqc3rCtqNX',
-          client_secret: '5wwq695ERsumcKdazCR04LhTxQVsPE8NlcZSvg78',
+          client_id: 'ZPQOODICaW98DgXiNPodz4TkT4slhyBa',
+          client_secret: 'ppUFuPSyiErb39lURH50sA72zW1JsinRXoH0tLjM',
           grant_type: 'client_credentials'
         })
       };
@@ -287,6 +287,65 @@ class ExternalSyscomService extends ResolversOperationsService {
         status: false,
         message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
         listProductsSyscomByBrand: null,
+      };
+    }
+  }
+
+  async getMetodosPagosSyscom() {
+    try {
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          metodosPagosSyscom: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/carrito/pago/';
+      const response = await fetch(url, options);
+      const data = await response.json();
+      // console.log('data: ', data);
+      process.env.PRODUCTION === 'true' && logger.info(`getMetodosPagosSyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          metodosPagosSyscom: null
+        };
+      }
+      const metodosPagosSyscom: IMetodoPagoSyscom[] = data.map((item: any) => {
+        const nombre: string = item.nombre;
+        const metodosPago: any = item.metodo;
+        const metodo: IMetodoPagoItemDetalle[] = Object.entries(metodosPago).map(([key, value]: [string, any]) => {
+          return {
+            nombre: key,
+            titulo: value.titulo,
+            codigo: value.codigo,
+            descuento: value.descuento,
+            tipo_cambio: value.tipo_cambio,
+            plazo: value.plazo,
+            forma: value.forma
+          };
+        });
+        return { nombre, metodo };
+      });
+      return {
+        status: true,
+        message: `Los Metodos de pagos se han generado correctamente`,
+        metodosPagosSyscom
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        metodosPagosSyscom: null,
       };
     }
   }

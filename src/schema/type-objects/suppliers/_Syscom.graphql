@@ -90,3 +90,23 @@ type CategoriaDetalle {
   origen: [Categoria]
   subcategorias: [Categoria]
 }
+
+type MetodoPagoSyscom {
+  nombre: String
+  metodo: [MetodoPagoItem]
+}
+
+type MetodoPagoItem {
+  nombre: String
+  titulo: String
+  codigo: String
+  descuento: Int
+  tipo_cambio: String
+  plazo: Int
+  forma: FormaPago
+}
+
+type FormaPago {
+  PUE: Int
+  PPD: Int
+}

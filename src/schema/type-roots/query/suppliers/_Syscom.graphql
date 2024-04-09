@@ -12,4 +12,5 @@ type Query {
     brandName: String
   ): ResultSyscom
   listProductsSyscom: ResultSyscom
+  metodosPagosSyscom: ResultSyscom
 }

@@ -30,6 +30,9 @@ const resolversSyscomQuery: IResolvers = {
     async fleterasSyscom(_, __, context) {
       return new ExternalSyscomService(_, __, context).getFleterasSyscom();
     },
+    async cfdisSyscom(_, __, context) {
+      return new ExternalSyscomService(_, __, context).getCfdisSyscom();
+    },
   }
 };
 

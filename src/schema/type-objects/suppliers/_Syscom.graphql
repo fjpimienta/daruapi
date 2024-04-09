@@ -116,3 +116,8 @@ type FleterasSyscom {
   dia_siguiente: Boolean
   nombre: String
 }
+
+type CfdisSyscom {
+  codigo: String
+  nombre: String
+}

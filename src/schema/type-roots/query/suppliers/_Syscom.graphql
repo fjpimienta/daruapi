@@ -14,4 +14,5 @@ type Query {
   listProductsSyscom: ResultSyscom
   metodosPagosSyscom: ResultSyscom
   fleterasSyscom: ResultSyscom
+  cfdisSyscom: ResultSyscom
 }

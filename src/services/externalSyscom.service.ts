@@ -391,6 +391,48 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
+  async getCfdisSyscom() {
+    try {
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          cfdisSyscom: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/carrito/cfdi/';
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getCfdisSyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          cfdisSyscom: null
+        };
+      }
+      return {
+        status: true,
+        message: `Las fleteras se han generado correctamente`,
+        cfdisSyscom: data
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        cfdisSyscom: null,
+      };
+    }
+  }
+
   async getListProductsSyscom() {
     try {
       const brand = 'ugreen';

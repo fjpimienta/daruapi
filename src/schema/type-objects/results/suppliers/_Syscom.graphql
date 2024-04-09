@@ -10,4 +10,5 @@ type ResultSyscom implements Result {
   listProductsSyscom: [Product]
   metodosPagosSyscom: [MetodoPagoSyscom]
   fleterasSyscom: [FleterasSyscom]
+  cfdisSyscom: [CfdisSyscom]
 }

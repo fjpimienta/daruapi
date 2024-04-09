@@ -311,7 +311,6 @@ class ExternalSyscomService extends ResolversOperationsService {
       const url = 'https://developers.syscom.mx/api/v1/carrito/pago/';
       const response = await fetch(url, options);
       const data = await response.json();
-      // console.log('data: ', data);
       process.env.PRODUCTION === 'true' && logger.info(`getMetodosPagosSyscom.data: \n ${JSON.stringify(data)} \n`);
       if (data && data.status && (data.status < 200 || data.status >= 300)) {
         return {
@@ -346,6 +345,48 @@ class ExternalSyscomService extends ResolversOperationsService {
         status: false,
         message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
         metodosPagosSyscom: null,
+      };
+    }
+  }
+
+  async getFleterasSyscom() {
+    try {
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          fleterasSyscom: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/carrito/fleteras/';
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getFleterasSyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          fleterasSyscom: null
+        };
+      }
+      return {
+        status: true,
+        message: `Las fleteras se han generado correctamente`,
+        fleterasSyscom: data
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        fleterasSyscom: null,
       };
     }
   }

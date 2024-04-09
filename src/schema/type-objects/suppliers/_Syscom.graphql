@@ -110,3 +110,9 @@ type FormaPago {
   PUE: Int
   PPD: Int
 }
+
+type FleterasSyscom {
+  codigo: String
+  dia_siguiente: Boolean
+  nombre: String
+}

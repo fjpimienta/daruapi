@@ -27,6 +27,9 @@ const resolversSyscomQuery: IResolvers = {
     async metodosPagosSyscom(_, __, context) {
       return new ExternalSyscomService(_, __, context).getMetodosPagosSyscom();
     },
+    async fleterasSyscom(_, __, context) {
+      return new ExternalSyscomService(_, __, context).getFleterasSyscom();
+    },
   }
 };
 

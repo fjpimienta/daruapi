@@ -9,4 +9,5 @@ type ResultSyscom implements Result {
   listProductsSyscomByBrand: [ProductsSyscom]
   listProductsSyscom: [Product]
   metodosPagosSyscom: [MetodoPagoSyscom]
+  fleterasSyscom: [FleterasSyscom]
 }

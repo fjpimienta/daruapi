@@ -122,6 +122,15 @@ type CfdisSyscom {
   nombre: String
 }
 
+type EstadoByCP {
+  codigo_postal: String
+  municipio: String
+  estado_sat: String
+  zona_extendida: String
+  estado_nombre: String
+  codigo_estado: String
+}
+
 type OrderResponseSyscom {
   error: String
   cliente: ClienteSyscom

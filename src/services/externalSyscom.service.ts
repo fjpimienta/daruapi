@@ -433,6 +433,56 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
+  async getEstadoByCP(codigoPostal: number = 0) {
+    try {
+      const cp = this.getVariables().cp || codigoPostal;
+      if (!cp || cp <= 0) {
+        return {
+          status: false,
+          message: 'Se requiere especificar el Codigo Postal',
+          estadoByCP: null,
+        };
+      }
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          estadoByCP: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/carrito/estados/' + cp;
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getEstadoByCP.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          estadoByCP: null
+        };
+      }
+      return {
+        status: true,
+        message: `El estado para el CP ${cp} se ha generado correctamente`,
+        estadoByCP: data.estado[0]
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        estadoByCP: null,
+      };
+    }
+  }
+
   async getListProductsSyscom() {
     try {
       const brand = 'ugreen';

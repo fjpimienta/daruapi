@@ -1,0 +1,34 @@
+input OrderSyscomInput {
+  tipo_entrega: String
+  direccion: DireccionSyscomInput
+  metodo_pago: String
+  fletera: String
+  productos: [ProductsSyscomInput]
+  moneda: String
+  uso_cfdi: String
+  tipo_pago: String
+  orden_compra: String
+  ordenar: Boolean
+  iva_frontera: Boolean
+  forzar: Boolean
+  testmode: Boolean
+}
+
+input DireccionSyscomInput {
+  atencion_a: String
+  calle: String
+  num_ext: String
+  num_int: String
+  colonia: String
+  codigo_postal: Int
+  pais: String
+  estado: String
+  ciudad: String
+  telefono: String
+}
+
+input ProductsSyscomInput {
+  id: Int
+  tipo: String
+  cantidad: Int
+}

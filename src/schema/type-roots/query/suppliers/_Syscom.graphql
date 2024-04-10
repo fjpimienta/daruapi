@@ -15,4 +15,7 @@ type Query {
   metodosPagosSyscom: ResultSyscom
   fleterasSyscom: ResultSyscom
   cfdisSyscom: ResultSyscom
+  saveOrderSyscom(
+    orderSyscomInput: OrderSyscomInput
+  ): ResultSyscom
 }

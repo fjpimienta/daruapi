@@ -8,7 +8,7 @@ import { Db } from 'mongodb';
 import { BranchOffices, Brands, Categorys, Descuentos, Picture, Product, SupplierProd, UnidadDeMedida } from '../models/product.models';
 import ConfigsService from './config.service';
 import slugify from 'slugify';
-import { IMetodoPagoItemDetalle, IMetodoPagoSyscom } from '../interfaces/suppliers/_Syscom.interface';
+import { IMetodoPagoItemDetalle, IMetodoPagoSyscom, IOrderSyscom } from '../interfaces/suppliers/_Syscom.interface';
 
 class ExternalSyscomService extends ResolversOperationsService {
   collection = COLLECTIONS.INGRAM_PRODUCTS;
@@ -612,6 +612,71 @@ class ExternalSyscomService extends ResolversOperationsService {
     return year + '-' + monthS + '-' + dtS;
   }
 
+  async setOrderSyscom() {
+    try {
+      const orderSyscomInput = this.getVariables().orderSyscomInput;
+      if (!orderSyscomInput) {
+        return {
+          status: false,
+          message: 'Es necesario especificar los datos de la orden',
+          saveOrderSyscom: null,
+        };
+      }
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          saveOrderSyscom: null,
+        };
+      }
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        },
+        body: JSON.stringify({
+          tipo_entrega: orderSyscomInput.tipo_entrega,
+          direccion: orderSyscomInput.direccion,
+          metodo_pago: orderSyscomInput.metodo_pago,
+          fletera: orderSyscomInput.fletera,
+          productos: orderSyscomInput.productos,
+          moneda: orderSyscomInput.moneda,
+          uso_cfdi: orderSyscomInput.uso_cfdi,
+          tipo_pago: orderSyscomInput.tipo_pago,
+          orden_compra: orderSyscomInput.orden_compra,
+          ordenar: orderSyscomInput.ordenar,
+          iva_frontera: orderSyscomInput.iva_frontera,
+          forzar: orderSyscomInput.forzar,
+          testmode: orderSyscomInput.testmode
+        }),
+        redirect: 'follow' as RequestRedirect
+      };
+      const url = 'https://developers.syscom.mx/api/v1/carrito/generar';
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`setOrderSyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          saveOrderSyscom: null
+        };
+      }
+      return {
+        status: true,
+        message: `La orden se ha generado correctamente`,
+        saveOrderSyscom: data
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        saveOrderSyscom: null,
+      };
+    }
+  }
 }
 
 export default ExternalSyscomService;

@@ -11,4 +11,5 @@ type ResultSyscom implements Result {
   metodosPagosSyscom: [MetodoPagoSyscom]
   fleterasSyscom: [FleterasSyscom]
   cfdisSyscom: [CfdisSyscom]
+  saveOrderSyscom: OrderResponseSyscom
 }

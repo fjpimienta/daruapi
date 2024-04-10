@@ -152,6 +152,7 @@ export interface IVariables {
   year?: number;
   month?: string;
   // syscom
+  paisName?: string;
   categoryId?: string;
   orderSyscomInput?: IOrderSyscom;
 }

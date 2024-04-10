@@ -15,6 +15,9 @@ type Query {
   metodosPagosSyscom: ResultSyscom
   fleterasSyscom: ResultSyscom
   cfdisSyscom: ResultSyscom
+  paisSyscom(
+    paisName: String
+  ): ResultSyscom
   estadoByCP(
     cp: Int
   ): ResultSyscom

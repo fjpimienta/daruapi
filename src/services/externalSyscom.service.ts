@@ -433,6 +433,10 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
+  quitarAcentos(texto: string): string {
+    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
   async getPaisSyscom(pais: string = '') {
     try {
       const paisName = this.getVariables().paisName || pais;
@@ -469,10 +473,7 @@ class ExternalSyscomService extends ResolversOperationsService {
           paisSyscom: ''
         };
       }
-      function quitarAcentos(texto: string): string {
-        return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      }
-      const paisEncontrado = data.paises.find((pais: any) => quitarAcentos(pais.nombre.toLowerCase()) === paisName.toLowerCase());
+      const paisEncontrado = data.paises.find((pais: any) => this.quitarAcentos(pais.nombre.toLowerCase()) === paisName.toLowerCase());
       const status = paisEncontrado ? true : false;
       const message = paisEncontrado ? `El código del país ${paisName} se ha generado correctamente` : `El código del país ${paisName} no se ha encontrado`;
       const paisSyscom = paisEncontrado ? paisEncontrado.codigo : '';
@@ -497,7 +498,7 @@ class ExternalSyscomService extends ResolversOperationsService {
         return {
           status: false,
           message: 'Se requiere especificar el Codigo Postal',
-          estadoByCP: null,
+          estadoByCP: '',
         };
       }
       const token = await this.getTokenSyscom();
@@ -505,7 +506,7 @@ class ExternalSyscomService extends ResolversOperationsService {
         return {
           status: token.status,
           message: token.message,
-          estadoByCP: null,
+          estadoByCP: '',
         };
       }
       const options = {
@@ -526,16 +527,97 @@ class ExternalSyscomService extends ResolversOperationsService {
           estadoByCP: null
         };
       }
+      if (!data.estado || data.estado.length <= 0) {
+        return {
+          status: false,
+          message: `El estado para el CP ${cp} no se ha encontrado`,
+          estadoByCP: ''
+        };
+      }
       return {
         status: true,
         message: `El estado para el CP ${cp} se ha generado correctamente`,
-        estadoByCP: data.estado[0]
+        estadoByCP: data.estado[0].codigo_estado
       };
     } catch (error: any) {
       return {
         status: false,
         message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
-        estadoByCP: null,
+        estadoByCP: '',
+      };
+    }
+  }
+
+  async getColoniaByCP(codigoPostal: number = 0, colonia: string = '') {
+    try {
+      const cp = this.getVariables().cp || codigoPostal;
+      const coloniaName = this.getVariables().coloniaName || colonia;
+      if (!cp || cp <= 0) {
+        return {
+          status: false,
+          message: 'Se requiere especificar el Codigo Postal',
+          coloniaByCP: null,
+        };
+      }
+      if (!coloniaName || coloniaName === '') {
+        return {
+          status: false,
+          message: 'Se requiere especificar la colonia',
+          coloniaByCP: null,
+        };
+      }
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          coloniaByCP: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/carrito/colonias/' + cp;
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getEstadoByCP.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          coloniaByCP: null
+        };
+      }
+      const coloniasSyscom = data.colonias;
+      if (!coloniasSyscom) {
+        return {
+          status: false,
+          message: `El codigo posta ${cp} no tiene cobertura`,
+          coloniaByCP: ''
+        };
+      }
+      const coloniasEncontradas = data.colonias.filter((colonia: any) => this.quitarAcentos(colonia.toLowerCase()) === this.quitarAcentos(coloniaName.toLowerCase()));
+      if (!coloniasEncontradas || coloniasEncontradas.length <= 0) {
+        return {
+          status: false,
+          message: `La colonia ${coloniaName} no tiene cobertura`,
+          coloniaByCP: ''
+        };
+      }
+      return {
+        status: true,
+        message: `El estado para el CP ${cp} se ha generado correctamente`,
+        coloniaByCP: coloniasEncontradas[0]
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        coloniaByCP: null,
       };
     }
   }

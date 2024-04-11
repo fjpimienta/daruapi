@@ -39,6 +39,9 @@ const resolversSyscomQuery: IResolvers = {
     async estadoByCP(_, __, context) {
       return new ExternalSyscomService(_, __, context).getEstadoByCP();
     },
+    async coloniaByCP(_, __, context) {
+      return new ExternalSyscomService(_, __, context).getColoniaByCP();
+    },
     async saveOrderSyscom(_, __, context) {
       return new ExternalSyscomService(_, __, context).setOrderSyscom();
     },

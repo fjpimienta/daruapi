@@ -21,6 +21,10 @@ type Query {
   estadoByCP(
     cp: Int
   ): ResultSyscom
+  coloniaByCP(
+    cp: Int
+    coloniaName: String
+  ): ResultSyscom
   saveOrderSyscom(
     orderSyscomInput: OrderSyscomInput
   ): ResultSyscom

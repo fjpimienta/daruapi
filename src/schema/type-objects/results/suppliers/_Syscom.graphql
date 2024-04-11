@@ -12,6 +12,7 @@ type ResultSyscom implements Result {
   fleterasSyscom: [FleterasSyscom]
   cfdisSyscom: [CfdisSyscom]
   paisSyscom: String!
-  estadoByCP: EstadoByCP
+  estadoByCP: String!
+  coloniaByCP: String!
   saveOrderSyscom: OrderResponseSyscom
 }

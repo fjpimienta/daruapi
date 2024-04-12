@@ -252,7 +252,7 @@ class ExternalSyscomService extends ResolversOperationsService {
         };
       }
       const token = await this.getTokenSyscom();
-      if (token && !token.status) {
+      if (!token.status) {
         return {
           status: token.status,
           message: token.message,
@@ -270,17 +270,25 @@ class ExternalSyscomService extends ResolversOperationsService {
       const response = await fetch(url, options);
       const data = await response.json();
       process.env.PRODUCTION === 'true' && logger.info(`getTokenSyscom.data: \n ${JSON.stringify(data)} \n`);
-      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+      if (response.status < 200 || response.status >= 300) {
         return {
           status: false,
           message: data.message || data.detail,
           listProductsSyscomByBrand: null
         };
       }
+      let allProducts = data.productos;
+      const totalPages = data.paginas;
+      for (let page = 2; page <= totalPages; page++) {
+        const pageUrl = `${url}&page=${page}`;
+        const response = await fetch(pageUrl, options);
+        const data = await response.json();
+        allProducts = allProducts.concat(data.productos);
+      }
       return {
         status: true,
         message: 'La lista de productos se ha generado correctamente',
-        listProductsSyscomByBrand: data.productos
+        listProductsSyscomByBrand: allProducts
       };
     } catch (error: any) {
       return {

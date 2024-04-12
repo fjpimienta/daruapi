@@ -266,7 +266,7 @@ class ExternalSyscomService extends ResolversOperationsService {
           'Authorization': 'Bearer ' + token.tokenSyscom.access_token
         }
       };
-      const url = 'https://developers.syscom.mx/api/v1/productos/?marca=' + brandName;
+      const url = 'https://developers.syscom.mx/api/v1/productos/?marca=' + brandName + '&stock=1';
       const response = await fetch(url, options);
       const data = await response.json();
       process.env.PRODUCTION === 'true' && logger.info(`getTokenSyscom.data: \n ${JSON.stringify(data)} \n`);
@@ -280,10 +280,10 @@ class ExternalSyscomService extends ResolversOperationsService {
       let allProducts = data.productos;
       const totalPages = data.paginas;
       for (let page = 2; page <= totalPages; page++) {
-        const pageUrl = `${url}&page=${page}`;
-        const response = await fetch(pageUrl, options);
-        const data = await response.json();
-        allProducts = allProducts.concat(data.productos);
+        const pageUrl = `${url}&pagina=${page}`;
+        const nextPageResponse = await fetch(pageUrl, options);
+        const nextPageData = await nextPageResponse.json();
+        allProducts = allProducts.concat(nextPageData.productos);
       }
       return {
         status: true,

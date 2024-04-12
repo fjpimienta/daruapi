@@ -709,10 +709,10 @@ class ExternalSyscomService extends ResolversOperationsService {
       itemData.new = false;
       itemData.sold = '';
       itemData.stock = item.total_existencia;
-      itemData.sku = item.sat_key;
-      itemData.upc = item.modelo;
+      itemData.sku = item.producto_id;
+      itemData.upc = item.sat_key;
       itemData.ean = '';
-      itemData.partnumber = item.sat_key;
+      itemData.partnumber = item.modelo;
       unidad.id = item.unidad_de_medida.codigo_unidad || 'PZ';
       unidad.name = item.unidad_de_medida.nombre || 'Pieza';
       unidad.slug = slugify(item.unidad_de_medida.nombre) || 'pieza';

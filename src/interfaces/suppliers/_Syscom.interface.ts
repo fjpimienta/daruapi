@@ -1,3 +1,9 @@
+export interface ITokenSyscom {
+  token_type: string;
+  expires_in: string;
+  access_token: string;
+}
+
 export interface IMetodoPagoSyscom {
   nombre: string;
   metodo: IMetodoPagoItem;

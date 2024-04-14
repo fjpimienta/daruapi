@@ -155,5 +155,6 @@ export interface IVariables {
   paisName?: string;
   coloniaName?: string;
   categoryId?: string;
+  productId?: string;
   orderSyscomInput?: IOrderSyscom;
 }

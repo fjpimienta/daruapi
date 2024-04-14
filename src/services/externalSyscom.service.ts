@@ -8,7 +8,8 @@ import { Db } from 'mongodb';
 import { BranchOffices, Brands, Categorys, Descuentos, Picture, Product, SupplierProd, UnidadDeMedida } from '../models/product.models';
 import ConfigsService from './config.service';
 import slugify from 'slugify';
-import { IMetodoPagoItemDetalle, IMetodoPagoSyscom, IOrderSyscom } from '../interfaces/suppliers/_Syscom.interface';
+import { IMetodoPagoItemDetalle, IMetodoPagoSyscom } from '../interfaces/suppliers/_Syscom.interface';
+import { IPicture } from '../interfaces/product.interface';
 
 class ExternalSyscomService extends ResolversOperationsService {
   collection = COLLECTIONS.INGRAM_PRODUCTS;
@@ -285,6 +286,45 @@ class ExternalSyscomService extends ResolversOperationsService {
         const nextPageData = await nextPageResponse.json();
         allProducts = allProducts.concat(nextPageData.productos);
       }
+      // console.log('allProducts[0]: ', allProducts[0]);
+      for (const product of allProducts) {
+        const productInfo = await this.getOneProductSyscomById(product.producto_id, token);
+        // const productInfo = await this.getOneProductSyscomById('206909', token);
+        // console.log('productInfo: ', productInfo);
+        // let product = allProducts[0];
+        if (productInfo && productInfo.oneProductSyscomById) {
+          const productTmp = productInfo.oneProductSyscomById
+          product.especificaciones = [];
+          product.especificacionesBullet = [];
+          product.especificacionesBullet.push({ tipo: 'Caracteristicas', valor: productTmp.caracteristicas });
+          if (productTmp && productTmp.recursos && productTmp.recursos.length > 0) {
+            for (const recurso of productTmp.recursos) {
+              product.especificaciones.push({ tipo: 'Recurso(' + recurso.recurso + ')', valor: recurso.path });
+            }
+          }
+          // Imagenes
+          if (productTmp.imagenes.length > 0) {
+            product.pictures = [];
+            product.sm_pictures = [];
+            for (const pictureI of productTmp.imagenes) {
+              if (pictureI !== '') {
+                const pict: IPicture = {
+                  width: '500',
+                  height: '500',
+                  url: pictureI.imagen
+                };
+                product.pictures.push(pict);
+                const pict_sm: IPicture = {
+                  width: '300',
+                  height: '300',
+                  url: pictureI.imagen
+                };
+                product.sm_pictures.push(pict_sm);
+              }
+            }
+          }
+        }
+      }
       return {
         status: true,
         message: 'La lista de productos se ha generado correctamente',
@@ -295,6 +335,55 @@ class ExternalSyscomService extends ResolversOperationsService {
         status: false,
         message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
         listProductsSyscomByBrand: null,
+      };
+    }
+  }
+
+  async getOneProductSyscomById(product_id: string = '', token: any) {
+    try {
+      const productId = this.getVariables().productId || product_id;
+      if (!productId || productId === '') {
+        return {
+          status: false,
+          message: 'Se requiere especificar el producto',
+          listProductsSyscomByBrand: null,
+        };
+      }
+      if (!token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          oneProductSyscomById: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/productos/' + productId;
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getTokenSyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (response.status < 200 || response.status >= 300) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          oneProductSyscomById: null
+        };
+      }
+      return {
+        status: true,
+        message: `El producto ${productId} se ha encontrado`,
+        oneProductSyscomById: data
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        oneProductSyscomById: null,
       };
     }
   }
@@ -662,10 +751,10 @@ class ExternalSyscomService extends ResolversOperationsService {
         }
 
       } else {
-        logger.info('No se pudieron recuperar los productos via FTP');
+        logger.info('No se pudieron recuperar los productos del proveedor');
         return {
           status: false,
-          message: 'No se pudieron recuperar los productos via FTP.',
+          message: 'No se pudieron recuperar los productos del proveedor.',
           listProductsSyscom: null,
         };
       }
@@ -774,26 +863,19 @@ class ExternalSyscomService extends ResolversOperationsService {
       });
       itemData.suppliersProd = s;
       itemData.model = item.modelo;
-      // Imagenes
-      itemData.pictures = [];
-      i.width = '600';
-      i.height = '600';
-      i.url = item.img_portada;
-      itemData.pictures.push(i);
-      // Imagenes pequeñas
-      itemData.sm_pictures = [];
-      is.width = '300';
-      is.height = '300';
-      is.url = item.img_portada;
-      itemData.variants = [];
-      itemData.sm_pictures.push(is);
+      itemData.pictures = item.pictures;
+      itemData.sm_pictures = item.sm_pictures;
       itemData.especificaciones = [];
+      if (item.especificaciones && item.especificaciones.length > 0) {
+        itemData.especificaciones = item.especificaciones;
+      }
       itemData.especificaciones.push({ tipo: 'Peso', valor: item.peso });
       itemData.especificaciones.push({ tipo: 'Altura', valor: item.alto });
       itemData.especificaciones.push({ tipo: 'Longitud', valor: item.largo });
       itemData.especificaciones.push({ tipo: 'Ancho', valor: item.ancho });
       itemData.especificaciones.push({ tipo: 'Link', valor: item.link });
       itemData.especificaciones.push({ tipo: 'Link_privado', valor: item.link_privado });
+      itemData.especificacionesBullet = item.especificacionesBullet;
     }
     return itemData;
   }

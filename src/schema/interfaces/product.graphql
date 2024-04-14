@@ -34,11 +34,17 @@ interface Product {
   promociones: Promociones
   generalInfo: GeneralInfo
   especificaciones: [Especificacion]
+  especificacionesBullet: [EspecificacionBullet]
 }
 
 interface Especificacion {
   tipo: String
   valor: String
+}
+
+interface EspecificacionBullet {
+  tipo: String
+  valor: [String]
 }
 
 interface Categorys {

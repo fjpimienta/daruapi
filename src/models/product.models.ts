@@ -37,11 +37,17 @@ export class Product implements IProduct {
   promociones: Promociones = { clave_promocion: '', descripcion_promocion: '', inicio_promocion: '', vencimiento_promocion: '', disponible_en_promocion: 0, porciento: 0, };
   registerDate?: String = '';
   especificaciones: Especificacion[] = [];
+  especificacionesBullet: EspecificacionBullet[] = [];
 }
 
 export class Especificacion {
   tipo: string = '';
   valor: string = '';
+}
+
+export class EspecificacionBullet {
+  tipo: string = '';
+  valor: string[] = [];
 }
 
 export class Categorys {

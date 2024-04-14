@@ -825,14 +825,14 @@ class ExternalSyscomService extends ResolversOperationsService {
         itemData.subCategory = [];
         item.categorias.forEach((category: any) => {
           // Categorias
-          if (category.nivel === 1 || category.nivel === 2 || category.nivel === 3) {
+          if (category.nivel === 1 || category.nivel === 3) {
             const c = new Categorys();
             c.name = category.nombre;
             c.slug = slugify(category.nombre, { lower: true });
             itemData.category.push(c);
           }
           // Subcategorias
-          if (category.nivel === 1 || category.nivel === 2 || category.nivel === 3) {
+          if (category.nivel === 2) {
             const c = new Categorys();
             c.name = category.nombre;
             c.slug = slugify(category.nombre, { lower: true });

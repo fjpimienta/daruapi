@@ -830,12 +830,13 @@ class ExternalSyscomService extends ResolversOperationsService {
             c.name = category.nombre;
             c.slug = slugify(category.nombre, { lower: true });
             itemData.category.push(c);
-            // Subcategorias
-            // } else if (category.nivel === 3) {
-            //   const c = new Categorys();
-            //   c.name = category.nombre;
-            //   c.slug = slugify(category.nombre, { lower: true });
-            //   itemData.subCategory.push(c);
+          }
+          // Subcategorias
+          if (category.nivel === 1 || category.nivel === 2 || category.nivel === 3) {
+            const c = new Categorys();
+            c.name = category.nombre;
+            c.slug = slugify(category.nombre, { lower: true });
+            itemData.subCategory.push(c);
           }
         });
       }

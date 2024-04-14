@@ -782,11 +782,16 @@ class ExternalSyscomService extends ResolversOperationsService {
     let salePrice = 0;
     itemData.id = undefined;
     if (item && item.total_existencia > 0) {
+      function extraerPrimeraSeccion(titulo: string) {
+        const secciones = titulo.split(/[\/|]/);
+        return secciones[0].trim();
+      }
       const branchOfficesSyscom: BranchOffices[] = [];
       let featured = false;
       itemData.id = item.producto_id;
-      itemData.name = item.titulo;
-      itemData.slug = slugify(item.titulo, { lower: true });
+      const titulo = extraerPrimeraSeccion(item.titulo);
+      itemData.name = titulo;
+      itemData.slug = slugify(titulo, { lower: true });
       itemData.short_desc = item.titulo;
       if (item.precios && item.precios.precio_1) {
         price = parseFloat((parseFloat(item.precios.precio_lista) * exchangeRate * utilidad * iva).toFixed(2));
@@ -820,17 +825,17 @@ class ExternalSyscomService extends ResolversOperationsService {
         itemData.subCategory = [];
         item.categorias.forEach((category: any) => {
           // Categorias
-          if (category.nivel === 1 || category.nivel === 2) {
+          if (category.nivel === 1 || category.nivel === 2 || category.nivel === 3) {
             const c = new Categorys();
             c.name = category.nombre;
             c.slug = slugify(category.nombre, { lower: true });
             itemData.category.push(c);
             // Subcategorias
-          } else if (category.nivel === 3) {
-            const c = new Categorys();
-            c.name = category.nombre;
-            c.slug = slugify(category.nombre, { lower: true });
-            itemData.subCategory.push(c);
+            // } else if (category.nivel === 3) {
+            //   const c = new Categorys();
+            //   c.name = category.nombre;
+            //   c.slug = slugify(category.nombre, { lower: true });
+            //   itemData.subCategory.push(c);
           }
         });
       }

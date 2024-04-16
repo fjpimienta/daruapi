@@ -25,6 +25,10 @@ type Query {
     cp: Int
     coloniaName: String
   ): ResultSyscom
+  sucursalSyscom(
+    cp: Int
+    coloniaName: String
+  ): ResultSyscom
   saveOrderSyscom(
     orderSyscomInput: OrderSyscomInput
   ): ResultSyscom

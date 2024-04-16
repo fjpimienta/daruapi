@@ -719,6 +719,83 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
+  async getSucursalSyscom(codigoPostal: number = 0, sucursal: string = '') {
+    try {
+      const cp = this.getVariables().cp || codigoPostal;
+      const sucursalName = this.getVariables().sucursalName || sucursal;
+      if ((!cp || cp <= 0) && (!sucursalName || sucursalName === '')) {
+        return {
+          status: false,
+          message: 'Se requiere especificar la sucursal o el codigo postal de la sucursal',
+          sucursalSyscom: null,
+        };
+      }
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          sucursalSyscom: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/carrito/sucursales';
+      const response = await fetch(url, options);
+      const data = await response.json();
+      // console.log('data: ', data);
+      process.env.PRODUCTION === 'true' && logger.info(`getSucursalesSyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          sucursalSyscom: null
+        };
+      }
+      let mensaje = '';
+      let sucursalEncontrada: any;
+      const sucursales = data;
+      if (cp > 0 && sucursal === '') {
+        sucursalEncontrada = sucursales.filter((sucursal: any) => sucursal.codigo_postal.toString() === cp.toString());
+        if (!sucursalEncontrada || sucursalEncontrada.length <= 0) {
+          return {
+            status: false,
+            message: `El codigo postal ${cp} no tiene sucursal`,
+            sucursalSyscom: null
+          };
+        }
+        mensaje = `Se ha encontrado la sucursal del cp ${cp}`;
+      }
+      if (cp === 0 && sucursal !== '') {
+        sucursalEncontrada = sucursales.filter((sucursal: any) => this.quitarAcentos(sucursal.nombre_sucursal.toLowerCase()) === this.quitarAcentos(sucursalName.toLowerCase()));
+        if (!sucursalEncontrada || sucursalEncontrada.length <= 0) {
+          return {
+            status: false,
+            message: `La sucursal ${sucursalName} no tiene cobertura`,
+            sucursalSyscom: null
+          };
+        }
+        mensaje = `Se ha encontrado la sucursal ${sucursalName}`;
+      }
+      return {
+        status: true,
+        message: mensaje,
+        sucursalSyscom: sucursalEncontrada[0]
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        sucursalSyscom: null,
+      };
+    }
+  }
+
   async getListProductsSyscom() {
     try {
       const brand = 'ugreen';
@@ -846,6 +923,18 @@ class ExternalSyscomService extends ResolversOperationsService {
       b.name = item.marca;
       b.slug = slugify(item.marca, { lower: true });
       itemData.brands.push(b);
+      // Almacenes
+      // const branchOfficesIngram: BranchOffices[] = [];
+      // const almacen = new BranchOffices();
+      // const almacenEstado = this.getCtAlmacenes(branch.almacen.key);
+      // almacen.id = almacenEstado.id.toString();
+      // almacen.name = almacenEstado.Sucursal;
+      // almacen.estado = almacenEstado.Estado;
+      // almacen.cp = almacenEstado.CP;
+      // almacen.latitud = almacenEstado.latitud;
+      // almacen.longitud = almacenEstado.longitud;
+      // almacen.cantidad = branch.almacen.value;
+      // branchOfficesIngram.push(almacen);
       // SupplierProd
       s.idProveedor = proveedor;
       s.codigo = item.producto_id;

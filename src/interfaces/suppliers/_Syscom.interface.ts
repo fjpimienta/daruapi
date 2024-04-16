@@ -39,10 +39,10 @@ export interface IOrderSyscom {
   uso_cfdi: string;
   tipo_pago: string;
   orden_compra: string;
-  ordenar: string;
-  iva_frontera: string;
-  forzar: string;
-  testmode: string;
+  ordenar: boolean;
+  iva_frontera: boolean;
+  forzar: boolean;
+  testmode: boolean;
 }
 
 export interface IDireccionSyscom {

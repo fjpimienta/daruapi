@@ -42,6 +42,9 @@ const resolversSyscomQuery: IResolvers = {
     async coloniaByCP(_, __, context) {
       return new ExternalSyscomService(_, __, context).getColoniaByCP();
     },
+    async sucursalSyscom(_, __, context) {
+      return new ExternalSyscomService(_, __, context).getSucursalSyscom();
+    },
     async saveOrderSyscom(_, __, context) {
       return new ExternalSyscomService(_, __, context).setOrderSyscom();
     },

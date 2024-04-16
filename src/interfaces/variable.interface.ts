@@ -154,6 +154,7 @@ export interface IVariables {
   // syscom
   paisName?: string;
   coloniaName?: string;
+  sucursalName?: string;
   categoryId?: string;
   productId?: string;
   orderSyscomInput?: IOrderSyscom;

@@ -131,6 +131,20 @@ type EstadoByCP {
   codigo_estado: String
 }
 
+type SucursalSyscom {
+  nombre_sucursal: String
+  calle: String
+  num_ext: String
+  num_int: String
+  codigo_postal: String
+  colonia: String
+  estado: String
+  ciudad: String
+  pais: String
+  telefono: String
+  codigo: String
+}
+
 type OrderResponseSyscom {
   error: String
   cliente: ClienteSyscom

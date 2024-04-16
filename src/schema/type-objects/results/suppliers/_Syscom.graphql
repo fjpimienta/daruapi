@@ -14,5 +14,6 @@ type ResultSyscom implements Result {
   paisSyscom: String!
   estadoByCP: String!
   coloniaByCP: String!
+  sucursalSyscom: SucursalSyscom
   saveOrderSyscom: OrderResponseSyscom
 }

@@ -801,7 +801,7 @@ class ExternalSyscomService extends ResolversOperationsService {
       const brand = 'ugreen';
       const listProductsSyscom = (await this.getListProductsSyscomByBrand(brand)).listProductsSyscomByBrand;
       const sucursal = (await this.getSucursalSyscom(31000)).sucursalSyscom;
-      const branchOffice: BranchOffices = new BranchOffices();
+      let branchOffice: BranchOffices = new BranchOffices();
       branchOffice.id = sucursal ? sucursal.codigo : 'chihuahua';
       branchOffice.name = sucursal ? sucursal.nombre_sucursal : 'Matriz Chihuahua';
       branchOffice.estado = sucursal ? sucursal.estado : 'Chihuahua';
@@ -1024,9 +1024,16 @@ class ExternalSyscomService extends ResolversOperationsService {
         }
       });
       // Almacenes
-      sucursal.cantidad = disponible;
       const branchOfficesSyscom: BranchOffices[] = [];
-      branchOfficesSyscom.push(sucursal);
+      let branchOffice: BranchOffices = new BranchOffices();
+      branchOffice.id = sucursal ? sucursal.id : 'chihuahua';
+      branchOffice.name = sucursal ? sucursal.name : 'Matriz Chihuahua';
+      branchOffice.estado = sucursal ? sucursal.estado : 'Chihuahua';
+      branchOffice.cp = sucursal ? sucursal.cp : '31000';
+      branchOffice.latitud = '';
+      branchOffice.longitud = '';
+      branchOffice.cantidad = disponible;
+      branchOfficesSyscom.push(branchOffice);
       s.branchOffices = branchOfficesSyscom;
       itemData.suppliersProd = s;
       itemData.model = item.modelo;

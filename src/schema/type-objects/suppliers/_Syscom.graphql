@@ -148,9 +148,10 @@ type SucursalSyscom {
 type OrderResponseSyscom {
   error: String
   cliente: ClienteSyscom
-  resumem: ResumenSyscom
+  resumen: ResumenSyscom
   datos_entrega: DatosEntregaSyscom
   productos: [ProductoSyscom]
+  totales: TotalesSyscom
 }
 
 type ClienteSyscom {
@@ -210,6 +211,13 @@ type ProductoSyscom {
   precio_unitario: String
   importe: Float
   descuentos: DescuentosSyscom
+}
+
+type TotalesSyscom {
+  subtotal: Float
+  flete: Float
+  iva: Float
+  total: Float
 }
 
 type DescuentosSyscom {

@@ -209,10 +209,10 @@ type ProductoSyscom {
   precio_oferta: String
   precio_unitario: String
   importe: Float
-  descuentos: String
+  descuentos: DescuentosSyscom
 }
 
-type DescuentosSystoms {
+type DescuentosSyscom {
   distribucion: Float
   clasificacion: String
   volumen: Float

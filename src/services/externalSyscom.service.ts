@@ -1110,7 +1110,7 @@ class ExternalSyscomService extends ResolversOperationsService {
       const response = await fetch(url, options);
       const data = await response.json();
       process.env.PRODUCTION === 'true' && logger.info(`setOrderSyscom.data: \n ${JSON.stringify(data)} \n`);
-      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+      if (data && data.status && (data.status < 200 || data.status >= 300 || data.status === 'error')) {
         return {
           status: false,
           message: data.message || data.detail,
@@ -1118,9 +1118,9 @@ class ExternalSyscomService extends ResolversOperationsService {
         };
       }
       return {
-        status: true,
-        message: `La orden se ha generado correctamente`,
-        saveOrderSyscom: data
+        status: data.error === '' ? true : false,
+        message: data.error === '' ? `La orden se ha generado correctamente` : data.error,
+        saveOrderSyscom: data.error === '' ? data : null
       };
     } catch (error: any) {
       return {

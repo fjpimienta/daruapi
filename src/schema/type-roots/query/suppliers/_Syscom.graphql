@@ -12,6 +12,9 @@ type Query {
     brandName: String
   ): ResultSyscom
   listProductsSyscom: ResultSyscom
+  existenciaProductoSyscom(
+    existenciaProducto: SupplierProdInput
+  ): ResultSyscom
   metodosPagosSyscom: ResultSyscom
   fleterasSyscom: ResultSyscom
   cfdisSyscom: ResultSyscom

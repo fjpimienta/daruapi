@@ -9,7 +9,7 @@ import { BranchOffices, Brands, Categorys, Descuentos, Picture, Product, Supplie
 import ConfigsService from './config.service';
 import slugify from 'slugify';
 import { IMetodoPagoItemDetalle, IMetodoPagoSyscom } from '../interfaces/suppliers/_Syscom.interface';
-import { IPicture } from '../interfaces/product.interface';
+import { IBranchOffices, IPicture } from '../interfaces/product.interface';
 
 class ExternalSyscomService extends ResolversOperationsService {
   collection = COLLECTIONS.INGRAM_PRODUCTS;
@@ -800,6 +800,15 @@ class ExternalSyscomService extends ResolversOperationsService {
     try {
       const brand = 'ugreen';
       const listProductsSyscom = (await this.getListProductsSyscomByBrand(brand)).listProductsSyscomByBrand;
+      const sucursal = (await this.getSucursalSyscom(31000)).sucursalSyscom;
+      const branchOffice: BranchOffices = new BranchOffices();
+      branchOffice.id = sucursal ? sucursal.codigo : 'chihuahua';
+      branchOffice.name = sucursal ? sucursal.nombre_sucursal : 'Matriz Chihuahua';
+      branchOffice.estado = sucursal ? sucursal.estado : 'Chihuahua';
+      branchOffice.cantidad = 0;
+      branchOffice.cp = sucursal ? sucursal.codigo_postal : '31000';
+      branchOffice.latitud = '';
+      branchOffice.longitud = '';
       if (listProductsSyscom) {
         const productos: Product[] = [];
         if (listProductsSyscom && listProductsSyscom.length > 0) {
@@ -809,7 +818,7 @@ class ExternalSyscomService extends ResolversOperationsService {
           const exchangeRate = config.config.exchange_rate;
           for (const product of listProductsSyscom) {
             if (product.producto_id !== '') {
-              const itemData: Product = await this.setProduct('syscom', product, null, stockMinimo, exchangeRate);
+              const itemData: Product = await this.setProduct('syscom', product, null, stockMinimo, exchangeRate, branchOffice);
               if (itemData.id !== undefined) {
                 productos.push(itemData);
               }
@@ -844,7 +853,78 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
-  async setProduct(proveedor: string, item: any, imagenes: any = null, stockMinimo: number, exchangeRate: number) {
+  async getExistenciaProductoSyscom() {
+    try {
+      const existenciaProducto = this.getVariables().existenciaProducto;
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          existenciaProductoSyscom: null,
+        };
+      }
+      if (!existenciaProducto) {
+        return {
+          status: false,
+          message: 'No hubo cambio en los almacenes. Verificar API.',
+          existenciaProductoSyscom: existenciaProducto,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/productos/' + existenciaProducto.codigo;
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getExistenciaProductoSyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          sucursalSyscom: null
+        };
+      }
+      if (data.total_existencia > 0) {
+        const sucursal = (await this.getSucursalSyscom(31000)).sucursalSyscom;
+        const branchOffice: BranchOffices = new BranchOffices();
+        const branchOffices: BranchOffices[] = [];
+        branchOffice.id = sucursal ? sucursal.codigo : 'chihuahua';
+        branchOffice.name = sucursal ? sucursal.nombre_sucursal : 'Matriz Chihuahua';
+        branchOffice.estado = sucursal ? sucursal.estado : 'Chihuahua';
+        branchOffice.cantidad = data.total_existencia;
+        branchOffice.cp = sucursal ? sucursal.codigo_postal : '31000';
+        branchOffice.latitud = '';
+        branchOffice.longitud = '';
+        branchOffices.push(branchOffice);
+        existenciaProducto.branchOffices = branchOffices;
+        return {
+          status: true,
+          message: 'La información que hemos pedido se ha cargado correctamente',
+          existenciaProductoSyscom: existenciaProducto,
+        };
+      } else {
+        existenciaProducto.branchOffices[0].cantidad = 0;
+        return {
+          status: true,
+          message: 'No hay disponibilidad del producto.',
+          existenciaProductoSyscom: existenciaProducto,
+        };
+      }
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+        existenciaProductoSyscom: null,
+      };
+    }
+  }
+
+  async setProduct(proveedor: string, item: any, imagenes: any = null, stockMinimo: number, exchangeRate: number, sucursal: BranchOffices) {
     const utilidad: number = 1.08;
     const iva: number = 1.16;
     let itemData: Product = new Product();
@@ -863,7 +943,7 @@ class ExternalSyscomService extends ResolversOperationsService {
         const secciones = titulo.split(/[\/|]/);
         return secciones[0].trim();
       }
-      const branchOfficesSyscom: BranchOffices[] = [];
+      disponible = item.total_existencia;
       let featured = false;
       itemData.id = item.producto_id;
       const titulo = extraerPrimeraSeccion(item.titulo);
@@ -887,7 +967,7 @@ class ExternalSyscomService extends ResolversOperationsService {
       itemData.featured = featured;
       itemData.new = false;
       itemData.sold = '';
-      itemData.stock = item.total_existencia;
+      itemData.stock = disponible;
       itemData.sku = item.producto_id;
       itemData.upc = item.sat_key;
       itemData.ean = '';
@@ -923,18 +1003,6 @@ class ExternalSyscomService extends ResolversOperationsService {
       b.name = item.marca;
       b.slug = slugify(item.marca, { lower: true });
       itemData.brands.push(b);
-      // Almacenes
-      // const branchOfficesIngram: BranchOffices[] = [];
-      // const almacen = new BranchOffices();
-      // const almacenEstado = this.getCtAlmacenes(branch.almacen.key);
-      // almacen.id = almacenEstado.id.toString();
-      // almacen.name = almacenEstado.Sucursal;
-      // almacen.estado = almacenEstado.Estado;
-      // almacen.cp = almacenEstado.CP;
-      // almacen.latitud = almacenEstado.latitud;
-      // almacen.longitud = almacenEstado.longitud;
-      // almacen.cantidad = branch.almacen.value;
-      // branchOfficesIngram.push(almacen);
       // SupplierProd
       s.idProveedor = proveedor;
       s.codigo = item.producto_id;
@@ -942,7 +1010,6 @@ class ExternalSyscomService extends ResolversOperationsService {
       s.price = parseFloat(item.precios.precio_lista);
       s.sale_price = parseFloat(item.precios.precio_descuento);
       s.moneda = 'MXN';
-      s.branchOffices = branchOfficesSyscom;
       s.category = new Categorys();
       s.subCategory = new Categorys();
       item.categorias.forEach((category: any) => {
@@ -956,6 +1023,11 @@ class ExternalSyscomService extends ResolversOperationsService {
           c.slug = slugify(category.nombre, { lower: true });
         }
       });
+      // Almacenes
+      sucursal.cantidad = disponible;
+      const branchOfficesSyscom: BranchOffices[] = [];
+      branchOfficesSyscom.push(sucursal);
+      s.branchOffices = branchOfficesSyscom;
       itemData.suppliersProd = s;
       itemData.model = item.modelo;
       itemData.pictures = item.pictures;

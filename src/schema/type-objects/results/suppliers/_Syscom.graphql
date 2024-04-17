@@ -8,6 +8,7 @@ type ResultSyscom implements Result {
   listCategorysSyscom: [Categoria]
   listProductsSyscomByBrand: [ProductsSyscom]
   listProductsSyscom: [Product]
+  existenciaProductoSyscom: ResponseSupplierProd
   metodosPagosSyscom: [MetodoPagoSyscom]
   fleterasSyscom: [FleterasSyscom]
   cfdisSyscom: [CfdisSyscom]

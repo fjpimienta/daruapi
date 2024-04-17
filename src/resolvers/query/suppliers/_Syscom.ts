@@ -24,6 +24,9 @@ const resolversSyscomQuery: IResolvers = {
     async listProductsSyscom(_, __, context) {
       return new ExternalSyscomService(_, __, context).getListProductsSyscom();
     },
+    async existenciaProductoSyscom(_, variables, context) {
+      return new ExternalSyscomService(_, variables, context).getExistenciaProductoSyscom();
+    },
     async metodosPagosSyscom(_, __, context) {
       return new ExternalSyscomService(_, __, context).getMetodosPagosSyscom();
     },

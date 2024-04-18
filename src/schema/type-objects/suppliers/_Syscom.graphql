@@ -1,0 +1,228 @@
+type TokenSyscom {
+  token_type: String
+  expires_in: String
+  access_token: String
+}
+
+type ProductsSyscom {
+  producto_id: String
+  modelo: String
+  total_existencia: Int
+  titulo: String
+  marca: String
+  sat_key: String
+  img_portada: String
+  link_privado: String
+  categorias: [Categoria]
+  pvol: String
+  marca_logo: String
+  link: String
+  iconos: [String]
+  peso: String
+  unidad_de_medida: UnidadDeMedida
+  alto: String
+  largo: String
+  ancho: String
+  precios: Precios
+  existencia: Existencia
+}
+
+type Categoria {
+  id: String
+  nombre: String
+  nivel: Int
+}
+
+type UnidadDeMedida {
+  codigo_unidad: String
+  nombre: String
+  clave_unidad_sat: String
+}
+
+type Precios {
+  precio_1: String
+  precio_especial: String
+  precio_descuento: String
+  precio_lista: String
+}
+
+type ExistenciaAsterisco {
+  a: Int
+  b: Int
+  c: Int
+  d: Int
+  e: Int
+}
+
+type ExistenciaDetalle {
+  detalle1: String
+}
+
+type Existencia {
+  nuevo: Int
+  asterisco: ExistenciaAsterisco
+  detalle: [ExistenciaDetalle]
+}
+
+type Marca {
+  id: String
+  nombre: String
+}
+
+type MarcaDetalle {
+  descripcion: String
+  titulo: String
+  logo: String
+  categorias: [CategoriaImagen]
+}
+
+type CategoriaImagen {
+  id: String
+  nombre: String
+  nivel: Int
+  imagen: String
+}
+
+type CategoriaDetalle {
+  id: String
+  nombre: String
+  nivel: String
+  origen: [Categoria]
+  subcategorias: [Categoria]
+}
+
+type MetodoPagoSyscom {
+  nombre: String
+  metodo: [MetodoPagoItem]
+}
+
+type MetodoPagoItem {
+  nombre: String
+  titulo: String
+  codigo: String
+  descuento: Int
+  tipo_cambio: String
+  plazo: Int
+  forma: FormaPago
+}
+
+type FormaPago {
+  PUE: Int
+  PPD: Int
+}
+
+type FleterasSyscom {
+  codigo: String
+  dia_siguiente: Boolean
+  nombre: String
+}
+
+type CfdisSyscom {
+  codigo: String
+  nombre: String
+}
+
+type EstadoByCP {
+  codigo_postal: String
+  municipio: String
+  estado_sat: String
+  zona_extendida: String
+  estado_nombre: String
+  codigo_estado: String
+}
+
+type SucursalSyscom {
+  nombre_sucursal: String
+  calle: String
+  num_ext: String
+  num_int: String
+  codigo_postal: String
+  colonia: String
+  estado: String
+  ciudad: String
+  pais: String
+  telefono: String
+  codigo: String
+}
+
+type OrderResponseSyscom {
+  error: String
+  cliente: ClienteSyscom
+  resumen: ResumenSyscom
+  datos_entrega: DatosEntregaSyscom
+  productos: [ProductoSyscom]
+  totales: TotalesSyscom
+}
+
+type ClienteSyscom {
+  num_cliente: String
+  rfc: String
+  whatsapp: String
+  email: String
+  telefono: String
+  direccion: DireccionSyscom
+}
+
+type DireccionSyscom {
+  calle: String
+  num_exterior: String
+  num_interior: String
+  colonia: String
+  ciudad: String
+  estado: String
+  pais: String
+}
+
+type ResumenSyscom {
+  peso_total: Float
+  peso_vol_total: Float
+  moneda: String
+  forma_pago: Int
+  tipo_cambio: String
+  plazo: String
+  codigo_pago: String
+  folio: String
+  folio_pedido: String
+  fecha_creacion: String
+  iva_aplicado: Int
+}
+
+type DatosEntregaSyscom {
+  calle: String
+  num_exterior: String
+  num_interior: String
+  colonia: String
+  ciudad: String
+  estado: String
+  pais: String
+}
+
+type ProductoSyscom {
+  id: Int
+  cantidad: Int
+  tipo: String
+  modelo: String
+  titulo: String
+  marca: String
+  link: String
+  imagen: String
+  precio_lista: String
+  precio_oferta: String
+  precio_unitario: String
+  importe: Float
+  descuentos: DescuentosSyscom
+}
+
+type TotalesSyscom {
+  subtotal: Float
+  flete: Float
+  iva: Float
+  total: Float
+}
+
+type DescuentosSyscom {
+  distribucion: Float
+  clasificacion: String
+  volumen: Float
+  financiero: Float
+}

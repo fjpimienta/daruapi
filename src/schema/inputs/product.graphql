@@ -34,11 +34,17 @@ input ProductInput {
   descuentos: DescuentosInput
   promociones: PromocionesInput
   especificaciones: [EspecificacionInput]
+  especificacionesBullet: [EspecificacionBulletInput]
 }
 
 input EspecificacionInput {
   tipo: String
   valor: String
+}
+
+input EspecificacionBulletInput {
+  tipo: String
+  valor: [String]
 }
 
 input CategorysInput {

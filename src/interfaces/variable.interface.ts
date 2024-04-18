@@ -20,6 +20,7 @@ import { IWelcome } from './welcome.interface';
 import { ICupon } from './cupon.interface';
 import { IIcommktContact } from './suppliers/_Icommkt.interface';
 import { IOrderIngram } from './suppliers/_Ingram.interface';
+import { IOrderSyscom } from './suppliers/_Syscom.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -150,4 +151,11 @@ export interface IVariables {
   // searchs
   year?: number;
   month?: string;
+  // syscom
+  paisName?: string;
+  coloniaName?: string;
+  sucursalName?: string;
+  categoryId?: string;
+  productId?: string;
+  orderSyscomInput?: IOrderSyscom;
 }

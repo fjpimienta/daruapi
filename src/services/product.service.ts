@@ -103,7 +103,7 @@ class ProductsService extends ResolversOperationsService {
     }
     const icecatExt = await new ExternalIcecatsService({}, variableLocal, context).getIcecatProductLocal();
 
-    if (icecatExt.status) {
+    if (icecatExt.status && product.suppliersProd.idProveedor !== 'syscom') {
       if (icecatExt.icecatProductLocal) {
         const generalInfo: any = {};
         generalInfo.IcecatId = 0;
@@ -190,7 +190,7 @@ class ProductsService extends ResolversOperationsService {
       }
     } else {
       const icecat = await new ExternalIcecatsService({}, variableLocal, context).getICecatProductInt(variableLocal);
-      if (icecat.status) {
+      if (icecat.status && product.suppliersProd.idProveedor !== 'syscom') {
         if (icecat.icecatProduct.GeneralInfo && icecat.icecatProduct.GeneralInfo.IcecatId !== '') {
           product.generalInfo = icecat.icecatProduct.GeneralInfo;
         }

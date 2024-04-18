@@ -530,6 +530,49 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
+  async getTipoCambioSyscom() {
+    try {
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          tipoCambioSyscom: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/tipocambio/';
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getTipoCambioSyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          tipoCambioSyscom: null
+        };
+      }
+      return {
+        status: true,
+        message: `El tipo de cambio se ha recuperado.`,
+        tipoCambioSyscom: data.preferencial
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        tipoCambioSyscom: null,
+      };
+    }
+  }
+
+
   quitarAcentos(texto: string): string {
     return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }

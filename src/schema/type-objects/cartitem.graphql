@@ -32,7 +32,8 @@ type Cartitem {
   suppliersProd: SupplierProd
   descuentos: Descuentos
   promociones: Promociones
-  especificaciones: Especificaciones
+  especificaciones: [Especificacion]
+  especificacionesBullet: [EspecificacionBullet]
   qty: Int
   sum: Float
   assignedBranchId: Boolean
@@ -144,7 +145,12 @@ type Promociones {
   porciento: Float
 }
 
-type Especificaciones {
+type Especificacion {
   tipo: String
   valor: String
+}
+
+type EspecificacionBullet {
+  tipo: String
+  valor: [String]
 }

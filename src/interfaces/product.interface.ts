@@ -35,11 +35,17 @@ export interface IProduct {
   promociones: IPromociones;
   registerDate?: String;
   especificaciones: IEspecificacion[];
+  especificacionesBullet: IEspecificacionBullet[];
 }
 
 export interface IEspecificacion {
   tipo: String;
   valor: String;
+}
+
+export interface IEspecificacionBullet {
+  tipo: String;
+  valor: String[];
 }
 
 export interface ICategorys {

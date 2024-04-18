@@ -36,11 +36,17 @@ type Product {
   promociones: Promociones
   generalInfo: GeneralInfo
   especificaciones: [Especificacion]
+  especificacionesBullet: [EspecificacionBullet]
 }
 
 type Especificacion {
   tipo: String
   valor: String
+}
+
+type EspecificacionBullet {
+  tipo: String
+  valor: [String]
 }
 
 type Categorys {

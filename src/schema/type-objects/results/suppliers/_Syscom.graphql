@@ -1,0 +1,20 @@
+type ResultSyscom implements Result {
+  status: Boolean!
+  message: String!
+  tokenSyscom: TokenSyscom
+  oneBrandSyscom: MarcaDetalle
+  listBrandsSyscom: [Marca]
+  oneCategorySyscom: CategoriaDetalle
+  listCategorysSyscom: [Categoria]
+  listProductsSyscomByBrand: [ProductsSyscom]
+  listProductsSyscom: [Product]
+  existenciaProductoSyscom: ResponseSupplierProd
+  metodosPagosSyscom: [MetodoPagoSyscom]
+  fleterasSyscom: [FleterasSyscom]
+  cfdisSyscom: [CfdisSyscom]
+  paisSyscom: String!
+  estadoByCP: String!
+  coloniaByCP: String!
+  sucursalSyscom: SucursalSyscom
+  saveOrderSyscom: OrderResponseSyscom
+}

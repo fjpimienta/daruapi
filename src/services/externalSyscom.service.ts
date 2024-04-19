@@ -1185,6 +1185,7 @@ class ExternalSyscomService extends ResolversOperationsService {
         orderSyscomInput.direccion.estado = estado;
         orderSyscomInput.direccion.colonia = colonias[0];
         orderSyscomInput.direccion.calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'Conocida';
+        orderSyscomInput.direccion.num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
         orderSyscomInput.direccion.telefono = orderSyscomInput.direccion.telefono !== '' ? orderSyscomInput.direccion.telefono : '9999999999';
       }
       // Fin Blindaje

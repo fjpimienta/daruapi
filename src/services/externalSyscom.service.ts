@@ -1223,6 +1223,7 @@ class ExternalSyscomService extends ResolversOperationsService {
       const url = 'https://developers.syscom.mx/api/v1/carrito/generar';
       const response = await fetch(url, options);
       const data = await response.json();
+      console.log('data: ', data);
       process.env.PRODUCTION === 'true' && logger.info(`setOrderSyscom.data: \n ${JSON.stringify(data)} \n`);
       if (data && data.status && (data.status < 200 || data.status >= 300 || data.status === 'error')) {
         return {

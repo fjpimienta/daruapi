@@ -17,6 +17,8 @@ import ExternalOpenpayService from './externalOpenpay.service';
 import { IChargeOpenpay } from '../interfaces/suppliers/_Openpay.interface';
 import ExternalCtsService from './externalCts.service';
 import logger from '../utils/logger';
+import { IOrderSyscom } from '../interfaces/suppliers/_Syscom.interface';
+import ExternalSyscomService from './externalSyscom.service';
 
 class DeliverysService extends ResolversOperationsService {
   collection = COLLECTIONS.DELIVERYS;
@@ -271,7 +273,21 @@ class DeliverysService extends ResolversOperationsService {
               }
               ordersCvas.push(ordersCva);
               break;
-            case 'ingram':
+            case 'syscom':
+              status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
+              const ordersSyscom = await this.setOrder(id, delivery, warehouse);
+              process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.ordersSyscom: \n ${JSON.stringify(ordersSyscom)} \n`);
+              const orderSyscomResponse = await this.EfectuarPedidos(supplier, ordersSyscom, context)
+                .then(async (result) => {
+                  return await result;
+                });
+              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderSyscomResponse: \n ${JSON.stringify(orderSyscomResponse)} \n`);
+              if (orderSyscomResponse.error !== '') {
+                status = 'ERROR PEDIDO PROVEEDOR';
+                statusError = true;
+                messageError = orderSyscomResponse.error;
+              }
+              ordersSyscom.push(orderSyscomResponse);
               break;
           }
         }
@@ -515,8 +531,12 @@ class DeliverysService extends ResolversOperationsService {
             Atencion: this.removeAccents(user?.name?.toUpperCase() + ' ' + user?.lastname?.toUpperCase())
           };
           return orderCvaSupplier;
-        case 'ingram':
-          return '';
+        case 'syscom':
+          const orderSyscom: IOrderSyscom = {
+            ...warehouse.ordersSyscom,
+            orden_compra: `DARU-${idDelivery.toString().padStart(6, '0')}`
+          };
+          return orderSyscom;
       }
       return '';
     }
@@ -594,6 +614,12 @@ class DeliverysService extends ResolversOperationsService {
             }
           });
         return await pedidosCt;
+        case 'syscom':
+          const pedidosSyscom = await new ExternalSyscomService({}, order, context).setOrderSyscom()
+          .then(async resultPedido => {
+            return await resultPedido.saveOrderSyscom;
+          });
+          return await pedidosSyscom
     }
   }
 

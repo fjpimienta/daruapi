@@ -3,7 +3,7 @@ input OrderSyscomInput {
   direccion: DireccionSyscomInput
   metodo_pago: String
   fletera: String
-  productos: [ProductsSyscomInput]
+  productos: [ProductoSyscomInput]
   moneda: String
   uso_cfdi: String
   tipo_pago: String
@@ -27,7 +27,7 @@ input DireccionSyscomInput {
   telefono: String
 }
 
-input ProductsSyscomInput {
+input ProductoSyscomInput {
   id: Int
   tipo: String
   cantidad: Int

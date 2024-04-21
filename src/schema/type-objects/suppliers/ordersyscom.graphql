@@ -16,9 +16,19 @@ type ClienteSyscom {
   direccion: DireccionSyscom
 }
 
+type DireccionSyscom {
+  calle: String
+  num_exterior: String
+  num_interior: String
+  colonia: String
+  ciudad: String
+  estado: String
+  pais: String
+}
+
 type ResumenSyscom {
-  peso_total: Int
-  peso_vol_total: Int
+  peso_total: Float
+  peso_vol_total: Float
   moneda: String
   forma_pago: Int
   tipo_cambio: String
@@ -61,16 +71,6 @@ type TotalesSyscom{
   flete: Float
   iva: Float
   total: Float
-}
-
-type DireccionSyscom {
-  calle: String
-  num_exterior: String
-  num_interior: String
-  colonia: String
-  ciudad: String
-  estado: String
-  pais: String
 }
 
 type DescuentosSyscom {

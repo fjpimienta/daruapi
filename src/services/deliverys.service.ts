@@ -192,6 +192,7 @@ class DeliverysService extends ResolversOperationsService {
       const id = delivery.id ? parseInt(delivery.id) : 0;
       const ordersCts: IOrderCt[] = [];
       const ordersCvas: IOrderCva[] = [];
+      const ordersSyscoms: IOrderSyscom[] = [];
       const warehouses: IWarehouse[] = delivery?.warehouses || [];
       const idTransactionOpenpay = delivery.chargeOpenpay.id;
       const resultOpenpay = await new ExternalOpenpayService({}, { idTransactionOpenpay }, context).oneCharge({ idTransactionOpenpay })
@@ -305,6 +306,7 @@ class DeliverysService extends ResolversOperationsService {
       deliveryUpdate.status = status;
       deliveryUpdate.ordersCt = ordersCts;
       deliveryUpdate.ordersCva = ordersCvas;
+      deliveryUpdate.ordersSyscom = ordersSyscoms;
       deliveryUpdate.chargeOpenpay = chargeOpenpay;
       deliveryUpdate.lastUpdate = new Date().toISOString();
       deliveryUpdate.status = status;

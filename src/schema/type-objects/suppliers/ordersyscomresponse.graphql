@@ -2,7 +2,7 @@ type OrderResponseSyscom {
   error: String
   cliente: ClienteSyscom
   resumen: ResumenSyscom
-  datos_entrega: DatosEntregaSyscom
+  datos_entrega: IDireccionSyscom
   productos: [ProductoSyscom]
   totales: TotalesSyscom
 }
@@ -13,10 +13,10 @@ type ClienteSyscom {
   whatsapp: String
   email: String
   telefono: String
-  direccion: DireccionSyscom
+  direccion: IDireccionSyscom
 }
 
-type DireccionSyscom {
+type IDireccionSyscom {
   calle: String
   num_exterior: String
   num_interior: String

@@ -21,7 +21,7 @@ type DireccionSyscom {
   num_ext: String
   num_int: String
   colonia: String
-  codigo_postal: number
+  codigo_postal: Int
   pais: String
   estado: String
   ciudad: String

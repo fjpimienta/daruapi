@@ -3,7 +3,7 @@ type OrderSyscom {
   direccion: DireccionSyscom
   metodo_pago: String
   fletera: String
-  productos: ProductoSyscom[]
+  productos: [ProductoSyscom]
   moneda: String
   uso_cfdi: String
   tipo_pago: String

@@ -536,7 +536,11 @@ class DeliverysService extends ResolversOperationsService {
         case 'syscom':
           const orderSyscom: IOrderSyscom = {
             ...warehouse.ordersSyscom,
-            orden_compra: `DARU-${idDelivery.toString().padStart(6, '0')}`
+            orden_compra: `DARU-${idDelivery.toString().padStart(6, '0')}`,
+            ordenar: true,
+            iva_frontera: false,
+            forzar: false,
+            testmode: false
           };
           return orderSyscom;
       }
@@ -616,12 +620,12 @@ class DeliverysService extends ResolversOperationsService {
             }
           });
         return await pedidosCt;
-        case 'syscom':
-          const pedidosSyscom = await new ExternalSyscomService({}, order, context).setOrderSyscom()
+      case 'syscom':
+        const pedidosSyscom = await new ExternalSyscomService({}, order, context).setOrderSyscom()
           .then(async resultPedido => {
             return await resultPedido.saveOrderSyscom;
           });
-          return await pedidosSyscom
+        return await pedidosSyscom
     }
   }
 

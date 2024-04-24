@@ -3,8 +3,7 @@ import { IInvoiceConfig } from './invoiceConfig.interface';
 import { IOrderCt } from './suppliers/_CtsShippments.interface';
 import { IOrderCva } from './suppliers/_CvasShippments.interface';
 import { IChargeOpenpay } from './suppliers/_Openpay.interface';
-import { IOrderCtConfirmResponse, IOrderCtResponse } from './suppliers/orderctresponse.interface';
-import { IOrderCvaResponse } from './suppliers/ordercvaresponse.interface';
+import { IOrderSyscom } from './suppliers/_Syscom.interface';
 import { IUserBasic } from './user.interface';
 import { IWarehouse } from './warehouses.interface';
 
@@ -22,6 +21,7 @@ export interface IDelivery {
   warehouses: IWarehouse[];
   ordersCt?: IOrderCt[];
   ordersCva?: IOrderCva[];
+  ordersSyscom?: IOrderSyscom[];
   invoiceConfig?: IInvoiceConfig;
   statusError?: boolean;
   messageError?: string;

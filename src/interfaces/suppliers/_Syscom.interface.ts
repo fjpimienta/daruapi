@@ -1,3 +1,5 @@
+import { IOrderSyscomResponse } from './ordersyscomresponse.interface';
+
 export interface ITokenSyscom {
   token_type: string;
   expires_in: string;
@@ -43,6 +45,7 @@ export interface IOrderSyscom {
   iva_frontera: boolean;
   forzar: boolean;
   testmode: boolean;
+  orderSyscomResponse: IOrderSyscomResponse;
 }
 
 export interface IDireccionSyscom {

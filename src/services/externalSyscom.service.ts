@@ -530,6 +530,49 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
+  async getTipoCambioSyscom() {
+    try {
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          tipoCambioSyscom: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/tipocambio/';
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getTipoCambioSyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          tipoCambioSyscom: null
+        };
+      }
+      return {
+        status: true,
+        message: `El tipo de cambio se ha recuperado.`,
+        tipoCambioSyscom: data.preferencial
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        tipoCambioSyscom: null,
+      };
+    }
+  }
+
+
   quitarAcentos(texto: string): string {
     return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
@@ -570,7 +613,7 @@ class ExternalSyscomService extends ResolversOperationsService {
           paisSyscom: ''
         };
       }
-      const paisEncontrado = data.paises.find((pais: any) => this.quitarAcentos(pais.nombre.toLowerCase()) === paisName.toLowerCase());
+      const paisEncontrado = data.paises.find((pais: any) => this.quitarAcentos(pais.nombre.toLowerCase()) === this.quitarAcentos(paisName.toLowerCase()));
       const status = paisEncontrado ? true : false;
       const message = paisEncontrado ? `El código del país ${paisName} se ha generado correctamente` : `El código del país ${paisName} no se ha encontrado`;
       const paisSyscom = paisEncontrado ? paisEncontrado.codigo : '';
@@ -715,6 +758,64 @@ class ExternalSyscomService extends ResolversOperationsService {
         status: false,
         message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
         coloniaByCP: null,
+      };
+    }
+  }
+
+  async getColoniasByCP(codigoPostal: number = 0) {
+    try {
+      const cp = this.getVariables().cp || codigoPostal;
+      if (!cp || cp <= 0) {
+        return {
+          status: false,
+          message: 'Se requiere especificar el Codigo Postal',
+          coloniasByCP: [],
+        };
+      }
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          coloniasByCP: [],
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/carrito/colonias/' + cp;
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getEstadoByCP.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          coloniasByCP: null
+        };
+      }
+      const coloniasSyscom = data.colonias;
+      if (!coloniasSyscom) {
+        return {
+          status: false,
+          message: `El codigo posta ${cp} no tiene cobertura`,
+          coloniasByCP: ''
+        };
+      }
+      return {
+        status: true,
+        message: `El estado para el CP ${cp} se ha generado correctamente`,
+        coloniasByCP: data.colonias
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        coloniaByCP: [],
       };
     }
   }
@@ -1075,6 +1176,21 @@ class ExternalSyscomService extends ResolversOperationsService {
           saveOrderSyscom: null,
         };
       }
+      // Blindaje para cuando solo se cotiza envio.
+      if (orderSyscomInput.testmode) {
+        const pais = (await this.getPaisSyscom(orderSyscomInput.direccion.pais)).paisSyscom;
+        const estado = (await this.getEstadoByCP(orderSyscomInput.direccion.codigo_postal)).estadoByCP;
+        const colonias = (await this.getColoniasByCP(orderSyscomInput.direccion.codigo_postal)).coloniasByCP;
+        orderSyscomInput.direccion.pais = pais;
+        orderSyscomInput.direccion.estado = estado;
+        orderSyscomInput.direccion.colonia = colonias[0];
+        orderSyscomInput.direccion.calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'Conocida';
+        orderSyscomInput.direccion.num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
+        orderSyscomInput.direccion.telefono = orderSyscomInput.direccion.telefono !== '' ? orderSyscomInput.direccion.telefono : '9999999999';
+        orderSyscomInput.ordenar = false;
+        orderSyscomInput.forzar = false;
+      }
+      // Fin Blindaje
       const token = await this.getTokenSyscom();
       if (token && !token.status) {
         return {

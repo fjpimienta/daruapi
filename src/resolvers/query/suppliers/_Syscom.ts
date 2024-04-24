@@ -36,6 +36,9 @@ const resolversSyscomQuery: IResolvers = {
     async cfdisSyscom(_, __, context) {
       return new ExternalSyscomService(_, __, context).getCfdisSyscom();
     },
+    async tipoCambioSyscom(_, __, context) {
+      return new ExternalSyscomService(_, __, context).getTipoCambioSyscom();
+    },
     async paisSyscom(_, __, context) {
       return new ExternalSyscomService(_, __, context).getPaisSyscom();
     },

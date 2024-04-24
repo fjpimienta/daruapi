@@ -848,7 +848,6 @@ class ExternalSyscomService extends ResolversOperationsService {
       const url = 'https://developers.syscom.mx/api/v1/carrito/sucursales';
       const response = await fetch(url, options);
       const data = await response.json();
-      // console.log('data: ', data);
       process.env.PRODUCTION === 'true' && logger.info(`getSucursalesSyscom.data: \n ${JSON.stringify(data)} \n`);
       if (data && data.status && (data.status < 200 || data.status >= 300)) {
         return {
@@ -1176,19 +1175,24 @@ class ExternalSyscomService extends ResolversOperationsService {
         };
       }
       // Blindaje para cuando solo se cotiza envio.
+      let colonia = '';
+      const pais = (await this.getPaisSyscom(orderSyscomInput.direccion.pais)).paisSyscom;
+      const estado = (await this.getEstadoByCP(orderSyscomInput.direccion.codigo_postal)).estadoByCP;
       if (orderSyscomInput.testmode) {
-        const pais = (await this.getPaisSyscom(orderSyscomInput.direccion.pais)).paisSyscom;
-        const estado = (await this.getEstadoByCP(orderSyscomInput.direccion.codigo_postal)).estadoByCP;
         const colonias = (await this.getColoniasByCP(orderSyscomInput.direccion.codigo_postal)).coloniasByCP;
-        orderSyscomInput.direccion.pais = pais;
-        orderSyscomInput.direccion.estado = estado;
-        orderSyscomInput.direccion.colonia = colonias[0];
-        orderSyscomInput.direccion.calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'Conocida';
-        orderSyscomInput.direccion.num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
-        orderSyscomInput.direccion.telefono = orderSyscomInput.direccion.telefono !== '' ? orderSyscomInput.direccion.telefono : '9999999999';
+        colonia = colonias[0];
         orderSyscomInput.ordenar = false;
         orderSyscomInput.forzar = false;
+      } else {
+        const coloniaSyscom = (await this.getColoniaByCP(orderSyscomInput.direccion.codigo_postal, orderSyscomInput.direccion.colonia)).coloniaByCP;
+        colonia = coloniaSyscom;
       }
+      orderSyscomInput.direccion.pais = pais;
+      orderSyscomInput.direccion.estado = estado;
+      orderSyscomInput.direccion.colonia = colonia;
+      orderSyscomInput.direccion.calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'Conocida';
+      orderSyscomInput.direccion.num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
+      orderSyscomInput.direccion.telefono = orderSyscomInput.direccion.telefono !== '' ? orderSyscomInput.direccion.telefono : '9999999999';
       // Fin Blindaje
       const token = await this.getTokenSyscom();
       if (token && !token.status) {
@@ -1225,7 +1229,7 @@ class ExternalSyscomService extends ResolversOperationsService {
       const response = await fetch(url, options);
       const data = await response.json();
       process.env.PRODUCTION === 'true' && logger.info(`setOrderSyscom.data: \n ${JSON.stringify(data)} \n`);
-      if (data && data.status && (data.status < 200 || data.status >= 300 || data.status === 'error')) {
+      if (data && data.status && (data.status < 200 || data.status >= 300 || data.status === 'error' || (data.error && data.error !== ''))) {
         return {
           status: false,
           message: data.message || data.detail,
@@ -1234,7 +1238,9 @@ class ExternalSyscomService extends ResolversOperationsService {
       }
       return {
         status: data.error === '' ? true : false,
-        message: data.error === '' ? `La orden se ha generado correctamente` : data.error,
+        message: data.error === ''
+          ? `La orden se ha generado correctamente`
+          : data.error === 'No se encontró el campo colonia' ? 'No hay cobertura para esta colonia.' : data.error,
         saveOrderSyscom: data.error === '' ? data : null
       };
     } catch (error: any) {

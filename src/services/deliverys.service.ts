@@ -321,7 +321,7 @@ class DeliverysService extends ResolversOperationsService {
       const filter = { id: id.toString() };
       const resultUpdate = await this.updateForce(this.collection, filter, deliveryUpdate, 'Pedido');
       process.env.PRODUCTION !== 'true' && logger.info(`modify.updateForce.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
-      if (resultUpdate && resultUpdate.status) {
+      if (resultUpdate && resultUpdate.status && !statusError) {
         // Si se guarda el envio, inactivar el cupon.
         if (delivery && delivery?.user) {
           const collection = COLLECTIONS.WELCOMES;

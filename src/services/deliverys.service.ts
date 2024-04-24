@@ -175,7 +175,7 @@ class DeliverysService extends ResolversOperationsService {
     process.env.PRODUCTION !== 'true' && logger.info(` \n Compra no definida, verificar datos. \n`);
     return {
       status: false,
-      mesage: 'Compra no definida, verificar datos.',
+      message: 'Compra no definida, verificar datos.',
       delivery: null
     };
   }
@@ -283,12 +283,11 @@ class DeliverysService extends ResolversOperationsService {
                 .then(async (result) => {
                   return await result;
                 });
-
               process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderSyscomResponse: \n ${JSON.stringify(orderSyscomResponse)} \n`);
               if (!orderSyscomResponse.status) {
                 status = 'ERROR PEDIDO PROVEEDOR';
                 statusError = true;
-                messageError = orderSyscomResponse.mesage;
+                messageError = orderSyscomResponse.message;
                 break;
               }
               orderSyscom.orderSyscomResponse = orderSyscomResponse.saveOrderSyscom;
@@ -344,17 +343,17 @@ class DeliverysService extends ResolversOperationsService {
           delivery: deliveryUpdate
         }
       }
-      process.env.PRODUCTION !== 'true' && logger.info(` \n Problemas con el cargo, verificar datos. \n`);
+      process.env.PRODUCTION !== 'true' && logger.info(` \n Problemas con el Proveedor. ${messageError}`);
       return {
         status: false,
-        mesage: 'Problemas con el cargo, verificar datos.',
+        message: `Problemas con el Proveedor. ${messageError} \n`,
         delivery: null
       };
     }
     process.env.PRODUCTION !== 'true' && logger.info(` \n Problemas con el cargo, verificar datos. \n`);
     return {
       status: false,
-      mesage: 'Problemas con el cargo, verificar datos.',
+      message: 'Problemas con el cargo, verificar datos.',
       delivery: null
     };
   }

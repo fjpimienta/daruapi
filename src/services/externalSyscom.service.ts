@@ -9,7 +9,7 @@ import { BranchOffices, Brands, Categorys, Descuentos, Picture, Product, Supplie
 import ConfigsService from './config.service';
 import slugify from 'slugify';
 import { IMetodoPagoItemDetalle, IMetodoPagoSyscom } from '../interfaces/suppliers/_Syscom.interface';
-import { IBranchOffices, IPicture } from '../interfaces/product.interface';
+import { IPicture } from '../interfaces/product.interface';
 
 class ExternalSyscomService extends ResolversOperationsService {
   collection = COLLECTIONS.INGRAM_PRODUCTS;
@@ -571,7 +571,6 @@ class ExternalSyscomService extends ResolversOperationsService {
       };
     }
   }
-
 
   quitarAcentos(texto: string): string {
     return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");

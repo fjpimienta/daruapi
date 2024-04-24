@@ -19,6 +19,7 @@ import ExternalCtsService from './externalCts.service';
 import logger from '../utils/logger';
 import { IOrderSyscom } from '../interfaces/suppliers/_Syscom.interface';
 import ExternalSyscomService from './externalSyscom.service';
+import { IOrderSyscomResponse } from '../interfaces/suppliers/ordersyscomresponse.interface';
 
 class DeliverysService extends ResolversOperationsService {
   collection = COLLECTIONS.DELIVERYS;
@@ -276,19 +277,22 @@ class DeliverysService extends ResolversOperationsService {
               break;
             case 'syscom':
               status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
-              const ordersSyscom = await this.setOrder(id, delivery, warehouse);
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.ordersSyscom: \n ${JSON.stringify(ordersSyscom)} \n`);
-              const orderSyscomResponse = await this.EfectuarPedidos(supplier, ordersSyscom, context)
+              const orderSyscom = await this.setOrder(id, delivery, warehouse, context);
+              process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.orderSyscom: \n ${JSON.stringify(orderSyscom)} \n`);
+              const orderSyscomResponse = await this.EfectuarPedidos(supplier, orderSyscom, context)
                 .then(async (result) => {
                   return await result;
                 });
+
               process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderSyscomResponse: \n ${JSON.stringify(orderSyscomResponse)} \n`);
-              if (orderSyscomResponse.error !== '') {
+              if (!orderSyscomResponse.status) {
                 status = 'ERROR PEDIDO PROVEEDOR';
                 statusError = true;
-                messageError = orderSyscomResponse.error;
+                messageError = orderSyscomResponse.mesage;
+                break;
               }
-              ordersSyscom.push(orderSyscomResponse);
+              orderSyscom.orderSyscomResponse = orderSyscomResponse.saveOrderSyscom;
+              ordersSyscoms.push(orderSyscom);
               break;
           }
         }
@@ -422,7 +426,7 @@ class DeliverysService extends ResolversOperationsService {
 
   //#region Pedidos
 
-  private async setOrder(idDelivery: number, delivery: IDelivery, warehouse: IWarehouse,): Promise<any> {
+  private async setOrder(idDelivery: number, delivery: IDelivery, warehouse: IWarehouse, context: IContextData = {}): Promise<any> {
     process.env.PRODUCTION !== 'true' && logger.info(` \n Log para setOrder \n`);
     process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.warehouse: \n ${JSON.stringify(warehouse)} \n`);
     const user = delivery.user;
@@ -534,13 +538,27 @@ class DeliverysService extends ResolversOperationsService {
           };
           return orderCvaSupplier;
         case 'syscom':
+          const paisSyscom = (await (await new ExternalSyscomService({}, {}, context)).getPaisSyscom(warehouse.ordersSyscom.direccion.pais)).paisSyscom;
+          const estadoSyscom = (await (await new ExternalSyscomService({}, {}, context)).getEstadoByCP(warehouse.ordersSyscom.direccion.codigo_postal)).estadoByCP;
+          const coloniaSyscom = (await (await new ExternalSyscomService({}, {}, context)).getColoniaByCP(warehouse.ordersSyscom.direccion.codigo_postal, warehouse.ordersSyscom.direccion.colonia)).coloniaByCP;
+          warehouse.ordersSyscom.direccion.pais = paisSyscom;
+          warehouse.ordersSyscom.direccion.estado = estadoSyscom;
+          warehouse.ordersSyscom.direccion.colonia = coloniaSyscom;
           const orderSyscom: IOrderSyscom = {
-            ...warehouse.ordersSyscom,
+            tipo_entrega: warehouse.ordersSyscom.tipo_entrega,
+            direccion: warehouse.ordersSyscom.direccion,
+            metodo_pago: warehouse.ordersSyscom.metodo_pago,
+            fletera: warehouse.ordersSyscom.fletera,
+            productos: warehouse.ordersSyscom.productos,
+            moneda: warehouse.ordersSyscom.moneda,
+            uso_cfdi: warehouse.ordersSyscom.uso_cfdi,
+            tipo_pago: warehouse.ordersSyscom.tipo_pago,
             orden_compra: `DARU-${idDelivery.toString().padStart(6, '0')}`,
-            ordenar: true,
+            ordenar: false,
             iva_frontera: false,
             forzar: false,
-            testmode: false
+            testmode: false,
+            orderSyscomResponse: null as any
           };
           return orderSyscom;
       }
@@ -621,9 +639,9 @@ class DeliverysService extends ResolversOperationsService {
           });
         return await pedidosCt;
       case 'syscom':
-        const pedidosSyscom = await new ExternalSyscomService({}, order, context).setOrderSyscom()
+        const pedidosSyscom = await new ExternalSyscomService({}, { orderSyscomInput: order }, context).setOrderSyscom()
           .then(async resultPedido => {
-            return await resultPedido.saveOrderSyscom;
+            return await resultPedido;
           });
         return await pedidosSyscom
     }

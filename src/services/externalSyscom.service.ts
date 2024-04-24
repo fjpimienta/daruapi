@@ -1176,23 +1176,32 @@ class ExternalSyscomService extends ResolversOperationsService {
       }
       // Blindaje para cuando solo se cotiza envio.
       let colonia = '';
+      let calle = '';
+      let num_ext = '';
+      let telefono = '';
       const pais = (await this.getPaisSyscom(orderSyscomInput.direccion.pais)).paisSyscom;
       const estado = (await this.getEstadoByCP(orderSyscomInput.direccion.codigo_postal)).estadoByCP;
       if (orderSyscomInput.testmode) {
         const colonias = (await this.getColoniasByCP(orderSyscomInput.direccion.codigo_postal)).coloniasByCP;
         colonia = colonias[0];
+        calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'Conocida';
+        num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
+        telefono = orderSyscomInput.direccion.telefono !== '' ? orderSyscomInput.direccion.telefono : '9999999999';
         orderSyscomInput.ordenar = false;
         orderSyscomInput.forzar = false;
       } else {
         const coloniaSyscom = (await this.getColoniaByCP(orderSyscomInput.direccion.codigo_postal, orderSyscomInput.direccion.colonia)).coloniaByCP;
         colonia = coloniaSyscom;
+        calle = orderSyscomInput.direccion.calle;
+        num_ext = orderSyscomInput.direccion.num_ext;
+        telefono = orderSyscomInput.direccion.telefono;
       }
       orderSyscomInput.direccion.pais = pais;
       orderSyscomInput.direccion.estado = estado;
       orderSyscomInput.direccion.colonia = colonia;
-      orderSyscomInput.direccion.calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'Conocida';
-      orderSyscomInput.direccion.num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
-      orderSyscomInput.direccion.telefono = orderSyscomInput.direccion.telefono !== '' ? orderSyscomInput.direccion.telefono : '9999999999';
+      orderSyscomInput.direccion.calle = calle;
+      orderSyscomInput.direccion.num_ext = num_ext;
+      orderSyscomInput.direccion.telefono = telefono;
       // Fin Blindaje
       const token = await this.getTokenSyscom();
       if (token && !token.status) {

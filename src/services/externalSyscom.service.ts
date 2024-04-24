@@ -1187,6 +1187,8 @@ class ExternalSyscomService extends ResolversOperationsService {
         orderSyscomInput.direccion.calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'Conocida';
         orderSyscomInput.direccion.num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
         orderSyscomInput.direccion.telefono = orderSyscomInput.direccion.telefono !== '' ? orderSyscomInput.direccion.telefono : '9999999999';
+        orderSyscomInput.ordenar = false;
+        orderSyscomInput.forzar = false;
       }
       // Fin Blindaje
       const token = await this.getTokenSyscom();

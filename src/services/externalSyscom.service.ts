@@ -1192,9 +1192,15 @@ class ExternalSyscomService extends ResolversOperationsService {
       } else {
         const coloniaSyscom = (await this.getColoniaByCP(orderSyscomInput.direccion.codigo_postal, orderSyscomInput.direccion.colonia)).coloniaByCP;
         colonia = coloniaSyscom;
-        calle = orderSyscomInput.direccion.calle;
-        num_ext = orderSyscomInput.direccion.num_ext;
-        telefono = orderSyscomInput.direccion.telefono;
+        if (orderSyscomInput.ordenar === false) {
+          calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'CONOCIDA';
+          num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
+          telefono = orderSyscomInput.direccion.telefono !== '' ? orderSyscomInput.direccion.telefono : '9999999999';
+        } else {
+          calle = orderSyscomInput.direccion.calle;
+          num_ext = orderSyscomInput.direccion.num_ext;
+          telefono = orderSyscomInput.direccion.telefono;
+        }
       }
       orderSyscomInput.direccion.pais = pais;
       orderSyscomInput.direccion.estado = estado;
@@ -1244,6 +1250,29 @@ class ExternalSyscomService extends ResolversOperationsService {
           message: data.message || data.detail,
           saveOrderSyscom: null
         };
+      }
+      let error = '';
+      if (data.error === '') {
+        return {
+          status: true,
+          message: `La orden se ha generado correctamente`,
+          saveOrderSyscom: data
+        };
+      } else {
+        switch (data.error) {
+          case 'No se encontró el campo colonia':
+            error = 'No hay cobertura para esta colonia.';
+            break;
+          case 'No se encontró el campo num_ext':
+            error = 'Se requiere especificar el numero de la casa.';
+            break;
+          case 'No se encontró el campo telefono':
+            error = 'Se requiere especificar el numero de telefono.';
+            break;
+          default:
+            error = data.error;
+            break;
+        }
       }
       return {
         status: data.error === '' ? true : false,

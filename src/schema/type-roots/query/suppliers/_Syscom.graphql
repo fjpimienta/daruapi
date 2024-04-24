@@ -18,6 +18,7 @@ type Query {
   metodosPagosSyscom: ResultSyscom
   fleterasSyscom: ResultSyscom
   cfdisSyscom: ResultSyscom
+  tipoCambioSyscom: ResultSyscom
   paisSyscom(
     paisName: String
   ): ResultSyscom

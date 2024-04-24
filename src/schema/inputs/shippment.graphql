@@ -4,4 +4,5 @@ input ShipmentInput {
   costo: Float
   lugarEnvio: String
   lugarRecepcion: String
+  orderSyscom: [OrderSyscomInput]
 }

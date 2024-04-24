@@ -12,6 +12,7 @@ type ResultSyscom implements Result {
   metodosPagosSyscom: [MetodoPagoSyscom]
   fleterasSyscom: [FleterasSyscom]
   cfdisSyscom: [CfdisSyscom]
+  tipoCambioSyscom: Float!
   paisSyscom: String!
   estadoByCP: String!
   coloniaByCP: String!

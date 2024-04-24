@@ -17,6 +17,9 @@ import ExternalOpenpayService from './externalOpenpay.service';
 import { IChargeOpenpay } from '../interfaces/suppliers/_Openpay.interface';
 import ExternalCtsService from './externalCts.service';
 import logger from '../utils/logger';
+import { IOrderSyscom } from '../interfaces/suppliers/_Syscom.interface';
+import ExternalSyscomService from './externalSyscom.service';
+import { IOrderSyscomResponse } from '../interfaces/suppliers/ordersyscomresponse.interface';
 
 class DeliverysService extends ResolversOperationsService {
   collection = COLLECTIONS.DELIVERYS;
@@ -190,6 +193,7 @@ class DeliverysService extends ResolversOperationsService {
       const id = delivery.id ? parseInt(delivery.id) : 0;
       const ordersCts: IOrderCt[] = [];
       const ordersCvas: IOrderCva[] = [];
+      const ordersSyscoms: IOrderSyscom[] = [];
       const warehouses: IWarehouse[] = delivery?.warehouses || [];
       const idTransactionOpenpay = delivery.chargeOpenpay.id;
       const resultOpenpay = await new ExternalOpenpayService({}, { idTransactionOpenpay }, context).oneCharge({ idTransactionOpenpay })
@@ -271,7 +275,24 @@ class DeliverysService extends ResolversOperationsService {
               }
               ordersCvas.push(ordersCva);
               break;
-            case 'ingram':
+            case 'syscom':
+              status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
+              const orderSyscom = await this.setOrder(id, delivery, warehouse, context);
+              process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.orderSyscom: \n ${JSON.stringify(orderSyscom)} \n`);
+              const orderSyscomResponse = await this.EfectuarPedidos(supplier, orderSyscom, context)
+                .then(async (result) => {
+                  return await result;
+                });
+
+              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderSyscomResponse: \n ${JSON.stringify(orderSyscomResponse)} \n`);
+              if (!orderSyscomResponse.status) {
+                status = 'ERROR PEDIDO PROVEEDOR';
+                statusError = true;
+                messageError = orderSyscomResponse.mesage;
+                break;
+              }
+              orderSyscom.orderSyscomResponse = orderSyscomResponse.saveOrderSyscom;
+              ordersSyscoms.push(orderSyscom);
               break;
           }
         }
@@ -289,6 +310,7 @@ class DeliverysService extends ResolversOperationsService {
       deliveryUpdate.status = status;
       deliveryUpdate.ordersCt = ordersCts;
       deliveryUpdate.ordersCva = ordersCvas;
+      deliveryUpdate.ordersSyscom = ordersSyscoms;
       deliveryUpdate.chargeOpenpay = chargeOpenpay;
       deliveryUpdate.lastUpdate = new Date().toISOString();
       deliveryUpdate.status = status;
@@ -404,7 +426,7 @@ class DeliverysService extends ResolversOperationsService {
 
   //#region Pedidos
 
-  private async setOrder(idDelivery: number, delivery: IDelivery, warehouse: IWarehouse,): Promise<any> {
+  private async setOrder(idDelivery: number, delivery: IDelivery, warehouse: IWarehouse, context: IContextData = {}): Promise<any> {
     process.env.PRODUCTION !== 'true' && logger.info(` \n Log para setOrder \n`);
     process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.warehouse: \n ${JSON.stringify(warehouse)} \n`);
     const user = delivery.user;
@@ -515,8 +537,30 @@ class DeliverysService extends ResolversOperationsService {
             Atencion: this.removeAccents(user?.name?.toUpperCase() + ' ' + user?.lastname?.toUpperCase())
           };
           return orderCvaSupplier;
-        case 'ingram':
-          return '';
+        case 'syscom':
+          const paisSyscom = (await (await new ExternalSyscomService({}, {}, context)).getPaisSyscom(warehouse.ordersSyscom.direccion.pais)).paisSyscom;
+          const estadoSyscom = (await (await new ExternalSyscomService({}, {}, context)).getEstadoByCP(warehouse.ordersSyscom.direccion.codigo_postal)).estadoByCP;
+          const coloniaSyscom = (await (await new ExternalSyscomService({}, {}, context)).getColoniaByCP(warehouse.ordersSyscom.direccion.codigo_postal, warehouse.ordersSyscom.direccion.colonia)).coloniaByCP;
+          warehouse.ordersSyscom.direccion.pais = paisSyscom;
+          warehouse.ordersSyscom.direccion.estado = estadoSyscom;
+          warehouse.ordersSyscom.direccion.colonia = coloniaSyscom;
+          const orderSyscom: IOrderSyscom = {
+            tipo_entrega: warehouse.ordersSyscom.tipo_entrega,
+            direccion: warehouse.ordersSyscom.direccion,
+            metodo_pago: warehouse.ordersSyscom.metodo_pago,
+            fletera: warehouse.ordersSyscom.fletera,
+            productos: warehouse.ordersSyscom.productos,
+            moneda: warehouse.ordersSyscom.moneda,
+            uso_cfdi: warehouse.ordersSyscom.uso_cfdi,
+            tipo_pago: warehouse.ordersSyscom.tipo_pago,
+            orden_compra: `DARU-${idDelivery.toString().padStart(6, '0')}`,
+            ordenar: false,
+            iva_frontera: false,
+            forzar: false,
+            testmode: false,
+            orderSyscomResponse: null as any
+          };
+          return orderSyscom;
       }
       return '';
     }
@@ -594,6 +638,12 @@ class DeliverysService extends ResolversOperationsService {
             }
           });
         return await pedidosCt;
+      case 'syscom':
+        const pedidosSyscom = await new ExternalSyscomService({}, { orderSyscomInput: order }, context).setOrderSyscom()
+          .then(async resultPedido => {
+            return await resultPedido;
+          });
+        return await pedidosSyscom
     }
   }
 

@@ -291,6 +291,7 @@ class DeliverysService extends ResolversOperationsService {
                 break;
               }
               orderSyscom.orderSyscomResponse = orderSyscomResponse.saveOrderSyscom;
+              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderSyscom: \n ${JSON.stringify(orderSyscom)} \n`);
               ordersSyscoms.push(orderSyscom);
               break;
           }

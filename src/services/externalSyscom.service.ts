@@ -615,7 +615,8 @@ class ExternalSyscomService extends ResolversOperationsService {
       const paisEncontrado = data.paises.find((pais: any) => this.quitarAcentos(pais.nombre.toLowerCase()) === this.quitarAcentos(paisName.toLowerCase()));
       const status = paisEncontrado ? true : false;
       const message = paisEncontrado ? `El código del país ${paisName} se ha generado correctamente` : `El código del país ${paisName} no se ha encontrado`;
-      const paisSyscom = paisEncontrado ? paisEncontrado.codigo : '';
+      // Servicio Retorna el pais incorrecto, lo manda sin acento.
+      const paisSyscom = 'MÉX'; // paisEncontrado ? paisEncontrado.codigo : '';
       return {
         status,
         message,
@@ -1176,23 +1177,38 @@ class ExternalSyscomService extends ResolversOperationsService {
       }
       // Blindaje para cuando solo se cotiza envio.
       let colonia = '';
+      let calle = '';
+      let num_ext = '';
+      let telefono = '';
       const pais = (await this.getPaisSyscom(orderSyscomInput.direccion.pais)).paisSyscom;
       const estado = (await this.getEstadoByCP(orderSyscomInput.direccion.codigo_postal)).estadoByCP;
       if (orderSyscomInput.testmode) {
         const colonias = (await this.getColoniasByCP(orderSyscomInput.direccion.codigo_postal)).coloniasByCP;
         colonia = colonias[0];
+        calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'Conocida';
+        num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
+        telefono = orderSyscomInput.direccion.telefono !== '' ? orderSyscomInput.direccion.telefono : '9999999999';
         orderSyscomInput.ordenar = false;
         orderSyscomInput.forzar = false;
       } else {
         const coloniaSyscom = (await this.getColoniaByCP(orderSyscomInput.direccion.codigo_postal, orderSyscomInput.direccion.colonia)).coloniaByCP;
         colonia = coloniaSyscom;
+        if (orderSyscomInput.ordenar === false) {
+          calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'CONOCIDA';
+          num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
+          telefono = orderSyscomInput.direccion.telefono !== '' ? orderSyscomInput.direccion.telefono : '9999999999';
+        } else {
+          calle = orderSyscomInput.direccion.calle;
+          num_ext = orderSyscomInput.direccion.num_ext;
+          telefono = orderSyscomInput.direccion.telefono;
+        }
       }
       orderSyscomInput.direccion.pais = pais;
       orderSyscomInput.direccion.estado = estado;
       orderSyscomInput.direccion.colonia = colonia;
-      orderSyscomInput.direccion.calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'Conocida';
-      orderSyscomInput.direccion.num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
-      orderSyscomInput.direccion.telefono = orderSyscomInput.direccion.telefono !== '' ? orderSyscomInput.direccion.telefono : '9999999999';
+      orderSyscomInput.direccion.calle = calle;
+      orderSyscomInput.direccion.num_ext = num_ext;
+      orderSyscomInput.direccion.telefono = telefono;
       // Fin Blindaje
       const token = await this.getTokenSyscom();
       if (token && !token.status) {
@@ -1235,6 +1251,29 @@ class ExternalSyscomService extends ResolversOperationsService {
           message: data.message || data.detail,
           saveOrderSyscom: null
         };
+      }
+      let error = '';
+      if (data.error === '') {
+        return {
+          status: true,
+          message: `La orden se ha generado correctamente`,
+          saveOrderSyscom: data
+        };
+      } else {
+        switch (data.error) {
+          case 'No se encontró el campo colonia':
+            error = 'No hay cobertura para esta colonia.';
+            break;
+          case 'No se encontró el campo num_ext':
+            error = 'Se requiere especificar el numero de la casa.';
+            break;
+          case 'No se encontró el campo telefono':
+            error = 'Se requiere especificar el numero de telefono.';
+            break;
+          default:
+            error = data.error;
+            break;
+        }
       }
       return {
         status: data.error === '' ? true : false,

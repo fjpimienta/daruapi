@@ -693,7 +693,24 @@ class ExternalCvasService extends ResolversOperationsService {
         product.id = i.toString();
         itemData = await this.setProduct('cva', product, null, null, almacenes, stockMinimo, exchangeRate);
         if (itemData.id !== undefined) {
-          productos.push(itemData);
+          let tieneValorCero = false;
+          for (let especificacion of itemData.especificaciones) {
+            if (especificacion.tipo === 'Longitud' && especificacion.valor == '0') {
+              tieneValorCero = true;
+              break;
+            }
+            if (especificacion.tipo === 'Ancho' && especificacion.valor == '0') {
+              tieneValorCero = true;
+              break;
+            }
+            if (especificacion.tipo === 'Altura' && especificacion.valor == '0') {
+              tieneValorCero = true;
+              break;
+            }
+          }
+          if (!tieneValorCero) {
+            productos.push(itemData);
+          }
         }
         i += 1;
       }

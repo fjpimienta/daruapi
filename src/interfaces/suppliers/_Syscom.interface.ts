@@ -1,4 +1,4 @@
-import { IOrderSyscomResponse } from './ordersyscomresponse.interface';
+import { IOrderResponseSyscom } from './ordersyscomresponse.interface';
 
 export interface ITokenSyscom {
   token_type: string;
@@ -45,7 +45,7 @@ export interface IOrderSyscom {
   iva_frontera: boolean;
   forzar: boolean;
   testmode: boolean;
-  orderSyscomResponse: IOrderSyscomResponse;
+  orderResponseSyscom: IOrderResponseSyscom;
 }
 
 export interface IDireccionSyscom {

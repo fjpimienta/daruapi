@@ -19,7 +19,7 @@ import ExternalCtsService from './externalCts.service';
 import logger from '../utils/logger';
 import { IOrderSyscom } from '../interfaces/suppliers/_Syscom.interface';
 import ExternalSyscomService from './externalSyscom.service';
-import { IOrderSyscomResponse } from '../interfaces/suppliers/ordersyscomresponse.interface';
+import { IOrderResponseSyscom } from '../interfaces/suppliers/ordersyscomresponse.interface';
 
 class DeliverysService extends ResolversOperationsService {
   collection = COLLECTIONS.DELIVERYS;
@@ -279,18 +279,18 @@ class DeliverysService extends ResolversOperationsService {
               status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
               const orderSyscom = await this.setOrder(id, delivery, warehouse, context);
               process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.orderSyscom: \n ${JSON.stringify(orderSyscom)} \n`);
-              const orderSyscomResponse = await this.EfectuarPedidos(supplier, orderSyscom, context)
+              const orderResponseSyscom = await this.EfectuarPedidos(supplier, orderSyscom, context)
                 .then(async (result) => {
                   return await result;
                 });
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderSyscomResponse: \n ${JSON.stringify(orderSyscomResponse)} \n`);
-              if (!orderSyscomResponse.status) {
+              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderResponseSyscom: \n ${JSON.stringify(orderResponseSyscom)} \n`);
+              if (!orderResponseSyscom.status) {
                 status = 'ERROR PEDIDO PROVEEDOR';
                 statusError = true;
-                messageError = orderSyscomResponse.message;
+                messageError = orderResponseSyscom.message;
                 break;
               }
-              orderSyscom.orderSyscomResponse = orderSyscomResponse.saveOrderSyscom;
+              orderSyscom.orderResponseSyscom = orderResponseSyscom.saveOrderSyscom;
               process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderSyscom: \n ${JSON.stringify(orderSyscom)} \n`);
               ordersSyscoms.push(orderSyscom);
               break;
@@ -558,7 +558,7 @@ class DeliverysService extends ResolversOperationsService {
             iva_frontera: false,
             forzar: false,
             testmode: false,
-            orderSyscomResponse: null as any
+            orderResponseSyscom: null as any
           };
           return orderSyscom;
       }

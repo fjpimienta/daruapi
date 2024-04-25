@@ -615,7 +615,8 @@ class ExternalSyscomService extends ResolversOperationsService {
       const paisEncontrado = data.paises.find((pais: any) => this.quitarAcentos(pais.nombre.toLowerCase()) === this.quitarAcentos(paisName.toLowerCase()));
       const status = paisEncontrado ? true : false;
       const message = paisEncontrado ? `El código del país ${paisName} se ha generado correctamente` : `El código del país ${paisName} no se ha encontrado`;
-      const paisSyscom = paisEncontrado ? paisEncontrado.codigo : '';
+      // Servicio Retorna el pais incorrecto, lo manda sin acento.
+      const paisSyscom = 'MÉX'; // paisEncontrado ? paisEncontrado.codigo : '';
       return {
         status,
         message,

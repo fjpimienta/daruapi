@@ -631,10 +631,10 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
-  async getEstadoByCP(codigoPostal: number = 0) {
+  async getEstadoByCP(codigoPostal: string = '0') {
     try {
       const cp = this.getVariables().cp || codigoPostal;
-      if (!cp || cp <= 0) {
+      if (!cp || cp === '0') {
         return {
           status: false,
           message: 'Se requiere especificar el Codigo Postal',
@@ -688,11 +688,11 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
-  async getColoniaByCP(codigoPostal: number = 0, colonia: string = '') {
+  async getColoniaByCP(codigoPostal: string = '0', colonia: string = '') {
     try {
       const cp = this.getVariables().cp || codigoPostal;
       const coloniaName = this.getVariables().coloniaName || colonia;
-      if (!cp || cp <= 0) {
+      if (!cp || cp === '0') {
         return {
           status: false,
           message: 'Se requiere especificar el Codigo Postal',
@@ -762,10 +762,10 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
-  async getColoniasByCP(codigoPostal: number = 0) {
+  async getColoniasByCP(codigoPostal: string = '0') {
     try {
       const cp = this.getVariables().cp || codigoPostal;
-      if (!cp || cp <= 0) {
+      if (!cp || cp === '0') {
         return {
           status: false,
           message: 'Se requiere especificar el Codigo Postal',
@@ -820,11 +820,11 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
-  async getSucursalSyscom(codigoPostal: number = 0, sucursal: string = '') {
+  async getSucursalSyscom(codigoPostal: string = '0', sucursal: string = '') {
     try {
       const cp = this.getVariables().cp || codigoPostal;
       const sucursalName = this.getVariables().sucursalName || sucursal;
-      if ((!cp || cp <= 0) && (!sucursalName || sucursalName === '')) {
+      if ((!cp || cp === '0') && (!sucursalName || sucursalName === '')) {
         return {
           status: false,
           message: 'Se requiere especificar la sucursal o el codigo postal de la sucursal',
@@ -860,7 +860,7 @@ class ExternalSyscomService extends ResolversOperationsService {
       let mensaje = '';
       let sucursalEncontrada: any;
       const sucursales = data;
-      if (cp > 0 && sucursal === '') {
+      if (cp !== '0' && sucursal === '') {
         sucursalEncontrada = sucursales.filter((sucursal: any) => sucursal.codigo_postal.toString() === cp.toString());
         if (!sucursalEncontrada || sucursalEncontrada.length <= 0) {
           return {
@@ -900,7 +900,7 @@ class ExternalSyscomService extends ResolversOperationsService {
     try {
       const brand = 'ugreen';
       const listProductsSyscom = (await this.getListProductsSyscomByBrand(brand)).listProductsSyscomByBrand;
-      const sucursal = (await this.getSucursalSyscom(31000)).sucursalSyscom;
+      const sucursal = (await this.getSucursalSyscom('31000')).sucursalSyscom;
       let branchOffice: BranchOffices = new BranchOffices();
       branchOffice.id = sucursal ? sucursal.codigo : 'chihuahua';
       branchOffice.name = sucursal ? sucursal.nombre_sucursal : 'Matriz Chihuahua';
@@ -990,7 +990,7 @@ class ExternalSyscomService extends ResolversOperationsService {
         };
       }
       if (data.total_existencia > 0) {
-        const sucursal = (await this.getSucursalSyscom(31000)).sucursalSyscom;
+        const sucursal = (await this.getSucursalSyscom('31000')).sucursalSyscom;
         const branchOffice: BranchOffices = new BranchOffices();
         const branchOffices: BranchOffices[] = [];
         branchOffice.id = sucursal ? sucursal.codigo : 'chihuahua';
@@ -1180,10 +1180,11 @@ class ExternalSyscomService extends ResolversOperationsService {
       let calle = '';
       let num_ext = '';
       let telefono = '';
+      const sCodigoPostal = orderSyscomInput.direccion.codigo_postal.toString().padStart(5, '0');
       const pais = (await this.getPaisSyscom(orderSyscomInput.direccion.pais)).paisSyscom;
-      const estado = (await this.getEstadoByCP(orderSyscomInput.direccion.codigo_postal)).estadoByCP;
+      const estado = (await this.getEstadoByCP(sCodigoPostal)).estadoByCP;
       if (orderSyscomInput.testmode) {
-        const colonias = (await this.getColoniasByCP(orderSyscomInput.direccion.codigo_postal)).coloniasByCP;
+        const colonias = (await this.getColoniasByCP(sCodigoPostal)).coloniasByCP;
         colonia = colonias[0];
         calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'Conocida';
         num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
@@ -1191,7 +1192,7 @@ class ExternalSyscomService extends ResolversOperationsService {
         orderSyscomInput.ordenar = false;
         orderSyscomInput.forzar = false;
       } else {
-        const coloniaSyscom = (await this.getColoniaByCP(orderSyscomInput.direccion.codigo_postal, orderSyscomInput.direccion.colonia)).coloniaByCP;
+        const coloniaSyscom = (await this.getColoniaByCP(sCodigoPostal, orderSyscomInput.direccion.colonia)).coloniaByCP;
         colonia = coloniaSyscom;
         if (orderSyscomInput.ordenar === false) {
           calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'CONOCIDA';

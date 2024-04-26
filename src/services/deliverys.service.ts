@@ -538,9 +538,10 @@ class DeliverysService extends ResolversOperationsService {
           };
           return orderCvaSupplier;
         case 'syscom':
+          const sCodigoPostal = warehouse.ordersSyscom.direccion.codigo_postal.toString().padStart(5, '0');
           const paisSyscom = (await (await new ExternalSyscomService({}, {}, context)).getPaisSyscom(warehouse.ordersSyscom.direccion.pais)).paisSyscom;
-          const estadoSyscom = (await (await new ExternalSyscomService({}, {}, context)).getEstadoByCP(warehouse.ordersSyscom.direccion.codigo_postal)).estadoByCP;
-          const coloniaSyscom = (await (await new ExternalSyscomService({}, {}, context)).getColoniaByCP(warehouse.ordersSyscom.direccion.codigo_postal, warehouse.ordersSyscom.direccion.colonia)).coloniaByCP;
+          const estadoSyscom = (await (await new ExternalSyscomService({}, {}, context)).getEstadoByCP(sCodigoPostal)).estadoByCP;
+          const coloniaSyscom = (await (await new ExternalSyscomService({}, {}, context)).getColoniaByCP(sCodigoPostal, warehouse.ordersSyscom.direccion.colonia)).coloniaByCP;
           warehouse.ordersSyscom.direccion.pais = paisSyscom;
           warehouse.ordersSyscom.direccion.estado = estadoSyscom;
           warehouse.ordersSyscom.direccion.colonia = coloniaSyscom;

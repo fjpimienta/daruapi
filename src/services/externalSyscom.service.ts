@@ -688,11 +688,11 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
-  async getColoniaByCP(codigoPostal: string = '0', colonia: string = '') {
+  async getColoniaByCP(codigoPostal: number = 0, colonia: string = '') {
     try {
       const cp = this.getVariables().cp || codigoPostal;
       const coloniaName = this.getVariables().coloniaName || colonia;
-      if (!cp || cp === '0') {
+      if (!cp || cp <= 0) {
         return {
           status: false,
           message: 'Se requiere especificar el Codigo Postal',
@@ -762,10 +762,10 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
-  async getColoniasByCP(codigoPostal: string = '0') {
+  async getColoniasByCP(codigoPostal: number = 0) {
     try {
       const cp = this.getVariables().cp || codigoPostal;
-      if (!cp || cp === '0') {
+      if (!cp || cp <= 0) {
         return {
           status: false,
           message: 'Se requiere especificar el Codigo Postal',
@@ -1184,7 +1184,7 @@ class ExternalSyscomService extends ResolversOperationsService {
       const pais = (await this.getPaisSyscom(orderSyscomInput.direccion.pais)).paisSyscom;
       const estado = (await this.getEstadoByCP(sCodigoPostal)).estadoByCP;
       if (orderSyscomInput.testmode) {
-        const colonias = (await this.getColoniasByCP(sCodigoPostal)).coloniasByCP;
+        const colonias = (await this.getColoniasByCP(parseInt(orderSyscomInput.direccion.codigo_postal))).coloniasByCP;
         colonia = colonias[0];
         calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'Conocida';
         num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
@@ -1192,7 +1192,7 @@ class ExternalSyscomService extends ResolversOperationsService {
         orderSyscomInput.ordenar = false;
         orderSyscomInput.forzar = false;
       } else {
-        const coloniaSyscom = (await this.getColoniaByCP(sCodigoPostal, orderSyscomInput.direccion.colonia)).coloniaByCP;
+        const coloniaSyscom = (await this.getColoniaByCP(parseInt(orderSyscomInput.direccion.codigo_postal), orderSyscomInput.direccion.colonia)).coloniaByCP;
         colonia = coloniaSyscom;
         if (orderSyscomInput.ordenar === false) {
           calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'CONOCIDA';
@@ -1204,6 +1204,7 @@ class ExternalSyscomService extends ResolversOperationsService {
           telefono = orderSyscomInput.direccion.telefono;
         }
       }
+      orderSyscomInput.direccion.codigo_postal = sCodigoPostal;
       orderSyscomInput.direccion.pais = pais;
       orderSyscomInput.direccion.estado = estado;
       orderSyscomInput.direccion.colonia = colonia;

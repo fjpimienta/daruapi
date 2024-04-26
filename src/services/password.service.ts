@@ -15,7 +15,7 @@ class PasswordService extends ResolversOperationsService {
     if (email === undefined || email === '') {
       return {
         status: false,
-        message: 'El email no se ha definido correctamente.'
+        message: 'El correo electrónico que estás colocando contiene información que no es válida, por favor verifica la información.'
       };
     }
     // Obtener informacion del usuario
@@ -24,7 +24,7 @@ class PasswordService extends ResolversOperationsService {
     if (user === undefined || user === null) {
       return {
         status: false,
-        message: `Usuario con el ${email} no existe.`
+        message: `Lo sentimos, el usuario con el correo electrónico ${email} que acabas de ingresar no existe, por favor verifica la información.`
       };
     }
     const newUser = {
@@ -67,7 +67,7 @@ class PasswordService extends ResolversOperationsService {
     if (password === undefined || password === '' || password === '1234') {
       return {
         status: false,
-        message: 'El password necesita una informacion correcta'
+        message: 'La contraseña que estás colocando contiene información que no es válida.'
       };
     }
     // Encriptar el password
@@ -81,7 +81,7 @@ class PasswordService extends ResolversOperationsService {
     );
     return {
       status: result.status,
-      message: (result.status) ? 'Password cambiado correctamente' : result.message
+      message: (result.status) ? 'Tú contraseña fue cambiada correctamente.' : result.message
     };
   }
 }

@@ -56,13 +56,13 @@ class StripeCustomerService extends StripeApi {
          // Usuario existe - Devolver diciendo que no se puede agregar
          return {
             status: false,
-            message: `El usuario con el email ${email} ya existe en el sistema`,
+            message: `Lo sentimos, el usuario con el correo electrónico ${email} ya existe en el sistema, por favor verifica la información.`,
             customer: userCheckExist.data[0]
          };
       }
       return {
          status: true,
-         message: `El usuario con el email ${email} no existe en el sistema`
+         message: `Lo sentimos, el usuario con el correo electrónico ${email} que acabas de ingresar no existe, por favor verifica la información.`
       };
    }
 
@@ -80,7 +80,7 @@ class StripeCustomerService extends StripeApi {
          // Usuario existe - Devolver diciendo que no se puede agregar
          return {
             status: false,
-            message: `El usuario con el email ${email} ya existe en el sistema`
+            message: `Lo sentimos, el usuario con el correo electrónico ${email} ya existe en el sistema, por favor verifica la información.`,
          };
       }
 

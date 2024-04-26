@@ -21,7 +21,7 @@ input DireccionSyscomInput {
   num_ext: String
   num_int: String
   colonia: String
-  codigo_postal: Int
+  codigo_postal: String
   pais: String
   estado: String
   ciudad: String

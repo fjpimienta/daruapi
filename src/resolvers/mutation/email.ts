@@ -46,7 +46,7 @@ function verifyToken(token: string, id: string) {
   if (checkToken === MESSAGES.TOKEN_VERICATION_FAILED) {
     return {
       status: false,
-      message: 'El periodo para activar el usuario ha finalizado. Contacta con el administrador para mas informacion.',
+      message: 'Lo sentimos, el periodo para activar tu cuenta de usuario ha caducado, por favor contáctanos a marketplace@daru.mx para brindarte apoyo.',
       user: null
     };
   }
@@ -55,7 +55,7 @@ function verifyToken(token: string, id: string) {
   if (user.id !== id) {
     return {
       status: false,
-      message: 'El usuario del token no corresponde al agregado en el argumento.'
+      message: 'Lo sentimos, este usuario no tiene permitido usar este token de seguridad, por favor contáctanos a marketplace@daru.mx para brindarte apoyo.'
     };
   }
 

@@ -365,7 +365,7 @@ class DeliverysService extends ResolversOperationsService {
     if (!this.checkData(String(id) || '')) {
       return {
         status: false,
-        message: `El ID del Delivery no se ha especificado correctamente.`,
+        message: `El identificador del pedido no se ha definido correctamente. Favor de verificar.`,
         delivery: null
       };
     }
@@ -382,7 +382,7 @@ class DeliverysService extends ResolversOperationsService {
     if (!this.checkData(String(id) || '')) {
       return {
         status: false,
-        message: `El ID del Delivery no se ha especificado correctamente.`,
+        message: `El identificador del pedido no se ha definido correctamente. Favor de verificar.`,
         delivery: null
       };
     }

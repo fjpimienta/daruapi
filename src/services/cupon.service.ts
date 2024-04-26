@@ -61,7 +61,7 @@ class CuponsService extends ResolversOperationsService {
     }
     return await {
       status: false,
-      message: 'No hay cupon para buscar',
+      message: 'Lo sentimos, por el momento no contamos con ningún cupón de descuento.',
       supplierName: null
     };
   }
@@ -83,7 +83,7 @@ class CuponsService extends ResolversOperationsService {
     if (!this.checkData(cupon?.description || '')) {
       return {
         status: false,
-        message: `El Cupon no se ha especificado correctamente`,
+        message: `Lo sentimos, el cupón que estás utilizando no es correcto.`,
         cupon: null
       };
     }
@@ -92,7 +92,7 @@ class CuponsService extends ResolversOperationsService {
     if (await this.checkInDatabase(cupon?.description || '')) {
       return {
         status: false,
-        message: `El Cupon ya existe en la base de datos, intenta con otro cupon`,
+        message: `Lo sentimos, el cupón que estás utilizando ya existe en nuestra base de datos, por favor intenta con otro.`,
         cupon: null
       };
     }
@@ -132,7 +132,7 @@ class CuponsService extends ResolversOperationsService {
     if (!this.checkData(cupon?.cupon || '')) {
       return {
         status: false,
-        message: `El Cupon no se ha especificado correctamente`,
+        message: `Lo sentimos, el cupón que estás utilizando no es correcto.`,
         cupon: null
       };
     }
@@ -161,7 +161,7 @@ class CuponsService extends ResolversOperationsService {
     if (!this.checkData(String(id) || '')) {
       return {
         status: false,
-        message: `El ID del Cupon no se ha especificado correctamente.`,
+        message: `Lo sentimos, el cupón que estás utilizando no es correcto.`,
         cupon: null
       };
     }
@@ -178,7 +178,7 @@ class CuponsService extends ResolversOperationsService {
     if (!this.checkData(String(id) || '')) {
       return {
         status: false,
-        message: `El ID del Cupon no se ha especificado correctamente.`,
+        message: `Lo sentimos, el cupón que estás utilizando no es correcto.`,
         cupon: null
       };
     }

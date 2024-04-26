@@ -57,7 +57,7 @@ class UsersService extends ResolversOperationsService {
       if (user === null) {
         return {
           status: false,
-          message: 'Lo sentimos este usuario no es parte de #DARUTEAM. Unete a nuestra comunidad',
+          message: 'Únete a nuestra comunidad #DARUTEAM y recibe grandes sorpresas al formar parte de nuestra familia',
           token: null
         };
       }

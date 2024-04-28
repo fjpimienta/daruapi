@@ -1,0 +1,15 @@
+type TokenBDI {
+  user: TokenUserBDI
+  token: String
+  signup: Boolean
+}
+
+type TokenUserBDI {
+  id: String
+  email: String
+  countryCode: String
+  super: Boolean
+  typeApp: String
+  segmentarIngram: Boolean
+  role: String
+}

@@ -5,6 +5,9 @@ const resolversBDIQuery: IResolvers = {
   Query: {
     async tokenBDI(_, __, context) {
       return new ExternalBDIService(_, __, context).getTokenBDI();
+    },
+    async imagenBDI(_, __, context) {
+      return new ExternalBDIService(_, __, context).getImagenBDI();
     }
   }
 };

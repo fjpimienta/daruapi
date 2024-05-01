@@ -49,6 +49,41 @@ class ExternalBDIService extends ResolversOperationsService {
     };
   }
 
+  async getImagenBDI() {
+    const username = 'bdimx@customer.com';
+    const password = 'yIP9fj4I8g';
+    const optionsBDI = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: username,
+        password: password
+      }),
+      redirect: 'follow' as RequestRedirect
+    };
+    console.log('optionsBDI: ', optionsBDI);
+
+    const tokenBDI = await fetch('https://admin.bdicentralapi.net/signin', optionsBDI)
+      .then(response => response.json())
+      .then(async response => {
+        return await response;
+      })
+      .catch(err => console.error(err));
+
+    console.log('tokenBDI: ', tokenBDI);
+
+    const status = tokenBDI.token !== '' ? true : false;
+    const message = tokenBDI.access_token !== '' ? 'El token se ha generado correctamente. data:' : 'Error en el servicio. ' + JSON.stringify(tokenBDI);
+
+    return {
+      status,
+      message,
+      tokenBDI
+    };
+  }
+
 }
 
 export default ExternalBDIService;

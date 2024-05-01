@@ -545,6 +545,8 @@ class DeliverysService extends ResolversOperationsService {
           warehouse.ordersSyscom.direccion.pais = paisSyscom;
           warehouse.ordersSyscom.direccion.estado = estadoSyscom;
           warehouse.ordersSyscom.direccion.colonia = coloniaSyscom;
+          const CONFIRMAR_PEDIDO = process.env.CONFIRMAR_PEDIDO;
+          const confirmarPedido = CONFIRMAR_PEDIDO === 'true' ? true : false;
           const orderSyscom: IOrderSyscom = {
             tipo_entrega: warehouse.ordersSyscom.tipo_entrega,
             direccion: warehouse.ordersSyscom.direccion,
@@ -555,7 +557,7 @@ class DeliverysService extends ResolversOperationsService {
             uso_cfdi: warehouse.ordersSyscom.uso_cfdi,
             tipo_pago: warehouse.ordersSyscom.tipo_pago,
             orden_compra: `DARU-${idDelivery.toString().padStart(6, '0')}`,
-            ordenar: false,
+            ordenar: confirmarPedido,
             iva_frontera: false,
             forzar: false,
             testmode: false,

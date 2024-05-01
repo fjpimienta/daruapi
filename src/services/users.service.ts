@@ -57,7 +57,7 @@ class UsersService extends ResolversOperationsService {
       if (user === null) {
         return {
           status: false,
-          message: 'El usuario no es parte de #DARUTEAM. Unete a nuestra comunidad',
+          message: 'Únete a nuestra comunidad #DARUTEAM y recibe grandes sorpresas al formar parte de nuestra familia',
           token: null
         };
       }
@@ -69,15 +69,15 @@ class UsersService extends ResolversOperationsService {
       if (!user.active) {
         return {
           status: false,
-          message: 'El usuario no está activo. Verificar su cuenta de correo.',
+          message: 'Lo sentimos, este usuario no está activo. Verificar su cuenta de correo o contacte a marketplace@daru.mx',
           token: null
         };
       }
       return {
         status: passwordCheck,
         message: !passwordCheck
-          ? 'Usuario o Password incorrectos, sesión no iniciada'
-          : 'Usuario cargado correctamente',
+          ? 'Lo sentimos el Usuario o Password son incorrectos, sesión no iniciada.'
+          : 'El Usuario ha sido verificado, puedes continuar.',
         token: !passwordCheck ? null : new JWT().sign({ user }, EXPIRETIME.H24),
         user: !passwordCheck ? null : user
       };
@@ -85,7 +85,7 @@ class UsersService extends ResolversOperationsService {
       console.log('error: ', error);
       return {
         status: false,
-        message: 'Errror al cargar el usuario. Verificar',
+        message: 'Lo sentimos hay un errror al cargar el usuario. Por favor contáctanos a marketplace@daru.mx para brindarte apoyo',
         token: null
       };
     }
@@ -103,7 +103,7 @@ class UsersService extends ResolversOperationsService {
     }
     return {
       status: true,
-      message: 'Usuario autenticado mediante token',
+      message: 'El Usuario ha sido verificado, puedes continuar.',
       user: Object.values(info)[0]
     };
   }
@@ -115,7 +115,7 @@ class UsersService extends ResolversOperationsService {
     if (user === null) {
       return {
         status: false,
-        mesage: 'Usuario no definido, verificar datos.',
+        mesage: 'Lo sentimos hay un errror al cargar el usuario. Por favor contáctanos a marketplace@daru.mx para brindarte apoyo',
         user: null
       };
     }
@@ -124,7 +124,7 @@ class UsersService extends ResolversOperationsService {
     if (userCheck !== null) {
       return {
         status: false,
-        message: `El email ${user?.email} ya es parte de #DARUTEAM. Intentar con otro email.`,
+        message: `Lo sentimos el email ${user?.email} ya es parte de #DARUTEAM. Intentar con otro email.`,
         user: null
       };
     }
@@ -160,7 +160,7 @@ class UsersService extends ResolversOperationsService {
     if (user === null) {
       return {
         status: false,
-        mesage: 'Usuario no definido, verificar datos.',
+        mesage: 'Lo sentimos hay un errror al cargar el usuario. Por favor contáctanos a marketplace@daru.mx para brindarte apoyo',
         user: null
       };
     }
@@ -182,7 +182,7 @@ class UsersService extends ResolversOperationsService {
     if (!this.checkData(String(id) || '')) {
       return {
         status: false,
-        message: `El identificador del Usuario no se ha especificado correctamente.`,
+        message: 'Lo sentimos hay un errror el identificador del usuario. Por favor contáctanos a marketplace@daru.mx para brindarte apoyo',
         user: null
       };
     }
@@ -200,13 +200,12 @@ class UsersService extends ResolversOperationsService {
     if (!this.checkData(String(id) || '')) {
       return {
         status: false,
-        message: `El email del Usuario no se ha especificado correctamente.`,
+        message: 'Lo sentimos hay un errror al cargar el correo del usuario. Por favor contáctanos a marketplace@daru.mx para brindarte apoyo',
         user: null
       };
     }
     let update = { active: unblock };
     if (unblock && !admin) {
-      console.log('Soy cliente y estoy cambiando la contrasena');
       update = Object.assign({}, { active: true }, {
         password: bcrypt.hashSync(user?.password, 10)
       });
@@ -227,7 +226,7 @@ class UsersService extends ResolversOperationsService {
     if (email === undefined || email === '') {
       return {
         status: false,
-        message: 'El email no se ha definido correctamente.'
+        message: 'Lo sentimos hay un errror al cargar el email. Por favor contáctanos a marketplace@daru.mx para brindarte apoyo'
       };
     }
     const token = new JWT().sign({ user: { id, email } }, EXPIRETIME.H1);
@@ -238,10 +237,18 @@ class UsersService extends ResolversOperationsService {
           <h1>Bienvenido a #DARUTEAM</h1>
       </header>
       <main>
-          <p>¡Bienvenido a nuestro TEAM! Estamos emocionados de tenerte como parte de nuestra comunidad.</p>
-          <p>Para activar la cuenta haz click aquí: <a href="${process.env.CLIENT_URL_ADMIN}auth/active/${token}">Click aqui</a></p>
+          <h2>¡Bienvenido a nuestro TEAM!</h2>
+          <p>Estamos emocionados de tenerte como parte de nuestra comunidad, para poder continuar es necesario que actives tu cuenta.</p>
+          <div style="text-align: center;">
+            <a href="${process.env.CLIENT_URL_ADMIN}auth/active/${token}" style="text-decoration: none; cursor: pointer;">
+              <button style="background-color: #007bff; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; font-size: 16px;">Activar cuenta</button>
+            </a>
+          </div>
+          <p>&nbsp;</p>
+          <p>&nbsp;</p>
       </main>
       <footer>
+          <p>&nbsp;</p>
       </footer>
       `
     } else {
@@ -250,12 +257,18 @@ class UsersService extends ResolversOperationsService {
           <h1>Bienvenido a #DARUTEAM</h1>
       </header>
       <main>
-          <p>¡Bienvenido a nuestro TEAM! Estamos emocionados de tenerte como parte de nuestra comunidad.</p>
-          <p>Para activar la cuenta haz click aquí: <a href="${process.env.CLIENT_URL}active/${token}">Click aqui</a></p>
-          <p>Consulta nuestros terminos y condiciones. <a href="${process.env.CLIENT_URL}terminos">Click aqui</a></p>
+          <h2>¡Bienvenido a nuestro TEAM!</h2>
+          <p>Estamos emocionados de tenerte como parte de nuestra comunidad, para poder continuar es necesario que actives tu cuenta.</p>
+          <div style="text-align: center;">
+            <a href="${process.env.CLIENT_URL}active/${token}" style="text-decoration: none; cursor: pointer;">
+              <button style="background-color: #007bff; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; font-size: 16px;">Activar cuenta</button>
+            </a>
+          </div>
+          <p>&nbsp;</p>
+          <p>Consulta nuestros terminos y condiciones. <a href="${process.env.CLIENT_URL}terminos" style="text-decoration: none; color: #007bff; padding: 5px 10px; background-color: #f0f0f0; border-radius: 4px;">Click aqui</a></p>
       </main>
       <footer>
-          <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en <a href="${process.env.CLIENT_URL}contact">Contactanos</a>.</p>
+          <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos. <a href="${process.env.CLIENT_URL}contact" style="text-decoration: none; color: #007bff; padding: 5px 10px; background-color: #f0f0f0; border-radius: 4px;">Click Aqui</a></p>
       </footer>
       `
     }

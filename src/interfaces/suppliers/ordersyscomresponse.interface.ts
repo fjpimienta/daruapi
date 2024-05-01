@@ -1,4 +1,4 @@
-export interface IOrderSyscomResponse {
+export interface IOrderResponseSyscom {
   error: string;
   cliente: IClienteSyscom;
   resumen: IResumenSyscom;

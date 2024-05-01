@@ -21,7 +21,7 @@ class DashboardsService extends ResolversOperationsService {
     } catch (error) {
       return await {
         status: false,
-        message: 'Error en la carga del importe por proveedor.',
+        message: 'Lo sentimos, no se puede cargar los datos del importe por proveedor en el Gráfico.',
         importBySupplier: null
       };
     }

@@ -73,7 +73,7 @@ class ExternalCtsService extends ResolversOperationsService {
       const jsonProductsCt = (await this.downloadFileFromFTP()).data;
       return {
         status: true,
-        message: 'La información que hemos pedido se ha cargado correctamente',
+        message: 'La información de los productos se ha cargado correctamente',
         jsonProductsCt,
       };
     } catch (error: any) {

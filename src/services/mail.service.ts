@@ -19,7 +19,7 @@ class MailService {
         } else {
           resolve({
             status: true,
-            message: `DARU Shop - Email enviado correctamente a ${mail.to}`,
+            message: `DARU Shop - El Correo electronico se ha enviado de forma correcta para ${mail.to}`,
             mail,
           });
         }

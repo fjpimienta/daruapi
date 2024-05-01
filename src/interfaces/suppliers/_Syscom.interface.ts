@@ -1,4 +1,4 @@
-import { IOrderSyscomResponse } from './ordersyscomresponse.interface';
+import { IOrderResponseSyscom } from './ordersyscomresponse.interface';
 
 export interface ITokenSyscom {
   token_type: string;
@@ -45,7 +45,7 @@ export interface IOrderSyscom {
   iva_frontera: boolean;
   forzar: boolean;
   testmode: boolean;
-  orderSyscomResponse: IOrderSyscomResponse;
+  orderResponseSyscom: IOrderResponseSyscom;
 }
 
 export interface IDireccionSyscom {
@@ -54,7 +54,7 @@ export interface IDireccionSyscom {
   num_ext: string;
   num_int: string;
   colonia: string;
-  codigo_postal: number;
+  codigo_postal: string;
   pais: string;
   estado: string;
   ciudad: string;

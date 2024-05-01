@@ -9,7 +9,7 @@ import { BranchOffices, Brands, Categorys, Descuentos, Picture, Product, Supplie
 import ConfigsService from './config.service';
 import slugify from 'slugify';
 import { IMetodoPagoItemDetalle, IMetodoPagoSyscom } from '../interfaces/suppliers/_Syscom.interface';
-import { IBranchOffices, IPicture } from '../interfaces/product.interface';
+import { IPicture } from '../interfaces/product.interface';
 
 class ExternalSyscomService extends ResolversOperationsService {
   collection = COLLECTIONS.INGRAM_PRODUCTS;
@@ -572,7 +572,6 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
-
   quitarAcentos(texto: string): string {
     return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
@@ -616,7 +615,8 @@ class ExternalSyscomService extends ResolversOperationsService {
       const paisEncontrado = data.paises.find((pais: any) => this.quitarAcentos(pais.nombre.toLowerCase()) === this.quitarAcentos(paisName.toLowerCase()));
       const status = paisEncontrado ? true : false;
       const message = paisEncontrado ? `El código del país ${paisName} se ha generado correctamente` : `El código del país ${paisName} no se ha encontrado`;
-      const paisSyscom = paisEncontrado ? paisEncontrado.codigo : '';
+      // Servicio Retorna el pais incorrecto, lo manda sin acento.
+      const paisSyscom = 'MÉX'; // paisEncontrado ? paisEncontrado.codigo : '';
       return {
         status,
         message,
@@ -631,10 +631,10 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
-  async getEstadoByCP(codigoPostal: number = 0) {
+  async getEstadoByCP(codigoPostal: string = '0') {
     try {
       const cp = this.getVariables().cp || codigoPostal;
-      if (!cp || cp <= 0) {
+      if (!cp || cp === '0') {
         return {
           status: false,
           message: 'Se requiere especificar el Codigo Postal',
@@ -820,11 +820,11 @@ class ExternalSyscomService extends ResolversOperationsService {
     }
   }
 
-  async getSucursalSyscom(codigoPostal: number = 0, sucursal: string = '') {
+  async getSucursalSyscom(codigoPostal: string = '0', sucursal: string = '') {
     try {
       const cp = this.getVariables().cp || codigoPostal;
       const sucursalName = this.getVariables().sucursalName || sucursal;
-      if ((!cp || cp <= 0) && (!sucursalName || sucursalName === '')) {
+      if ((!cp || cp === '0') && (!sucursalName || sucursalName === '')) {
         return {
           status: false,
           message: 'Se requiere especificar la sucursal o el codigo postal de la sucursal',
@@ -849,7 +849,6 @@ class ExternalSyscomService extends ResolversOperationsService {
       const url = 'https://developers.syscom.mx/api/v1/carrito/sucursales';
       const response = await fetch(url, options);
       const data = await response.json();
-      // console.log('data: ', data);
       process.env.PRODUCTION === 'true' && logger.info(`getSucursalesSyscom.data: \n ${JSON.stringify(data)} \n`);
       if (data && data.status && (data.status < 200 || data.status >= 300)) {
         return {
@@ -861,7 +860,7 @@ class ExternalSyscomService extends ResolversOperationsService {
       let mensaje = '';
       let sucursalEncontrada: any;
       const sucursales = data;
-      if (cp > 0 && sucursal === '') {
+      if (cp !== '0' && sucursal === '') {
         sucursalEncontrada = sucursales.filter((sucursal: any) => sucursal.codigo_postal.toString() === cp.toString());
         if (!sucursalEncontrada || sucursalEncontrada.length <= 0) {
           return {
@@ -901,7 +900,7 @@ class ExternalSyscomService extends ResolversOperationsService {
     try {
       const brand = 'ugreen';
       const listProductsSyscom = (await this.getListProductsSyscomByBrand(brand)).listProductsSyscomByBrand;
-      const sucursal = (await this.getSucursalSyscom(31000)).sucursalSyscom;
+      const sucursal = (await this.getSucursalSyscom('31000')).sucursalSyscom;
       let branchOffice: BranchOffices = new BranchOffices();
       branchOffice.id = sucursal ? sucursal.codigo : 'chihuahua';
       branchOffice.name = sucursal ? sucursal.nombre_sucursal : 'Matriz Chihuahua';
@@ -991,7 +990,7 @@ class ExternalSyscomService extends ResolversOperationsService {
         };
       }
       if (data.total_existencia > 0) {
-        const sucursal = (await this.getSucursalSyscom(31000)).sucursalSyscom;
+        const sucursal = (await this.getSucursalSyscom('31000')).sucursalSyscom;
         const branchOffice: BranchOffices = new BranchOffices();
         const branchOffices: BranchOffices[] = [];
         branchOffice.id = sucursal ? sucursal.codigo : 'chihuahua';
@@ -1177,19 +1176,41 @@ class ExternalSyscomService extends ResolversOperationsService {
         };
       }
       // Blindaje para cuando solo se cotiza envio.
+      let colonia = '';
+      let calle = '';
+      let num_ext = '';
+      let telefono = '';
+      const sCodigoPostal = orderSyscomInput.direccion.codigo_postal.toString().padStart(5, '0');
+      const pais = (await this.getPaisSyscom(orderSyscomInput.direccion.pais)).paisSyscom;
+      const estado = (await this.getEstadoByCP(sCodigoPostal)).estadoByCP;
       if (orderSyscomInput.testmode) {
-        const pais = (await this.getPaisSyscom(orderSyscomInput.direccion.pais)).paisSyscom;
-        const estado = (await this.getEstadoByCP(orderSyscomInput.direccion.codigo_postal)).estadoByCP;
-        const colonias = (await this.getColoniasByCP(orderSyscomInput.direccion.codigo_postal)).coloniasByCP;
-        orderSyscomInput.direccion.pais = pais;
-        orderSyscomInput.direccion.estado = estado;
-        orderSyscomInput.direccion.colonia = colonias[0];
-        orderSyscomInput.direccion.calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'Conocida';
-        orderSyscomInput.direccion.num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
-        orderSyscomInput.direccion.telefono = orderSyscomInput.direccion.telefono !== '' ? orderSyscomInput.direccion.telefono : '9999999999';
+        const colonias = (await this.getColoniasByCP(parseInt(orderSyscomInput.direccion.codigo_postal))).coloniasByCP;
+        colonia = colonias[0];
+        calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'Conocida';
+        num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
+        telefono = orderSyscomInput.direccion.telefono !== '' ? orderSyscomInput.direccion.telefono : '9999999999';
         orderSyscomInput.ordenar = false;
         orderSyscomInput.forzar = false;
+      } else {
+        const coloniaSyscom = (await this.getColoniaByCP(parseInt(orderSyscomInput.direccion.codigo_postal), orderSyscomInput.direccion.colonia)).coloniaByCP;
+        colonia = coloniaSyscom;
+        if (orderSyscomInput.ordenar === false) {
+          calle = orderSyscomInput.direccion.calle !== '' ? orderSyscomInput.direccion.calle : 'CONOCIDA';
+          num_ext = orderSyscomInput.direccion.num_ext !== '' ? orderSyscomInput.direccion.num_ext : 'SN';
+          telefono = orderSyscomInput.direccion.telefono !== '' ? orderSyscomInput.direccion.telefono : '9999999999';
+        } else {
+          calle = orderSyscomInput.direccion.calle;
+          num_ext = orderSyscomInput.direccion.num_ext;
+          telefono = orderSyscomInput.direccion.telefono;
+        }
       }
+      orderSyscomInput.direccion.codigo_postal = sCodigoPostal;
+      orderSyscomInput.direccion.pais = pais;
+      orderSyscomInput.direccion.estado = estado;
+      orderSyscomInput.direccion.colonia = colonia;
+      orderSyscomInput.direccion.calle = calle;
+      orderSyscomInput.direccion.num_ext = num_ext;
+      orderSyscomInput.direccion.telefono = telefono;
       // Fin Blindaje
       const token = await this.getTokenSyscom();
       if (token && !token.status) {
@@ -1226,16 +1247,41 @@ class ExternalSyscomService extends ResolversOperationsService {
       const response = await fetch(url, options);
       const data = await response.json();
       process.env.PRODUCTION === 'true' && logger.info(`setOrderSyscom.data: \n ${JSON.stringify(data)} \n`);
-      if (data && data.status && (data.status < 200 || data.status >= 300 || data.status === 'error')) {
+      if (data && data.status && (data.status < 200 || data.status >= 300 || data.status === 'error' || (data.error && data.error !== ''))) {
         return {
           status: false,
           message: data.message || data.detail,
           saveOrderSyscom: null
         };
       }
+      let error = '';
+      if (data.error === '') {
+        return {
+          status: true,
+          message: `La orden se ha generado correctamente`,
+          saveOrderSyscom: data
+        };
+      } else {
+        switch (data.error) {
+          case 'No se encontró el campo colonia':
+            error = 'No hay cobertura para esta colonia.';
+            break;
+          case 'No se encontró el campo num_ext':
+            error = 'Se requiere especificar el numero de la casa.';
+            break;
+          case 'No se encontró el campo telefono':
+            error = 'Se requiere especificar el numero de telefono.';
+            break;
+          default:
+            error = data.error;
+            break;
+        }
+      }
       return {
         status: data.error === '' ? true : false,
-        message: data.error === '' ? `La orden se ha generado correctamente` : data.error,
+        message: data.error === ''
+          ? `La orden se ha generado correctamente`
+          : data.error === 'No se encontró el campo colonia' ? 'No hay cobertura para esta colonia.' : data.error,
         saveOrderSyscom: data.error === '' ? data : null
       };
     } catch (error: any) {

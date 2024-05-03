@@ -9,4 +9,5 @@ type Warehouse {
   products: [Cartitem]
   productShipments: [ProductShipment]
   shipments: [Shipment]
+  ordersSyscom: OrderSyscom
 }

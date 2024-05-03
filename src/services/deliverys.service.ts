@@ -248,12 +248,22 @@ class DeliverysService extends ResolversOperationsService {
                   break;
                 }
                 process.env.PRODUCTION !== 'true' && logger.info(`modify.orderCtConfirm: \n ${JSON.stringify(orderCtConfirm)} \n`);
-                const orderCtConfirmResponse = await this.ConfirmarPedidos(supplier, orderCtConfirm, context);
-                process.env.PRODUCTION !== 'true' && logger.info(`modify.ConfirmarPedidos.orderCtConfirmResponse: \n ${JSON.stringify(orderCtConfirmResponse)} \n`);
-                if (!orderCtConfirmResponse) {
-                  status = 'PEDIDO SIN CONFIRMAR POR EL PROVEEDOR';
+                if (process.env.PRODUCTION === 'true') {
+                  const orderCtConfirmResponse = await this.ConfirmarPedidos(supplier, orderCtConfirm, context);
+                  logger.info(`modify.ConfirmarPedidos.orderCtConfirmResponse: \n ${JSON.stringify(orderCtConfirmResponse)} \n`);
+                  if (!orderCtConfirmResponse) {
+                    status = 'PEDIDO SIN CONFIRMAR POR EL PROVEEDOR';
+                  }
+                  ordersCt.orderCtConfirmResponse = orderCtConfirmResponse;
+                } else {
+                  status = 'PEDIDO SIN CONFIRMAR POR EL PROVEEDOR. AMBIENTE DEV.';
+                  const ctConfirmResponse: IOrderCtConfirmResponse = {
+                    okCode: 'NA',
+                    okMessage: 'No se confirma el pedido por ser ambiente DEV',
+                    okReference: 'NA'
+                  };
+                  ordersCt.orderCtConfirmResponse = ctConfirmResponse;
                 }
-                ordersCt.orderCtConfirmResponse = orderCtConfirmResponse;
               }
               ordersCts.push(ordersCt);
               process.env.PRODUCTION !== 'true' && logger.info(`modify.ordersCts: \n ${JSON.stringify(ordersCts)} \n`);

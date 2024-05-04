@@ -54,6 +54,12 @@ const resolversSyscomQuery: IResolvers = {
     async saveOrderSyscom(_, __, context) {
       return new ExternalSyscomService(_, __, context).setOrderSyscom();
     },
+    async facturasSyscom(_, __, context) {
+      return new ExternalSyscomService(_, __, context).getFacturasSyscom();
+    },
+    async facturaSyscom(_, __, context) {
+      return new ExternalSyscomService(_, __, context).getFacturaSyscom();
+    },
   }
 };
 

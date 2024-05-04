@@ -286,12 +286,8 @@ class ExternalSyscomService extends ResolversOperationsService {
         const nextPageData = await nextPageResponse.json();
         allProducts = allProducts.concat(nextPageData.productos);
       }
-      // console.log('allProducts[0]: ', allProducts[0]);
       for (const product of allProducts) {
         const productInfo = await this.getOneProductSyscomById(product.producto_id, token);
-        // const productInfo = await this.getOneProductSyscomById('206909', token);
-        // console.log('productInfo: ', productInfo);
-        // let product = allProducts[0];
         if (productInfo && productInfo.oneProductSyscomById) {
           const productTmp = productInfo.oneProductSyscomById
           product.especificaciones = [];
@@ -1292,6 +1288,108 @@ class ExternalSyscomService extends ResolversOperationsService {
       };
     }
   }
+
+  async getFacturasSyscom() {
+    try {
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          facturasSyscom: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/facturas/';
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getFacturasSyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          facturasSyscom: null
+        };
+      }
+      let allFacturas = data.facturas;
+      const totalPages = data.paginas;
+      for (let page = 2; page <= totalPages; page++) {
+        const pageUrl = `${url}&pagina=${page}`;
+        const nextPageResponse = await fetch(pageUrl, options);
+        const nextPageData = await nextPageResponse.json();
+        allFacturas = allFacturas.concat(nextPageData.facturas);
+      }
+      return {
+        status: true,
+        message: `Las facturas se han generado correctamente`,
+        facturasSyscom: data.facturas
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        facturasSyscom: null,
+      };
+    }
+  }
+
+  async getFacturaSyscom(factura: string = '') {
+    try {
+      const facturaId = this.getVariables().facturaId || factura;
+      if (!facturaId || facturaId === '') {
+        return {
+          status: false,
+          message: 'Se requiere especificar la facura',
+          facturaSyscom: null,
+        };
+      }
+      const token = await this.getTokenSyscom();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          facturaSyscom: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenSyscom.access_token
+        }
+      };
+      const url = 'https://developers.syscom.mx/api/v1/facturas/' + facturaId;
+      const response = await fetch(url, options);
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getfacturaSyscom.data: \n ${JSON.stringify(data)} \n`);
+      if (data && data.status && (data.status < 200 || data.status >= 300)) {
+        return {
+          status: false,
+          message: data.message || data.detail,
+          facturaSyscom: null
+        };
+      }
+      return {
+        status: true,
+        message: `La factura ${facturaId} se ha generado correctamente`,
+        facturaSyscom: data
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        facturaSyscom: null,
+      };
+    }
+  }
+
+
 }
 
 export default ExternalSyscomService;

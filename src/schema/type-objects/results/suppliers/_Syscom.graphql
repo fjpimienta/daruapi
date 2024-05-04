@@ -18,4 +18,6 @@ type ResultSyscom implements Result {
   coloniaByCP: String!
   sucursalSyscom: SucursalSyscom
   saveOrderSyscom: OrderResponseSyscom
+  facturasSyscom: [ListFacturaSyscom]
+  facturaSyscom: FacturaSyscom
 }

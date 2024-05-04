@@ -36,4 +36,8 @@ type Query {
   saveOrderSyscom(
     orderSyscomInput: OrderSyscomInput
   ): ResultSyscom
+  facturasSyscom: ResultSyscom
+  facturaSyscom(
+    facturaId: String
+  ): ResultSyscom
 }

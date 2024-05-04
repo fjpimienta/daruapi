@@ -144,3 +144,67 @@ type SucursalSyscom {
   telefono: String
   codigo: String
 }
+
+type ListFacturaSyscom {
+  folio_factura: String
+  fecha: String
+  total: String
+  texto: String
+  moneda: String
+  pago_aplicado: String
+  estatus_fiscal: String
+  estatus: String
+  plazo: String
+  folio_pedido: String
+  uuid: String
+}
+
+type FacturaSyscom {
+  nom_vendedor: String
+  mail_vendedor: String
+  calle_emb: String
+  no_ext_emb: String
+  no_int_emb: String
+  colonia_emb: String
+  cp_emb: String
+  ciudad_emb: String
+  estado_emb: String
+  pais_emb: String
+  ext_vendedor: String
+  atencion_a: String
+  nom_guia: String
+  metodo_pago: String
+  estatus: String
+  fiscal: String
+  moneda: String
+  iva_porcent: String
+  uuid: String
+  folio_factura: String
+  folio_pedido: String
+  sub_total: String
+  envio: String
+  iva: String
+  total: String
+  metodo_txt: String
+  productos: [ProductoFactura]
+}
+
+type ProductoFactura {
+  precio_lista: String
+  precio: String
+  cod_art: String
+  descuento_cliente: String
+  descuento_clasificacion: String
+  descuento_financiero: String
+  cantidad: String
+  descuento_volumen: String
+  producto_id: String
+  asterisco: String
+  titulo: String
+  imagen: String
+  marca: String
+  link: String
+  precio_unitario: String
+  importe: Float
+  precio_oferta: String
+}

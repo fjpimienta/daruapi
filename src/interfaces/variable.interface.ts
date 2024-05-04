@@ -157,5 +157,6 @@ export interface IVariables {
   sucursalName?: string;
   categoryId?: string;
   productId?: string;
+  facturaId?: string;
   orderSyscomInput?: IOrderSyscom;
 }

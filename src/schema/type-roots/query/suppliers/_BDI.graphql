@@ -1,4 +1,4 @@
 type Query {
   tokenBDI: ResultBDI
-  imagenBDI: ResultBDI
+  brandsBDI: ResultBDI
 }

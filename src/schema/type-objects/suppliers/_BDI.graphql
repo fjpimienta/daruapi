@@ -14,6 +14,11 @@ type TokenUserBDI {
   role: String
 }
 
+type BrandsBDI {
+  id: String
+  name: String
+}
+
 type ProductBDI {
   active: String
   sku: String

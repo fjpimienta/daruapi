@@ -110,7 +110,7 @@ class ResolversOperationsService {
       const paginationData = await paginationProducts(this.getDB(), collection, page, itemsPage, filter);
       // Agregamos la etapa de agregación para encontrar el registro con el menor "sale_price" por "partnumber"
       const aggregate = [
-        { $match: filter, },
+        { $match: { sale_price: { $gt: 0 }, ...filter } },
         { $sort: { partnumber: 1, sale_price: 1 }, },
         {
           $group: {

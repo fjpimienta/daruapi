@@ -14,10 +14,35 @@ type TokenUserBDI {
   role: String
 }
 
+type BrandsBDI {
+  id: String
+  name: String
+}
+
+type categorieBDI {
+  id: String
+  name: String
+  nameTemp: String
+  country: [String]
+  parentName: String
+  status: Boolean
+  children: [categorieBDI]
+  parent: categorieBDI
+  categories: [CategorieDetail]
+}
+
+type CategorieDetail {
+  categoriesId: String
+  categoriesIngramId: String
+  assignedAt: String
+  customerId: Int
+  status: Boolean
+}
+
 type ProductBDI {
   active: String
   sku: String
-  price: Int
+  price: Float
   inventory: Int
   priceApply: Float
   currencyCode: String
@@ -28,9 +53,6 @@ type ProductBDI {
 type ProductDetailsBDI {
   description: String
   productDetailDescription: String
-  sheet: String
-  sheetJson: String
-  technicalSpecifications: [TechnicalSpecificationBDI]
   vendornumber: String
   upcnumber: String
   images: [String]
@@ -38,6 +60,9 @@ type ProductDetailsBDI {
   manufacturerIdIngram: String
   manufacturerIngram: ManufacturerBDI
   categoriesIngram: CategoryBDI
+  sheet: String
+  sheetJson: String
+  technicalSpecifications: [TechnicalSpecificationBDI]
 }
 
 type TechnicalSpecificationBDI {

@@ -2,5 +2,7 @@ type ResultBDI implements Result {
   status: Boolean!
   message: String!
   tokenBDI: TokenBDI
-  imagenBDI: String
+  brandsBDI: [BrandsBDI]
+  categoriesBDI: [CategoriesBDI]
+  listProductsBDI: [ProductBDI]
 }

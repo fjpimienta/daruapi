@@ -111,7 +111,7 @@ class ResolversOperationsService {
       // Agregamos la etapa de agregación para encontrar el registro con el menor "sale_price" por "partnumber"
       const aggregate = [
         { $match: filter, },
-        { $sort: { partnumber: 1, price: 1 }, },
+        { $sort: { partnumber: 1, sale_price: 1 }, },
         {
           $group: {
             _id: '$partnumber',

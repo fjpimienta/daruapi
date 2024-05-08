@@ -42,7 +42,7 @@ type CategorieDetail {
 type ProductBDI {
   active: String
   sku: String
-  price: Int
+  price: Float
   inventory: Int
   priceApply: Float
   currencyCode: String
@@ -53,9 +53,6 @@ type ProductBDI {
 type ProductDetailsBDI {
   description: String
   productDetailDescription: String
-  sheet: String
-  sheetJson: String
-  technicalSpecifications: [TechnicalSpecificationBDI]
   vendornumber: String
   upcnumber: String
   images: [String]
@@ -63,6 +60,9 @@ type ProductDetailsBDI {
   manufacturerIdIngram: String
   manufacturerIngram: ManufacturerBDI
   categoriesIngram: CategoryBDI
+  sheet: String
+  sheetJson: String
+  technicalSpecifications: [TechnicalSpecificationBDI]
 }
 
 type TechnicalSpecificationBDI {

@@ -97,13 +97,48 @@ class ExternalBDIService extends ResolversOperationsService {
     };
     const url = 'https://admin.bdicentralapi.net/api/categories';
     const response = await fetch(url, options);
+    if (response.status < 200 || response.status >= 300) {
+      return {
+        status: false,
+        message: `Error en el servicio del proveedor (${response.status}::${response.statusText})`,
+        categoriesBDI: null
+      };
+    }
+    const data = await response.json();
+    process.env.PRODUCTION === 'true' && logger.info(`getCategoriesBDI.data: \n ${JSON.stringify(data)} \n`);
+    const brands = data.categories;
+    return {
+      status: true,
+      message: 'Esta es la lista de Marcas de BDI',
+      categoriesBDI: brands,
+    };
+  }
+
+  async getlistProductsBDI() {
+    const token = await this.getTokenBDI();
+    if (!token || !token.status) {
+      return {
+        status: token.status,
+        message: token.message,
+        listProductsBDI: null,
+      };
+    }
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token.tokenBDI.token
+      }
+    };
+    const url = 'https://admin.bdicentralapi.net/api/products';
+    const response = await fetch(url, options);
     console.log('url: ', url);
     console.log('response: ', response);
     if (response.status < 200 || response.status >= 300) {
       return {
         status: false,
         message: `Error en el servicio del proveedor (${response.status}::${response.statusText})`,
-        categoriesBDI: null
+        listProductsBDI: null
       };
     }
     const data = await response.json();
@@ -113,7 +148,7 @@ class ExternalBDIService extends ResolversOperationsService {
     return {
       status: true,
       message: 'Esta es la lista de Marcas de BDI',
-      categoriesBDI: brands,
+      listProductsBDI: brands,
     };
   }
 }

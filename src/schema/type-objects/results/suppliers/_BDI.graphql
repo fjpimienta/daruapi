@@ -4,4 +4,5 @@ type ResultBDI implements Result {
   tokenBDI: TokenBDI
   brandsBDI: [BrandsBDI]
   categoriesBDI: [CategoriesBDI]
+  listProductsBDI: [ProductBDI]
 }

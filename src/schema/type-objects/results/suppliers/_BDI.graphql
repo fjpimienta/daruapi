@@ -3,4 +3,5 @@ type ResultBDI implements Result {
   message: String!
   tokenBDI: TokenBDI
   brandsBDI: [BrandsBDI]
+  categoriesBDI: [CategoriesBDI]
 }

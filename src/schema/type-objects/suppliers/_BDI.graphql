@@ -19,6 +19,26 @@ type BrandsBDI {
   name: String
 }
 
+type categorieBDI {
+  id: String
+  name: String
+  nameTemp: String
+  country: [String]
+  parentName: String
+  status: Boolean
+  children: [categorieBDI]
+  parent: categorieBDI
+  categories: [CategorieDetail]
+}
+
+type CategorieDetail {
+  categoriesId: String
+  categoriesIngramId: String
+  assignedAt: String
+  customerId: Int
+  status: Boolean
+}
+
 type ProductBDI {
   active: String
   sku: String

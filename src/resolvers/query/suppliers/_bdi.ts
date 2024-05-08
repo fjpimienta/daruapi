@@ -8,6 +8,9 @@ const resolversBDIQuery: IResolvers = {
     },
     async brandsBDI(_, __, context) {
       return new ExternalBDIService(_, __, context).getBrandsBDI();
+    },
+    async categoriesBDI(_, __, context) {
+      return new ExternalBDIService(_, __, context).getCategoriesBDI();
     }
   }
 };

@@ -1,4 +1,6 @@
 type Query {
   tokenBDI: ResultBDI
-  imagenBDI: ResultBDI
+  brandsBDI: ResultBDI
+  categoriesBDI: ResultBDI
+  listProductsBDI: ResultBDI
 }

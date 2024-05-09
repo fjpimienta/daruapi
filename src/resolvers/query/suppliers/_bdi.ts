@@ -6,8 +6,14 @@ const resolversBDIQuery: IResolvers = {
     async tokenBDI(_, __, context) {
       return new ExternalBDIService(_, __, context).getTokenBDI();
     },
-    async imagenBDI(_, __, context) {
-      return new ExternalBDIService(_, __, context).getImagenBDI();
+    async brandsBDI(_, __, context) {
+      return new ExternalBDIService(_, __, context).getBrandsBDI();
+    },
+    async categoriesBDI(_, __, context) {
+      return new ExternalBDIService(_, __, context).getCategoriesBDI();
+    },
+    async listProductsBDI(_, __, context) {
+      return new ExternalBDIService(_, __, context).getlistProductsBDI();
     }
   }
 };

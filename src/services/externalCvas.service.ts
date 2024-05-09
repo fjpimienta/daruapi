@@ -741,8 +741,6 @@ class ExternalCvasService extends ResolversOperationsService {
     const promo = new Promociones();
     let disponible = 0;
     let salePrice = 0;
-    salePrice = 0;
-    disponible = 0;
     itemData.id = undefined;
     let branchOffices: BranchOffices[] = [];
     if (item.ExsTotal >= stockMinimo) {                  // Si existencias totales.
@@ -756,13 +754,13 @@ class ExternalCvasService extends ResolversOperationsService {
         itemData.name = item.descripcion;
         itemData.slug = slugify(item.descripcion, { lower: true });
         itemData.short_desc = item.clave + '. Grupo: ' + item.grupo;
-        itemData.price = item.precio === '' || isNaN(parseFloat(item.precio)) ? 0 : parseFloat(item.precio);
+        itemData.price = item.precio === '' || isNaN(parseFloat(item.precio)) ? 0 : parseFloat(item.precio) * utilidad * iva;
         itemData.review = 0;
         itemData.ratings = 0;
         itemData.until = this.getFechas(new Date());
         itemData.top = false;
         if (item.PrecioDescuento !== 'Sin Descuento') {
-          desc.total_descuento = item.TotalDescuento === '' || isNaN(parseFloat(item.TotalDescuento)) ? 0 : parseFloat(item.TotalDescuento) * utilidad * iva;
+          desc.total_descuento = item.TotalDescuento === '' || isNaN(parseFloat(item.TotalDescuento)) ? 0 : parseFloat(item.TotalDescuento) * parseFloat(item.tipocambio) * utilidad * iva;
           desc.moneda_descuento = item.MonedaDescuento;
           desc.precio_descuento = item.PrecioDescuento === '' || isNaN(parseFloat(item.PrecioDescuento)) ? 0 : parseFloat(item.PrecioDescuento) * utilidad * iva;
           salePrice = desc.precio_descuento;

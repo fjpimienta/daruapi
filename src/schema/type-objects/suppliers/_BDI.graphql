@@ -55,7 +55,7 @@ type ProductDetailsBDI {
   productDetailDescription: String
   vendornumber: String
   upcnumber: String
-  images: [String]
+  images: String
   categoriesIdIngram: String
   manufacturerIdIngram: String
   manufacturerIngram: ManufacturerBDI
@@ -87,8 +87,6 @@ type CategoryParentBDI {
   id: Int
   name: String
 }
-
-
 
 type ProductPricesBDI {
   ingram: IngramDetailsBDI

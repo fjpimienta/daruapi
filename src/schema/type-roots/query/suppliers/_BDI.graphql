@@ -2,5 +2,5 @@ type Query {
   tokenBDI: ResultBDI
   brandsBDI: ResultBDI
   categoriesBDI: ResultBDI
-  listProductsBDI: ResultBDI
+  productsBDI: ResultBDI
 }

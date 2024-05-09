@@ -114,13 +114,13 @@ class ExternalBDIService extends ResolversOperationsService {
     };
   }
 
-  async getlistProductsBDI() {
+  async getProductsBDI() {
     const token = await this.getTokenBDI();
     if (!token || !token.status) {
       return {
         status: token.status,
         message: token.message,
-        listProductsBDI: null,
+        productsBDI: null,
       };
     }
     const options = {
@@ -138,17 +138,17 @@ class ExternalBDIService extends ResolversOperationsService {
       return {
         status: false,
         message: `Error en el servicio del proveedor (${response.status}::${response.statusText})`,
-        listProductsBDI: null
+        productsBDI: null
       };
     }
     const data = await response.json();
     console.log('data: ', data);
     process.env.PRODUCTION === 'true' && logger.info(`getCategoriesBDI.data: \n ${JSON.stringify(data)} \n`);
-    const brands = data.categories;
+    const products = data.products;
     return {
       status: true,
-      message: 'Esta es la lista de Marcas de BDI',
-      listProductsBDI: brands,
+      message: 'Esta es la lista de Productos de BDI',
+      productsBDI: products,
     };
   }
 }

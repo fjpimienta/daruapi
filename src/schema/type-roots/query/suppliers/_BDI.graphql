@@ -3,4 +3,6 @@ type Query {
   brandsBDI: ResultBDI
   categoriesBDI: ResultBDI
   productsBDI: ResultBDI
+  listProductsBDI: ResultBDI
+  existenciaProductoBDI: ResultBDI
 }

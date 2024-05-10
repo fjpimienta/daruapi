@@ -14,6 +14,12 @@ const resolversBDIQuery: IResolvers = {
     },
     async productsBDI(_, __, context) {
       return new ExternalBDIService(_, __, context).getProductsBDI();
+    },
+    async listProductsBDI(_, __, context) {
+      return new ExternalBDIService(_, __, context).getListProductsBDI();
+    },
+    async existenciaProductoBDI(_, __, context) {
+      return new ExternalBDIService(_, __, context).getExistenciaProductoBDI();
     }
   }
 };

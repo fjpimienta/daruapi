@@ -116,6 +116,48 @@ class ExternalBDIService extends ResolversOperationsService {
     };
   }
 
+  async getLocationsBDI() {
+    try {
+      const token = await this.getTokenBDI();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          locationsBDI: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenBDI.token
+        }
+      };
+      const url = 'https://admin.bdicentralapi.net/api/brslocations';
+      const response = await fetch(url, options);
+      if (response.status < 200 || response.status >= 300) {
+        return {
+          status: false,
+          message: `Error en el servicio del proveedor (${response.status}::${response.statusText})`,
+          locationsBDI: null
+        };
+      }
+      const data = await response.json();
+      const sucursales = data.brsLocations;
+      return {
+        status: true,
+        message: 'Esta es la lista de Sucursales de BDI',
+        locationsBDI: sucursales
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        locationsBDI: null,
+      };
+    }
+  }
+
   async getProductsBDI() {
     const token = await this.getTokenBDI();
     if (!token || !token.status) {
@@ -156,7 +198,19 @@ class ExternalBDIService extends ResolversOperationsService {
 
   async getListProductsBDI() {
     const listProductsBDI = (await this.getProductsBDI()).productsBDI;
+    console.log('listProductsBDI: ', listProductsBDI);
+    // const sucursal = (await this.getLocationsBDI('31000')).sucursalBDI;
+    // let branchOffice: BranchOffices = new BranchOffices();
+    // branchOffice.id = sucursal ? sucursal.codigo : '10';
+    // branchOffice.name = sucursal ? sucursal.nombre_sucursal : 'VENTAS-MEXICO';
+    // branchOffice.estado = sucursal ? sucursal.estado : 'CDMX';
+    // branchOffice.cantidad = 0;
+    // branchOffice.cp = sucursal ? sucursal.codigo_postal : '31000';
+    // branchOffice.latitud = '';
+    // branchOffice.longitud = '';
+    if (listProductsBDI) {
 
+    }
     return {
       status: true,
       message: 'Esta es la lista de Precios de los Productos de BDI',
@@ -166,6 +220,11 @@ class ExternalBDIService extends ResolversOperationsService {
 
   async getExistenciaProductoBDI() {
 
+  }
+
+
+  quitarAcentos(texto: string): string {
+    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 
   async setProduct(proveedor: string, item: any, imagenes: any = null, stockMinimo: number, exchangeRate: number, sucursal: BranchOffices) {

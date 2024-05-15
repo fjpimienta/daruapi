@@ -2,6 +2,7 @@ type Query {
   tokenBDI: ResultBDI
   brandsBDI: ResultBDI
   categoriesBDI: ResultBDI
+  locationsBDI: ResultBDI
   productsBDI: ResultBDI
   listProductsBDI: ResultBDI
   existenciaProductoBDI: ResultBDI

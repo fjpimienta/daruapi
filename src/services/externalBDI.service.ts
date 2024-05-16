@@ -7,6 +7,7 @@ import { Db } from 'mongodb';
 import logger from '../utils/logger';
 import { BranchOffices, Brands, Categorys, Descuentos, Picture, Product, SupplierProd, UnidadDeMedida } from '../models/product.models';
 import slugify from 'slugify';
+import ConfigsService from './config.service';
 
 class ExternalBDIService extends ResolversOperationsService {
   collection = COLLECTIONS.INGRAM_PRODUCTS;
@@ -199,22 +200,50 @@ class ExternalBDIService extends ResolversOperationsService {
   async getListProductsBDI() {
     const listProductsBDI = (await this.getProductsBDI()).productsBDI;
     console.log('listProductsBDI: ', listProductsBDI);
-    // const sucursal = (await this.getLocationsBDI('31000')).sucursalBDI;
-    // let branchOffice: BranchOffices = new BranchOffices();
-    // branchOffice.id = sucursal ? sucursal.codigo : '10';
-    // branchOffice.name = sucursal ? sucursal.nombre_sucursal : 'VENTAS-MEXICO';
-    // branchOffice.estado = sucursal ? sucursal.estado : 'CDMX';
-    // branchOffice.cantidad = 0;
-    // branchOffice.cp = sucursal ? sucursal.codigo_postal : '31000';
-    // branchOffice.latitud = '';
-    // branchOffice.longitud = '';
+    const sucursales = (await this.getLocationsBDI()).locationsBDI;
+    const sucursal = sucursales.find((suc: any) => suc.name === 'Mexico DF');
+    let branchOffice: BranchOffices = new BranchOffices();
+    branchOffice.id = sucursal ? sucursal.brId : '10';
+    branchOffice.name = sucursal ? sucursal.name : 'Mexico DF';
+    branchOffice.estado = sucursal ? sucursal.alias : 'Mexico DF';
+    branchOffice.cantidad = 0;
+    branchOffice.cp = sucursal ? sucursal.codigo_postal : '31000';
+    branchOffice.latitud = '';
+    branchOffice.longitud = '';
     if (listProductsBDI) {
-
+      const productos: Product[] = [];
+      if (listProductsBDI && listProductsBDI.length > 0) {
+        const db = this.db;
+        const config = await new ConfigsService({}, { id: '1' }, { db }).details();
+        const stockMinimo = config.config.minimum_offer;
+        const exchangeRate = config.config.exchange_rate;
+        for (const product of listProductsBDI) {
+          if (product.producto_id !== '') {
+            const itemData: Product = await this.setProduct('syscom', product, null, stockMinimo, exchangeRate, branchOffice);
+            if (itemData.id !== undefined) {
+              productos.push(itemData);
+            }
+          }
+        }
+      }
+      return await {
+        status: true,
+        message: `Productos listos para agregar.`,
+        listProductsBDI: productos
+      }
+    } else {
+      logger.info('No se pudieron recuperar los productos del proveedor');
+      return {
+        status: false,
+        message: 'No se pudieron recuperar los productos del proveedor.',
+        listProductsBDI: null,
+      };
     }
+  } catch(error: any) {
     return {
-      status: true,
-      message: 'Esta es la lista de Precios de los Productos de BDI',
-      listProductsBDI: listProductsBDI,
+      status: false,
+      message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+      listProductsBDI: null,
     };
   }
 
@@ -241,21 +270,16 @@ class ExternalBDIService extends ResolversOperationsService {
     let price = 0;
     let salePrice = 0;
     itemData.id = undefined;
-    if (item && item.total_existencia > 0) {
-      function extraerPrimeraSeccion(titulo: string) {
-        const secciones = titulo.split(/[\/|]/);
-        return secciones[0].trim();
-      }
-      disponible = item.total_existencia;
+    if (item && item.inventory > 0) {
+      disponible = item.inventory;
       let featured = false;
-      itemData.id = item.producto_id;
-      const titulo = extraerPrimeraSeccion(item.titulo);
-      itemData.name = titulo;
-      itemData.slug = slugify(titulo, { lower: true });
-      itemData.short_desc = item.titulo;
-      if (item.precios && item.precios.precio_1) {
-        price = parseFloat((parseFloat(item.precios.precio_lista) * exchangeRate * utilidad * iva).toFixed(2));
-        salePrice = parseFloat((parseFloat(item.precios.precio_descuento) * exchangeRate * utilidad * iva).toFixed(2));
+      itemData.id = item.sku;
+      itemData.name = item.productDetailDescription;
+      itemData.slug = slugify(item.productDetailDescription, { lower: true });
+      itemData.short_desc = item.description;
+      if (item.price) {
+        price = parseFloat((parseFloat(item.price) * exchangeRate * utilidad * iva).toFixed(2));
+        salePrice = parseFloat((parseFloat(item.price) * exchangeRate * utilidad * iva).toFixed(2));
         if (price > salePrice) {
           featured = true;
         }

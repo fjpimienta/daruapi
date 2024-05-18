@@ -257,6 +257,10 @@ class ExternalDaisytekService extends ResolversOperationsService {
             itemData.brands.push(b);
           } else {
             itemData.brand = 'N/E';
+            itemData.brands = [];
+            b.name = 'N/E';
+            b.slug = 'ne';
+            itemData.brands.push(b);
           }
           // SupplierProd
           s.idProveedor = proveedor;

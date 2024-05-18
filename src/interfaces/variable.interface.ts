@@ -159,4 +159,6 @@ export interface IVariables {
   productId?: string;
   facturaId?: string;
   orderSyscomInput?: IOrderSyscom;
+  // daisytek
+  partNumberDaisytek?: string;
 }

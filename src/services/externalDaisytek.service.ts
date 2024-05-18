@@ -216,61 +216,65 @@ class ExternalDaisytekService extends ResolversOperationsService {
             branchOfficesDaisytek.push(almacenTmp)
           }
         }
-        let featured = false;
-        itemData.id = item.sku;
-        itemData.name = item.title;
-        itemData.slug = slugify(item.title, { lower: true });
-        itemData.short_desc = item.description === '' ? item.title : item.description;
-        price = parseFloat((parseFloat(item.price) * utilidad * iva).toFixed(2));
-        salePrice = parseFloat((parseFloat(item.price) * utilidad * iva).toFixed(2));
-        if (price > salePrice) {
-          featured = true;
+        if (disponible > 0) {
+          let featured = false;
+          itemData.id = item.sku;
+          itemData.name = item.title;
+          itemData.slug = slugify(item.title, { lower: true });
+          itemData.short_desc = item.title;
+          price = parseFloat((parseFloat(item.price) * utilidad * iva).toFixed(2));
+          salePrice = parseFloat((parseFloat(item.price) * utilidad * iva).toFixed(2));
+          if (price > salePrice) {
+            featured = true;
+          }
+          itemData.price = price;
+          itemData.sale_price = salePrice;
+          itemData.exchangeRate = exchangeRate;
+          itemData.review = 0;
+          itemData.ratings = 0;
+          itemData.until = this.getFechas(new Date());
+          itemData.top = false;
+          itemData.featured = featured;
+          itemData.new = false;
+          itemData.sold = '';
+          itemData.stock = disponible;
+          itemData.sku = item.sku;
+          itemData.upc = '';
+          itemData.ean = '';
+          itemData.partnumber = item.manufacturer_sku;
+          unidad.id = 'PZ';
+          unidad.name = 'Pieza';
+          unidad.slug = 'pieza';
+          itemData.unidadDeMedida = unidad;
+          itemData.category = [];
+          itemData.subCategory = [];
+          // Marcas
+          if (item.manufacturer) {
+            itemData.brand = item.manufacturer.toLowerCase();
+            itemData.brands = [];
+            b.name = item.manufacturer;
+            b.slug = slugify(item.manufacturer, { lower: true });
+            itemData.brands.push(b);
+          } else {
+            itemData.brand = 'N/E';
+          }
+          // SupplierProd
+          s.idProveedor = proveedor;
+          s.codigo = item.sku;
+          s.cantidad = stockMinimo;
+          s.price = parseFloat(item.price);
+          s.sale_price = 0;
+          s.moneda = 'MXN';
+          s.category = new Categorys();
+          s.subCategory = new Categorys();
+          // Almacenes
+          s.branchOffices = branchOfficesDaisytek;
+          itemData.suppliersProd = s;
+          itemData.model = '';
+          itemData.pictures = [];
+          itemData.sm_pictures = [];
+          itemData.especificaciones = [];
         }
-        itemData.price = price;
-        itemData.sale_price = salePrice;
-        itemData.exchangeRate = exchangeRate;
-        itemData.review = 0;
-        itemData.ratings = 0;
-        itemData.until = this.getFechas(new Date());
-        itemData.top = false;
-        itemData.featured = featured;
-        itemData.new = false;
-        itemData.sold = '';
-        itemData.stock = disponible;
-        itemData.sku = item.sku;
-        itemData.upc = '';
-        itemData.ean = '';
-        itemData.partnumber = item.manufacturer_sku;
-        unidad.id = 'PZ';
-        unidad.name = 'Pieza';
-        unidad.slug = 'pieza';
-        itemData.unidadDeMedida = unidad;
-        itemData.category = [];
-        itemData.subCategory = [];
-        // Marcas
-        if (item.manufacturer) {
-          itemData.brand = item.manufacturer.toLowerCase();
-          itemData.brands = [];
-          b.name = item.manufacturer;
-          b.slug = slugify(item.manufacturer, { lower: true });
-          itemData.brands.push(b);
-        }
-        // SupplierProd
-        s.idProveedor = proveedor;
-        s.codigo = item.sku;
-        s.cantidad = stockMinimo;
-        s.price = parseFloat(item.price);
-        s.sale_price = 0;
-        s.moneda = 'MXN';
-        s.category = new Categorys();
-        s.subCategory = new Categorys();
-        // Almacenes
-        s.branchOffices = branchOfficesDaisytek;
-        itemData.suppliersProd = s;
-        itemData.model = '';
-        itemData.pictures = [];
-        itemData.sm_pictures = [];
-        itemData.especificaciones = [];
       }
     }
     return itemData;

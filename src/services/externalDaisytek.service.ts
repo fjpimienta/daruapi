@@ -46,9 +46,6 @@ class ExternalDaisytekService extends ResolversOperationsService {
     };
     const url = 'https://www.daisytek.com.mx/api/products/full-catalog';
     const response = await fetch(url, options);
-    console.log('token: ', token);
-    console.log('url: ', url);
-    console.log('options: ', options);
     if (response.status < 200 || response.status >= 300) {
       return {
         status: false,
@@ -57,7 +54,6 @@ class ExternalDaisytekService extends ResolversOperationsService {
       };
     }
     const data = await response.json();
-    console.log('data: ', data);
     process.env.PRODUCTION === 'true' && logger.info(`getCategoriesDaisytek.data: \n ${JSON.stringify(data)} \n`);
     const products = data;
     return {
@@ -69,8 +65,8 @@ class ExternalDaisytekService extends ResolversOperationsService {
 
   async getListProductsDaisytek() {
     const listProductsDaisytek = (await this.getProductsDaisytek()).productsDaisytek;
-    console.log('listProductsDaisytek: ', listProductsDaisytek);
     if (listProductsDaisytek) {
+      console.log('listProductsDaisytek.length: ', listProductsDaisytek.length);
       const productos: Product[] = [];
       if (listProductsDaisytek && listProductsDaisytek.length > 0) {
         const db = this.db;
@@ -78,7 +74,7 @@ class ExternalDaisytekService extends ResolversOperationsService {
         const stockMinimo = config.config.minimum_offer;
         const exchangeRate = config.config.exchange_rate;
         for (const product of listProductsDaisytek) {
-          if (product.producto_id !== '') {
+          if (product.sku !== '') {
             const itemData: Product = await this.setProduct('syscom', product, null, stockMinimo, exchangeRate);
             if (itemData.id !== undefined) {
               productos.push(itemData);
@@ -86,6 +82,7 @@ class ExternalDaisytekService extends ResolversOperationsService {
           }
         }
       }
+      console.log('productos: ', productos);
       return await {
         status: true,
         message: `Productos listos para agregar.`,
@@ -143,7 +140,6 @@ class ExternalDaisytekService extends ResolversOperationsService {
     }
     const data: IProductDaisytek = await response.json();
     process.env.PRODUCTION === 'true' && logger.info(`getExistenciaProductoDaisytek.data: \n ${JSON.stringify(data)} \n`);
-    // getAvailability
     if (data) {
       const warehousesDaisytek: IWarehousesDaisytek = data.warehouses;
       const almacenesConExistencia = this.buscarAlmacenesConExistencia(existenciaProducto, warehousesDaisytek);
@@ -151,7 +147,7 @@ class ExternalDaisytekService extends ResolversOperationsService {
         .filter((almacen): almacen is IWarehouseDaisytek => almacen !== undefined)
         .map((almacen: IWarehouseDaisytek) => {
           return {
-            id: almacen.location,
+            id: almacen.id,
             cantidad: almacen.stock,
             name: almacen.location,
             estado: almacen.location,
@@ -183,6 +179,7 @@ class ExternalDaisytekService extends ResolversOperationsService {
     const almacenesConExistencia: IWarehousesDaisytek = {};
     for (const [key, almacen] of Object.entries(existenciaProductoDaisytek)) {
       if (almacen && cantidad !== undefined && almacen.stock >= cantidad) {
+        almacen.id = key;
         almacenesConExistencia[key] = almacen;
       }
     }
@@ -207,115 +204,92 @@ class ExternalDaisytekService extends ResolversOperationsService {
     let price = 0;
     let salePrice = 0;
     itemData.id = undefined;
-    if (item && item.inventory > 0) {
-      disponible = item.inventory;
-      let featured = false;
-      itemData.id = item.sku;
-      itemData.name = item.productDetailDescription;
-      itemData.slug = slugify(item.productDetailDescription, { lower: true });
-      itemData.short_desc = item.description;
-      if (item.price) {
-        price = parseFloat((parseFloat(item.price) * exchangeRate * utilidad * iva).toFixed(2));
-        salePrice = parseFloat((parseFloat(item.price) * exchangeRate * utilidad * iva).toFixed(2));
+    console.log('item: ', item);
+    if (item && item.warehouses) {
+      if (item.price && item.price > 0) {
+        const branchOfficesDeisytek: BranchOffices[] = [];
+        const existenciaProductoDaisytek: IWarehousesDaisytek = item.warehouses;
+        const almacenesConExistencia: IWarehousesDaisytek = {};
+        for (const [key, almacen] of Object.entries(existenciaProductoDaisytek)) {
+          if (almacen && almacen.stock >= stockMinimo) {
+            almacen.id = key;
+            almacenesConExistencia[key] = almacen;
+            console.log('almacen: ', almacen);
+            const almacenTmp = this.getAlmacenCant(almacen);
+            branchOfficesDeisytek.push(almacenTmp)
+          }
+        }
+        console.log('branchOfficesDeisytek: ', branchOfficesDeisytek);
+        let featured = false;
+        itemData.id = item.sku;
+        itemData.name = item.title;
+        itemData.slug = slugify(item.title, { lower: true });
+        itemData.short_desc = item.description;
+        price = parseFloat((parseFloat(item.price) * utilidad * iva).toFixed(2));
+        salePrice = parseFloat((parseFloat(item.price) * utilidad * iva).toFixed(2));
         if (price > salePrice) {
           featured = true;
         }
-      }
-      itemData.price = price;
-      itemData.sale_price = salePrice;
-      itemData.exchangeRate = exchangeRate;
-      itemData.review = 0;
-      itemData.ratings = 0;
-      itemData.until = this.getFechas(new Date());
-      itemData.top = false;
-      itemData.featured = featured;
-      itemData.new = false;
-      itemData.sold = '';
-      itemData.stock = disponible;
-      itemData.sku = item.producto_id;
-      itemData.upc = item.sat_key;
-      itemData.ean = '';
-      itemData.partnumber = item.modelo;
-      unidad.id = item.unidad_de_medida.codigo_unidad || 'PZ';
-      unidad.name = item.unidad_de_medida.nombre || 'Pieza';
-      unidad.slug = slugify(item.unidad_de_medida.nombre) || 'pieza';
-      itemData.unidadDeMedida = unidad;
-      // Categorias
-      if (item.categorias) {
+        itemData.price = price;
+        itemData.sale_price = salePrice;
+        itemData.exchangeRate = exchangeRate;
+        itemData.review = 0;
+        itemData.ratings = 0;
+        itemData.until = this.getFechas(new Date());
+        itemData.top = false;
+        itemData.featured = featured;
+        itemData.new = false;
+        itemData.sold = '';
+        itemData.stock = disponible;
+        itemData.sku = item.sku;
+        itemData.upc = '';
+        itemData.ean = '';
+        itemData.partnumber = item.manufacturer_sku;
+        unidad.id = 'PZ';
+        unidad.name = 'Pieza';
+        unidad.slug = 'pieza';
+        itemData.unidadDeMedida = unidad;
         itemData.category = [];
         itemData.subCategory = [];
-        item.categorias.forEach((category: any) => {
-          // Categorias
-          if (category.nivel === 1 || category.nivel === 2) {
-            const c = new Categorys();
-            c.name = category.nombre;
-            c.slug = slugify(category.nombre, { lower: true });
-            itemData.category.push(c);
-          }
-          // Subcategorias
-          if (category.nivel === 3) {
-            const c = new Categorys();
-            c.name = category.nombre;
-            c.slug = slugify(category.nombre, { lower: true });
-            itemData.subCategory.push(c);
-          }
-        });
-      }
-      // Marcas
-      itemData.brand = item.marca.toLowerCase();
-      itemData.brands = [];
-      b.name = item.marca;
-      b.slug = slugify(item.marca, { lower: true });
-      itemData.brands.push(b);
-      // SupplierProd
-      s.idProveedor = proveedor;
-      s.codigo = item.producto_id;
-      s.cantidad = stockMinimo;
-      s.price = parseFloat(item.precios.precio_lista);
-      s.sale_price = parseFloat(item.precios.precio_descuento);
-      s.moneda = 'MXN';
-      s.category = new Categorys();
-      s.subCategory = new Categorys();
-      item.categorias.forEach((category: any) => {
-        if (category.nivel === 1) {
-          const c = new Categorys();
-          c.name = category.nombre;
-          c.slug = slugify(category.nombre, { lower: true });
-        } else if (category.nivel === 3) {
-          const c = new Categorys();
-          c.name = category.nombre;
-          c.slug = slugify(category.nombre, { lower: true });
+        // Marcas
+        if (item.manufacturer) {
+          itemData.brand = item.manufacturer.toLowerCase();
+          itemData.brands = [];
+          b.name = item.manufacturer;
+          b.slug = slugify(item.manufacturer, { lower: true });
+          itemData.brands.push(b);
         }
-      });
-      // Almacenes
-      const branchOfficesSyscom: BranchOffices[] = [];
-      let branchOffice: BranchOffices = new BranchOffices();
-      branchOffice.id = 'chihuahua';
-      branchOffice.name = 'Matriz Chihuahua';
-      branchOffice.estado = 'Chihuahua';
-      branchOffice.cp = '31000';
-      branchOffice.latitud = '';
-      branchOffice.longitud = '';
-      branchOffice.cantidad = disponible;
-      branchOfficesSyscom.push(branchOffice);
-      s.branchOffices = branchOfficesSyscom;
-      itemData.suppliersProd = s;
-      itemData.model = item.modelo;
-      itemData.pictures = item.pictures;
-      itemData.sm_pictures = item.sm_pictures;
-      itemData.especificaciones = [];
-      if (item.especificaciones && item.especificaciones.length > 0) {
-        itemData.especificaciones = item.especificaciones;
+        // SupplierProd
+        s.idProveedor = proveedor;
+        s.codigo = item.sku;
+        s.cantidad = stockMinimo;
+        s.price = parseFloat(item.price);
+        s.sale_price = 0;
+        s.moneda = 'MXN';
+        s.category = new Categorys();
+        s.subCategory = new Categorys();
+        // Almacenes
+        s.branchOffices = branchOfficesDeisytek;
+        itemData.suppliersProd = s;
+        itemData.model = '';
+        itemData.pictures = [];
+        itemData.sm_pictures = [];
+        itemData.especificaciones = [];
       }
-      itemData.especificaciones.push({ tipo: 'Peso', valor: item.peso });
-      itemData.especificaciones.push({ tipo: 'Altura', valor: item.alto });
-      itemData.especificaciones.push({ tipo: 'Longitud', valor: item.largo });
-      itemData.especificaciones.push({ tipo: 'Ancho', valor: item.ancho });
-      itemData.especificaciones.push({ tipo: 'Link', valor: item.link });
-      itemData.especificaciones.push({ tipo: 'Link_privado', valor: item.link_privado });
-      itemData.especificacionesBullet = item.especificacionesBullet;
     }
     return itemData;
+  }
+
+  getAlmacenCant(branch: any): BranchOffices {
+    const almacen = new BranchOffices();
+    almacen.id = branch.id;
+    almacen.name = branch.location;
+    almacen.estado = branch.location;
+    almacen.cp = '';
+    almacen.latitud = '';
+    almacen.longitud = '';
+    almacen.cantidad = branch.stock;
+    return almacen;
   }
 
   getFechas(fecha: Date) {

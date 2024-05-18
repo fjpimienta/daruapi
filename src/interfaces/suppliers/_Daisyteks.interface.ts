@@ -23,5 +23,6 @@ export interface IWarehousesDaisytek {
 
 export interface IWarehouseDaisytek {
   stock: number;
+  id: string;
   location: string;
 }

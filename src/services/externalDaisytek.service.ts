@@ -207,7 +207,7 @@ class ExternalDaisytekService extends ResolversOperationsService {
     console.log('item: ', item);
     if (item && item.warehouses) {
       if (item.price && item.price > 0) {
-        const branchOfficesDeisytek: BranchOffices[] = [];
+        const branchOfficesDaisytek: BranchOffices[] = [];
         const existenciaProductoDaisytek: IWarehousesDaisytek = item.warehouses;
         const almacenesConExistencia: IWarehousesDaisytek = {};
         for (const [key, almacen] of Object.entries(existenciaProductoDaisytek)) {
@@ -216,10 +216,10 @@ class ExternalDaisytekService extends ResolversOperationsService {
             almacenesConExistencia[key] = almacen;
             console.log('almacen: ', almacen);
             const almacenTmp = this.getAlmacenCant(almacen);
-            branchOfficesDeisytek.push(almacenTmp)
+            branchOfficesDaisytek.push(almacenTmp)
           }
         }
-        console.log('branchOfficesDeisytek: ', branchOfficesDeisytek);
+        console.log('branchOfficesDaisytek: ', branchOfficesDaisytek);
         let featured = false;
         itemData.id = item.sku;
         itemData.name = item.title;
@@ -269,7 +269,7 @@ class ExternalDaisytekService extends ResolversOperationsService {
         s.category = new Categorys();
         s.subCategory = new Categorys();
         // Almacenes
-        s.branchOffices = branchOfficesDeisytek;
+        s.branchOffices = branchOfficesDaisytek;
         itemData.suppliersProd = s;
         itemData.model = '';
         itemData.pictures = [];

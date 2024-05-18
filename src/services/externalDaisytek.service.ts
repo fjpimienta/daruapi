@@ -74,7 +74,7 @@ class ExternalDaisytekService extends ResolversOperationsService {
         const exchangeRate = config.config.exchange_rate;
         for (const product of listProductsDaisytek) {
           if (product.sku !== '') {
-            const itemData: Product = await this.setProduct('syscom', product, null, stockMinimo, exchangeRate);
+            const itemData: Product = await this.setProduct('daisytek', product, null, stockMinimo, exchangeRate);
             if (itemData.id !== undefined) {
               productos.push(itemData);
             }

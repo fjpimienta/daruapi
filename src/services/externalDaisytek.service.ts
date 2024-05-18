@@ -66,7 +66,6 @@ class ExternalDaisytekService extends ResolversOperationsService {
   async getListProductsDaisytek() {
     const listProductsDaisytek = (await this.getProductsDaisytek()).productsDaisytek;
     if (listProductsDaisytek) {
-      console.log('listProductsDaisytek.length: ', listProductsDaisytek.length);
       const productos: Product[] = [];
       if (listProductsDaisytek && listProductsDaisytek.length > 0) {
         const db = this.db;
@@ -82,7 +81,6 @@ class ExternalDaisytekService extends ResolversOperationsService {
           }
         }
       }
-      console.log('productos: ', productos);
       return await {
         status: true,
         message: `Productos listos para agregar.`,
@@ -204,7 +202,6 @@ class ExternalDaisytekService extends ResolversOperationsService {
     let price = 0;
     let salePrice = 0;
     itemData.id = undefined;
-    console.log('item: ', item);
     if (item && item.warehouses) {
       if (item.price && item.price > 0) {
         const branchOfficesDaisytek: BranchOffices[] = [];
@@ -212,19 +209,18 @@ class ExternalDaisytekService extends ResolversOperationsService {
         const almacenesConExistencia: IWarehousesDaisytek = {};
         for (const [key, almacen] of Object.entries(existenciaProductoDaisytek)) {
           if (almacen && almacen.stock >= stockMinimo) {
+            disponible += almacen.stock;
             almacen.id = key;
             almacenesConExistencia[key] = almacen;
-            console.log('almacen: ', almacen);
             const almacenTmp = this.getAlmacenCant(almacen);
             branchOfficesDaisytek.push(almacenTmp)
           }
         }
-        console.log('branchOfficesDaisytek: ', branchOfficesDaisytek);
         let featured = false;
         itemData.id = item.sku;
         itemData.name = item.title;
         itemData.slug = slugify(item.title, { lower: true });
-        itemData.short_desc = item.description;
+        itemData.short_desc = item.description === '' ? item.title : item.description;
         price = parseFloat((parseFloat(item.price) * utilidad * iva).toFixed(2));
         salePrice = parseFloat((parseFloat(item.price) * utilidad * iva).toFixed(2));
         if (price > salePrice) {

@@ -353,7 +353,7 @@ class ResolversOperationsService {
     try {
       return await insertOneElement(this.getDB(), collection, document).then(
         res => {
-          process.env.PRODUCTION !== 'true' && logger.info(`add.insertOneElement: \n ${JSON.stringify(res)} \n`);
+          process.env.PRODUCTION === 'true' && logger.info(`add.insertOneElement: \n ${JSON.stringify(res)} \n`);
           if (res.result.ok === 1) {
             return {
               status: true,
@@ -368,7 +368,7 @@ class ResolversOperationsService {
           };
         });
     } catch (error) {
-      process.env.PRODUCTION !== 'true' && logger.info(`updateForce.error: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`updateForce.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: `Error inesperado al insertar el ${item}. Intentalo de nuevo.`,
@@ -382,7 +382,7 @@ class ResolversOperationsService {
     try {
       return await insertManyElements(this.getDB(), collection, documents).then(
         res => {
-          process.env.PRODUCTION !== 'true' && logger.info(`addList.insertManyElements: \n ${JSON.stringify(res)} \n`);
+          process.env.PRODUCTION === 'true' && logger.info(`addList.insertManyElements: \n ${JSON.stringify(res)} \n`);
           if (res.result.ok === 1) {
             return {
               status: true,
@@ -397,7 +397,7 @@ class ResolversOperationsService {
           };
         });
     } catch (error) {
-      process.env.PRODUCTION !== 'true' && logger.info(`updateForce.error: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`updateForce.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: `Error inesperado al insertar la lista ${collection}. Intentalo de nuevo.`,
@@ -416,7 +416,7 @@ class ResolversOperationsService {
         objectUpdate
       ).then(
         res => {
-          process.env.PRODUCTION !== 'true' && logger.info(`update.updateOneElement: \n ${JSON.stringify(res)} \n`);
+          process.env.PRODUCTION === 'true' && logger.info(`update.updateOneElement: \n ${JSON.stringify(res)} \n`);
           if (res.result.nModified === 1 && res.result.ok) {
             return {
               status: true,
@@ -432,7 +432,7 @@ class ResolversOperationsService {
         }
       );
     } catch (error) {
-      process.env.PRODUCTION !== 'true' && logger.info(`updateForce.error: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`updateForce.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: `Error inesperado al modificar el ${item}. Intentalo de nuevo.`,
@@ -451,7 +451,7 @@ class ResolversOperationsService {
         objectUpdate
       ).then(
         res => {
-          process.env.PRODUCTION !== 'true' && logger.info(`updateForce.updateOneElement: \n ${JSON.stringify(res)} \n`);
+          process.env.PRODUCTION === 'true' && logger.info(`updateForce.updateOneElement: \n ${JSON.stringify(res)} \n`);
           return {
             status: true,
             message: `El registro de ${item} se ha actualizado.`,
@@ -460,7 +460,7 @@ class ResolversOperationsService {
         }
       );
     } catch (error) {
-      process.env.PRODUCTION !== 'true' && logger.info(`updateForce.error: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`updateForce.error: \n ${JSON.stringify(error)} \n`);
       return {
         status: false,
         message: `Error inesperado al modificar el ${item}. Intentalo de nuevo.`,

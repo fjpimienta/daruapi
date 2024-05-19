@@ -50,7 +50,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`getTokenCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-    process.env.PRODUCTION !== 'true' && logger.info(`getTokenCt.data: \n ${JSON.stringify(data)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`getTokenCt.data: \n ${JSON.stringify(data)} \n`);
     if (data && data.codigo && data.codigo === '5033') {
       return {
         status: false,
@@ -134,7 +134,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`setShippingCtRates.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-    process.env.PRODUCTION !== 'true' && logger.info(`setShippingCtRates.data: \n ${JSON.stringify(data)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`setShippingCtRates.data: \n ${JSON.stringify(data)} \n`);
     if (response.ok) {
       return {
         status: true,
@@ -193,7 +193,7 @@ class ExternalCtsService extends ResolversOperationsService {
       logger.info(`getExistenciaProductoCt.response: \n ${JSON.stringify(response)} \n`);
       if (response.ok) {
         const data: IExistenciaAlmacenCT = await response.json();
-        process.env.PRODUCTION !== 'true' && logger.info(`getExistenciaProductoCt.data: \n ${JSON.stringify(data)} \n`);
+        process.env.PRODUCTION === 'true' && logger.info(`getExistenciaProductoCt.data: \n ${JSON.stringify(data)} \n`);
         const existenciaProductoCt = Object.keys(data).map(key => ({
           key,
           existencia: data[key].existencia,
@@ -263,7 +263,7 @@ class ExternalCtsService extends ResolversOperationsService {
       logger.info(`getStockProductsCt.response: \n ${JSON.stringify(response)} \n`);
       if (response.ok) {
         const data: IProductoCt[] = await response.json();
-        process.env.PRODUCTION !== 'true' && logger.info(`getStockProductsCt.data: \n ${JSON.stringify(data)} \n`);
+        process.env.PRODUCTION === 'true' && logger.info(`getStockProductsCt.data: \n ${JSON.stringify(data)} \n`);
         const stockProductsCt = data.map((product: IProductoCt) => {
           const almacenes = product.almacenes.map((almacenItem: IAlmacenes) => {
             const almacenPromocion: IAlmacenPromocion[] = [];
@@ -684,7 +684,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`setOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-    process.env.PRODUCTION !== 'true' && logger.info(`setOrderCt.data: \n ${JSON.stringify(data)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`setOrderCt.data: \n ${JSON.stringify(data)} \n`);
     if (data && data.length > 0 && data[0].respuestaCT) {
       if (data[0].respuestaCT.errores && data[0].respuestaCT.errores.length <= 0) {
         return {
@@ -744,7 +744,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`setConfirmOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-    process.env.PRODUCTION !== 'true' && logger.info(`setConfirmOrderCt.data: \n ${JSON.stringify(data)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`setConfirmOrderCt.data: \n ${JSON.stringify(data)} \n`);
 
     const status = response.ok;
     const message = status ? 'La información que hemos enviado se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
@@ -781,7 +781,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`getListOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-    process.env.PRODUCTION !== 'true' && logger.info(`getListOrderCt.data: \n ${JSON.stringify(data)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`getListOrderCt.data: \n ${JSON.stringify(data)} \n`);
     if (response.ok) {
       const listOrdersCt = data
         .map((order: IOrderCtResponseList) => ({
@@ -835,7 +835,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`getStatusOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-    process.env.PRODUCTION !== 'true' && logger.info(`getStatusOrderCt.data: \n ${JSON.stringify(data)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`getStatusOrderCt.data: \n ${JSON.stringify(data)} \n`);
 
     const status = response.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
@@ -874,7 +874,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`getDetailOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-    process.env.PRODUCTION !== 'true' && logger.info(`getDetailOrderCt.data: \n ${JSON.stringify(data)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`getDetailOrderCt.data: \n ${JSON.stringify(data)} \n`);
     const status = response.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
 
@@ -915,7 +915,7 @@ class ExternalCtsService extends ResolversOperationsService {
     const response = await fetch(url, options);
     logger.info(`getVolProductCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-    process.env.PRODUCTION !== 'true' && logger.info(`getVolProductCt.data: \n ${JSON.stringify(data)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`getVolProductCt.data: \n ${JSON.stringify(data)} \n`);
     const status = response.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
 

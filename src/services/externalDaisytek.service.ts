@@ -262,6 +262,16 @@ class ExternalDaisytekService extends ResolversOperationsService {
             b.slug = 'ne';
             itemData.brands.push(b);
           }
+          // Categorias
+          const c = new Categorys();
+          c.name = '';
+          c.slug = '';
+          itemData.category.push(c);
+          // Subcatgorias
+          const c1 = new Categorys();
+          c1.name = '';
+          c1.slug = '';
+          itemData.subCategory.push(c1);
           // SupplierProd
           s.idProveedor = proveedor;
           s.codigo = item.sku;

@@ -9,6 +9,7 @@ import { pagination } from '../lib/pagination';
 import { IPicture, IProduct } from '../interfaces/product.interface';
 import ExternalIcecatsService from './externalIcecat.service';
 import ExternalIngramService from './externalIngram.service';
+import { Categorys } from '../models/product.models';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
@@ -436,7 +437,6 @@ class ProductsService extends ResolversOperationsService {
   // Añadir una lista
   async insertMany(context: IContextData) {
     try {
-
       const products = this.getVariables().products;
       let productsAdd: IProduct[] = [];
       if (products?.length === 0) {                                   // Verificar que envien productos.
@@ -447,11 +447,9 @@ class ProductsService extends ResolversOperationsService {
         };
       }
       const id = await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 });
-      let i = parseInt(id);
+      let i = id ? parseInt(id) : 1;
       // Eliminar los productos del proveedor.
-
       const idProveedor = products![0].suppliersProd.idProveedor;
-
       if (idProveedor !== '') {
         let filter: object = { 'suppliersProd.idProveedor': idProveedor };
         const result = await this.delList(this.collection, filter, 'producto');
@@ -464,7 +462,6 @@ class ProductsService extends ResolversOperationsService {
           products: null
         };
       }
-
       for (const product of products) {
         if (product.subCategory && product.subCategory.length > 0) {
           product.id = i.toString();
@@ -487,7 +484,6 @@ class ProductsService extends ResolversOperationsService {
           }
           product.slug = slugify(product?.name || '', { lower: true });
           product.active = true;
-          i += 1;
           product.registerDate = new Date().toISOString();
         }
         // Recuperar imagenes de icecat todos los proveedores
@@ -496,10 +492,12 @@ class ProductsService extends ResolversOperationsService {
           productIcecat: product.partnumber
         }
         // Busca las imagenes en Icecat Local
-        if (idProveedor === 'ingram' || idProveedor === 'daysitek') {
+        console.log('i: ', i);
+        if (idProveedor === 'ingram' || idProveedor === 'daisytek') {
           const icecatExt = await new ExternalIcecatsService({}, variableLocal, context).getIcecatProductLocal();
           if (icecatExt.status) {
             if (icecatExt.icecatProductLocal) {
+              console.log('icecatExt: ', icecatExt);
               if (icecatExt.icecatProductLocal.LowPic !== '') {
                 const imagenes: string[] = icecatExt.icecatProductLocal.ProductGallery.split('|');
                 if (imagenes.length > 0) {
@@ -523,12 +521,25 @@ class ProductsService extends ResolversOperationsService {
                   }
                 }
               }
+              product.partnumber = icecatExt.icecatProductLocal.Requested_prod_id;
+              product.upc = icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC;
+              product.model = icecatExt.icecatProductLocal.model;
+              product.name = icecatExt.icecatProductLocal.ProductTitle;
+              product.slug = slugify(icecatExt.icecatProductLocal.ProductTitle, { lower: true });
+              product.short_desc = icecatExt.icecatProductLocal.ShortSummaryDescription;
+
+              product.category = [];
+              const c = new Categorys();
+              c.name = icecatExt.icecatProductLocal.Category;
+              c.slug = slugify(icecatExt.icecatProductLocal.Category, { lower: true });
+              product.category.push(c);
             }
           } else {                  // Si no hay imagenes en icecat local buscan en los otros proveedores las imagenes.
             const variableLoc = {
               partNumber: product.partnumber
             }
             const productLocal = await new ProductsService({}, variableLoc, context).getProductField();
+            console.log('productLocal: ', productLocal);
             if (productLocal.productField && productLocal.productField.category) {
               product.category = productLocal.productField.category
             }
@@ -582,6 +593,7 @@ class ProductsService extends ResolversOperationsService {
             }
           }
         }
+        i += 1;
         productsAdd.push(product);
       }
 
@@ -595,7 +607,7 @@ class ProductsService extends ResolversOperationsService {
         };
       }
     } catch (error) {
-      console.log('error: ', error);
+      // console.log('error: ', error);
       return {
         status: false,
         message: error,

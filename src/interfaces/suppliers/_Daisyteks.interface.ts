@@ -26,3 +26,14 @@ export interface IWarehouseDaisytek {
   id: string;
   location: string;
 }
+
+export interface IOrderDaisytek {
+  purchase_order_number: string;
+  warehouse: string;
+  products: IProductoDaisytekInput[]
+}
+
+export interface IProductoDaisytekInput {
+  sku: string;
+  quantity: number;
+}

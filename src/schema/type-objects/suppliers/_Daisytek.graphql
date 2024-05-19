@@ -26,3 +26,10 @@ type WarehouseDaisytek {
   stock: Float!
   location: String!
 }
+
+type OrderResponseDaisytek {
+  subtotal: Float
+  total: Float
+  currency: String
+  order_number: String
+}

@@ -14,6 +14,9 @@ const resolversDaisytekQuery: IResolvers = {
     },
     async existenciaProductoDaisytek(_, __, context) {
       return new ExternalDaisytekService(_, __, context).getExistenciaProductoDaisytek();
+    },
+    async addOrderDaisytek(_, __, context) {
+      return new ExternalDaisytekService(_, __, context).setOrderDaisytek();
     }
   }
 };

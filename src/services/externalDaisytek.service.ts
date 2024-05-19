@@ -29,77 +29,147 @@ class ExternalDaisytekService extends ResolversOperationsService {
   }
 
   async getProductsDaisytek() {
-    const token = await this.getTokenDaisytek();
-    if (!token || !token.status) {
-      return {
-        status: token.status,
-        message: token.message,
-        productsDaisytek: null,
+    try {
+      const token = await this.getTokenDaisytek();
+      if (!token || !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          productsDaisytek: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + token.tokenDaisytek.token
+        },
+        redirect: 'follow' as RequestRedirect
       };
-    }
-    const options = {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + token.tokenDaisytek.token
-      },
-      redirect: 'follow' as RequestRedirect
-    };
-    const url = 'https://www.daisytek.com.mx/api/products/full-catalog';
-    const response = await fetch(url, options);
-    if (response.status < 200 || response.status >= 300) {
+      const url = 'https://www.daisytek.com.mx/api/products/full-catalog';
+      const response = await fetch(url, options);
+      if (response.status < 200 || response.status >= 300) {
+        return {
+          status: false,
+          message: `Error en el servicio del proveedor (${response.status}::${response.statusText})`,
+          productsDaisytek: null
+        };
+      }
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getCategoriesDaisytek.data: \n ${JSON.stringify(data)} \n`);
+      const products = data;
+      return {
+        status: true,
+        message: 'Esta es la lista de Productos de Daisytek',
+        productsDaisytek: products,
+      };
+    } catch (error) {
+      console.log('error: ', error);
       return {
         status: false,
-        message: `Error en el servicio del proveedor (${response.status}::${response.statusText})`,
+        message: 'Lo sentimos hay un errror al recuperar los productos. Por favor contáctanos a marketplace@daru.mx para brindarte apoyo',
         productsDaisytek: null
       };
     }
-    const data = await response.json();
-    process.env.PRODUCTION === 'true' && logger.info(`getCategoriesDaisytek.data: \n ${JSON.stringify(data)} \n`);
-    const products = data;
-    return {
-      status: true,
-      message: 'Esta es la lista de Productos de Daisytek',
-      productsDaisytek: products,
-    };
   }
 
   async getListProductsDaisytek() {
-    const listProductsDaisytek = (await this.getProductsDaisytek()).productsDaisytek;
-    if (listProductsDaisytek) {
-      const productos: Product[] = [];
-      if (listProductsDaisytek && listProductsDaisytek.length > 0) {
-        const db = this.db;
-        const config = await new ConfigsService({}, { id: '1' }, { db }).details();
-        const stockMinimo = config.config.minimum_offer;
-        const exchangeRate = config.config.exchange_rate;
-        for (const product of listProductsDaisytek) {
-          if (product.sku !== '') {
-            const itemData: Product = await this.setProduct('daisytek', product, null, stockMinimo, exchangeRate);
-            if (itemData.id !== undefined) {
-              productos.push(itemData);
+    try {
+      const listProductsDaisytek = (await this.getProductsDaisytek()).productsDaisytek;
+      if (listProductsDaisytek) {
+        const productos: Product[] = [];
+        if (listProductsDaisytek && listProductsDaisytek.length > 0) {
+          const db = this.db;
+          const config = await new ConfigsService({}, { id: '1' }, { db }).details();
+          const stockMinimo = config.config.minimum_offer;
+          const exchangeRate = config.config.exchange_rate;
+          for (const product of listProductsDaisytek) {
+            if (product.sku !== '') {
+              const itemData: Product = await this.setProduct('daisytek', product, null, stockMinimo, exchangeRate);
+              if (itemData.id !== undefined) {
+                productos.push(itemData);
+              }
             }
           }
         }
+        return await {
+          status: true,
+          message: `Productos listos para agregar.`,
+          listProductsDaisytek: productos
+        }
+      } else {
+        logger.info('No se pudieron recuperar los productos del proveedor');
+        return {
+          status: false,
+          message: 'No se pudieron recuperar los productos del proveedor.',
+          listProductsDaisytek: null,
+        };
       }
-      return await {
-        status: true,
-        message: `Productos listos para agregar.`,
-        listProductsDaisytek: productos
-      }
-    } else {
-      logger.info('No se pudieron recuperar los productos del proveedor');
+    } catch (error: any) {
       return {
         status: false,
-        message: 'No se pudieron recuperar los productos del proveedor.',
+        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
         listProductsDaisytek: null,
       };
     }
-  } catch(error: any) {
-    return {
-      status: false,
-      message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
-      listProductsDaisytek: null,
-    };
+  }
+
+  async setOrderDaisytek() {
+    try {
+      const orderDaisytek = this.getVariables().orderDaisytek;
+      console.log('orderDaisytek: ', orderDaisytek);
+      if (!orderDaisytek) {
+        return {
+          status: false,
+          message: 'Se requiere especificar los datos del pedido.',
+          addOrderDaisytek: null,
+        };
+      }
+      const token = await this.getTokenDaisytek();
+      if (!token || !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          addOrderDaisytek: null,
+        };
+      }
+      const options = {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenDaisytek.token
+        },
+        payload: {
+          'purchase_order_number': orderDaisytek.purchase_order_number,
+          'warehouse': orderDaisytek.warehouse,
+          'products': orderDaisytek.products,
+        },
+        redirect: 'follow' as RequestRedirect
+      };
+      const url = 'https://www.daisytek.com.mx/api/products/full-catalog';
+      console.log('options: ', options);
+      const response = await fetch(url, options);
+      if (response.status < 200 || response.status >= 300) {
+        return {
+          status: false,
+          message: `Error en el servicio del proveedor (${response.status}::${response.statusText})`,
+          addOrderDaisytek: null
+        };
+      }
+      const data = await response.json();
+      process.env.PRODUCTION === 'true' && logger.info(`getCategoriesDaisytek.data: \n ${JSON.stringify(data)} \n`);
+      return {
+        status: true,
+        message: 'Esta es la lista de Productos de Daisytek',
+        addOrderDaisytek: data,
+      };
+    } catch (error) {
+      console.log('error: ', error);
+      return {
+        status: false,
+        message: 'Lo sentimos hay un errror al generar la orden con el proveedor. Por favor contáctanos a marketplace@daru.mx para brindarte apoyo',
+        addOrderDaisytek: null
+      };
+    }
   }
 
   async getExistenciaProductoDaisytek() {

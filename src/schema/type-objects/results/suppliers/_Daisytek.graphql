@@ -5,4 +5,5 @@ type ResultDaisytek implements Result {
   productsDaisytek: [ProductDaisytek]
   listProductsDaisytek: [Product]
   existenciaProductoDaisytek: ResponseSupplierProd
+  addOrderDaisytek: OrderResponseDaisytek
 }

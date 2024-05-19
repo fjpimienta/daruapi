@@ -177,8 +177,6 @@ class ExternalBDIService extends ResolversOperationsService {
     };
     const url = 'https://admin.bdicentralapi.net/api/products';
     const response = await fetch(url, options);
-    console.log('url: ', url);
-    console.log('response: ', response);
     if (response.status < 200 || response.status >= 300) {
       return {
         status: false,
@@ -187,7 +185,6 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
     const data = await response.json();
-    console.log('data: ', data);
     process.env.PRODUCTION === 'true' && logger.info(`getCategoriesBDI.data: \n ${JSON.stringify(data)} \n`);
     const products = data.products;
     return {
@@ -199,7 +196,6 @@ class ExternalBDIService extends ResolversOperationsService {
 
   async getListProductsBDI() {
     const listProductsBDI = (await this.getProductsBDI()).productsBDI;
-    console.log('listProductsBDI: ', listProductsBDI);
     const sucursales = (await this.getLocationsBDI()).locationsBDI;
     const sucursal = sucursales.find((suc: any) => suc.name === 'Mexico DF');
     let branchOffice: BranchOffices = new BranchOffices();

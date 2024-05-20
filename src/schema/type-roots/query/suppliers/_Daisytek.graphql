@@ -1,0 +1,11 @@
+type Query {
+  tokenDaisytek: ResultDaisytek
+  productsDaisytek: ResultDaisytek
+  listProductsDaisytek: ResultDaisytek
+  existenciaProductoDaisytek(
+    existenciaProducto: SupplierProdInput
+  ): ResultDaisytek
+  addOrderDaisytek(
+    orderDaisytek: OrderDaisytekInput
+  ): ResultDaisytek
+}

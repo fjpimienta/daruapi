@@ -1,0 +1,9 @@
+type ResultDaisytek implements Result {
+  status: Boolean!
+  message: String!
+  tokenDaisytek: TokenDaisytek
+  productsDaisytek: [ProductDaisytek]
+  listProductsDaisytek: [Product]
+  existenciaProductoDaisytek: ResponseSupplierProd
+  addOrderDaisytek: OrderResponseDaisytek
+}

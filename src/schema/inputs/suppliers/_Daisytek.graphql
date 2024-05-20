@@ -1,0 +1,10 @@
+input OrderDaisytekInput {
+  purchase_order_number: String
+  warehouse: String
+  products: [ProductoDaisytekInput]
+}
+
+input ProductoDaisytekInput {
+  sku: String
+  quantity: Int
+}

@@ -36,6 +36,7 @@ import resolversIcommktQuery from './suppliers/_Icommkt';
 import resolversDashboardsQuery from './dashboard';
 import resolversSyscomQuery from './suppliers/_Syscom';
 import resolversBDIQuery from './suppliers/_bdi';
+import resolversDaisytekQuery from './suppliers/_daisytek';
 
 const queryResolvers = GMR.merge([
   resolversUsersQuery,
@@ -74,7 +75,8 @@ const queryResolvers = GMR.merge([
   resolversIcommktQuery,
   resolversDashboardsQuery,
   resolversSyscomQuery,
-  resolversBDIQuery
+  resolversBDIQuery,
+  resolversDaisytekQuery
 ]);
 
 export default queryResolvers;

@@ -21,6 +21,7 @@ import { ICupon } from './cupon.interface';
 import { IIcommktContact } from './suppliers/_Icommkt.interface';
 import { IOrderIngram } from './suppliers/_Ingram.interface';
 import { IOrderSyscom } from './suppliers/_Syscom.interface';
+import { IOrderDaisytek } from './suppliers/_Daisyteks.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -159,4 +160,7 @@ export interface IVariables {
   productId?: string;
   facturaId?: string;
   orderSyscomInput?: IOrderSyscom;
+  // daisytek
+  partNumberDaisytek?: string;
+  orderDaisytek?: IOrderDaisytek;
 }

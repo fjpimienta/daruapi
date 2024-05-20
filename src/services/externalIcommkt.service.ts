@@ -111,9 +111,9 @@ class ExternalIcommktsService extends ResolversOperationsService {
         })
       };
       const result = await fetch(apiUrl, options);
-      console.log('result: ', result);
+      // console.log('result: ', result);
       const data = await result.json();
-      console.log('data: ', data);
+      // console.log('data: ', data);
       if (result.ok) {
         if (data.SaveContactJsonResult.StatusCode === 1) {
           return {

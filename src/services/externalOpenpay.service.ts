@@ -41,7 +41,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         createCustomerOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`createCustomer: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`createCustomer: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -69,7 +69,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         updateCustomerOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`updateCustomer: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`updateCustomer: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -96,7 +96,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         message: 'Se ha eliminado el Cliente correctamente.',
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`deleteCustomer: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`deleteCustomer: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -132,7 +132,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         customerOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`oneCustomer: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`oneCustomer: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -159,7 +159,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         listCustomersOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`listCustomers: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`listCustomers: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -189,7 +189,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         listCardsOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`listCards: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`listCards: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -217,7 +217,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         createCardOpenpay: token,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`createCard: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`createCard: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -253,7 +253,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         cardOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`oneCard: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`oneCard: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -280,7 +280,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         message: 'La tarjeta se ha eliminado correctamente.',
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`deleteCard: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`deleteCard: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -309,7 +309,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         createChargeOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`createCharge: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`createCharge: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -345,7 +345,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         captureChargeOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`captureCharge: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`captureCharge: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -381,7 +381,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         refundChargeOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`refundCharge: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`refundCharge: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -415,7 +415,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         chargeOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`oneCharge: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`oneCharge: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -442,7 +442,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         listChargesOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`listCharges: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`listCharges: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -472,7 +472,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         createPayoutOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`createPayout: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`createPayout: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -505,7 +505,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         payoutOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`onePayout: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`onePayout: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -532,7 +532,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         listPayoutsOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`listPayouts: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`listPayouts: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -566,7 +566,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
   }
 
   handleStringError(error: string) {
-    process.env.PRODUCTION !== 'true' && logger.info(`handleStringError.Error string: \n ${JSON.stringify(error)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`handleStringError.Error string: \n ${JSON.stringify(error)} \n`);
     // Aquí puedes manejar el error como una cadena directamente
     // Por ejemplo, podrías buscar patrones en la cadena para determinar el tipo de error
     // y devolver un mensaje adecuado en función de eso.

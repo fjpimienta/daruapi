@@ -12,6 +12,9 @@ const resolversBDIQuery: IResolvers = {
     async categoriesBDI(_, __, context) {
       return new ExternalBDIService(_, __, context).getCategoriesBDI();
     },
+    async locationsBDI(_, __, context) {
+      return new ExternalBDIService(_, __, context).getLocationsBDI();
+    },
     async productsBDI(_, __, context) {
       return new ExternalBDIService(_, __, context).getProductsBDI();
     },

@@ -19,15 +19,15 @@ type BrandsBDI {
   name: String
 }
 
-type categorieBDI {
+type CategorieBDI {
   id: String
   name: String
   nameTemp: String
   country: [String]
   parentName: String
   status: Boolean
-  children: [categorieBDI]
-  parent: categorieBDI
+  children: [CategorieBDI]
+  parent: CategorieBDI
   categories: [CategorieDetail]
 }
 
@@ -37,6 +37,12 @@ type CategorieDetail {
   assignedAt: String
   customerId: Int
   status: Boolean
+}
+
+type LocationsBDI {
+  brId: String
+  name: String
+  alias: String
 }
 
 type ProductBDI {

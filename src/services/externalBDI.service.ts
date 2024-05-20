@@ -7,6 +7,7 @@ import { Db } from 'mongodb';
 import logger from '../utils/logger';
 import { BranchOffices, Brands, Categorys, Descuentos, Picture, Product, SupplierProd, UnidadDeMedida } from '../models/product.models';
 import slugify from 'slugify';
+import ConfigsService from './config.service';
 
 class ExternalBDIService extends ResolversOperationsService {
   collection = COLLECTIONS.INGRAM_PRODUCTS;
@@ -116,6 +117,48 @@ class ExternalBDIService extends ResolversOperationsService {
     };
   }
 
+  async getLocationsBDI() {
+    try {
+      const token = await this.getTokenBDI();
+      if (token && !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          locationsBDI: null,
+        };
+      }
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenBDI.token
+        }
+      };
+      const url = 'https://admin.bdicentralapi.net/api/brslocations';
+      const response = await fetch(url, options);
+      if (response.status < 200 || response.status >= 300) {
+        return {
+          status: false,
+          message: `Error en el servicio del proveedor (${response.status}::${response.statusText})`,
+          locationsBDI: null
+        };
+      }
+      const data = await response.json();
+      const sucursales = data.brsLocations;
+      return {
+        status: true,
+        message: 'Esta es la lista de Sucursales de BDI',
+        locationsBDI: sucursales
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        locationsBDI: null,
+      };
+    }
+  }
+
   async getProductsBDI() {
     const token = await this.getTokenBDI();
     if (!token || !token.status) {
@@ -134,8 +177,6 @@ class ExternalBDIService extends ResolversOperationsService {
     };
     const url = 'https://admin.bdicentralapi.net/api/products';
     const response = await fetch(url, options);
-    console.log('url: ', url);
-    console.log('response: ', response);
     if (response.status < 200 || response.status >= 300) {
       return {
         status: false,
@@ -144,7 +185,6 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
     const data = await response.json();
-    console.log('data: ', data);
     process.env.PRODUCTION === 'true' && logger.info(`getCategoriesBDI.data: \n ${JSON.stringify(data)} \n`);
     const products = data.products;
     return {
@@ -156,16 +196,60 @@ class ExternalBDIService extends ResolversOperationsService {
 
   async getListProductsBDI() {
     const listProductsBDI = (await this.getProductsBDI()).productsBDI;
-
+    const sucursales = (await this.getLocationsBDI()).locationsBDI;
+    const sucursal = sucursales.find((suc: any) => suc.name === 'Mexico DF');
+    let branchOffice: BranchOffices = new BranchOffices();
+    branchOffice.id = sucursal ? sucursal.brId : '10';
+    branchOffice.name = sucursal ? sucursal.name : 'Mexico DF';
+    branchOffice.estado = sucursal ? sucursal.alias : 'Mexico DF';
+    branchOffice.cantidad = 0;
+    branchOffice.cp = sucursal ? sucursal.codigo_postal : '31000';
+    branchOffice.latitud = '';
+    branchOffice.longitud = '';
+    if (listProductsBDI) {
+      const productos: Product[] = [];
+      if (listProductsBDI && listProductsBDI.length > 0) {
+        const db = this.db;
+        const config = await new ConfigsService({}, { id: '1' }, { db }).details();
+        const stockMinimo = config.config.minimum_offer;
+        const exchangeRate = config.config.exchange_rate;
+        for (const product of listProductsBDI) {
+          if (product.producto_id !== '') {
+            const itemData: Product = await this.setProduct('syscom', product, null, stockMinimo, exchangeRate, branchOffice);
+            if (itemData.id !== undefined) {
+              productos.push(itemData);
+            }
+          }
+        }
+      }
+      return await {
+        status: true,
+        message: `Productos listos para agregar.`,
+        listProductsBDI: productos
+      }
+    } else {
+      logger.info('No se pudieron recuperar los productos del proveedor');
+      return {
+        status: false,
+        message: 'No se pudieron recuperar los productos del proveedor.',
+        listProductsBDI: null,
+      };
+    }
+  } catch(error: any) {
     return {
-      status: true,
-      message: 'Esta es la lista de Precios de los Productos de BDI',
-      listProductsBDI: listProductsBDI,
+      status: false,
+      message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
+      listProductsBDI: null,
     };
   }
 
   async getExistenciaProductoBDI() {
 
+  }
+
+
+  quitarAcentos(texto: string): string {
+    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 
   async setProduct(proveedor: string, item: any, imagenes: any = null, stockMinimo: number, exchangeRate: number, sucursal: BranchOffices) {
@@ -182,21 +266,16 @@ class ExternalBDIService extends ResolversOperationsService {
     let price = 0;
     let salePrice = 0;
     itemData.id = undefined;
-    if (item && item.total_existencia > 0) {
-      function extraerPrimeraSeccion(titulo: string) {
-        const secciones = titulo.split(/[\/|]/);
-        return secciones[0].trim();
-      }
-      disponible = item.total_existencia;
+    if (item && item.inventory > 0) {
+      disponible = item.inventory;
       let featured = false;
-      itemData.id = item.producto_id;
-      const titulo = extraerPrimeraSeccion(item.titulo);
-      itemData.name = titulo;
-      itemData.slug = slugify(titulo, { lower: true });
-      itemData.short_desc = item.titulo;
-      if (item.precios && item.precios.precio_1) {
-        price = parseFloat((parseFloat(item.precios.precio_lista) * exchangeRate * utilidad * iva).toFixed(2));
-        salePrice = parseFloat((parseFloat(item.precios.precio_descuento) * exchangeRate * utilidad * iva).toFixed(2));
+      itemData.id = item.sku;
+      itemData.name = item.productDetailDescription;
+      itemData.slug = slugify(item.productDetailDescription, { lower: true });
+      itemData.short_desc = item.description;
+      if (item.price) {
+        price = parseFloat((parseFloat(item.price) * exchangeRate * utilidad * iva).toFixed(2));
+        salePrice = parseFloat((parseFloat(item.price) * exchangeRate * utilidad * iva).toFixed(2));
         if (price > salePrice) {
           featured = true;
         }

@@ -64,7 +64,7 @@ class DeliverysService extends ResolversOperationsService {
   // Obtener detalles del item
   async details() {
     const response = await this.getByDelivery(this.collection);
-    process.env.PRODUCTION !== 'true' && logger.info(`delivery.details: \n ${JSON.stringify(response)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`delivery.details: \n ${JSON.stringify(response)} \n`);
     return {
       status: response.status,
       message: response.message,
@@ -75,7 +75,7 @@ class DeliverysService extends ResolversOperationsService {
   // Obtener el siguiente elemento
   async next() {
     const response = await this.nextId(this.collection);
-    process.env.PRODUCTION !== 'true' && logger.info(`delivery.next: \n ${JSON.stringify(response)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`delivery.next: \n ${JSON.stringify(response)} \n`);
     return {
       status: response.status,
       message: response.message,
@@ -85,18 +85,18 @@ class DeliverysService extends ResolversOperationsService {
 
   // Insert Delivery
   async insert(context: IContextData) {
-    process.env.PRODUCTION !== 'true' && logger.info(` \n Log para delivery.insert \n`);
+    process.env.PRODUCTION === 'true' && logger.info(` \n Log para delivery.insert \n`);
     let status = 'PEDIDO CREADO'
     const delivery = this.getVariables().delivery;
     const idDelivery = await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 });
-    process.env.PRODUCTION !== 'true' && logger.info(`insert.asignDocumentId.idDelivery: \n ${JSON.stringify(idDelivery)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`insert.asignDocumentId.idDelivery: \n ${JSON.stringify(idDelivery)} \n`);
     if (delivery) {
       delivery.id = idDelivery;
       delivery.status = status;
       delivery.registerDate = new Date().toISOString();
       // Insertar Pedido Inicial
       const result = await this.add(this.collection, delivery, 'delivery');
-      process.env.PRODUCTION !== 'true' && logger.info(`insert.add.result: \n ${JSON.stringify(result)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`insert.add.result: \n ${JSON.stringify(result)} \n`);
       if (result && result.status) {
         // Realizar el Cargo al Cliente
         const chargeOpenpay: any = { chargeOpenpay: delivery.chargeOpenpay }
@@ -119,7 +119,7 @@ class DeliverysService extends ResolversOperationsService {
             }
           });
         // Si el cargo es correcto actualizar estatus del pedido
-        process.env.PRODUCTION !== 'true' && logger.info(`insert.createCharge.resultOpenpay: \n ${JSON.stringify(resultOpenpay)} \n`);
+        process.env.PRODUCTION === 'true' && logger.info(`insert.createCharge.resultOpenpay: \n ${JSON.stringify(resultOpenpay)} \n`);
         if (resultOpenpay && resultOpenpay.status) {
           const deliveryUpdate: IDelivery = result.item as IDelivery;
           deliveryUpdate.status = status;
@@ -149,30 +149,30 @@ class DeliverysService extends ResolversOperationsService {
         deliveryUpdate.lastUpdate = new Date().toISOString();
         const filter = { id: idDelivery };
         const resultUpdate = await this.update(this.collection, filter, deliveryUpdate, 'Pedido');
-        process.env.PRODUCTION !== 'true' && logger.info(`insert.update.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
+        process.env.PRODUCTION === 'true' && logger.info(`insert.update.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
         if (resultUpdate && resultUpdate.status) {
-          process.env.PRODUCTION !== 'true' && logger.info(` \n ${resultOpenpay.message} \n`);
+          process.env.PRODUCTION === 'true' && logger.info(` \n ${resultOpenpay.message} \n`);
           return await {
             status: resultOpenpay.status,
             message: resultOpenpay.message,
             delivery: resultUpdate.item
           }
         }
-        process.env.PRODUCTION !== 'true' && logger.info(` \n ${resultOpenpay.message} \n`);
+        process.env.PRODUCTION === 'true' && logger.info(` \n ${resultOpenpay.message} \n`);
         return await {
           status: resultOpenpay.status,
           message: resultOpenpay.message,
           delivery: result.item
         }
       }
-      process.env.PRODUCTION !== 'true' && logger.info(` \n ${result.message} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(` \n ${result.message} \n`);
       return {
         status: result.status,
         message: result.message,
         delivery: null
       };
     }
-    process.env.PRODUCTION !== 'true' && logger.info(` \n Compra no definida, verificar datos. \n`);
+    process.env.PRODUCTION === 'true' && logger.info(` \n Compra no definida, verificar datos. \n`);
     return {
       status: false,
       message: 'Compra no definida, verificar datos.',
@@ -182,12 +182,12 @@ class DeliverysService extends ResolversOperationsService {
 
   // Update Delivery
   async modify(context: IContextData) {
-    process.env.PRODUCTION !== 'true' && logger.info(` \n Log para delivery.modify \n`);
+    process.env.PRODUCTION === 'true' && logger.info(` \n Log para delivery.modify \n`);
     let status = 'AUTORIZANDO CARGO';
     let statusError = false;
     let messageError = '';
     const delivery = this.getVariables().delivery;
-    process.env.PRODUCTION !== 'true' && logger.info(`modify.getVariables().delivery: \n ${JSON.stringify(delivery)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`modify.getVariables().delivery: \n ${JSON.stringify(delivery)} \n`);
     // Si el pago fue autorizado.
     if (delivery) {
       const id = delivery.id ? parseInt(delivery.id) : 0;
@@ -215,7 +215,7 @@ class DeliverysService extends ResolversOperationsService {
             };
           }
         });
-      process.env.PRODUCTION !== 'true' && logger.info(`modify.oneCharge.resultOpenpay: \n ${JSON.stringify(resultOpenpay)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`modify.oneCharge.resultOpenpay: \n ${JSON.stringify(resultOpenpay)} \n`);
       let chargeOpenpay: IChargeOpenpay;
       if (resultOpenpay && resultOpenpay.chargeOpenpay && resultOpenpay.chargeOpenpay.status === 'completed') {
         chargeOpenpay = resultOpenpay.chargeOpenpay;
@@ -228,12 +228,12 @@ class DeliverysService extends ResolversOperationsService {
           switch (supplier) {
             case 'ct':
               const ordersCt = await this.setOrder(id, delivery, warehouse);
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.ordersCt: \n ${JSON.stringify(ordersCt)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.ordersCt: \n ${JSON.stringify(ordersCt)} \n`);
               const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
                 .then(async (result) => {
                   return await result;
                 });
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderCtResponse: \n ${JSON.stringify(orderCtResponse)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderCtResponse: \n ${JSON.stringify(orderCtResponse)} \n`);
               ordersCt.orderCtResponse = orderCtResponse;
               const CONFIRMAR_PEDIDO = process.env.CONFIRMAR_PEDIDO;
               if (CONFIRMAR_PEDIDO === 'true') {
@@ -247,7 +247,7 @@ class DeliverysService extends ResolversOperationsService {
                   messageError = orderCtResponse.errores[0].errorMessage;
                   break;
                 }
-                process.env.PRODUCTION !== 'true' && logger.info(`modify.orderCtConfirm: \n ${JSON.stringify(orderCtConfirm)} \n`);
+                process.env.PRODUCTION === 'true' && logger.info(`modify.orderCtConfirm: \n ${JSON.stringify(orderCtConfirm)} \n`);
                 if (process.env.PRODUCTION === 'true') {
                   const orderCtConfirmResponse = await this.ConfirmarPedidos(supplier, orderCtConfirm, context);
                   logger.info(`modify.ConfirmarPedidos.orderCtConfirmResponse: \n ${JSON.stringify(orderCtConfirmResponse)} \n`);
@@ -266,17 +266,17 @@ class DeliverysService extends ResolversOperationsService {
                 }
               }
               ordersCts.push(ordersCt);
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.ordersCts: \n ${JSON.stringify(ordersCts)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.ordersCts: \n ${JSON.stringify(ordersCts)} \n`);
               break;
             case 'cva':
               status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
               const ordersCva = await this.setOrder(id, delivery, warehouse);
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.ordersCva: \n ${JSON.stringify(ordersCva)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.ordersCva: \n ${JSON.stringify(ordersCva)} \n`);
               const orderCvaResponse = await this.EfectuarPedidos(supplier, ordersCva, context)
                 .then(async (result) => {
                   return await result;
                 });
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderCvaResponse: \n ${JSON.stringify(orderCvaResponse)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderCvaResponse: \n ${JSON.stringify(orderCvaResponse)} \n`);
               ordersCva.orderCvaResponse = orderCvaResponse;
               if (orderCvaResponse.estado === 'ERROR') {
                 status = 'ERROR PEDIDO PROVEEDOR';
@@ -288,12 +288,12 @@ class DeliverysService extends ResolversOperationsService {
             case 'syscom':
               status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
               const orderSyscom = await this.setOrder(id, delivery, warehouse, context);
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.orderSyscom: \n ${JSON.stringify(orderSyscom)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.orderSyscom: \n ${JSON.stringify(orderSyscom)} \n`);
               const orderResponseSyscom = await this.EfectuarPedidos(supplier, orderSyscom, context)
                 .then(async (result) => {
                   return await result;
                 });
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderResponseSyscom: \n ${JSON.stringify(orderResponseSyscom)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderResponseSyscom: \n ${JSON.stringify(orderResponseSyscom)} \n`);
               if (!orderResponseSyscom.status) {
                 status = 'ERROR PEDIDO PROVEEDOR';
                 statusError = true;
@@ -301,7 +301,7 @@ class DeliverysService extends ResolversOperationsService {
                 break;
               }
               orderSyscom.orderResponseSyscom = orderResponseSyscom.saveOrderSyscom;
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderSyscom: \n ${JSON.stringify(orderSyscom)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderSyscom: \n ${JSON.stringify(orderSyscom)} \n`);
               ordersSyscoms.push(orderSyscom);
               break;
           }
@@ -315,7 +315,7 @@ class DeliverysService extends ResolversOperationsService {
         status = 'CARGO PENDIENTE';
       }
       // Actualizar Delivery
-      process.env.PRODUCTION !== 'true' && logger.info(` \n Actualizar Delivery \n`);
+      process.env.PRODUCTION === 'true' && logger.info(` \n Actualizar Delivery \n`);
       const deliveryUpdate: IDelivery = delivery as IDelivery;
       deliveryUpdate.status = status;
       deliveryUpdate.ordersCt = ordersCts;
@@ -327,10 +327,10 @@ class DeliverysService extends ResolversOperationsService {
       deliveryUpdate.messageError = messageError;
       deliveryUpdate.statusError = statusError;
 
-      process.env.PRODUCTION !== 'true' && logger.info(`modify.deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`modify.deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
       const filter = { id: id.toString() };
       const resultUpdate = await this.updateForce(this.collection, filter, deliveryUpdate, 'Pedido');
-      process.env.PRODUCTION !== 'true' && logger.info(`modify.updateForce.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`modify.updateForce.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
       if (resultUpdate && resultUpdate.status && !statusError) {
         // Si se guarda el envio, inactivar el cupon.
         if (delivery && delivery?.user) {
@@ -339,29 +339,29 @@ class DeliverysService extends ResolversOperationsService {
             email: delivery?.user.email
           }
           const welcome = await this.getByField(collection, filter);
-          process.env.PRODUCTION !== 'true' && logger.info(`modify.getByField.welcome: \n ${JSON.stringify(welcome)} \n`);
+          process.env.PRODUCTION === 'true' && logger.info(`modify.getByField.welcome: \n ${JSON.stringify(welcome)} \n`);
           if (welcome && welcome.item) {
             const id = { id: welcome.item.id };
             const active = { active: false };
             await this.update(collection, id, active, 'welcome');
           }
         }
-        process.env.PRODUCTION !== 'true' && logger.info(`deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
-        process.env.PRODUCTION !== 'true' && logger.info(` \n ${resultUpdate.message} \n`);
+        process.env.PRODUCTION === 'true' && logger.info(`deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
+        process.env.PRODUCTION === 'true' && logger.info(` \n ${resultUpdate.message} \n`);
         return await {
           status: resultUpdate.status,
           message: resultUpdate.message,
           delivery: deliveryUpdate
         }
       }
-      process.env.PRODUCTION !== 'true' && logger.info(` \n Problemas con el Proveedor. ${messageError}`);
+      process.env.PRODUCTION === 'true' && logger.info(` \n Problemas con el Proveedor. ${messageError}`);
       return {
         status: false,
         message: `Problemas con el Proveedor. ${messageError} \n`,
         delivery: null
       };
     }
-    process.env.PRODUCTION !== 'true' && logger.info(` \n Problemas con el cargo, verificar datos. \n`);
+    process.env.PRODUCTION === 'true' && logger.info(` \n Problemas con el cargo, verificar datos. \n`);
     return {
       status: false,
       message: 'Problemas con el cargo, verificar datos.',
@@ -437,8 +437,8 @@ class DeliverysService extends ResolversOperationsService {
   //#region Pedidos
 
   private async setOrder(idDelivery: number, delivery: IDelivery, warehouse: IWarehouse, context: IContextData = {}): Promise<any> {
-    process.env.PRODUCTION !== 'true' && logger.info(` \n Log para setOrder \n`);
-    process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.warehouse: \n ${JSON.stringify(warehouse)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(` \n Log para setOrder \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.warehouse: \n ${JSON.stringify(warehouse)} \n`);
     const user = delivery.user;
     if (user && user.addresses && user.addresses.length > 0) {
       const dir = user.addresses && user.addresses.length > 0 ? user.addresses[0] : null;
@@ -474,7 +474,7 @@ class DeliverysService extends ResolversOperationsService {
             };
             ProductosCt.push(productCt);
           }
-          process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.ProductosCt: \n ${JSON.stringify(ProductosCt)} \n`);
+          process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.ProductosCt: \n ${JSON.stringify(ProductosCt)} \n`);
           const orderCtSupplier: IOrderCt = {
             idPedido: idDelivery,
             almacen: warehouse.productShipments[0].almacen,
@@ -484,7 +484,7 @@ class DeliverysService extends ResolversOperationsService {
             producto: ProductosCt,
             cfdi: 'G01'
           };
-          process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.orderCtSupplier: \n ${JSON.stringify(orderCtSupplier)} \n`);
+          process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.orderCtSupplier: \n ${JSON.stringify(orderCtSupplier)} \n`);
           return orderCtSupplier;
         case 'cva':
           const enviosCva: IEnvioCVA[] = [];
@@ -580,7 +580,7 @@ class DeliverysService extends ResolversOperationsService {
   }
 
   async EfectuarPedidos(supplierName: string, order: any, context: IContextData): Promise<any> {
-    process.env.PRODUCTION !== 'true' && logger.info(` \n Log para EfectuarPedidos \n`);
+    process.env.PRODUCTION === 'true' && logger.info(` \n Log para EfectuarPedidos \n`);
     switch (supplierName) {
       case 'cva':
         const pedidosCva = await new ExternalCvasService({}, { pedidoCva: order }, context).setOrderCva({ pedidoCva: order })
@@ -605,7 +605,7 @@ class DeliverysService extends ResolversOperationsService {
         const pedidosCt = await new ExternalCtsService({}, order, context).setOrderCt(order)
           .then(async resultPedido => {
             try {
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.resultPedido: \n ${JSON.stringify(resultPedido)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.resultPedido: \n ${JSON.stringify(resultPedido)} \n`);
               if (!resultPedido.orderCt) {                              // Hay error en el pedido.
                 let errorCT: IErroresCT = {
                   errorCode: '999999',

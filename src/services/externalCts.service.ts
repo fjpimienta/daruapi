@@ -506,7 +506,7 @@ class ExternalCtsService extends ResolversOperationsService {
         itemData.sale_price = parseFloat((salePrice * exchangeRate * utilidad * iva).toFixed(2));
       } else {
         itemData.price = parseFloat((parseFloat(item.precio) * utilidad * iva).toFixed(2));
-        itemData.sale_price = parseFloat((salePrice * exchangeRate * utilidad * iva).toFixed(2));
+        itemData.sale_price = parseFloat((salePrice * utilidad * iva).toFixed(2));
       }
       itemData.exchangeRate = exchangeRate;
       itemData.review = 0;

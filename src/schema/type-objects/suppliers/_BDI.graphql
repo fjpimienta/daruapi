@@ -94,8 +94,7 @@ type CategoryParentBDI {
   name: String
 }
 
-type ProductPricesBDI {
-  ingram: IngramDetailsBDI
+type ProductPriceBDI {
   status: String
   price: Int
   priceApply: Float
@@ -105,7 +104,10 @@ type ProductPricesBDI {
   sku: String
   updatedAt: String
   vendorNumber: String
+  description: String
+  upcnumber: String
   daysOutStock: Int
+  exemptIva: Boolean
   br10: Int
   br55: Int
   br60: Int

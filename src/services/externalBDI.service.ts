@@ -185,12 +185,48 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
     const data = await response.json();
-    process.env.PRODUCTION === 'true' && logger.info(`getCategoriesBDI.data: \n ${JSON.stringify(data)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`getProductsBDI.data: \n ${JSON.stringify(data)} \n`);
     const products = data.products;
     return {
       status: true,
       message: 'Esta es la lista de Productos de BDI',
       productsBDI: products,
+    };
+  }
+
+  async getProductsPricesBDI() {
+    const token = await this.getTokenBDI();
+    if (!token || !token.status) {
+      return {
+        status: token.status,
+        message: token.message,
+        productsPricesBDI: null,
+      };
+    }
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token.tokenBDI.token
+      }
+    };
+    const url = 'https://admin.bdicentralapi.net/api/prices';
+    const response = await fetch(url, options);
+    if (response.status < 200 || response.status >= 300) {
+      return {
+        status: false,
+        message: `Error en el servicio del proveedor (${response.status}::${response.statusText})`,
+        productsPricesBDI: null
+      };
+    }
+    const data = await response.json();
+    console.log('data: ', data);
+    process.env.PRODUCTION === 'true' && logger.info(`getProductsPricesBDI.data: \n ${JSON.stringify(data)} \n`);
+    const productsPrices = data.products;
+    return {
+      status: true,
+      message: 'Esta es la lista de Precios de Productos de BDI',
+      productsPricesBDI: productsPrices,
     };
   }
 

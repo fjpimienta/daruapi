@@ -463,7 +463,7 @@ class ExternalCtsService extends ResolversOperationsService {
     let is: Picture = new Picture();
     let desc: Descuentos = new Descuentos();
     let disponible = 0;
-    let salePrice = 0;
+    let salePrice = item.precio;
     itemData.id = undefined;
     if (item && item.almacenes && item.almacenes.length > 0) {
       const branchOfficesCt: BranchOffices[] = [];
@@ -488,7 +488,7 @@ class ExternalCtsService extends ResolversOperationsService {
             porciento: item.almacenes[0].promociones[0].porciento
           }
           salePrice = item.almacenes[0].promociones[0].precio;
-          featured = salePrice > 0 ? true : false;
+          featured = salePrice < item.precio ? true : false;
           // // Se elimina hasta confirmar que es descuento.
           // if (salePrice === 0 && promo.porciento > 0) {
           //   const desc = parseFloat(item.almacenes[0].promociones[0].porciento) * parseFloat(item.precio) / 100;

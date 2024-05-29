@@ -6,6 +6,7 @@ type ResultBDI implements Result {
   categoriesBDI: [CategoriesBDI]
   locationsBDI: [LocationsBDI]
   productsBDI: [ProductBDI]
+  productsPricesBDI: [ProductPriceBDI]
   listProductsBDI: [Product]
   existenciaProductoBDI: ResponseSupplierProd
 }

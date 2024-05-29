@@ -463,11 +463,10 @@ class ExternalCtsService extends ResolversOperationsService {
     let is: Picture = new Picture();
     let desc: Descuentos = new Descuentos();
     let disponible = 0;
-    let salePrice = 0;
+    let salePrice = 0.0;
     itemData.id = undefined;
     if (item && item.almacenes && item.almacenes.length > 0) {
       const branchOfficesCt: BranchOffices[] = [];
-      let featured = false;
       for (const element of item.almacenes) {
         const almacen = this.getAlmacenCant(element);
         if (almacen.cantidad >= stockMinimo) {
@@ -488,7 +487,6 @@ class ExternalCtsService extends ResolversOperationsService {
             porciento: item.almacenes[0].promociones[0].porciento
           }
           salePrice = item.almacenes[0].promociones[0].precio;
-          featured = salePrice > 0 ? true : false;
           // // Se elimina hasta confirmar que es descuento.
           // if (salePrice === 0 && promo.porciento > 0) {
           //   const desc = parseFloat(item.almacenes[0].promociones[0].porciento) * parseFloat(item.precio) / 100;
@@ -496,6 +494,12 @@ class ExternalCtsService extends ResolversOperationsService {
           // }
           itemData.promociones = promo;
         }
+      }
+      let featured = false;
+      if (salePrice <= 0) {
+        salePrice = parseFloat(item.precio)
+      } else if (salePrice < parseFloat(item.precio)) {
+        featured = true;
       }
       itemData.id = productJson.clave;
       itemData.name = productJson.nombre;
@@ -506,7 +510,7 @@ class ExternalCtsService extends ResolversOperationsService {
         itemData.sale_price = parseFloat((salePrice * exchangeRate * utilidad * iva).toFixed(2));
       } else {
         itemData.price = parseFloat((parseFloat(item.precio) * utilidad * iva).toFixed(2));
-        itemData.sale_price = salePrice * utilidad * iva;
+        itemData.sale_price = parseFloat((salePrice * utilidad * iva).toFixed(2));
       }
       itemData.exchangeRate = exchangeRate;
       itemData.review = 0;
@@ -566,7 +570,7 @@ class ExternalCtsService extends ResolversOperationsService {
         itemData.promociones.disponible_en_promocion > 0 || itemData.promociones.porciento > 0)) {
         s.sale_price = parseFloat(item.almacenes[0].promociones[0].precio);
       } else {
-        s.sale_price = 0;
+        s.sale_price = parseFloat(item.precio);
       }
       s.moneda = item.moneda;
       s.branchOffices = branchOfficesCt;

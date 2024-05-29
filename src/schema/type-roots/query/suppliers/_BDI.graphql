@@ -4,6 +4,7 @@ type Query {
   categoriesBDI: ResultBDI
   locationsBDI: ResultBDI
   productsBDI: ResultBDI
+  productsPricesBDI: ResultBDI
   listProductsBDI: ResultBDI
   existenciaProductoBDI: ResultBDI
 }

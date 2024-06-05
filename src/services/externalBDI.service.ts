@@ -220,7 +220,6 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
     const data = await response.json();
-    console.log('data: ', data);
     process.env.PRODUCTION === 'true' && logger.info(`getProductsPricesBDI.data: \n ${JSON.stringify(data)} \n`);
     const productsPrices = data.products;
     return {
@@ -232,6 +231,7 @@ class ExternalBDIService extends ResolversOperationsService {
 
   async getListProductsBDI() {
     const listProductsBDI = (await this.getProductsBDI()).productsBDI;
+    const listProductsPricesBDI = (await this.getProductsPricesBDI()).productsPricesBDI;
     const sucursales = (await this.getLocationsBDI()).locationsBDI;
     const sucursal = sucursales.find((suc: any) => suc.name === 'Mexico DF');
     let branchOffice: BranchOffices = new BranchOffices();
@@ -242,18 +242,20 @@ class ExternalBDIService extends ResolversOperationsService {
     branchOffice.cp = sucursal ? sucursal.codigo_postal : '31000';
     branchOffice.latitud = '';
     branchOffice.longitud = '';
-    if (listProductsBDI) {
+    if (listProductsBDI && listProductsPricesBDI) {
       const productos: Product[] = [];
-      if (listProductsBDI && listProductsBDI.length > 0) {
+      if (listProductsBDI.length > 0 && listProductsPricesBDI.length > 0) {
         const db = this.db;
         const config = await new ConfigsService({}, { id: '1' }, { db }).details();
         const stockMinimo = config.config.minimum_offer;
         const exchangeRate = config.config.exchange_rate;
         for (const product of listProductsBDI) {
-          if (product.producto_id !== '') {
-            const itemData: Product = await this.setProduct('syscom', product, null, stockMinimo, exchangeRate, branchOffice);
-            if (itemData.id !== undefined) {
-              productos.push(itemData);
+          for (const productsP of listProductsPricesBDI) {
+            if (product.sku === productsP.sku) {
+              const itemData: Product = await this.setProduct('ingram', product, productsP, null, stockMinimo, exchangeRate, branchOffice);
+              if (itemData.id !== undefined) {
+                productos.push(itemData);
+              }
             }
           }
         }
@@ -279,16 +281,7 @@ class ExternalBDIService extends ResolversOperationsService {
     };
   }
 
-  async getExistenciaProductoBDI() {
-
-  }
-
-
-  quitarAcentos(texto: string): string {
-    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  }
-
-  async setProduct(proveedor: string, item: any, imagenes: any = null, stockMinimo: number, exchangeRate: number, sucursal: BranchOffices) {
+  async setProduct(proveedor: string, item: any, productPrice: any = null, imagenes: any = null, stockMinimo: number, exchangeRate: number, sucursal: BranchOffices) {
     const utilidad: number = 1.08;
     const iva: number = 1.16;
     let itemData: Product = new Product();
@@ -306,12 +299,17 @@ class ExternalBDIService extends ResolversOperationsService {
       disponible = item.inventory;
       let featured = false;
       itemData.id = item.sku;
-      itemData.name = item.productDetailDescription;
-      itemData.slug = slugify(item.productDetailDescription, { lower: true });
-      itemData.short_desc = item.description;
+      itemData.name = item.products.description;
+      itemData.slug = slugify(item.products.description, { lower: true });
+      itemData.short_desc = item.products.productDetailDescription;
       if (item.price) {
-        price = parseFloat((parseFloat(item.price) * exchangeRate * utilidad * iva).toFixed(2));
-        salePrice = parseFloat((parseFloat(item.price) * exchangeRate * utilidad * iva).toFixed(2));
+        const priceS = parseFloat(item.price);
+        price = parseFloat((priceS * exchangeRate * utilidad * iva).toFixed(2));
+        salePrice = priceS;
+        if (productPrice.priceSpecial && productPrice.priceSpecial.specialPriceDiscount) {
+          const priceD = parseFloat(productPrice.priceSpecial.specialPriceDiscount);
+          salePrice = parseFloat(((priceS - priceD) * exchangeRate * utilidad * iva).toFixed(2));
+        }
         if (price > salePrice) {
           featured = true;
         }
@@ -327,88 +325,93 @@ class ExternalBDIService extends ResolversOperationsService {
       itemData.new = false;
       itemData.sold = '';
       itemData.stock = disponible;
-      itemData.sku = item.producto_id;
-      itemData.upc = item.sat_key;
+      itemData.sku = item.sku;
+      itemData.upc = item.products.upcnumber;
       itemData.ean = '';
-      itemData.partnumber = item.modelo;
-      unidad.id = item.unidad_de_medida.codigo_unidad || 'PZ';
-      unidad.name = item.unidad_de_medida.nombre || 'Pieza';
-      unidad.slug = slugify(item.unidad_de_medida.nombre) || 'pieza';
+      itemData.partnumber = item.products.vendornumber;
+      unidad.id = 'PZ';
+      unidad.name = 'Pieza';
+      unidad.slug = 'pieza';
       itemData.unidadDeMedida = unidad;
       // Categorias
-      if (item.categorias) {
+      if (item.products.categoriesIdIngram) {
         itemData.category = [];
         itemData.subCategory = [];
-        item.categorias.forEach((category: any) => {
+        const partes: string[] = item.products.categoriesIdIngram.split("->", 2);
+        if (partes && partes.length > 0) {
           // Categorias
-          if (category.nivel === 1 || category.nivel === 2) {
+          if (partes[0].length > 0) {
             const c = new Categorys();
-            c.name = category.nombre;
-            c.slug = slugify(category.nombre, { lower: true });
+            c.name = partes[0];
+            c.slug = slugify(partes[0], { lower: true });
             itemData.category.push(c);
           }
           // Subcategorias
-          if (category.nivel === 3) {
+          if (partes[1].length > 0) {
             const c = new Categorys();
-            c.name = category.nombre;
-            c.slug = slugify(category.nombre, { lower: true });
+            c.name = partes[1];
+            c.slug = slugify(partes[1], { lower: true });
             itemData.subCategory.push(c);
           }
-        });
+        }
       }
       // Marcas
-      itemData.brand = item.marca.toLowerCase();
-      itemData.brands = [];
-      b.name = item.marca;
-      b.slug = slugify(item.marca, { lower: true });
-      itemData.brands.push(b);
+      if (item.products.manufacturerIdIngram) {
+        itemData.brand = item.products.manufacturerIdIngram.toLowerCase();
+        itemData.brands = [];
+        b.name = item.products.manufacturerIdIngram;
+        b.slug = slugify(item.products.manufacturerIdIngram, { lower: true });
+        itemData.brands.push(b);
+      }
       // SupplierProd
       s.idProveedor = proveedor;
-      s.codigo = item.producto_id;
+      s.codigo = item.products.vendornumber;
       s.cantidad = stockMinimo;
-      s.price = parseFloat(item.precios.precio_lista);
-      s.sale_price = parseFloat(item.precios.precio_descuento);
-      s.moneda = 'MXN';
+      s.price = parseFloat(item.price);
+      if (productPrice.priceSpecial && productPrice.priceSpecial.specialPriceDiscount) {
+        s.sale_price = parseFloat(item.price) - parseFloat(productPrice.priceSpecial.specialPriceDiscount);
+      }
+      s.moneda = item.currencyCode;
       s.category = new Categorys();
       s.subCategory = new Categorys();
-      item.categorias.forEach((category: any) => {
-        if (category.nivel === 1) {
-          const c = new Categorys();
-          c.name = category.nombre;
-          c.slug = slugify(category.nombre, { lower: true });
-        } else if (category.nivel === 3) {
-          const c = new Categorys();
-          c.name = category.nombre;
-          c.slug = slugify(category.nombre, { lower: true });
+      const partes: string[] = item.products.categoriesIdIngram.split("->", 2);
+      if (partes && partes.length > 0) {
+        // Categoria
+        if (partes[0].length > 0) {
+          s.category.name = partes[0];
+          s.category.slug = slugify(partes[0], { lower: true });
         }
-      });
-      // Almacenes
-      const branchOfficesSyscom: BranchOffices[] = [];
-      let branchOffice: BranchOffices = new BranchOffices();
-      branchOffice.id = sucursal ? sucursal.id : 'chihuahua';
-      branchOffice.name = sucursal ? sucursal.name : 'Matriz Chihuahua';
-      branchOffice.estado = sucursal ? sucursal.estado : 'Chihuahua';
-      branchOffice.cp = sucursal ? sucursal.cp : '31000';
-      branchOffice.latitud = '';
-      branchOffice.longitud = '';
-      branchOffice.cantidad = disponible;
-      branchOfficesSyscom.push(branchOffice);
-      s.branchOffices = branchOfficesSyscom;
-      itemData.suppliersProd = s;
-      itemData.model = item.modelo;
-      itemData.pictures = item.pictures;
-      itemData.sm_pictures = item.sm_pictures;
-      itemData.especificaciones = [];
-      if (item.especificaciones && item.especificaciones.length > 0) {
-        itemData.especificaciones = item.especificaciones;
+        // Subcategoria
+        if (partes[1].length > 0) {
+          s.subCategory.name = partes[1];
+          s.subCategory.slug = slugify(partes[1], { lower: true });
+        }
       }
-      itemData.especificaciones.push({ tipo: 'Peso', valor: item.peso });
-      itemData.especificaciones.push({ tipo: 'Altura', valor: item.alto });
-      itemData.especificaciones.push({ tipo: 'Longitud', valor: item.largo });
-      itemData.especificaciones.push({ tipo: 'Ancho', valor: item.ancho });
-      itemData.especificaciones.push({ tipo: 'Link', valor: item.link });
-      itemData.especificaciones.push({ tipo: 'Link_privado', valor: item.link_privado });
-      itemData.especificacionesBullet = item.especificacionesBullet;
+      // Almacenes
+      const branchOfficesIngram: BranchOffices[] = [];
+      if (productPrice.brs && productPrice.brs.length > 0) {
+        for (const brs of productPrice.brs) {
+          let branchOffice: BranchOffices = new BranchOffices();
+          branchOffice.id = brs.id;
+          branchOffice.name = brs.name;
+          branchOffice.estado = brs.name;
+          branchOffice.cp = '31000';
+          branchOffice.latitud = '';
+          branchOffice.longitud = '';
+          branchOffice.cantidad = brs.inventory;
+          branchOfficesIngram.push(branchOffice);
+        }
+      }
+      s.branchOffices = branchOfficesIngram;
+      itemData.suppliersProd = s;
+      function extraerModelo(description: string): string | null {
+        const regex = /MODELO\s*:\s*([^\s]+)/;
+        const match = description.match(regex);
+        console.log('match: ', match);
+        return match ? match[1] : '';
+      }
+      console.log('productPrice.description: ', productPrice.description);
+      itemData.model = extraerModelo(productPrice.description) || '';
     }
     return itemData;
   }

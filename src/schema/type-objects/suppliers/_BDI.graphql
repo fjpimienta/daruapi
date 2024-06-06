@@ -96,7 +96,7 @@ type CategoryParentBDI {
 
 type ProductPriceBDI {
   status: String
-  price: Int
+  price: Float
   priceApply: Float
   currencyCode: String
   priceSpecial: SpecialPriceBDI

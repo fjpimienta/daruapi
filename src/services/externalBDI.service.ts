@@ -301,7 +301,7 @@ class ExternalBDIService extends ResolversOperationsService {
       itemData.id = item.sku;
       itemData.name = item.products.description;
       itemData.slug = slugify(item.products.description, { lower: true });
-      itemData.short_desc = item.products.productDetailDescription;
+      itemData.short_desc = item.products.productDetailDescription || item.products.description;
       if (item.price) {
         const priceS = parseFloat(item.price);
         price = parseFloat((priceS * exchangeRate * utilidad * iva).toFixed(2));

@@ -233,15 +233,6 @@ class ExternalBDIService extends ResolversOperationsService {
     const listProductsBDI = (await this.getProductsBDI()).productsBDI;
     const listProductsPricesBDI = (await this.getProductsPricesBDI()).productsPricesBDI;
     const sucursales = (await this.getLocationsBDI()).locationsBDI;
-    const sucursal = sucursales.find((suc: any) => suc.name === 'Mexico DF');
-    let branchOffice: BranchOffices = new BranchOffices();
-    branchOffice.id = sucursal ? sucursal.brId : '10';
-    branchOffice.name = sucursal ? sucursal.name : 'Mexico DF';
-    branchOffice.estado = sucursal ? sucursal.alias : 'Mexico DF';
-    branchOffice.cantidad = 0;
-    branchOffice.cp = sucursal ? sucursal.codigo_postal : '31000';
-    branchOffice.latitud = '';
-    branchOffice.longitud = '';
     if (listProductsBDI && listProductsPricesBDI) {
       const productos: Product[] = [];
       if (listProductsBDI.length > 0 && listProductsPricesBDI.length > 0) {
@@ -252,7 +243,7 @@ class ExternalBDIService extends ResolversOperationsService {
         for (const product of listProductsBDI) {
           for (const productsP of listProductsPricesBDI) {
             if (product.sku === productsP.sku) {
-              const itemData: Product = await this.setProduct('ingram', product, productsP, null, stockMinimo, exchangeRate, branchOffice);
+              const itemData: Product = await this.setProduct('ingram', product, productsP, null, stockMinimo, exchangeRate);
               if (itemData.id !== undefined) {
                 productos.push(itemData);
               }
@@ -281,7 +272,7 @@ class ExternalBDIService extends ResolversOperationsService {
     };
   }
 
-  async setProduct(proveedor: string, item: any, productPrice: any = null, imagenes: any = null, stockMinimo: number, exchangeRate: number, sucursal: BranchOffices) {
+  async setProduct(proveedor: string, item: any, productPrice: any = null, imagenes: any = null, stockMinimo: number, exchangeRate: number) {
     const utilidad: number = 1.08;
     const iva: number = 1.16;
     let itemData: Product = new Product();

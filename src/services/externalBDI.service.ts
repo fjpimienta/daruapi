@@ -246,7 +246,6 @@ class ExternalBDIService extends ResolversOperationsService {
   async getListProductsBDI() {
     const listProductsBDI = (await this.getProductsBDI()).productsBDI;
     const listProductsPricesBDI = (await this.getProductsPricesBDI()).productsPricesBDI;
-    const sucursales = (await this.getLocationsBDI()).locationsBDI;
     if (listProductsBDI && listProductsPricesBDI) {
       const productos: Product[] = [];
       if (listProductsBDI.length > 0 && listProductsPricesBDI.length > 0) {
@@ -307,7 +306,11 @@ class ExternalBDIService extends ResolversOperationsService {
       itemData.name = item.products.description || 'SIN DESCRIPCION';
       itemData.slug = slugify(item.products.description || '', { lower: true });
       itemData.short_desc = item.products.productDetailDescription || item.products.description;
+      itemData.exchangeRate = exchangeRate;
       if (item.price) {
+        if (item.currencyCode && (item.currencyCode === 'MXN' || item.currencyCode === 'MXP')) {
+          exchangeRate = 1;
+        }
         const priceS = parseFloat(item.price);
         price = parseFloat((priceS * exchangeRate * utilidad * iva).toFixed(2));
         salePrice = priceS;
@@ -321,7 +324,6 @@ class ExternalBDIService extends ResolversOperationsService {
       }
       itemData.price = price;
       itemData.sale_price = salePrice;
-      itemData.exchangeRate = exchangeRate;
       itemData.review = 0;
       itemData.ratings = 0;
       itemData.until = this.getFechas(new Date());

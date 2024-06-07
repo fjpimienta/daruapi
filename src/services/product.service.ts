@@ -492,7 +492,8 @@ class ProductsService extends ResolversOperationsService {
           productIcecat: product.partnumber
         }
         // Busca las imagenes en Icecat Local
-        if (idProveedor === 'ingram' || idProveedor === 'daisytek') {
+        // if (idProveedor === 'ingram' || idProveedor === 'daisytek') {
+        if (product.pictures && product.pictures.length <= 1) {
           const icecatExt = await new ExternalIcecatsService({}, variableLocal, context).getIcecatProductLocal();
           if (icecatExt.status) {
             if (icecatExt.icecatProductLocal) {

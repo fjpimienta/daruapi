@@ -416,8 +416,30 @@ class ExternalBDIService extends ResolversOperationsService {
         const match = description.match(regex);
         return match ? match[1] : '';
       }
-      if(productPrice.description) {
-        itemData.model = extraerModelo(productPrice.description) || '';        
+      if (productPrice.description) {
+        itemData.model = extraerModelo(productPrice.description) || '';
+      }
+      // Imagenes
+      if (item.products.images) {
+        const urlsDeImagenes: string[] = item.products.images.split(',');
+        if (urlsDeImagenes.length > 0) {
+          // Imagenes
+          itemData.pictures = [];
+          for (const urlImage of urlsDeImagenes) {
+            const i = new Picture();
+            i.width = '600';
+            i.height = '600';
+            i.url = urlImage;
+            itemData.pictures.push(i);
+            // Imagenes pequeñas
+            itemData.sm_pictures = [];
+            const is = new Picture();
+            is.width = '300';
+            is.height = '300';
+            is.url = urlImage;
+            itemData.sm_pictures.push(i);
+          }
+        }
       }
     }
     return itemData;

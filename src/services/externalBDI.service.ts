@@ -168,12 +168,19 @@ class ExternalBDIService extends ResolversOperationsService {
         productsBDI: null,
       };
     }
+    const raw = JSON.stringify({
+      "report": "json",
+      "filters": {
+        "active": true
+      }
+    });
     const options = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token.tokenBDI.token
-      }
+      },
+      body: raw
     };
     const url = 'https://admin.bdicentralapi.net/api/products';
     const response = await fetch(url, options);
@@ -203,12 +210,19 @@ class ExternalBDIService extends ResolversOperationsService {
         productsPricesBDI: null,
       };
     }
+    const raw = JSON.stringify({
+      "report": "json",
+      "filters": {
+        "active": true
+      }
+    });
     const options = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token.tokenBDI.token
-      }
+      },
+      body: raw
     };
     const url = 'https://admin.bdicentralapi.net/api/prices';
     const response = await fetch(url, options);
@@ -233,15 +247,6 @@ class ExternalBDIService extends ResolversOperationsService {
     const listProductsBDI = (await this.getProductsBDI()).productsBDI;
     const listProductsPricesBDI = (await this.getProductsPricesBDI()).productsPricesBDI;
     const sucursales = (await this.getLocationsBDI()).locationsBDI;
-    const sucursal = sucursales.find((suc: any) => suc.name === 'Mexico DF');
-    let branchOffice: BranchOffices = new BranchOffices();
-    branchOffice.id = sucursal ? sucursal.brId : '10';
-    branchOffice.name = sucursal ? sucursal.name : 'Mexico DF';
-    branchOffice.estado = sucursal ? sucursal.alias : 'Mexico DF';
-    branchOffice.cantidad = 0;
-    branchOffice.cp = sucursal ? sucursal.codigo_postal : '31000';
-    branchOffice.latitud = '';
-    branchOffice.longitud = '';
     if (listProductsBDI && listProductsPricesBDI) {
       const productos: Product[] = [];
       if (listProductsBDI.length > 0 && listProductsPricesBDI.length > 0) {
@@ -252,7 +257,7 @@ class ExternalBDIService extends ResolversOperationsService {
         for (const product of listProductsBDI) {
           for (const productsP of listProductsPricesBDI) {
             if (product.sku === productsP.sku) {
-              const itemData: Product = await this.setProduct('ingram', product, productsP, null, stockMinimo, exchangeRate, branchOffice);
+              const itemData: Product = await this.setProduct('ingram', product, productsP, null, stockMinimo, exchangeRate);
               if (itemData.id !== undefined) {
                 productos.push(itemData);
               }
@@ -281,7 +286,7 @@ class ExternalBDIService extends ResolversOperationsService {
     };
   }
 
-  async setProduct(proveedor: string, item: any, productPrice: any = null, imagenes: any = null, stockMinimo: number, exchangeRate: number, sucursal: BranchOffices) {
+  async setProduct(proveedor: string, item: any, productPrice: any = null, imagenes: any = null, stockMinimo: number, exchangeRate: number) {
     const utilidad: number = 1.08;
     const iva: number = 1.16;
     let itemData: Product = new Product();
@@ -299,8 +304,8 @@ class ExternalBDIService extends ResolversOperationsService {
       disponible = item.inventory;
       let featured = false;
       itemData.id = item.sku;
-      itemData.name = item.products.description;
-      itemData.slug = slugify(item.products.description, { lower: true });
+      itemData.name = item.products.description || 'SIN DESCRIPCION';
+      itemData.slug = slugify(item.products.description || '', { lower: true });
       itemData.short_desc = item.products.productDetailDescription || item.products.description;
       if (item.price) {
         const priceS = parseFloat(item.price);
@@ -343,14 +348,14 @@ class ExternalBDIService extends ResolversOperationsService {
           if (partes[0].length > 0) {
             const c = new Categorys();
             c.name = partes[0];
-            c.slug = slugify(partes[0], { lower: true });
+            c.slug = slugify(partes[0] || '', { lower: true });
             itemData.category.push(c);
           }
           // Subcategorias
           if (partes[1].length > 0) {
             const c = new Categorys();
             c.name = partes[1];
-            c.slug = slugify(partes[1], { lower: true });
+            c.slug = slugify(partes[1] || '', { lower: true });
             itemData.subCategory.push(c);
           }
         }
@@ -360,7 +365,7 @@ class ExternalBDIService extends ResolversOperationsService {
         itemData.brand = item.products.manufacturerIdIngram.toLowerCase();
         itemData.brands = [];
         b.name = item.products.manufacturerIdIngram;
-        b.slug = slugify(item.products.manufacturerIdIngram, { lower: true });
+        b.slug = slugify(item.products.manufacturerIdIngram || '', { lower: true });
         itemData.brands.push(b);
       }
       // SupplierProd
@@ -379,12 +384,12 @@ class ExternalBDIService extends ResolversOperationsService {
         // Categoria
         if (partes[0].length > 0) {
           s.category.name = partes[0];
-          s.category.slug = slugify(partes[0], { lower: true });
+          s.category.slug = slugify(partes[0] || '', { lower: true });
         }
         // Subcategoria
         if (partes[1].length > 0) {
           s.subCategory.name = partes[1];
-          s.subCategory.slug = slugify(partes[1], { lower: true });
+          s.subCategory.slug = slugify(partes[1] || '', { lower: true });
         }
       }
       // Almacenes
@@ -407,11 +412,11 @@ class ExternalBDIService extends ResolversOperationsService {
       function extraerModelo(description: string): string | null {
         const regex = /MODELO\s*:\s*([^\s]+)/;
         const match = description.match(regex);
-        console.log('match: ', match);
         return match ? match[1] : '';
       }
-      console.log('productPrice.description: ', productPrice.description);
-      itemData.model = extraerModelo(productPrice.description) || '';
+      if(productPrice.description) {
+        itemData.model = extraerModelo(productPrice.description) || '';        
+      }
     }
     return itemData;
   }

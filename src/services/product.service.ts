@@ -497,7 +497,9 @@ class ProductsService extends ResolversOperationsService {
           const icecatExt = await new ExternalIcecatsService({}, variableLocal, context).getIcecatProductLocal();
           if (icecatExt.status) {
             if (icecatExt.icecatProductLocal) {
-              if (icecatExt.icecatProductLocal.LowPic !== '') {
+              if (icecatExt.icecatProductLocal.LowPic !== '' &&
+                icecatExt.icecatProductLocal.ProductGallery && icecatExt.icecatProductLocal.ProductGallery.includes('|')
+              ) {
                 const imagenes: string[] = icecatExt.icecatProductLocal.ProductGallery.split('|');
                 if (imagenes.length > 0) {
                   product.pictures = [];

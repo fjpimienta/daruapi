@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 import { COLLECTIONS } from '../config/constants';
 import { Db } from 'mongodb';
 import logger from '../utils/logger';
-import { BranchOffices, Brands, Categorys, Descuentos, Picture, Product, SupplierProd, UnidadDeMedida } from '../models/product.models';
+import { BranchOffices, Brands, Categorys, Descuentos, Especificacion, Picture, Product, SupplierProd, UnidadDeMedida } from '../models/product.models';
 import slugify from 'slugify';
 import ConfigsService from './config.service';
 
@@ -441,6 +441,36 @@ class ExternalBDIService extends ResolversOperationsService {
           }
         }
       }
+
+      const especificaciones: Especificacion[] = [];
+      if (item.products.weight) {
+        itemData.especificaciones.push({ tipo: 'Peso', valor: item.products.weight });
+      }
+      if (item.products.height) {
+        itemData.especificaciones.push({ tipo: 'Altura', valor: item.products.height });
+      }
+      if (item.products.width) {
+        itemData.especificaciones.push({ tipo: 'Ancho', valor: item.products.width });
+      }
+      if (item.products.length) {
+        itemData.especificaciones.push({ tipo: 'Longitud', valor: item.products.length });
+      }
+      if (item.products.dimensionUnit) {
+        itemData.especificaciones.push({ tipo: 'Unidad de Dimensiones', valor: item.products.dimensionUnit });
+      }
+      if (item.products.weightUnit) {
+        itemData.especificaciones.push({ tipo: 'Unidad de Peso', valor: item.products.weightUnit });
+      }
+
+      itemData.especificaciones.push(...especificaciones);
+      const atributosPrincipales = item.products.listPrimaryAttribute;
+      if (atributosPrincipales && atributosPrincipales.length > 0) {
+        for (let i = 0; i < atributosPrincipales.length; i++) {
+          const atributo = atributosPrincipales[i];
+          itemData.especificaciones.push({ tipo: 'Característica', valor: atributo });
+        }
+      }
+
     }
     return itemData;
   }

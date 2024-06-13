@@ -11,6 +11,9 @@ import ExternalIcecatsService from './externalIcecat.service';
 import ExternalIngramService from './externalIngram.service';
 import { Categorys, Picture } from '../models/product.models';
 import ExternalBDIService from './externalBDI.service';
+import downloadImage from './download.service';
+import path from 'path';
+import logger from '../utils/logger';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
@@ -438,6 +441,7 @@ class ProductsService extends ResolversOperationsService {
   // Añadir una lista
   async insertMany(context: IContextData) {
     try {
+      const uploadFolder = './uploads/images/';
       const products = this.getVariables().products;
       let productsAdd: IProduct[] = [];
       if (products?.length === 0) {                                   // Verificar que envien productos.
@@ -450,199 +454,219 @@ class ProductsService extends ResolversOperationsService {
       const id = await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 });
       console.log('products.length: ', products?.length);
       const productsBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI()).productsBDI;
-      // Crear un mapa para buscar productos por número de parte
-      const productsBDIMap = new Map<string, any>();
-      for (const productBDI of productsBDI) {
-        productsBDIMap.set(productBDI.sku, productBDI);
-      }
-
-      console.log('productsBDI.length: ', productsBDI?.length);
-      let i = id ? parseInt(id) : 1;
-      // Eliminar los productos del proveedor.
-      const idProveedor = products![0].suppliersProd.idProveedor;
-      if (idProveedor !== '') {
-        let filter: object = { 'suppliersProd.idProveedor': idProveedor };
-        const result = await this.delList(this.collection, filter, 'producto');
-      }
-      // Complementa los datos del producto.
-      if (!products) {
-        return {
-          status: false,
-          message: 'No existen elementos para integrar',
-          products: null
-        };
-      }
-      for (const product of products) {
-        // Clasificar Categorias y Subcategorias
-        if (product.subCategory && product.subCategory.length > 0) {
-          product.id = i.toString();
-          if (product.price === null) {
-            product.price = 0;
-            product.sale_price = 0;
-          }
-          const resultCat: any = await findSubcategoryProduct(
-            this.getDB(),
-            this.collectionCat,
-            product.subCategory[0].slug
-          );
-          if (resultCat.categoria && resultCat.categoria.slug) {
-            product.category[0].slug = resultCat.categoria.slug;
-            product.category[0].name = resultCat.categoria.description;
-          }
-          if (resultCat.subCategoria && resultCat.subCategoria.slug) {
-            product.subCategory[0].slug = resultCat.subCategoria.slug;
-            product.subCategory[0].name = resultCat.subCategoria.description;
-          }
-          product.slug = slugify(product?.name || '', { lower: true });
-          product.active = true;
-          product.registerDate = new Date().toISOString();
+      if (productsBDI) {
+        // Crear un mapa para buscar productos por número de parte
+        const productsBDIMap = new Map<string, any>();
+        for (const productBDI of productsBDI) {
+          productsBDIMap.set(productBDI.sku, productBDI);
         }
-        // Recuperar imagenes de icecat todos los proveedores
-        // Busca las imagenes en BDI
-        if (idProveedor !== 'ingram') {
-          if (productsBDI && productsBDI.length > 0) {
-            const productBDI = productsBDIMap.get(product.partnumber);
-            console.log('productBDI:', productBDI);
-            if (productBDI) {
-
-              // for (const productBDI of productsBDI) {
-              console.log(`productBDI.sku: ${productBDI.sku} - product.partnumber: ${product.partnumber}`);
-              // if (productBDI.sku === product.partnumber) {
-              if (productBDI.products.images) {
-                const urlsDeImagenes: string[] = productBDI.products.images.split(',');
-                if (urlsDeImagenes.length > 0) {
-                  // Imagenes
-                  product.pictures = [];
-                  for (const urlImage of urlsDeImagenes) {
-                    const i = new Picture();
-                    i.width = '600';
-                    i.height = '600';
-                    i.url = urlImage;
-                    product.pictures.push(i);
-                    // Imagenes pequeñas
-                    product.sm_pictures = [];
-                    const is = new Picture();
-                    is.width = '300';
-                    is.height = '300';
-                    is.url = urlImage;
-                    product.sm_pictures.push(i);
-                  }
-                }
-              }
-              // }
+        console.log('productsBDI.length: ', productsBDI?.length);
+        let i = id ? parseInt(id) : 1;
+        // Eliminar los productos del proveedor.
+        const idProveedor = products![0].suppliersProd.idProveedor;
+        if (idProveedor !== '') {
+          let filter: object = { 'suppliersProd.idProveedor': idProveedor };
+          const result = await this.delList(this.collection, filter, 'producto');
+        }
+        // Complementa los datos del producto.
+        if (!products) {
+          return {
+            status: false,
+            message: 'No existen elementos para integrar',
+            products: null
+          };
+        }
+        for (const product of products) {
+          // Clasificar Categorias y Subcategorias
+          if (product.subCategory && product.subCategory.length > 0) {
+            product.id = i.toString();
+            if (product.price === null) {
+              product.price = 0;
+              product.sale_price = 0;
             }
+            const resultCat: any = await findSubcategoryProduct(
+              this.getDB(),
+              this.collectionCat,
+              product.subCategory[0].slug
+            );
+            if (resultCat.categoria && resultCat.categoria.slug) {
+              product.category[0].slug = resultCat.categoria.slug;
+              product.category[0].name = resultCat.categoria.description;
+            }
+            if (resultCat.subCategoria && resultCat.subCategoria.slug) {
+              product.subCategory[0].slug = resultCat.subCategoria.slug;
+              product.subCategory[0].name = resultCat.subCategoria.description;
+            }
+            product.slug = slugify(product?.name || '', { lower: true });
+            product.active = true;
+            product.registerDate = new Date().toISOString();
           }
-        }
-        // Busca las imagenes en Icecat Local
-        const variableLocal = {
-          brandIcecat: product.brands[0].slug,
-          productIcecat: product.partnumber
-        }
-        if (product.pictures && product.pictures.length <= 0) {
-          console.log(`product.partnumber: ${product.partnumber} - product.pictures.length: ${product.pictures.length}`);
-          const icecatExt = await new ExternalIcecatsService({}, variableLocal, context).getIcecatProductLocal();
-          if (icecatExt.status) {
-            if (icecatExt.icecatProductLocal) {
-              if (icecatExt.icecatProductLocal.LowPic !== '' &&
-                icecatExt.icecatProductLocal.ProductGallery && icecatExt.icecatProductLocal.ProductGallery.includes('|')
-              ) {
-                const imagenes: string[] = icecatExt.icecatProductLocal.ProductGallery.split('|');
-                if (imagenes.length > 0) {
-                  product.pictures = [];
-                  product.sm_pictures = [];
-                  for (const pictureI of imagenes) {
-                    if (pictureI !== '') {
-                      const pict: IPicture = {
-                        width: '500',
-                        height: '500',
-                        url: pictureI
-                      };
-                      product.pictures.push(pict);
-                      const pict_sm: IPicture = {
-                        width: '300',
-                        height: '300',
-                        url: pictureI
-                      };
-                      product.sm_pictures.push(pict_sm);
+          // Recuperar imagenes de icecat todos los proveedores
+          // Busca las imagenes en BDI
+          if (idProveedor !== 'ingram') {
+            if (productsBDI && productsBDI.length > 0) {
+              const productBDI = productsBDIMap.get(product.partnumber);
+              console.log('productBDI:', productBDI);
+              if (productBDI) {
+
+                // for (const productBDI of productsBDI) {
+                console.log(`productBDI.sku: ${productBDI.sku} - product.partnumber: ${product.partnumber}`);
+                // if (productBDI.sku === product.partnumber) {
+                if (productBDI.products.images) {
+                  const urlsDeImagenes: string[] = productBDI.products.images.split(',');
+                  if (urlsDeImagenes.length > 0) {
+                    // Imagenes
+                    product.pictures = [];
+                    for (const urlImage of urlsDeImagenes) {
+                      const i = new Picture();
+                      i.width = '600';
+                      i.height = '600';
+                      i.url = urlImage;
+                      product.pictures.push(i);
+                      // Imagenes pequeñas
+                      product.sm_pictures = [];
+                      const is = new Picture();
+                      is.width = '300';
+                      is.height = '300';
+                      is.url = urlImage;
+                      product.sm_pictures.push(i);
                     }
                   }
                 }
+                // }
               }
-              product.partnumber = icecatExt.icecatProductLocal.Requested_prod_id;
-              product.upc = icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC;
-              product.model = icecatExt.icecatProductLocal.model;
-              product.name = icecatExt.icecatProductLocal.ProductTitle;
-              product.slug = slugify(icecatExt.icecatProductLocal.ProductTitle, { lower: true });
-              product.short_desc = icecatExt.icecatProductLocal.ShortSummaryDescription;
-
-              product.category = [];
-              const c = new Categorys();
-              c.name = icecatExt.icecatProductLocal.Category;
-              c.slug = slugify(icecatExt.icecatProductLocal.Category, { lower: true });
-              product.category.push(c);
-            }
-          } else {                  // Si no hay imagenes en icecat local buscan en los otros proveedores las imagenes.
-            const variableLoc = {
-              partNumber: product.partnumber
-            }
-            const productLocal = await new ProductsService({}, variableLoc, context).getProductField();
-            console.log('productLocal: ', productLocal);
-            if (productLocal.productField && productLocal.productField.category) {
-              product.category = productLocal.productField.category
-            }
-            if (productLocal.productField && productLocal.productField.subCategory) {
-              product.subCategory = productLocal.productField.subCategory
-            }
-            if (productLocal.productField && productLocal.productField.brand) {
-              product.brand = productLocal.productField.brand
-            }
-            if (productLocal.productField && productLocal.productField.brands) {
-              product.brands = productLocal.productField.brands
-            }
-            if (productLocal.productField && productLocal.productField.pictures && productLocal.productField.pictures.length > 0) {
-              product.pictures = [];
-              product.sm_pictures = [];
-              for (const pictureI of productLocal.productField.pictures) {
-                if (pictureI.url !== '') {
-                  const pict: IPicture = {
-                    width: pictureI.width,
-                    height: pictureI.height,
-                    url: pictureI.url
-                  };
-                  product.pictures.push(pict);
-                }
-              }
-              for (const pictureIsm of productLocal.productField.sm_pictures) {
-                if (pictureIsm.url !== '') {
-                  const pict: IPicture = {
-                    width: pictureIsm.width,
-                    height: pictureIsm.height,
-                    url: pictureIsm.url
-                  };
-                  product.sm_pictures.push(pict);
-                }
-              }
-            } else {
-              product.pictures = [];
-              product.sm_pictures = [];
-              const pict: IPicture = {
-                width: "500",
-                height: "500",
-                url: "https://daru.mx/files/logo.png"
-              };
-              product.pictures.push(pict);
-              const pictSm: IPicture = {
-                width: "250",
-                height: "250",
-                url: "https://daru.mx/files/logo.png"
-              };
-              product.sm_pictures.push(pictSm);
             }
           }
+          // Busca las imagenes en Icecat Local
+          const variableLocal = {
+            brandIcecat: product.brands[0].slug,
+            productIcecat: product.partnumber
+          }
+          if (product.pictures && product.pictures.length <= 0) {
+            console.log(`product.partnumber: ${product.partnumber} - product.pictures.length: ${product.pictures.length}`);
+            const icecatExt = await new ExternalIcecatsService({}, variableLocal, context).getIcecatProductLocal();
+            if (icecatExt.status) {
+              if (icecatExt.icecatProductLocal) {
+                if (icecatExt.icecatProductLocal.LowPic !== '' &&
+                  icecatExt.icecatProductLocal.ProductGallery && icecatExt.icecatProductLocal.ProductGallery.includes('|')
+                ) {
+                  const imagenes: string[] = icecatExt.icecatProductLocal.ProductGallery.split('|');
+                  if (imagenes.length > 0) {
+                    product.pictures = [];
+                    product.sm_pictures = [];
+                    for (const pictureI of imagenes) {
+                      if (pictureI !== '') {
+                        const pict: IPicture = {
+                          width: '500',
+                          height: '500',
+                          url: pictureI
+                        };
+                        product.pictures.push(pict);
+                        const pict_sm: IPicture = {
+                          width: '300',
+                          height: '300',
+                          url: pictureI
+                        };
+                        product.sm_pictures.push(pict_sm);
+                      }
+                    }
+                  }
+                }
+                product.partnumber = icecatExt.icecatProductLocal.Requested_prod_id;
+                product.upc = icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC;
+                product.model = icecatExt.icecatProductLocal.model;
+                product.name = icecatExt.icecatProductLocal.ProductTitle;
+                product.slug = slugify(icecatExt.icecatProductLocal.ProductTitle, { lower: true });
+                product.short_desc = icecatExt.icecatProductLocal.ShortSummaryDescription;
+
+                product.category = [];
+                const c = new Categorys();
+                c.name = icecatExt.icecatProductLocal.Category;
+                c.slug = slugify(icecatExt.icecatProductLocal.Category, { lower: true });
+                product.category.push(c);
+              }
+            } else {                  // Si no hay imagenes en icecat local buscan en los otros proveedores las imagenes.
+              const variableLoc = {
+                partNumber: product.partnumber
+              }
+              const productLocal = await new ProductsService({}, variableLoc, context).getProductField();
+              console.log('productLocal: ', productLocal);
+              if (productLocal.productField && productLocal.productField.category) {
+                product.category = productLocal.productField.category
+              }
+              if (productLocal.productField && productLocal.productField.subCategory) {
+                product.subCategory = productLocal.productField.subCategory
+              }
+              if (productLocal.productField && productLocal.productField.brand) {
+                product.brand = productLocal.productField.brand
+              }
+              if (productLocal.productField && productLocal.productField.brands) {
+                product.brands = productLocal.productField.brands
+              }
+              if (productLocal.productField && productLocal.productField.pictures && productLocal.productField.pictures.length > 0) {
+                product.pictures = [];
+                product.sm_pictures = [];
+                for (const pictureI of productLocal.productField.pictures) {
+                  if (pictureI.url !== '') {
+                    const pict: IPicture = {
+                      width: pictureI.width,
+                      height: pictureI.height,
+                      url: pictureI.url
+                    };
+                    product.pictures.push(pict);
+                  }
+                }
+                for (const pictureIsm of productLocal.productField.sm_pictures) {
+                  if (pictureIsm.url !== '') {
+                    const pict: IPicture = {
+                      width: pictureIsm.width,
+                      height: pictureIsm.height,
+                      url: pictureIsm.url
+                    };
+                    product.sm_pictures.push(pict);
+                  }
+                }
+              } else {
+                product.pictures = [];
+                product.sm_pictures = [];
+                const pict: IPicture = {
+                  width: "500",
+                  height: "500",
+                  url: "https://daru.mx/files/logo.png"
+                };
+                product.pictures.push(pict);
+                const pictSm: IPicture = {
+                  width: "250",
+                  height: "250",
+                  url: "https://daru.mx/files/logo.png"
+                };
+                product.sm_pictures.push(pictSm);
+              }
+            }
+          }
+          i += 1;
+          console.log(`product.partnumber: ${product.partnumber} - product.pictures.length: ${product.pictures.length}`);
+          // Guardar Imagenes
+          for (const image of product.pictures) {
+            const urlImage = image.url;
+            try {
+              const filename = await downloadImage(urlImage, uploadFolder);
+              image.url = path.join(uploadFolder, filename);
+            } catch (error) {
+              image.url = "";
+            }
+          }
+          for (const simage of product.sm_pictures) {
+            const urlImage = simage.url;
+            try {
+              const filename = await downloadImage(urlImage, uploadFolder);
+              simage.url = path.join(uploadFolder, filename);
+            } catch (error) {
+              simage.url = "";
+            }
+          }
+          productsAdd.push(product);
         }
-        i += 1;
-        console.log(`product.partnumber: ${product.partnumber} - product.pictures.length: ${product.pictures.length}`);
-        productsAdd.push(product);
       }
 
       // Guardar los elementos nuevos

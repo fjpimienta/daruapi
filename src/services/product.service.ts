@@ -650,7 +650,9 @@ class ProductsService extends ResolversOperationsService {
           for (const image of product.pictures) {
             const urlImage = image.url;
             try {
+              console.log('urlImage: ', urlImage);
               const filename = await downloadImage(urlImage, uploadFolder);
+              console.log('filename: ', filename);
               image.url = path.join(uploadFolder, filename);
             } catch (error) {
               image.url = "";
@@ -659,7 +661,9 @@ class ProductsService extends ResolversOperationsService {
           for (const simage of product.sm_pictures) {
             const urlImage = simage.url;
             try {
+              console.log('urlImage: ', urlImage);
               const filename = await downloadImage(urlImage, uploadFolder);
+              console.log('filename: ', filename);
               simage.url = path.join(uploadFolder, filename);
             } catch (error) {
               simage.url = "";

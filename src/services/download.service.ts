@@ -22,7 +22,15 @@ const downloadImage = (url: string, destFolder: string): Promise<string> => {
     console.log(`Starting download from: ${url}`);
     logger.info(`Starting download from: ${url}`);
 
-    protocol.get(url, (response) => {
+    const request = protocol.get(url, (response) => {
+      if (!response || response.statusCode === null) {
+        const errorMessage = `No valid response from: ${url}`;
+        console.error(errorMessage);
+        logger.error(errorMessage);
+        fs.unlink(filePath, () => reject(errorMessage));
+        return;
+      }
+
       console.log(`Response status code: ${response.statusCode}`);
       logger.info(`Response status code: ${response.statusCode}`);
 
@@ -35,7 +43,7 @@ const downloadImage = (url: string, destFolder: string): Promise<string> => {
             errorMessage = `Failed to get '${url}' (${response.statusCode})`;
           }
           console.error(errorMessage);
-          logger.info(`response(if) - errorMessage: ${errorMessage}`);
+          logger.error(`response(if) - errorMessage: ${errorMessage}`);
           return reject(errorMessage);
         });
       } else {
@@ -44,7 +52,7 @@ const downloadImage = (url: string, destFolder: string): Promise<string> => {
           fs.unlink(filePath, () => {
             const errorMessage = `Invalid content type '${contentType}' for URL: ${url}`;
             console.error(errorMessage);
-            logger.info(`response(else) - errorMessage: ${errorMessage}`);
+            logger.error(`response(else) - errorMessage: ${errorMessage}`);
             return reject(errorMessage);
           });
         } else {
@@ -60,20 +68,24 @@ const downloadImage = (url: string, destFolder: string): Promise<string> => {
 
           file.on('error', (err) => {
             console.error(`File stream error: ${err.message}`);
-            logger.info(`File stream error: ${err.message}`);
+            logger.error(`File stream error: ${err.message}`);
             fs.unlink(filePath, () => reject(err.message));
           });
 
           response.on('error', (err) => {
             console.error(`Response stream error: ${err.message}`);
-            logger.info(`Response stream error: ${err.message}`);
-            fs.unlink(filePath, () => reject(err.message));
+            logger.error(`Response stream error: ${err.message}`);
+            file.close(() => {
+              fs.unlink(filePath, () => reject(err.message));
+            });
           });
         }
       }
-    }).on('error', (err) => {
+    });
+
+    request.on('error', (err) => {
       console.error(`Request error: ${err.message}`);
-      logger.info(`Request error: ${err.message}`);
+      logger.error(`Request error: ${err.message}`);
       fs.unlink(filePath, () => reject(err.message));
     });
   });

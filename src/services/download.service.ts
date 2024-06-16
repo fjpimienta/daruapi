@@ -6,6 +6,11 @@ import * as path from 'path';
 
 const downloadImage = (url: string, destFolder: string): Promise<string> => {
   return new Promise((resolve, reject) => {
+    // Asegúrate de que la carpeta de destino existe
+    if (!fs.existsSync(destFolder)) {
+      fs.mkdirSync(destFolder, { recursive: true });
+    }
+
     const fileName = `${uuidv4()}${path.extname(url)}`;
     const filePath = path.join(destFolder, fileName);
 
@@ -27,8 +32,19 @@ const downloadImage = (url: string, destFolder: string): Promise<string> => {
       } else {
         response.pipe(file);
 
+        // Manejar el evento 'finish' para cerrar el archivo
         file.on('finish', () => {
-          file.close(() => resolve(fileName));
+          file.close(() => resolve(fileName));  // Cierra el archivo y resuelve la promesa
+        });
+
+        // Manejar cualquier error que ocurra durante la escritura del archivo
+        file.on('error', (err) => {
+          fs.unlink(filePath, () => reject(err.message));
+        });
+
+        // Manejar errores en el flujo de respuesta
+        response.on('error', (err) => {
+          fs.unlink(filePath, () => reject(err.message));
         });
       }
     }).on('error', (err) => {

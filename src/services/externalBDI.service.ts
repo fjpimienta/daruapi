@@ -244,6 +244,37 @@ class ExternalBDIService extends ResolversOperationsService {
   }
 
   async getListProductsBDI() {
+    const responseProducts = await this.getProductsBDI();
+    if (!responseProducts.status) {
+      return {
+        status: responseProducts.status,
+        message: responseProducts.message,
+        listProductsBDI: null,
+      };
+    }
+    if (responseProducts.productsBDI && responseProducts.productsBDI.length <= 0) {
+      return {
+        status: responseProducts.status,
+        message: 'No hay productos en el servicio del Proveedor',
+        listProductsBDI: null,
+      };
+    }
+    const responsePrices = await this.getProductsPricesBDI();
+    if (!responsePrices.status) {
+      return {
+        status: responsePrices.status,
+        message: responsePrices.message,
+        listProductsBDI: null,
+      };
+    }
+    if (responsePrices.productsPricesBDI && responsePrices.productsPricesBDI.length <= 0) {
+      return {
+        status: responsePrices.status,
+        message: 'No hay precios en el servicio del Proveedor',
+        listProductsBDI: null,
+      };
+    }
+
     const listProductsBDI = (await this.getProductsBDI()).productsBDI;
     const listProductsPricesBDI = (await this.getProductsPricesBDI()).productsPricesBDI;
     if (listProductsBDI && listProductsPricesBDI) {

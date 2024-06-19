@@ -712,7 +712,7 @@ class ProductsService extends ResolversOperationsService {
         };
       }
       const id = await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 });
-      console.log('products.length: ', products?.length);
+      console.log('products.length: ', products.length);
       process.env.PRODUCTION === 'true' && logger.info(`insertMany/products.length: ${products.length} \n`);
       const idProveedor = products![0].suppliersProd.idProveedor;
       if (idProveedor !== 'ingram') {
@@ -723,17 +723,24 @@ class ProductsService extends ResolversOperationsService {
           // Crear un mapa para buscar productos por número de parte
           const productsBDIMap = new Map<string, any>();
           for (const productBDI of productsBDI) {
-            productsBDIMap.set(productBDI.sku, productBDI);
+            if (productBDI.products && productBDI.products.vendornumber) {
+              productsBDIMap.set(productBDI.products.vendornumber, productBDI);
+            } else {
+              console.log('productBDI.products.vendornumber is undefined: ', productBDI);
+              process.env.PRODUCTION === 'true' && logger.info(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
+            }
           }
           let i = id ? parseInt(id) : 1;
-          process.env.PRODUCTION === 'true' && logger.info(`insertMany/products: ${JSON.stringify(products[0])} \n`);
-          process.env.PRODUCTION === 'true' && logger.info(`insertMany/productsBDI: ${JSON.stringify(productsBDI[0])} \n`);
           for (const product of products) {
-            // Verificar si el producto viene categorizdo
+            // Verificar si el producto viene categorizado
             const productBDI = productsBDIMap.get(product.partnumber);
-            if (!product.category || (product.category.length <= 0 || product.category[0].name !== '')) {
+            if (productBDI) {
+              console.log('product.partnumber: ', product.partnumber);
+              // console.log('productBDI: ', productBDI); // Imprimir el resultado de la búsqueda
               // Categorias
-              if (productBDI && productBDI.products && productBDI.products.categoriesIdIngram) {
+              if (productBDI.products && productBDI.products.categoriesIdIngram) {
+                // console.log('product.category: ', product.category);
+                // console.log('productBDI.products.categoriesIdIngram: ', productBDI.products.categoriesIdIngram);
                 product.category = [];
                 product.subCategory = [];
                 const partes: string[] = productBDI.products.categoriesIdIngram.split("->", 2);
@@ -753,11 +760,10 @@ class ProductsService extends ResolversOperationsService {
                     product.subCategory.push(c);
                   }
                 }
+                console.log('product.category: ', product.category);
               }
-            }
-            if (!product.pictures || product.pictures.length <= 0) {
               // Imagenes
-              if (productBDI && productBDI.products.images) {
+              if (productBDI.products.images) {
                 const urlsDeImagenes: string[] = productBDI.products.images.split(',');
                 if (urlsDeImagenes.length > 0) {
                   // Imagenes
@@ -799,17 +805,10 @@ class ProductsService extends ResolversOperationsService {
         let filter: object = { 'suppliersProd.idProveedor': idProveedor };
         const delResult = await this.delList(this.collection, filter, 'producto');
         if (delResult) {
-          if (delResult.status) {
-            const result = await this.addList(this.collection, productsAdd || [], 'products');
-            return {
-              status: result.status,
-              message: result.message,
-              products: []
-            };
-          }
+          const result = await this.addList(this.collection, productsAdd || [], 'products');
           return {
-            status: delResult.status,
-            message: delResult.message,
+            status: result.status,
+            message: result.message,
             products: []
           };
         }

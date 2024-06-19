@@ -717,6 +717,7 @@ class ProductsService extends ResolversOperationsService {
       const idProveedor = products![0].suppliersProd.idProveedor;
       if (idProveedor !== 'ingram') {
         const productsBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI()).productsBDI;
+        // const productsICECAT = (await new ExternalIcecatsService({}, {}, context).getIcecatProductLocal()).icecatProductLocal;
         if (productsBDI && productsBDI.length > 0) {
           console.log('productsBDI.length: ', productsBDI?.length);
           process.env.PRODUCTION === 'true' && logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
@@ -730,6 +731,20 @@ class ProductsService extends ResolversOperationsService {
               process.env.PRODUCTION === 'true' && logger.info(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
             }
           }
+          // if (productsICECAT && productsICECAT.length > 0) {
+          //   console.log('productsICECAT.length: ', productsICECAT?.length);
+          //   process.env.PRODUCTION === 'true' && logger.info(`insertMany/productsICECAT.length: ${productsICECAT.length} \n`);
+          //   // Crear un mapa para buscar productos por número de parte ICECAT
+          //   const productsICECATMap = new Map<string, any>();
+          //   for (const productICECAT of productsICECAT) {
+          //     if (productICECAT.products && productICECAT.products.vendornumber) {
+          //       productsICECATMap.set(productICECAT.products.vendornumber, productICECAT);
+          //     } else {
+          //       console.log('productICECAT.products.vendornumber is undefined: ', productICECAT);
+          //       process.env.PRODUCTION === 'true' && logger.info(`productICECAT.products.vendornumber is undefined: ${productICECAT} \n`);
+          //     }
+          //   }
+          // }
           let i = id ? parseInt(id) : 1;
           for (const product of products) {
             // Verificar si el producto viene categorizado
@@ -738,59 +753,67 @@ class ProductsService extends ResolversOperationsService {
               console.log('product.partnumber: ', product.partnumber);
               // console.log('productBDI: ', productBDI); // Imprimir el resultado de la búsqueda
               // Categorias
-              if (productBDI.products && productBDI.products.categoriesIdIngram) {
-                // console.log('product.category: ', product.category);
-                // console.log('productBDI.products.categoriesIdIngram: ', productBDI.products.categoriesIdIngram);
-                product.category = [];
-                product.subCategory = [];
-                const partes: string[] = productBDI.products.categoriesIdIngram.split("->", 2);
-                if (partes && partes.length > 0) {
-                  // Categorias
-                  if (partes[0].length > 0) {
-                    const c = new Categorys();
-                    c.name = partes[0];
-                    c.slug = slugify(partes[0] || '', { lower: true });
-                    product.category.push(c);
+              if (!product.category || (product.category.length > 0 && product.category[0].name === '')) {
+                // Categorizar por BDI
+                if (productBDI.products && productBDI.products.categoriesIdIngram) {
+                  // console.log('product.category: ', product.category);
+                  // console.log('productBDI.products.categoriesIdIngram: ', productBDI.products.categoriesIdIngram);
+                  product.category = [];
+                  product.subCategory = [];
+                  const partes: string[] = productBDI.products.categoriesIdIngram.split("->", 2);
+                  if (partes && partes.length > 0) {
+                    // Categorias
+                    if (partes[0].length > 0) {
+                      const c = new Categorys();
+                      c.name = partes[0];
+                      c.slug = slugify(partes[0] || '', { lower: true });
+                      product.category.push(c);
+                    }
+                    // Subcategorias
+                    if (partes[1].length > 0) {
+                      const c = new Categorys();
+                      c.name = partes[1];
+                      c.slug = slugify(partes[1] || '', { lower: true });
+                      product.subCategory.push(c);
+                    }
                   }
-                  // Subcategorias
-                  if (partes[1].length > 0) {
-                    const c = new Categorys();
-                    c.name = partes[1];
-                    c.slug = slugify(partes[1] || '', { lower: true });
-                    product.subCategory.push(c);
-                  }
+                  console.log('product.category: ', product.category);
                 }
-                console.log('product.category: ', product.category);
+                // TO DO  - Categorizar por ICECAT
               }
               // Imagenes
-              if (productBDI.products.images) {
-                const urlsDeImagenes: string[] = productBDI.products.images.split(',');
-                if (urlsDeImagenes.length > 0) {
-                  // Imagenes
-                  product.pictures = [];
-                  for (const urlImage of urlsDeImagenes) {
-                    const i = new Picture();
-                    i.width = '600';
-                    i.height = '600';
-                    i.url = urlImage;
-                    product.pictures.push(i);
-                    // Imagenes pequeñas
-                    product.sm_pictures = [];
-                    const is = new Picture();
-                    is.width = '300';
-                    is.height = '300';
-                    is.url = urlImage;
-                    product.sm_pictures.push(i);
+              if (!product.pictures || (product.pictures.length > 0 && product.pictures[0].url === '')) {
+                // Imagenes por BDI
+                if (productBDI.products.images) {
+                  const urlsDeImagenes: string[] = productBDI.products.images.split(',');
+                  if (urlsDeImagenes.length > 0) {
+                    // Imagenes
+                    product.pictures = [];
+                    for (const urlImage of urlsDeImagenes) {
+                      const i = new Picture();
+                      i.width = '600';
+                      i.height = '600';
+                      i.url = urlImage;
+                      product.pictures.push(i);
+                      // Imagenes pequeñas
+                      product.sm_pictures = [];
+                      const is = new Picture();
+                      is.width = '300';
+                      is.height = '300';
+                      is.url = urlImage;
+                      product.sm_pictures.push(i);
+                    }
                   }
                 }
+                // TO DO  - Imagenes por ICECAT
               }
             }
             const productC = await this.categorizarProductos(product, i);
             productsAdd.push(productC);
             i += 1;
           }
-          process.env.PRODUCTION === 'true' && logger.info(`insertMany/products: ${JSON.stringify(products[0])} \n`);
         }
+        process.env.PRODUCTION === 'true' && logger.info(`insertMany/products: ${JSON.stringify(products[0])} \n`);
       } else {
         let i = id ? parseInt(id) : 1;
         for (const product of products) {

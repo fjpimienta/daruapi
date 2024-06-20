@@ -14,6 +14,7 @@ import ExternalBDIService from './externalBDI.service';
 import downloadImage from './download.service';
 import path from 'path';
 import logger from '../utils/logger';
+import checkImageExists from './checkimage.service';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
@@ -32,6 +33,7 @@ class ProductsService extends ResolversOperationsService {
     const brands = variables.brands;
     const categories = variables.categories;
     const subCategories = variables.subCategories;
+    const supplierId = variables.supplierId;
     let filter: object;
     const regExp = new RegExp('.*' + filterName + '.*', 'i');
     if (filterName === '' || filterName === undefined) {
@@ -79,6 +81,9 @@ class ProductsService extends ResolversOperationsService {
     }
     if (subCategories) {
       filter = { ...filter, ...{ 'subCategory.slug': { $in: subCategories } } };
+    }
+    if (supplierId) {
+      filter = { ...filter, ...{ 'suppliersProd.idProveedor': supplierId } };
     }
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
@@ -854,25 +859,107 @@ class ProductsService extends ResolversOperationsService {
   async saveImages(context: IContextData) {
     try {
       const uploadFolder = './uploads/images/';
-      const products = this.getVariables().products;
-      if (products?.length === 0) {
-        return {
-          status: false,
-          message: 'No existen elementos para integrar',
-          products: null
-        };
+      const supplierId = this.getVariables().supplierId;
+      let filter: object = {};
+      if (supplierId) {
+        filter = { 'suppliersProd.idProveedor': supplierId };
       }
-      if (!products) {
+      // Recuperar los productos de un proveedor
+      const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
+      if (!result || !result.items || result.items.length === 0) {
         process.env.PRODUCTION === 'true' && logger.info(`insertMany->No existen elementos para integrar`);
         return {
           status: false,
-          message: 'No existen elementos para integrar',
-          products: null
+          message: 'No existen elementos para recuperar las imagenes',
+          products: []
         };
       }
+      console.log('result.items.length: ', result.items.length);
+      const products = result.items as IProduct[];
       console.log('products.length: ', products.length);
       process.env.PRODUCTION === 'true' && logger.info(`insertMany/products.length: ${products?.length} \n`);
-      const idProveedor = products![0].suppliersProd.idProveedor;
+      const idProveedor = supplierId;
+      // Proveedores que no tienen imagenes
+      if (idProveedor === 'daisytek') {
+        // const productsBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI()).productsBDI;
+        const productsBDI = (await this.listAll(this.collection, this.catalogName, 1, -1, { 'suppliersProd.idProveedor': 'ingram' })).items;
+        console.log('productsBDI.length: ', productsBDI.length);
+        if (productsBDI && productsBDI.length > 0) {
+          console.log('productsBDI.length: ', productsBDI.length);
+          process.env.PRODUCTION === 'true' && logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
+          // Crear un mapa para buscar productos por número de parte
+          const productsBDIMap = new Map<string, any>();
+          for (const productBDI of productsBDI) {
+            if (productBDI.products && productBDI.products.vendornumber) {
+              productsBDIMap.set(productBDI.products.vendornumber, productBDI);
+            } else {
+              console.log('productBDI.products.vendornumber is undefined: ', productBDI);
+              process.env.PRODUCTION === 'true' && logger.info(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
+            }
+          }
+          // Procesa la carga de imagenes.
+          for (const product of products) {
+            const productBDI = productsBDIMap.get(product.partnumber);
+            if (productBDI) {
+              console.log('product.partnumber: ', product.partnumber);
+              product.pictures = productBDI.pictures;
+              product.sm_pictures = productBDI.sm_pictures;
+            }
+          }
+        }
+      }
+
+      // Proveedores que si tienen imagenes
+      if (idProveedor === 'ingram') {
+        for (const product of products) {
+          // Guardar Imagenes
+          for (const image of product.pictures) {
+            const urlImage = image.url;
+            try {
+              console.log('urlImage: ', urlImage);
+              // Verificar que no exista la imagen:
+              const existFile = await checkImageExists(urlImage);
+              if (!existFile) {
+                // Si no existe guardar la imagen
+                const filename = await downloadImage(urlImage, uploadFolder);
+                console.log('filename: ', filename);
+                const urlImageSave = process.env.UPLOAD_URL + '';
+                image.url = path.join(urlImageSave, filename);
+              } else {
+                image.url = urlImage;
+              }
+            } catch (error) {
+              image.url = "";
+            }
+          }
+          for (const simage of product.sm_pictures) {
+            const urlImage = simage.url;
+            try {
+              console.log('urlImage: ', urlImage);
+              // Verificar que no exista la imagen:
+              const existFile = await checkImageExists(urlImage);
+              if (!existFile) {
+                // Si no existe guardar la imagen
+                const filename = await downloadImage(urlImage, uploadFolder);
+                console.log('filename: ', filename);
+                simage.url = path.join(uploadFolder, filename);
+              } else {
+                simage.url = urlImage;
+              }
+            } catch (error) {
+              simage.url = "";
+            }
+          }
+        }
+      }
+
+      return {
+        status: true,
+        message: 'Se han actualizado las imagenes de los productos',
+        products
+      };
+
+
       if (idProveedor === 'ingram') {
         for (const product of products) {
           // Guardar Imagenes
@@ -882,7 +969,8 @@ class ProductsService extends ResolversOperationsService {
               console.log('urlImage: ', urlImage);
               const filename = await downloadImage(urlImage, uploadFolder);
               console.log('filename: ', filename);
-              image.url = path.join(uploadFolder, filename);
+              const urlImageSave = process.env.UPLOAD_URL + '';
+              image.url = path.join(urlImageSave, filename);
             } catch (error) {
               image.url = "";
             }
@@ -901,6 +989,7 @@ class ProductsService extends ResolversOperationsService {
         }
       } else {
         const productsBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI()).productsBDI;
+        console.log('productsBDI.length: ', productsBDI.length);
         for (const product of products) {
           // Guardar Imagenes
           if (productsBDI) {

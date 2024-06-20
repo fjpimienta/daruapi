@@ -6,4 +6,5 @@ type Mutation {
    updateProduct(product: ProductInput): ResultProduct
    deleteProduct(id: ID!): ResultProduct
    blockProduct(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultProduct
+   addImages(supplierId: String): ResultProduct
 }

@@ -86,7 +86,7 @@ class ResolversOperationsService {
         },
         status: true,
         message: `Lista de ${listElement} cargada correctamente`,
-        items: findElements(this.getDB(), collection, filter, paginationData, sort)
+        items: await findElements(this.getDB(), collection, filter, paginationData, sort)
       };
     } catch (error) {
       return {
@@ -131,7 +131,7 @@ class ResolversOperationsService {
         },
         status: true,
         message: `Lista de ${listElement} cargada correctamente`,
-        items: findElementsProducts(this.getDB(), collection, aggregate),
+        items: await findElementsProducts(this.getDB(), collection, aggregate),
       };
     } catch (error) {
       return {

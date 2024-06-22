@@ -1,28 +1,23 @@
-import http from 'http';
+import http, { ClientRequest, IncomingMessage } from 'http';
 import https from 'https';
 import fs from 'fs';
-import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
 import logger from '../utils/logger';
 
-const downloadImage = (url: string, destFolder: string): Promise<string> => {
+const downloadImage = (url: string, destFolder: string, filename: string): Promise<string> => {
   return new Promise((resolve, reject) => {
-    // Asegúrate de que la carpeta de destino existe
+    // Ensure the destination folder exists
     if (!fs.existsSync(destFolder)) {
       fs.mkdirSync(destFolder, { recursive: true });
     }
 
-    const fileName = `${uuidv4()}${path.extname(url)}`;
-    const filePath = path.join(destFolder, fileName);
-
-    const file = fs.createWriteStream(filePath);
-
+    const filePath = path.join(destFolder, filename);
     const protocol = url.startsWith('https') ? https : http;
 
     console.log(`Starting download from: ${url}`);
     logger.info(`Starting download from: ${url}`);
 
-    const request = protocol.get(url, (response) => {
+    const request = (protocol.get(url, (response: IncomingMessage) => {
       if (!response || response.statusCode === null) {
         const errorMessage = `No valid response from: ${url}`;
         console.error(errorMessage);
@@ -56,13 +51,15 @@ const downloadImage = (url: string, destFolder: string): Promise<string> => {
             return reject(errorMessage);
           });
         } else {
+          const file = fs.createWriteStream(filePath);
+
           response.pipe(file);
 
           file.on('finish', () => {
             file.close(() => {
               console.log(`Successfully downloaded image: ${filePath}`);
               logger.info(`Successfully downloaded image: ${filePath}`);
-              resolve(fileName);
+              resolve(filename);
             });  // Cierra el archivo y resuelve la promesa
           });
 
@@ -81,7 +78,7 @@ const downloadImage = (url: string, destFolder: string): Promise<string> => {
           });
         }
       }
-    });
+    }) as ClientRequest);
 
     request.on('error', (err) => {
       console.error(`Request error: ${err.message}`);
@@ -91,4 +88,15 @@ const downloadImage = (url: string, destFolder: string): Promise<string> => {
   });
 };
 
-export default downloadImage;
+const checkImageExists = (url: string): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const protocol = url.startsWith('https') ? https : http;
+    (protocol.get(url, (res) => {
+      resolve(res.statusCode === 200);
+    }) as ClientRequest).on('error', () => {
+      resolve(false);
+    });
+  });
+};
+
+export { downloadImage, checkImageExists };

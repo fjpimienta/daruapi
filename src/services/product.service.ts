@@ -11,10 +11,11 @@ import ExternalIcecatsService from './externalIcecat.service';
 import ExternalIngramService from './externalIngram.service';
 import { Categorys, Picture } from '../models/product.models';
 import ExternalBDIService from './externalBDI.service';
-import downloadImage from './download.service';
 import path from 'path';
 import logger from '../utils/logger';
 import checkImageExists from './checkimage.service';
+import fs from 'fs';
+import { downloadImage } from './download.service';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
@@ -656,7 +657,7 @@ class ProductsService extends ResolversOperationsService {
             const urlImage = image.url;
             try {
               console.log('urlImage: ', urlImage);
-              const filename = await downloadImage(urlImage, uploadFolder);
+              const filename = await downloadImage(urlImage, uploadFolder, 'No existia');
               console.log('filename: ', filename);
               image.url = path.join(uploadFolder, filename);
             } catch (error) {
@@ -667,7 +668,7 @@ class ProductsService extends ResolversOperationsService {
             const urlImage = simage.url;
             try {
               console.log('urlImage: ', urlImage);
-              const filename = await downloadImage(urlImage, uploadFolder);
+              const filename = await downloadImage(urlImage, uploadFolder, 'No existia');
               console.log('filename: ', filename);
               simage.url = path.join(uploadFolder, filename);
             } catch (error) {
@@ -910,46 +911,64 @@ class ProductsService extends ResolversOperationsService {
       }
 
       // Proveedores que si tienen imagenes
-      if (idProveedor === 'ingram') {
+      if (idProveedor === 'ingram' || idProveedor === 'syscom') {
         for (const product of products) {
           // Guardar Imagenes
+          let imageIndex = 1;
           for (const image of product.pictures) {
             const urlImage = image.url;
             try {
-              console.log('urlImage: ', urlImage);
-              // Verificar que no exista la imagen:
               const existFile = await checkImageExists(urlImage);
-              if (!existFile) {
-                // Si no existe guardar la imagen
-                const filename = await downloadImage(urlImage, uploadFolder);
-                console.log('filename: ', filename);
-                const urlImageSave = process.env.UPLOAD_URL + '';
+              if (existFile) {
+                console.log(`existFile: ${urlImage}`);
+                const filename = this.generateFilename(product.partnumber, imageIndex);
+                console.log(`filename: ${filename}`);
+                const filePath = path.join(uploadFolder, filename);
+                console.log(`filePath: ${filePath}`);
+                if (fs.existsSync(filePath)) {
+                  await fs.promises.unlink(filePath);
+                }
+                await downloadImage(urlImage, uploadFolder, filename);
+                const urlImageSave = process.env.UPLOAD_URL || '';
                 image.url = path.join(urlImageSave, filename);
+                console.log(`image.url: ${image.url}`);
+                imageIndex++;
               } else {
-                image.url = urlImage;
+                image.url = "";
               }
             } catch (error) {
+              console.error(`Error downloading image from ${urlImage}:`, error);
               image.url = "";
             }
           }
-          for (const simage of product.sm_pictures) {
-            const urlImage = simage.url;
-            try {
-              console.log('urlImage: ', urlImage);
-              // Verificar que no exista la imagen:
-              const existFile = await checkImageExists(urlImage);
-              if (!existFile) {
-                // Si no existe guardar la imagen
-                const filename = await downloadImage(urlImage, uploadFolder);
-                console.log('filename: ', filename);
-                simage.url = path.join(uploadFolder, filename);
-              } else {
-                simage.url = urlImage;
-              }
-            } catch (error) {
-              simage.url = "";
-            }
-          }
+          // imageIndex = 1;
+
+          // for (const simage of product.sm_pictures) {
+          //   const urlImage = simage.url;
+
+          //   try {
+          //     const existFile = await checkImageExists(urlImage);
+
+          //     if (existFile) {
+          //       const filename = this.generateFilename(product.partnumber, imageIndex);
+          //       const filePath = path.join(uploadFolder, filename);
+
+          //       if (fs.existsSync(filePath)) {
+          //         await fs.promises.unlink(filePath);
+          //       }
+
+          //       await downloadImage(urlImage, uploadFolder, filename);
+          //       const urlImageSave = process.env.UPLOAD_URL || '';
+          //       simage.url = path.join(urlImageSave, filename);
+          //       imageIndex++;
+          //     } else {
+          //       simage.url = "";
+          //     }
+          //   } catch (error) {
+          //     console.error(`Error downloading image from ${urlImage}:`, error);
+          //     simage.url = "";
+          //   }
+          // }
         }
       }
 
@@ -960,74 +979,74 @@ class ProductsService extends ResolversOperationsService {
       };
 
 
-      if (idProveedor === 'ingram') {
-        for (const product of products) {
-          // Guardar Imagenes
-          for (const image of product.pictures) {
-            const urlImage = image.url;
-            try {
-              console.log('urlImage: ', urlImage);
-              const filename = await downloadImage(urlImage, uploadFolder);
-              console.log('filename: ', filename);
-              const urlImageSave = process.env.UPLOAD_URL + '';
-              image.url = path.join(urlImageSave, filename);
-            } catch (error) {
-              image.url = "";
-            }
-          }
-          for (const simage of product.sm_pictures) {
-            const urlImage = simage.url;
-            try {
-              console.log('urlImage: ', urlImage);
-              const filename = await downloadImage(urlImage, uploadFolder);
-              console.log('filename: ', filename);
-              simage.url = path.join(uploadFolder, filename);
-            } catch (error) {
-              simage.url = "";
-            }
-          }
-        }
-      } else {
-        const productsBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI()).productsBDI;
-        console.log('productsBDI.length: ', productsBDI.length);
-        for (const product of products) {
-          // Guardar Imagenes
-          if (productsBDI) {
-            // Recuperar imagenes de icecat todos los proveedores
-            // Busca las imagenes en BDI
-            if (productsBDI && productsBDI.length > 0) {
-              // Crear un mapa para buscar productos por número de parte
-              const productsBDIMap = new Map<string, any>();
-              for (const productBDI of productsBDI) {
-                productsBDIMap.set(productBDI.sku, productBDI);
-              }
-              const productBDI = productsBDIMap.get(product.partnumber);
-              if (productBDI) {
-                console.log(`productBDI.sku: ${productBDI.sku} - product.partnumber: ${product.partnumber}`);
-                if (productBDI.products.images) {
-                  const urlsDeImagenes: string[] = productBDI.products.images.split(',');
-                  if (urlsDeImagenes.length > 0) {
-                    product.pictures = [];
-                    for (const urlImage of urlsDeImagenes) {
-                      const i = new Picture();
-                      i.width = '600';
-                      i.height = '600';
-                      i.url = urlImage;
-                      product.pictures.push(i);                       // Imagenes
-                      product.sm_pictures = [];
-                      const is = new Picture();
-                      is.width = '300';
-                      is.height = '300';
-                      is.url = urlImage;
-                      product.sm_pictures.push(i);                    // Imagenes pequeñas
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+      // if (idProveedor === 'ingram') {
+      //   for (const product of products) {
+      //     // Guardar Imagenes
+      //     for (const image of product.pictures) {
+      //       const urlImage = image.url;
+      //       try {
+      //         console.log('urlImage: ', urlImage);
+      //         const filename = await downloadImage(urlImage, uploadFolder);
+      //         console.log('filename: ', filename);
+      //         const urlImageSave = process.env.UPLOAD_URL + '';
+      //         image.url = path.join(urlImageSave, filename);
+      //       } catch (error) {
+      //         image.url = "";
+      //       }
+      //     }
+      //     for (const simage of product.sm_pictures) {
+      //       const urlImage = simage.url;
+      //       try {
+      //         console.log('urlImage: ', urlImage);
+      //         const filename = await downloadImage(urlImage, uploadFolder);
+      //         console.log('filename: ', filename);
+      //         simage.url = path.join(uploadFolder, filename);
+      //       } catch (error) {
+      //         simage.url = "";
+      //       }
+      //     }
+      //   }
+      // } else {
+      //   const productsBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI()).productsBDI;
+      //   console.log('productsBDI.length: ', productsBDI.length);
+      //   for (const product of products) {
+      //     // Guardar Imagenes
+      //     if (productsBDI) {
+      //       // Recuperar imagenes de icecat todos los proveedores
+      //       // Busca las imagenes en BDI
+      //       if (productsBDI && productsBDI.length > 0) {
+      //         // Crear un mapa para buscar productos por número de parte
+      //         const productsBDIMap = new Map<string, any>();
+      //         for (const productBDI of productsBDI) {
+      //           productsBDIMap.set(productBDI.sku, productBDI);
+      //         }
+      //         const productBDI = productsBDIMap.get(product.partnumber);
+      //         if (productBDI) {
+      //           console.log(`productBDI.sku: ${productBDI.sku} - product.partnumber: ${product.partnumber}`);
+      //           if (productBDI.products.images) {
+      //             const urlsDeImagenes: string[] = productBDI.products.images.split(',');
+      //             if (urlsDeImagenes.length > 0) {
+      //               product.pictures = [];
+      //               for (const urlImage of urlsDeImagenes) {
+      //                 const i = new Picture();
+      //                 i.width = '600';
+      //                 i.height = '600';
+      //                 i.url = urlImage;
+      //                 product.pictures.push(i);                       // Imagenes
+      //                 product.sm_pictures = [];
+      //                 const is = new Picture();
+      //                 is.width = '300';
+      //                 is.height = '300';
+      //                 is.url = urlImage;
+      //                 product.sm_pictures.push(i);                    // Imagenes pequeñas
+      //               }
+      //             }
+      //           }
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
     } catch (error) {
       return {
         status: false,
@@ -1035,6 +1054,10 @@ class ProductsService extends ResolversOperationsService {
         products: []
       };
     }
+  }
+
+  generateFilename(partNumber: string, index: number): string {
+    return `${partNumber}_${index}.jpg`;
   }
 
   async categorizarProductos(product: IProduct, i: number) {

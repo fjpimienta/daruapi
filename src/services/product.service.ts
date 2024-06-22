@@ -941,6 +941,7 @@ class ProductsService extends ResolversOperationsService {
               image.url = "";
             }
           }
+          product.sm_pictures = product.pictures;
           // imageIndex = 1;
 
           // for (const simage of product.sm_pictures) {

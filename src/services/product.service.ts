@@ -929,7 +929,7 @@ class ProductsService extends ResolversOperationsService {
                   await fs.promises.unlink(filePath);
                 }
                 await downloadImage(urlImage, uploadFolder, filename);
-                const urlImageSave = process.env.UPLOAD_URL || '';
+                const urlImageSave = process.env.UPLOAD_URL + '/images' || '';
                 image.url = path.join(urlImageSave, filename);
                 console.log(`image.url: ${image.url}`);
                 imageIndex++;

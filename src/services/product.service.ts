@@ -971,12 +971,29 @@ class ProductsService extends ResolversOperationsService {
           // }
         }
       }
-
-      return {
-        status: true,
-        message: 'Se han actualizado las imagenes de los productos',
-        products
-      };
+      // Guardar los elementos nuevos
+      if (products.length > 0) {
+        let filter: object = { 'suppliersProd.idProveedor': idProveedor };
+        const delResult = await this.delList(this.collection, filter, 'producto');
+        if (delResult) {
+          const result = await this.addList(this.collection, products || [], 'products');
+          return {
+            status: result.status,
+            message: result.message,
+            products
+          };
+        }
+        return {
+          status: false,
+          message: 'Hubo un error al generar los productos. No se pudieron eliminar previamente.',
+          products: []
+        };
+      }
+      // return {
+      //   status: true,
+      //   message: 'Se han actualizado las imagenes de los productos',
+      //   products
+      // };
 
 
       // if (idProveedor === 'ingram') {

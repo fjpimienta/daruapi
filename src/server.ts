@@ -81,7 +81,7 @@ async function init(): Promise<void> {
   app.use('/files', fileService);
 
   // Configurar el directorio estático
-  app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+  app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
   await server.start();
   server.applyMiddleware({ app });

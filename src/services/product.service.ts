@@ -859,6 +859,7 @@ class ProductsService extends ResolversOperationsService {
   // Guardar Imagenes
   async saveImages(context: IContextData) {
     try {
+      let productsAdd: IProduct[] = [];
       const uploadFolder = './uploads/images/';
       const supplierId = this.getVariables().supplierId;
       let filter: object = {};
@@ -917,67 +918,43 @@ class ProductsService extends ResolversOperationsService {
           let imageIndex = 1;
           for (const image of product.pictures) {
             const urlImage = image.url;
-            try {
-              const existFile = await checkImageExists(urlImage);
-              if (existFile) {
-                console.log(`existFile: ${urlImage}`);
-                const filename = this.generateFilename(product.partnumber, imageIndex);
-                console.log(`filename: ${filename}`);
-                const filePath = path.join(uploadFolder, filename);
-                console.log(`filePath: ${filePath}`);
-                if (fs.existsSync(filePath)) {
-                  await fs.promises.unlink(filePath);
+            // Verificar si la URL de la imagen comienza con "uploads/images/"
+            if (!urlImage.startsWith('uploads/images/')) {
+              try {
+                const existFile = await checkImageExists(urlImage);
+                if (existFile) {
+                  console.log(`existFile: ${urlImage}`);
+                  const filename = this.generateFilename(product.partnumber, imageIndex);
+                  console.log(`filename: ${filename}`);
+                  const filePath = path.join(uploadFolder, filename);
+                  console.log(`filePath: ${filePath}`);
+                  if (fs.existsSync(filePath)) {
+                    await fs.promises.unlink(filePath);
+                  }
+                  await downloadImage(urlImage, uploadFolder, filename);
+                  const urlImageSave = process.env.UPLOAD_URL + '/images' || '';
+                  image.url = path.join(urlImageSave, filename);
+                  console.log(`image.url: ${image.url}`);
+                  imageIndex++;
+                } else {
+                  image.url = "";
                 }
-                await downloadImage(urlImage, uploadFolder, filename);
-                const urlImageSave = process.env.UPLOAD_URL + '/images' || '';
-                image.url = path.join(urlImageSave, filename);
-                console.log(`image.url: ${image.url}`);
-                imageIndex++;
-              } else {
+              } catch (error) {
+                console.error(`Error downloading image from ${urlImage}:`, error);
                 image.url = "";
               }
-            } catch (error) {
-              console.error(`Error downloading image from ${urlImage}:`, error);
-              image.url = "";
             }
           }
           product.sm_pictures = product.pictures;
-          // imageIndex = 1;
-
-          // for (const simage of product.sm_pictures) {
-          //   const urlImage = simage.url;
-
-          //   try {
-          //     const existFile = await checkImageExists(urlImage);
-
-          //     if (existFile) {
-          //       const filename = this.generateFilename(product.partnumber, imageIndex);
-          //       const filePath = path.join(uploadFolder, filename);
-
-          //       if (fs.existsSync(filePath)) {
-          //         await fs.promises.unlink(filePath);
-          //       }
-
-          //       await downloadImage(urlImage, uploadFolder, filename);
-          //       const urlImageSave = process.env.UPLOAD_URL || '';
-          //       simage.url = path.join(urlImageSave, filename);
-          //       imageIndex++;
-          //     } else {
-          //       simage.url = "";
-          //     }
-          //   } catch (error) {
-          //     console.error(`Error downloading image from ${urlImage}:`, error);
-          //     simage.url = "";
-          //   }
-          // }
+          productsAdd.push(product);
         }
       }
       // Guardar los elementos nuevos
-      if (products.length > 0) {
+      if (productsAdd.length > 0) {
         let filter: object = { 'suppliersProd.idProveedor': idProveedor };
         const delResult = await this.delList(this.collection, filter, 'producto');
         if (delResult) {
-          const result = await this.addList(this.collection, products || [], 'products');
+          const result = await this.addList(this.collection, productsAdd || [], 'products');
           return {
             status: result.status,
             message: result.message,
@@ -990,81 +967,6 @@ class ProductsService extends ResolversOperationsService {
           products: []
         };
       }
-      // return {
-      //   status: true,
-      //   message: 'Se han actualizado las imagenes de los productos',
-      //   products
-      // };
-
-
-      // if (idProveedor === 'ingram') {
-      //   for (const product of products) {
-      //     // Guardar Imagenes
-      //     for (const image of product.pictures) {
-      //       const urlImage = image.url;
-      //       try {
-      //         console.log('urlImage: ', urlImage);
-      //         const filename = await downloadImage(urlImage, uploadFolder);
-      //         console.log('filename: ', filename);
-      //         const urlImageSave = process.env.UPLOAD_URL + '';
-      //         image.url = path.join(urlImageSave, filename);
-      //       } catch (error) {
-      //         image.url = "";
-      //       }
-      //     }
-      //     for (const simage of product.sm_pictures) {
-      //       const urlImage = simage.url;
-      //       try {
-      //         console.log('urlImage: ', urlImage);
-      //         const filename = await downloadImage(urlImage, uploadFolder);
-      //         console.log('filename: ', filename);
-      //         simage.url = path.join(uploadFolder, filename);
-      //       } catch (error) {
-      //         simage.url = "";
-      //       }
-      //     }
-      //   }
-      // } else {
-      //   const productsBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI()).productsBDI;
-      //   console.log('productsBDI.length: ', productsBDI.length);
-      //   for (const product of products) {
-      //     // Guardar Imagenes
-      //     if (productsBDI) {
-      //       // Recuperar imagenes de icecat todos los proveedores
-      //       // Busca las imagenes en BDI
-      //       if (productsBDI && productsBDI.length > 0) {
-      //         // Crear un mapa para buscar productos por número de parte
-      //         const productsBDIMap = new Map<string, any>();
-      //         for (const productBDI of productsBDI) {
-      //           productsBDIMap.set(productBDI.sku, productBDI);
-      //         }
-      //         const productBDI = productsBDIMap.get(product.partnumber);
-      //         if (productBDI) {
-      //           console.log(`productBDI.sku: ${productBDI.sku} - product.partnumber: ${product.partnumber}`);
-      //           if (productBDI.products.images) {
-      //             const urlsDeImagenes: string[] = productBDI.products.images.split(',');
-      //             if (urlsDeImagenes.length > 0) {
-      //               product.pictures = [];
-      //               for (const urlImage of urlsDeImagenes) {
-      //                 const i = new Picture();
-      //                 i.width = '600';
-      //                 i.height = '600';
-      //                 i.url = urlImage;
-      //                 product.pictures.push(i);                       // Imagenes
-      //                 product.sm_pictures = [];
-      //                 const is = new Picture();
-      //                 is.width = '300';
-      //                 is.height = '300';
-      //                 is.url = urlImage;
-      //                 product.sm_pictures.push(i);                    // Imagenes pequeñas
-      //               }
-      //             }
-      //           }
-      //         }
-      //       }
-      //     }
-      //   }
-      // }
     } catch (error) {
       return {
         status: false,

@@ -877,31 +877,29 @@ class ProductsService extends ResolversOperationsService {
         };
       }
       const products = result.items as IProduct[];
-      process.env.PRODUCTION === 'true' && logger.info(`insertMany/products.length: ${products?.length} \n`);
       const idProveedor = supplierId;
       // Proveedores que no tienen imagenes
       if (idProveedor === 'daisytek') {
-        // const productsBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI()).productsBDI;
-        const productsBDI = (await this.listAll(this.collection, this.catalogName, 1, -1, { 'suppliersProd.idProveedor': 'ingram' })).items;
+        const productsBDI = (await this.listAll(this.collection, this.catalogName, 1, -1, { 'suppliersProd.idProveedor': { $ne: 'ingram' } })).items;
         console.log('productsBDI.length: ', productsBDI.length);
+        process.env.PRODUCTION === 'true' && logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
         if (productsBDI && productsBDI.length > 0) {
-          console.log('productsBDI.length: ', productsBDI.length);
-          process.env.PRODUCTION === 'true' && logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
           // Crear un mapa para buscar productos por número de parte
           const productsBDIMap = new Map<string, any>();
           for (const productBDI of productsBDI) {
             if (productBDI.products && productBDI.products.vendornumber) {
               productsBDIMap.set(productBDI.products.vendornumber, productBDI);
-            } else {
-              console.log('productBDI.products.vendornumber is undefined: ', productBDI);
-              process.env.PRODUCTION === 'true' && logger.info(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
+              // } else {
+              //   console.log(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
+              //   process.env.PRODUCTION === 'true' && logger.info(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
             }
           }
           // Procesa la carga de imagenes.
+          console.log('products.length: ', products.length);
+          process.env.PRODUCTION === 'true' && logger.info(`insertMany/products.length: ${products?.length} \n`);
           for (const product of products) {
             const productBDI = productsBDIMap.get(product.partnumber);
             if (productBDI) {
-              console.log('product.partnumber: ', product.partnumber);
               product.pictures = productBDI.pictures;
               product.sm_pictures = productBDI.sm_pictures;
             }
@@ -943,6 +941,8 @@ class ProductsService extends ResolversOperationsService {
         }
       }
       // Guardar los elementos nuevos
+      console.log('productsAdd.length: ', productsAdd.length);
+      process.env.PRODUCTION === 'true' && logger.info(`insertMany/productsAdd.length: ${productsAdd?.length} \n`);
       if (productsAdd.length > 0) {
         let filter: object = { 'suppliersProd.idProveedor': idProveedor };
         const delResult = await this.delList(this.collection, filter, 'producto');
@@ -960,6 +960,11 @@ class ProductsService extends ResolversOperationsService {
           products: []
         };
       }
+      return {
+        status: false,
+        message: 'No hubo productos para agregar imagenes.',
+        products: []
+      };
     } catch (error) {
       return {
         status: false,

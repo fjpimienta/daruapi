@@ -879,7 +879,7 @@ class ProductsService extends ResolversOperationsService {
       const products = result.items as IProduct[];
       const idProveedor = supplierId;
       // Proveedores que no tienen imagenes
-      if (idProveedor === 'daisytek') {
+      if (idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva') {
         const productsBDI = (await this.listAll(this.collection, this.catalogName, 1, -1, { 'suppliersProd.idProveedor': { $ne: 'ingram' } })).items;
         console.log('productsBDI.length: ', productsBDI.length);
         process.env.PRODUCTION === 'true' && logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
@@ -923,15 +923,29 @@ class ProductsService extends ResolversOperationsService {
                   if (fs.existsSync(filePath)) {
                     await fs.promises.unlink(filePath);
                   }
-                  await downloadImage(urlImage, uploadFolder, filename);
-                  const urlImageSave = process.env.UPLOAD_URL + '/images' || '';
-                  image.url = path.join(urlImageSave, filename);
+                  const segments = urlImage.split('/');
+                  const fileName = segments[segments.length - 1];
+                  const urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileName}`;
+                  const existFile = await checkImageExists(urlImageDaru);
+                  if (!existFile) {
+                    await downloadImage(urlImage, uploadFolder, filename);
+                    const urlImageSave = process.env.UPLOAD_URL + '/images' || '';
+                    image.url = path.join(urlImageSave, filename);
+                  }
                   imageIndex++;
                 } else {
                   image.url = "";
                 }
               } catch (error) {
                 console.error(`Error downloading image from ${urlImage}:`, error);
+                image.url = "";
+              }
+            } else {
+              const urlImageDaru = process.env.UPLOAD_URL + '/images' + urlImage;
+              console.log('urlImageDaru: ', urlImageDaru);
+              const existFile = await checkImageExists(urlImageDaru);
+              if (existFile) {
+              } else {
                 image.url = "";
               }
             }

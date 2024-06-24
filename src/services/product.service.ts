@@ -876,9 +876,7 @@ class ProductsService extends ResolversOperationsService {
           products: []
         };
       }
-      console.log('result.items.length: ', result.items.length);
       const products = result.items as IProduct[];
-      console.log('products.length: ', products.length);
       process.env.PRODUCTION === 'true' && logger.info(`insertMany/products.length: ${products?.length} \n`);
       const idProveedor = supplierId;
       // Proveedores que no tienen imagenes
@@ -910,7 +908,6 @@ class ProductsService extends ResolversOperationsService {
           }
         }
       }
-
       // Proveedores que si tienen imagenes
       if (idProveedor === 'ingram' || idProveedor === 'syscom') {
         for (const product of products) {
@@ -923,18 +920,14 @@ class ProductsService extends ResolversOperationsService {
               try {
                 const existFile = await checkImageExists(urlImage);
                 if (existFile) {
-                  console.log(`existFile: ${urlImage}`);
                   const filename = this.generateFilename(product.partnumber, imageIndex);
-                  console.log(`filename: ${filename}`);
                   const filePath = path.join(uploadFolder, filename);
-                  console.log(`filePath: ${filePath}`);
                   if (fs.existsSync(filePath)) {
                     await fs.promises.unlink(filePath);
                   }
                   await downloadImage(urlImage, uploadFolder, filename);
                   const urlImageSave = process.env.UPLOAD_URL + '/images' || '';
                   image.url = path.join(urlImageSave, filename);
-                  console.log(`image.url: ${image.url}`);
                   imageIndex++;
                 } else {
                   image.url = "";

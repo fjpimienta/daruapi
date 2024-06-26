@@ -928,6 +928,17 @@ class ProductsService extends ResolversOperationsService {
       }
       // Proveedores que si tienen imagenes
       if (idProveedor === 'ingram' || idProveedor === 'syscom') {
+        if (idProveedor === 'ingram') {
+          const token = (await new ExternalBDIService({}, {}, context).getTokenBDI());
+          if (!token || !token.status) {
+            return {
+              status: token.status,
+              message: token.message,
+              products: [],
+            };
+          }
+          process.env.PRODUCTION === 'true' && logger.info(`saveImages/token.tokenBDI.token: ${token.tokenBDI.token} \n`);
+        }
         for (const product of products) {
           // Guardar Imagenes
           let imageIndex = 1;
@@ -940,32 +951,36 @@ class ProductsService extends ResolversOperationsService {
                 const fileNameLocal = segments[segments.length - 1];
                 const urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileNameLocal}`;
                 const existFileLocal = await checkImageExists(urlImageDaru);
-                if (!existFileLocal) {
+                if (existFileLocal) {
+                  const urlImageSave = `${process.env.UPLOAD_URL}images/`;
+                  image.url = path.join(urlImageSave, fileNameLocal);
+                } else {
                   const existFile = await checkImageExists(urlImage);
+                  process.env.PRODUCTION === 'true' && logger.info(`saveImages->existFile ${urlImage}: ${existFile}`);
                   if (existFile) {
                     const filename = this.generateFilename(product.partnumber, imageIndex);
                     const filePath = path.join(uploadFolder, filename);
+                    process.env.PRODUCTION === 'true' && logger.info(`saveImages->filePath ${urlImage}: ${filePath}`);
                     if (fs.existsSync(filePath)) {
                       await fs.promises.unlink(filePath);
                     }
+                    await downloadImage(urlImage, uploadFolder, fileNameLocal);
+                    const urlImageSave = `${process.env.UPLOAD_URL}images/`;
+                    image.url = path.join(urlImageSave, fileNameLocal);
                     imageIndex++;
-                  } else {
-                    image.url = "";
                   }
-                  await downloadImage(urlImage, uploadFolder, fileNameLocal);
                 }
-                const urlImageSave = `${process.env.UPLOAD_URL}images/`;
-                image.url = path.join(urlImageSave, fileNameLocal);
+                process.env.PRODUCTION === 'true' && logger.info(`saveImages->image.url ${urlImage}: ${image.url}`);
               } catch (error) {
                 console.error(`Error downloading image from ${urlImage}:`, error);
-                process.env.PRODUCTION === 'true' && logger.info(`insertMany->Error downloading image from ${urlImage}: ${error}`);
+                process.env.PRODUCTION === 'true' && logger.info(`saveImages->Error downloading image from ${urlImage}: ${error}`);
                 image.url = "";
               }
             } else {
               const urlImageDaru = `${process.env.API_URL}${urlImage}`;
               const existFile = await checkImageExists(urlImageDaru);
               if (!existFile) {
-                image.url = "";
+                // TO DO - Recuperar Imagen de otro proveedor.
               }
             }
           }
@@ -975,7 +990,7 @@ class ProductsService extends ResolversOperationsService {
       }
       // Guardar los elementos nuevos
       console.log('productsAdd.length: ', productsAdd.length);
-      process.env.PRODUCTION === 'true' && logger.info(`insertMany/productsAdd.length: ${productsAdd?.length} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`saveImages/productsAdd.length: ${productsAdd?.length} \n`);
       if (productsAdd.length > 0) {
         let filter: object = { 'suppliersProd.idProveedor': idProveedor };
         const delResult = await this.delList(this.collection, filter, 'producto');

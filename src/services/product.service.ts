@@ -958,10 +958,11 @@ class ProductsService extends ResolversOperationsService {
                 image.url = path.join(urlImageSave, fileNameLocal);
               } catch (error) {
                 console.error(`Error downloading image from ${urlImage}:`, error);
+                process.env.PRODUCTION === 'true' && logger.info(`insertMany->Error downloading image from ${urlImage}: ${error}`);
                 image.url = "";
               }
             } else {
-              const urlImageDaru = `${process.env.UPLOAD_URL}images/${urlImage}`;
+              const urlImageDaru = `${process.env.API_URL}${urlImage}`;
               const existFile = await checkImageExists(urlImageDaru);
               if (!existFile) {
                 image.url = "";

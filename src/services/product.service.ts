@@ -889,19 +889,39 @@ class ProductsService extends ResolversOperationsService {
           for (const productBDI of productsBDI) {
             if (productBDI.products && productBDI.products.vendornumber) {
               productsBDIMap.set(productBDI.products.vendornumber, productBDI);
-              // } else {
-              //   console.log(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
-              //   process.env.PRODUCTION === 'true' && logger.info(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
             }
           }
           // Procesa la carga de imagenes.
           console.log('products.length: ', products.length);
           process.env.PRODUCTION === 'true' && logger.info(`insertMany/products.length: ${products?.length} \n`);
           for (const product of products) {
-            const productBDI = productsBDIMap.get(product.partnumber);
-            if (productBDI) {
-              product.pictures = productBDI.pictures;
-              product.sm_pictures = productBDI.sm_pictures;
+            if (product.pictures && product.pictures.length > 0) {
+              for (const image of product.pictures) {
+                const urlImage = image.url;
+                // Verificar si la URL de la imagen comienza con "uploads/images/"
+                if (urlImage.startsWith('uploads/images/')) {
+                  try {
+                    const urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${urlImage}`;
+                    const existFile = await checkImageExists(urlImageDaru);
+                    if (!existFile) {
+                      const productBDI = productsBDIMap.get(product.partnumber);
+                      if (productBDI) {
+                        product.pictures = productBDI.pictures;
+                        product.sm_pictures = productBDI.sm_pictures;
+                      }
+                    }
+                  } catch (error) {
+                    console.error(`Error downloading image from ${urlImage}:`, error);
+                    image.url = "";
+                  }
+                }
+              }
+            } else {
+              const productBDI = productsBDIMap.get(product.partnumber);
+              if (productBDI) {
+                product.pictures = productBDI.pictures;
+                product.sm_pictures = productBDI.sm_pictures;
+              }
             }
           }
         }
@@ -916,33 +936,32 @@ class ProductsService extends ResolversOperationsService {
             // Verificar si la URL de la imagen comienza con "uploads/images/"
             if (!urlImage.startsWith('uploads/images/')) {
               try {
-                const existFile = await checkImageExists(urlImage);
-                if (existFile) {
-                  const filename = this.generateFilename(product.partnumber, imageIndex);
-                  const filePath = path.join(uploadFolder, filename);
-                  if (fs.existsSync(filePath)) {
-                    await fs.promises.unlink(filePath);
+                const segments = urlImage.split('/');
+                const fileNameLocal = segments[segments.length - 1];
+                const urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileNameLocal}`;
+                const existFileLocal = await checkImageExists(urlImageDaru);
+                if (!existFileLocal) {
+                  const existFile = await checkImageExists(urlImage);
+                  if (existFile) {
+                    const filename = this.generateFilename(product.partnumber, imageIndex);
+                    const filePath = path.join(uploadFolder, filename);
+                    if (fs.existsSync(filePath)) {
+                      await fs.promises.unlink(filePath);
+                    }
+                    imageIndex++;
+                  } else {
+                    image.url = "";
                   }
-                  const segments = urlImage.split('/');
-                  const fileName = segments[segments.length - 1];
-                  const urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileName}`;
-                  const existFile = await checkImageExists(urlImageDaru);
-                  if (!existFile) {
-                    await downloadImage(urlImage, uploadFolder, filename);
-                    const urlImageSave = process.env.UPLOAD_URL + '/images' || '';
-                    image.url = path.join(urlImageSave, filename);
-                  }
-                  imageIndex++;
-                } else {
-                  image.url = "";
+                  await downloadImage(urlImage, uploadFolder, fileNameLocal);
+                  const urlImageSave = `${process.env.API_URL}${process.env.UPLOAD_URL}images/`;
+                  image.url = path.join(urlImageSave, fileNameLocal);
                 }
               } catch (error) {
                 console.error(`Error downloading image from ${urlImage}:`, error);
                 image.url = "";
               }
             } else {
-              const urlImageDaru = process.env.UPLOAD_URL + '/images' + urlImage;
-              console.log('urlImageDaru: ', urlImageDaru);
+              const urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${urlImage}`;
               const existFile = await checkImageExists(urlImageDaru);
               if (existFile) {
               } else {

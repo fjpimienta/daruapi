@@ -862,6 +862,7 @@ class ProductsService extends ResolversOperationsService {
       let productsAdd: IProduct[] = [];
       const uploadFolder = './uploads/images/';
       const supplierId = this.getVariables().supplierId;
+      process.env.PRODUCTION === 'true' && logger.info(`saveImages/idProveedor: ${supplierId} \n`);
       let filter: object = {};
       if (supplierId) {
         filter = { 'suppliersProd.idProveedor': supplierId };
@@ -945,6 +946,7 @@ class ProductsService extends ResolversOperationsService {
           for (const image of product.pictures) {
             const urlImage = image.url;
             // Verificar si la URL de la imagen comienza con "uploads/images/"
+            process.env.PRODUCTION === 'true' && logger.info(`saveImages->existFile ${urlImage}: ${urlImage}`);
             if (!urlImage.startsWith('uploads/images/')) {
               try {
                 const segments = urlImage.split('/');

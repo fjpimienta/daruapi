@@ -953,18 +953,17 @@ class ProductsService extends ResolversOperationsService {
                     image.url = "";
                   }
                   await downloadImage(urlImage, uploadFolder, fileNameLocal);
-                  const urlImageSave = `${process.env.API_URL}${process.env.UPLOAD_URL}images/`;
-                  image.url = path.join(urlImageSave, fileNameLocal);
                 }
+                const urlImageSave = `${process.env.UPLOAD_URL}images/`;
+                image.url = path.join(urlImageSave, fileNameLocal);
               } catch (error) {
                 console.error(`Error downloading image from ${urlImage}:`, error);
                 image.url = "";
               }
             } else {
-              const urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${urlImage}`;
+              const urlImageDaru = `${process.env.UPLOAD_URL}images/${urlImage}`;
               const existFile = await checkImageExists(urlImageDaru);
-              if (existFile) {
-              } else {
+              if (!existFile) {
                 image.url = "";
               }
             }

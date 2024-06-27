@@ -600,15 +600,14 @@ class ProductsService extends ResolversOperationsService {
   async saveImages(context: IContextData) {
     try {
       let productsAdd: IProduct[] = [];
+      const productsBDIMap = new Map<string, any>();
       const uploadFolder = './uploads/images/';
       const supplierId = this.getVariables().supplierId;
       process.env.PRODUCTION === 'true' && logger.info(`saveImages/idProveedor: ${supplierId} \n`);
-
       let filter: object = {};
       if (supplierId) {
         filter = { 'suppliersProd.idProveedor': supplierId };
       }
-
       // Recuperar los productos de un proveedor
       const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
       if (!result || !result.items || result.items.length === 0) {
@@ -668,18 +667,8 @@ class ProductsService extends ResolversOperationsService {
       }
 
       // Proveedores que si tienen imagenes
-      if (idProveedor === 'ingram' || idProveedor === 'syscom') {
-        if (idProveedor === 'ingram') {
-          const token = (await new ExternalBDIService({}, {}, context).getTokenBDI());
-          if (!token || !token.status) {
-            return {
-              status: token.status,
-              message: token.message,
-              products: [],
-            };
-          }
-          process.env.PRODUCTION === 'true' && logger.info(`saveImages/token.tokenBDI.token: ${token.tokenBDI.token} \n`);
-        }
+      if (idProveedor === 'syscom') {
+        console.log(`saveImages->products.length ${products.length}`);
         process.env.PRODUCTION === 'true' && logger.info(`saveImages->products.length ${products.length}`);
         for (let j = 0; j < products.length; j++) {
           let product = products[j];
@@ -698,6 +687,7 @@ class ProductsService extends ResolversOperationsService {
                   let urlImageSave = `${process.env.UPLOAD_URL}images/`;
                   image.url = path.join(urlImageSave, fileNameLocal);
                 } else {
+                  // Si no existe el archivo localmente entonces busca las imagenes del producto
                   let existFile = await checkImageExists(urlImage);
                   process.env.PRODUCTION === 'true' && logger.info(`saveImages->existFile ${urlImage}: ${existFile}`);
                   if (existFile) {
@@ -712,7 +702,6 @@ class ProductsService extends ResolversOperationsService {
                     image.url = path.join(urlImageSave, fileNameLocal);
                   }
                 }
-
                 imageIndex++; // Incrementar imageIndex aquí, fuera de los if-else
                 process.env.PRODUCTION === 'true' && logger.info(`saveImages->image.url ${urlImage}: ${image.url}`);
               } catch (error) {
@@ -729,6 +718,80 @@ class ProductsService extends ResolversOperationsService {
           }
           product.sm_pictures = product.pictures;
           productsAdd.push(product);
+        }
+      }
+      if (idProveedor === 'ingram') {
+        const productsBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI()).productsBDI;
+        if (!productsBDI || !productsBDI.status) {
+          return {
+            status: productsBDI.status,
+            message: productsBDI.message,
+            products: [],
+          };
+        }
+        console.log(`saveImages->productsBDI.length ${productsBDI.length}`);
+        process.env.PRODUCTION === 'true' && logger.info(`saveImages->productsBDI.length ${productsBDI.length}`);
+        // Crear un mapa para buscar productos por número de parte
+        for (const productBDI of productsBDI) {
+          if (productBDI.products && productBDI.products.vendornumber) {
+            productsBDIMap.set(productBDI.products.vendornumber, productBDI);
+          } else {
+            process.env.PRODUCTION === 'true' && logger.info(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
+          }
+        }
+        console.log(`saveImages->products.length ${products.length}`);
+        process.env.PRODUCTION === 'true' && logger.info(`saveImages->products.length ${products.length}`);
+
+        for (let j = 0; j < products.length; j++) {
+          let productBD = products[j];
+          let imageIndex = 1; // Inicializar imageIndex para cada producto
+          const product = productsBDIMap.get(productBD.partnumber);
+          if (product) {
+            for (let i = 0; i < product.pictures.length; i++) {
+              let image = product.pictures[i];
+              let urlImage = image.url;
+              process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImage ${imageIndex}: ${urlImage}`);
+              if (!urlImage.startsWith('uploads/images/')) {
+                try {
+                  let fileNameLocal = `${product.partnumber}_${i}`; // Genera un nombre de archivo único
+                  let urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileNameLocal}`;
+                  process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImageDaru ${urlImageDaru}`);
+                  let existFileLocal = await checkImageExists(urlImageDaru);
+                  if (existFileLocal) {
+                    let urlImageSave = `${process.env.UPLOAD_URL}images/`;
+                    image.url = path.join(urlImageSave, fileNameLocal);
+                  } else {
+                    // Si no existe el archivo localmente entonces busca las imagenes del producto
+                    let existFile = await checkImageExists(urlImage);
+                    process.env.PRODUCTION === 'true' && logger.info(`saveImages->existFile ${urlImage}: ${existFile}`);
+                    if (existFile) {
+                      let filename = this.generateFilename(product.partnumber, i);
+                      let filePath = path.join(uploadFolder, filename);
+                      process.env.PRODUCTION === 'true' && logger.info(`saveImages->filePath ${urlImage}: ${filePath}`);
+                      if (fs.existsSync(filePath)) {
+                        await fs.promises.unlink(filePath);
+                      }
+                      await downloadImage(urlImage, uploadFolder, fileNameLocal);
+                      let urlImageSave = `${process.env.UPLOAD_URL}images/`;
+                      image.url = path.join(urlImageSave, fileNameLocal);
+                    }
+                  }
+                  imageIndex++; // Incrementar imageIndex aquí, fuera de los if-else
+                  process.env.PRODUCTION === 'true' && logger.info(`saveImages->image.url ${urlImage}: ${image.url}`);
+                } catch (error) {
+                  process.env.PRODUCTION === 'true' && logger.error(`saveImages->Error downloading image from ${urlImage}: ${error}`);
+                }
+              } else {
+                let urlImageDaru = `${process.env.API_URL}${urlImage}`;
+                let existFile = await checkImageExists(urlImageDaru);
+                if (!existFile) {
+                  // TO DO - Recuperar Imagen de otro proveedor.
+                }
+              }
+            }
+            product.sm_pictures = product.pictures;
+            productsAdd.push(product);
+          }
         }
       }
 

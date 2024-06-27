@@ -853,6 +853,7 @@ class ProductsService extends ResolversOperationsService {
         message: error,
         products: []
       };
+
     }
   }
 
@@ -863,10 +864,12 @@ class ProductsService extends ResolversOperationsService {
       const uploadFolder = './uploads/images/';
       const supplierId = this.getVariables().supplierId;
       process.env.PRODUCTION === 'true' && logger.info(`saveImages/idProveedor: ${supplierId} \n`);
+
       let filter: object = {};
       if (supplierId) {
         filter = { 'suppliersProd.idProveedor': supplierId };
       }
+
       // Recuperar los productos de un proveedor
       const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
       if (!result || !result.items || result.items.length === 0) {
@@ -879,27 +882,29 @@ class ProductsService extends ResolversOperationsService {
       }
       const products = result.items as IProduct[];
       const idProveedor = supplierId;
+
       // Proveedores que no tienen imagenes
       if (idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva') {
         const productsBDI = (await this.listAll(this.collection, this.catalogName, 1, -1, { 'suppliersProd.idProveedor': { $ne: 'ingram' } })).items;
         console.log('productsBDI.length: ', productsBDI.length);
         process.env.PRODUCTION === 'true' && logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
+
         if (productsBDI && productsBDI.length > 0) {
-          // Crear un mapa para buscar productos por número de parte
           const productsBDIMap = new Map<string, any>();
           for (const productBDI of productsBDI) {
             if (productBDI.products && productBDI.products.vendornumber) {
               productsBDIMap.set(productBDI.products.vendornumber, productBDI);
             }
           }
+
           // Procesa la carga de imagenes.
           console.log('products.length: ', products.length);
           process.env.PRODUCTION === 'true' && logger.info(`insertMany/products.length: ${products?.length} \n`);
+
           for (const product of products) {
             if (product.pictures && product.pictures.length > 0) {
               for (const image of product.pictures) {
                 const urlImage = image.url;
-                // Verificar si la URL de la imagen comienza con "uploads/images/"
                 if (urlImage.startsWith('uploads/images/')) {
                   try {
                     const urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${urlImage}`;
@@ -927,6 +932,7 @@ class ProductsService extends ResolversOperationsService {
           }
         }
       }
+
       // Proveedores que si tienen imagenes
       if (idProveedor === 'ingram' || idProveedor === 'syscom') {
         if (idProveedor === 'ingram') {
@@ -938,49 +944,61 @@ class ProductsService extends ResolversOperationsService {
               products: [],
             };
           }
+          console.log(`saveImages/token.tokenBDI.token: ${token.tokenBDI.token} \n`);
           process.env.PRODUCTION === 'true' && logger.info(`saveImages/token.tokenBDI.token: ${token.tokenBDI.token} \n`);
         }
-        for (const product of products) {
-          // Guardar Imagenes
-          let imageIndex = 1;
-          for (const image of product.pictures) {
-            const urlImage = image.url;
-            // Verificar si la URL de la imagen comienza con "uploads/images/"
-            process.env.PRODUCTION === 'true' && logger.info(`saveImages->existFile ${urlImage}: ${urlImage}`);
+        console.log(`saveImages->products.length ${products.length}`);
+        for (let j = 0; j < products.length; j++) {
+          let product = products[j];
+          console.log(`saveImages->product ${j}: ${product.partnumber}; total imagenes: ${product.pictures.length}`);
+          let imageIndex = 1; // Inicializar imageIndex para cada producto
+          for (let i = 0; i < product.pictures.length - 1; i++) {
+            let image = product.pictures[i];
+            console.log(`saveImages->product ${j}: ${product.partnumber}; image ${i}: ${image.url}`);
+            let urlImage = image.url;
+            process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImage ${imageIndex}: ${urlImage}`);
             if (!urlImage.startsWith('uploads/images/')) {
               try {
-                const segments = urlImage.split('/');
-                const fileNameLocal = segments[segments.length - 1];
-                const urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileNameLocal}`;
-                const existFileLocal = await checkImageExists(urlImageDaru);
+                // let segments = urlImage.split('/');
+                // let fileNameLocal = `${product.partnumber}_${Date.now()}_${segments[segments.length - 1]}`; // Genera un nombre de archivo único
+                let fileNameLocal = `${product.partnumber}_${i}`; // Genera un nombre de archivo único
+                let urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileNameLocal}`;
+                console.log(`saveImages->urlImageDaru ${urlImageDaru}`);
+                process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImageDaru ${urlImageDaru}`);
+                let existFileLocal = await checkImageExists(urlImageDaru);
                 if (existFileLocal) {
-                  const urlImageSave = `${process.env.UPLOAD_URL}images/`;
+                  let urlImageSave = `${process.env.UPLOAD_URL}images/`;
                   image.url = path.join(urlImageSave, fileNameLocal);
                 } else {
-                  const existFile = await checkImageExists(urlImage);
+                  let existFile = await checkImageExists(urlImage);
+                  console.log(`saveImages->existFile ${urlImage}: ${existFile}`);
                   process.env.PRODUCTION === 'true' && logger.info(`saveImages->existFile ${urlImage}: ${existFile}`);
                   if (existFile) {
-                    const filename = this.generateFilename(product.partnumber, imageIndex);
-                    const filePath = path.join(uploadFolder, filename);
+                    let filename = this.generateFilename(product.partnumber, i);
+                    let filePath = path.join(uploadFolder, filename);
+                    console.log(`saveImages->filePath ${urlImage}: ${filePath}`);
                     process.env.PRODUCTION === 'true' && logger.info(`saveImages->filePath ${urlImage}: ${filePath}`);
+
                     if (fs.existsSync(filePath)) {
                       await fs.promises.unlink(filePath);
                     }
+
                     await downloadImage(urlImage, uploadFolder, fileNameLocal);
-                    const urlImageSave = `${process.env.UPLOAD_URL}images/`;
+                    let urlImageSave = `${process.env.UPLOAD_URL}images/`;
                     image.url = path.join(urlImageSave, fileNameLocal);
-                    imageIndex++;
                   }
                 }
+
+                imageIndex++; // Incrementar imageIndex aquí, fuera de los if-else
                 process.env.PRODUCTION === 'true' && logger.info(`saveImages->image.url ${urlImage}: ${image.url}`);
               } catch (error) {
-                console.error(`Error downloading image from ${urlImage}:`, error);
-                process.env.PRODUCTION === 'true' && logger.info(`saveImages->Error downloading image from ${urlImage}: ${error}`);
+                console.error(`saveImages->Error downloading image from ${urlImage}: ${error}`);
+                process.env.PRODUCTION === 'true' && logger.error(`saveImages->Error downloading image from ${urlImage}: ${error}`);
                 image.url = "";
               }
             } else {
-              const urlImageDaru = `${process.env.API_URL}${urlImage}`;
-              const existFile = await checkImageExists(urlImageDaru);
+              let urlImageDaru = `${process.env.API_URL}${urlImage}`;
+              let existFile = await checkImageExists(urlImageDaru);
               if (!existFile) {
                 // TO DO - Recuperar Imagen de otro proveedor.
               }
@@ -990,9 +1008,10 @@ class ProductsService extends ResolversOperationsService {
           productsAdd.push(product);
         }
       }
-      // Guardar los elementos nuevos
+
       console.log('productsAdd.length: ', productsAdd.length);
       process.env.PRODUCTION === 'true' && logger.info(`saveImages/productsAdd.length: ${productsAdd?.length} \n`);
+
       if (productsAdd.length > 0) {
         let filter: object = { 'suppliersProd.idProveedor': idProveedor };
         const delResult = await this.delList(this.collection, filter, 'producto');

@@ -80,6 +80,9 @@ async function init(): Promise<void> {
   // Agrega el servicio de archivos a la aplicación
   app.use('/files', fileService);
 
+  // Configurar el directorio estático
+  app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
   await server.start();
   server.applyMiddleware({ app });
 

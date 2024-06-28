@@ -61,9 +61,16 @@ type ProductDetailsBDI {
   productDetailDescription: String
   vendornumber: String
   upcnumber: String
+  weight: Int
+  height: Int
+  width: Int
+  length: Int
+  dimensionUnit: String
+  weightUnit: String
   images: String
   categoriesIdIngram: String
   manufacturerIdIngram: String
+  listPrimaryAttribute: [String]
   manufacturerIngram: ManufacturerBDI
   categoriesIngram: CategoryBDI
   sheet: String

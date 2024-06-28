@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 import { COLLECTIONS } from '../config/constants';
 import { Db } from 'mongodb';
 import logger from '../utils/logger';
-import { BranchOffices, Brands, Categorys, Descuentos, Picture, Product, SupplierProd, UnidadDeMedida } from '../models/product.models';
+import { BranchOffices, Brands, Categorys, Descuentos, Especificacion, Picture, Product, SupplierProd, UnidadDeMedida } from '../models/product.models';
 import slugify from 'slugify';
 import ConfigsService from './config.service';
 
@@ -244,6 +244,37 @@ class ExternalBDIService extends ResolversOperationsService {
   }
 
   async getListProductsBDI() {
+    const responseProducts = await this.getProductsBDI();
+    if (!responseProducts.status) {
+      return {
+        status: responseProducts.status,
+        message: responseProducts.message,
+        listProductsBDI: null,
+      };
+    }
+    if (responseProducts.productsBDI && responseProducts.productsBDI.length <= 0) {
+      return {
+        status: responseProducts.status,
+        message: 'No hay productos en el servicio del Proveedor',
+        listProductsBDI: null,
+      };
+    }
+    const responsePrices = await this.getProductsPricesBDI();
+    if (!responsePrices.status) {
+      return {
+        status: responsePrices.status,
+        message: responsePrices.message,
+        listProductsBDI: null,
+      };
+    }
+    if (responsePrices.productsPricesBDI && responsePrices.productsPricesBDI.length <= 0) {
+      return {
+        status: responsePrices.status,
+        message: 'No hay precios en el servicio del Proveedor',
+        listProductsBDI: null,
+      };
+    }
+
     const listProductsBDI = (await this.getProductsBDI()).productsBDI;
     const listProductsPricesBDI = (await this.getProductsPricesBDI()).productsPricesBDI;
     if (listProductsBDI && listProductsPricesBDI) {
@@ -441,6 +472,36 @@ class ExternalBDIService extends ResolversOperationsService {
           }
         }
       }
+
+      const especificaciones: Especificacion[] = [];
+      if (item.products.weight) {
+        itemData.especificaciones.push({ tipo: 'Peso', valor: item.products.weight });
+      }
+      if (item.products.height) {
+        itemData.especificaciones.push({ tipo: 'Altura', valor: item.products.height });
+      }
+      if (item.products.width) {
+        itemData.especificaciones.push({ tipo: 'Ancho', valor: item.products.width });
+      }
+      if (item.products.length) {
+        itemData.especificaciones.push({ tipo: 'Longitud', valor: item.products.length });
+      }
+      if (item.products.dimensionUnit) {
+        itemData.especificaciones.push({ tipo: 'Unidad de Dimensiones', valor: item.products.dimensionUnit });
+      }
+      if (item.products.weightUnit) {
+        itemData.especificaciones.push({ tipo: 'Unidad de Peso', valor: item.products.weightUnit });
+      }
+
+      itemData.especificaciones.push(...especificaciones);
+      const atributosPrincipales = item.products.listPrimaryAttribute;
+      if (atributosPrincipales && atributosPrincipales.length > 0) {
+        for (let i = 0; i < atributosPrincipales.length; i++) {
+          const atributo = atributosPrincipales[i];
+          itemData.especificaciones.push({ tipo: 'Característica', valor: atributo });
+        }
+      }
+
     }
     return itemData;
   }

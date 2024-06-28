@@ -603,6 +603,7 @@ class ProductsService extends ResolversOperationsService {
       const productsBDIMap = new Map<string, any>();
       const uploadFolder = './uploads/images/';
       const supplierId = this.getVariables().supplierId;
+      const urlImageSave = `${process.env.UPLOAD_URL}images/`;
       process.env.PRODUCTION === 'true' && logger.info(`saveImages/idProveedor: ${supplierId} \n`);
       let filter: object = {};
       if (supplierId) {
@@ -671,11 +672,10 @@ class ProductsService extends ResolversOperationsService {
         process.env.PRODUCTION === 'true' && logger.info(`saveImages->products.length ${products.length}`);
         for (let j = 0; j < products.length; j++) {
           let product = products[j];
-          let imageIndex = 1; // Inicializar imageIndex para cada producto
           for (let i = 0; i < product.pictures.length; i++) {
             let image = product.pictures[i];
             let urlImage = image.url;
-            process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImage ${imageIndex}: ${urlImage}`);
+            process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImage ${i}: ${urlImage}`);
             if (!urlImage.startsWith('uploads/images/' && product.partnumber)) {
               try {
                 let fileNameLocal = `${product.partnumber}_${i}`; // Genera un nombre de archivo único
@@ -683,7 +683,6 @@ class ProductsService extends ResolversOperationsService {
                 process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImageDaru ${urlImageDaru}`);
                 let existFileLocal = await checkImageExists(urlImageDaru);
                 if (existFileLocal) {
-                  let urlImageSave = `${process.env.UPLOAD_URL}images/`;
                   image.url = path.join(urlImageSave, fileNameLocal);
                 } else {
                   // Si no existe el archivo localmente entonces busca las imagenes del producto
@@ -697,11 +696,9 @@ class ProductsService extends ResolversOperationsService {
                       await fs.promises.unlink(filePath);
                     }
                     await downloadImage(urlImage, uploadFolder, fileNameLocal);
-                    let urlImageSave = `${process.env.UPLOAD_URL}images/`;
                     image.url = path.join(urlImageSave, fileNameLocal);
                   }
                 }
-                imageIndex++; // Incrementar imageIndex aquí, fuera de los if-else
                 process.env.PRODUCTION === 'true' && logger.info(`saveImages->image.url ${urlImage}: ${image.url}`);
               } catch (error) {
                 process.env.PRODUCTION === 'true' && logger.error(`saveImages->Error downloading image from ${urlImage}: ${error}`);
@@ -745,76 +742,82 @@ class ProductsService extends ResolversOperationsService {
         process.env.PRODUCTION === 'true' && logger.info(`saveImages->products.length ${products.length}`);
         for (let j = 0; j < products.length; j++) {
           let product = products[j];
-          let imageIndex = 1; // Inicializar imageIndex para cada producto
           const productIngram = productsBDIMap.get(product.partnumber);
           if (productIngram) {
             console.log(`saveImages->productIngram.products.images: ${productIngram.products.images}`);
             if (productIngram.products && productIngram.products.images !== '') {
               let imageUrls = productIngram.products.images.split(',');
+              product.pictures = [];
+              product.sm_pictures = [];
               for (let i = 0; i < imageUrls.length; i++) {
                 let urlImage = imageUrls[i].trim();
-                console.log(`saveImages->urlImage ${imageIndex}: ${urlImage}`);
-                process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImage ${imageIndex}: ${urlImage}`);
+                console.log(`saveImages->urlImage ${i}: ${urlImage}`);
+                logger.info(`saveImages->urlImage ${i}: ${urlImage}`);
+                // process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImage ${i}: ${urlImage}`);
                 if (!urlImage.startsWith('uploads/images/')) {
                   try {
                     let fileNameLocal = this.generateFilename(product.partnumber, i);
                     let urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileNameLocal}`;
+                    logger.info(`fileNameLocal: ${fileNameLocal}; urlImageDaru: ${urlImageDaru} \n`);
                     let existFileLocal = await checkImageExists(urlImageDaru);
                     console.log(`saveImages->urlImageDaru(${urlImageDaru}); existe:(${existFileLocal})`);
-                    process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImageDaru(${urlImageDaru}); existe:(${existFileLocal})`);
+                    logger.info(`saveImages->urlImageDaru(${urlImageDaru}); existe:(${existFileLocal})`);
+                    // process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImageDaru(${urlImageDaru}); existe:(${existFileLocal})`);
                     if (existFileLocal) {
-                      let urlImageSave = `${process.env.UPLOAD_URL}images/`;
-                      // Imagenes
-                      product.pictures = [];
-                      const image = new Picture();
+                      const image = new Picture();                // Imagenes
                       image.width = '600';
                       image.height = '600';
-                      image.url = path.join(urlImageSave, fileNameLocal);;
+                      image.url = path.join(urlImageSave, fileNameLocal);
                       product.pictures.push(image);
-                      // Imagenes pequeñas
-                      product.sm_pictures = [];
-                      const imagesm = new Picture();
+                      const imagesm = new Picture();              // Imagenes pequeñas
                       imagesm.width = '300';
                       imagesm.height = '300';
-                      imagesm.url = path.join(urlImageSave, fileNameLocal);;
+                      imagesm.url = path.join(urlImageSave, fileNameLocal);
                       product.sm_pictures.push(imagesm);
                     } else {
                       // Si no existe el archivo localmente entonces busca las imagenes del producto en BDI
                       let existFile = await checkImageExists(urlImage);
                       console.log(`saveImages->urlImage(${urlImage}); existe:(${existFile})`);
-                      process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImage(${urlImage}); existe:(${existFile})`);
+                      logger.info(`saveImages->urlImage(${urlImage}); existe:(${existFile})`);
+                      // process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImage(${urlImage}); existe:(${existFile})`);
                       if (existFile) {
                         let filePath = path.join(uploadFolder, fileNameLocal);
                         console.log(`saveImages->filePath ${urlImage}: ${filePath}`);
-                        process.env.PRODUCTION === 'true' && logger.info(`saveImages->filePath ${urlImage}: ${filePath}`);
+                        logger.info(`saveImages->filePath ${urlImage}: ${filePath}`);
+                        // process.env.PRODUCTION === 'true' && logger.info(`saveImages->filePath ${urlImage}: ${filePath}`);
                         if (fs.existsSync(filePath)) {
                           await fs.promises.unlink(filePath);
                         }
                         await downloadImage(urlImage, uploadFolder, fileNameLocal);
-                        let urlImageSave = `${process.env.UPLOAD_URL}images/`;
                         // Imagenes
-                        product.pictures = [];
                         const image = new Picture();
                         image.width = '600';
                         image.height = '600';
-                        image.url = path.join(urlImageSave, fileNameLocal);;
+                        image.url = path.join(urlImageSave, fileNameLocal);
                         product.pictures.push(image);
                         // Imagenes pequeñas
-                        product.sm_pictures = [];
                         const imagesm = new Picture();
                         imagesm.width = '300';
                         imagesm.height = '300';
-                        imagesm.url = path.join(urlImageSave, fileNameLocal);;
+                        imagesm.url = path.join(urlImageSave, fileNameLocal);
                         product.sm_pictures.push(imagesm);
                       }
                     }
-                    imageIndex++;
                   } catch (error) {
                     process.env.PRODUCTION === 'true' && logger.error(`saveImages->Error downloading image from ${urlImage}: ${error}`);
                   }
                 } else {
-                  let urlImageDaru = `${process.env.API_URL}${urlImage}`;
-                  let existFile = await checkImageExists(urlImageDaru);
+                  const image = new Picture();
+                  image.width = '600';
+                  image.height = '600';
+                  image.url = urlImage;
+                  product.pictures.push(image);
+                  const imagesm = new Picture();
+                  imagesm.width = '300';
+                  imagesm.height = '300';
+                  imagesm.url = urlImage;
+                  product.sm_pictures.push(imagesm);
+                  let existFile = await checkImageExists(urlImage);
                   if (!existFile) {
                     // TO DO - Recuperar Imagen de otro proveedor.
                   }

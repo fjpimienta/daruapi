@@ -677,7 +677,7 @@ class ProductsService extends ResolversOperationsService {
             let image = product.pictures[i];
             let urlImage = image.url;
             process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImage ${imageIndex}: ${urlImage}`);
-            if (!urlImage.startsWith('uploads/images/')) {
+            if (!urlImage.startsWith('uploads/images/' && product.partnumber)) {
               try {
                 let fileNameLocal = `${product.partnumber}_${i}`; // Genera un nombre de archivo único
                 let urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileNameLocal}`;

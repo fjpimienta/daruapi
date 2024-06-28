@@ -721,14 +721,17 @@ class ProductsService extends ResolversOperationsService {
         }
       }
       if (idProveedor === 'ingram') {
-        const productsBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI()).productsBDI;
-        if (!productsBDI || !productsBDI.status) {
+        console.log(`ingram`);
+        // const productsBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI()).productsBDI;
+        const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
+        if (!resultBDI || !resultBDI.status) {
           return {
-            status: productsBDI.status,
-            message: productsBDI.message,
+            status: resultBDI.status,
+            message: resultBDI.message,
             products: [],
           };
         }
+        const productsBDI = resultBDI.productsBDI;
         console.log(`saveImages->productsBDI.length ${productsBDI.length}`);
         process.env.PRODUCTION === 'true' && logger.info(`saveImages->productsBDI.length ${productsBDI.length}`);
         // Crear un mapa para buscar productos por número de parte
@@ -736,61 +739,88 @@ class ProductsService extends ResolversOperationsService {
           if (productBDI.products && productBDI.products.vendornumber) {
             productsBDIMap.set(productBDI.products.vendornumber, productBDI);
           } else {
+            console.log(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
             process.env.PRODUCTION === 'true' && logger.info(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
           }
         }
         console.log(`saveImages->products.length ${products.length}`);
         process.env.PRODUCTION === 'true' && logger.info(`saveImages->products.length ${products.length}`);
-
         for (let j = 0; j < products.length; j++) {
           let productBD = products[j];
           let imageIndex = 1; // Inicializar imageIndex para cada producto
           const product = productsBDIMap.get(productBD.partnumber);
           if (product) {
-            for (let i = 0; i < product.pictures.length; i++) {
-              let image = product.pictures[i];
-              let urlImage = image.url;
-              process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImage ${imageIndex}: ${urlImage}`);
-              if (!urlImage.startsWith('uploads/images/')) {
-                try {
-                  let fileNameLocal = `${product.partnumber}_${i}`; // Genera un nombre de archivo único
-                  let urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileNameLocal}`;
-                  process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImageDaru ${urlImageDaru}`);
-                  let existFileLocal = await checkImageExists(urlImageDaru);
-                  if (existFileLocal) {
-                    let urlImageSave = `${process.env.UPLOAD_URL}images/`;
-                    image.url = path.join(urlImageSave, fileNameLocal);
-                  } else {
-                    // Si no existe el archivo localmente entonces busca las imagenes del producto
-                    let existFile = await checkImageExists(urlImage);
-                    process.env.PRODUCTION === 'true' && logger.info(`saveImages->existFile ${urlImage}: ${existFile}`);
-                    if (existFile) {
-                      let filename = this.generateFilename(product.partnumber, i);
-                      let filePath = path.join(uploadFolder, filename);
-                      process.env.PRODUCTION === 'true' && logger.info(`saveImages->filePath ${urlImage}: ${filePath}`);
-                      if (fs.existsSync(filePath)) {
-                        await fs.promises.unlink(filePath);
-                      }
-                      await downloadImage(urlImage, uploadFolder, fileNameLocal);
+            console.log(`saveImages->product.products.images: ${product.products.images}`);
+            if (product.products && product.products.images !== '') {
+              let imageUrls = product.products.images.split(',');
+              for (let i = 0; i < imageUrls.length; i++) {
+                let urlImage = imageUrls[i].trim();
+                console.log(`saveImages->urlImage ${imageIndex}: ${urlImage}`);
+                process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImage ${imageIndex}: ${urlImage}`);
+                if (!urlImage.startsWith('uploads/images/')) {
+                  try {
+                    let fileNameLocal = `${product.partnumber}_${i}`; // Genera un nombre de archivo único
+                    let urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileNameLocal}`;
+                    process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImageDaru ${urlImageDaru}`);
+                    let existFileLocal = await checkImageExists(urlImageDaru);
+                    if (existFileLocal) {
+                      productBD.pictures = [];
                       let urlImageSave = `${process.env.UPLOAD_URL}images/`;
-                      image.url = path.join(urlImageSave, fileNameLocal);
+                      const image = new Picture();
+                      image.width = '600';
+                      image.height = '600';
+                      image.url = path.join(urlImageSave, fileNameLocal);;
+                      productBD.pictures.push(image);
+                      // Imagenes pequeñas
+                      productBD.sm_pictures = [];
+                      const imagesm = new Picture();
+                      imagesm.width = '300';
+                      imagesm.height = '300';
+                      imagesm.url = path.join(urlImageSave, fileNameLocal);;
+                      productBD.sm_pictures.push(imagesm);
+                    } else {
+                      // Si no existe el archivo localmente entonces busca las imagenes del producto
+                      let existFile = await checkImageExists(urlImage);
+                      process.env.PRODUCTION === 'true' && logger.info(`saveImages->existFile ${urlImage}: ${existFile}`);
+                      if (existFile) {
+                        let filename = this.generateFilename(product.partnumber, i);
+                        let filePath = path.join(uploadFolder, filename);
+                        process.env.PRODUCTION === 'true' && logger.info(`saveImages->filePath ${urlImage}: ${filePath}`);
+                        if (fs.existsSync(filePath)) {
+                          await fs.promises.unlink(filePath);
+                        }
+                        await downloadImage(urlImage, uploadFolder, fileNameLocal);
+                        productBD.pictures = [];
+                        let urlImageSave = `${process.env.UPLOAD_URL}images/`;
+                        const image = new Picture();
+                        image.width = '600';
+                        image.height = '600';
+                        image.url = path.join(urlImageSave, fileNameLocal);;
+                        productBD.pictures.push(image);
+                        // Imagenes pequeñas
+                        productBD.sm_pictures = [];
+                        const imagesm = new Picture();
+                        imagesm.width = '300';
+                        imagesm.height = '300';
+                        imagesm.url = path.join(urlImageSave, fileNameLocal);;
+                        productBD.sm_pictures.push(imagesm);
+                      }
                     }
+                    imageIndex++; // Incrementar imageIndex aquí, fuera de los if-else
+                    process.env.PRODUCTION === 'true' && logger.info(`saveImages->image.url ${urlImage}`);
+                  } catch (error) {
+                    process.env.PRODUCTION === 'true' && logger.error(`saveImages->Error downloading image from ${urlImage}: ${error}`);
                   }
-                  imageIndex++; // Incrementar imageIndex aquí, fuera de los if-else
-                  process.env.PRODUCTION === 'true' && logger.info(`saveImages->image.url ${urlImage}: ${image.url}`);
-                } catch (error) {
-                  process.env.PRODUCTION === 'true' && logger.error(`saveImages->Error downloading image from ${urlImage}: ${error}`);
-                }
-              } else {
-                let urlImageDaru = `${process.env.API_URL}${urlImage}`;
-                let existFile = await checkImageExists(urlImageDaru);
-                if (!existFile) {
-                  // TO DO - Recuperar Imagen de otro proveedor.
+                } else {
+                  let urlImageDaru = `${process.env.API_URL}${urlImage}`;
+                  let existFile = await checkImageExists(urlImageDaru);
+                  if (!existFile) {
+                    // TO DO - Recuperar Imagen de otro proveedor.
+                  }
                 }
               }
+              productsAdd.push(product);
             }
-            product.sm_pictures = product.pictures;
-            productsAdd.push(product);
           }
         }
       }

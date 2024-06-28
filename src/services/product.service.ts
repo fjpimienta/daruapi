@@ -665,7 +665,6 @@ class ProductsService extends ResolversOperationsService {
           }
         }
       }
-
       // Proveedores que si tienen imagenes
       if (idProveedor === 'syscom') {
         console.log(`saveImages->products.length ${products.length}`);
@@ -721,8 +720,6 @@ class ProductsService extends ResolversOperationsService {
         }
       }
       if (idProveedor === 'ingram') {
-        console.log(`ingram`);
-        // const productsBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI()).productsBDI;
         const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         if (!resultBDI || !resultBDI.status) {
           return {
@@ -743,71 +740,75 @@ class ProductsService extends ResolversOperationsService {
             process.env.PRODUCTION === 'true' && logger.info(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
           }
         }
+        // Recuperar de todos los productos guardados las imagenes.
         console.log(`saveImages->products.length ${products.length}`);
         process.env.PRODUCTION === 'true' && logger.info(`saveImages->products.length ${products.length}`);
         for (let j = 0; j < products.length; j++) {
-          let productBD = products[j];
+          let product = products[j];
           let imageIndex = 1; // Inicializar imageIndex para cada producto
-          const product = productsBDIMap.get(productBD.partnumber);
-          if (product) {
-            console.log(`saveImages->product.products.images: ${product.products.images}`);
-            if (product.products && product.products.images !== '') {
-              let imageUrls = product.products.images.split(',');
+          const productIngram = productsBDIMap.get(product.partnumber);
+          if (productIngram) {
+            console.log(`saveImages->productIngram.products.images: ${productIngram.products.images}`);
+            if (productIngram.products && productIngram.products.images !== '') {
+              let imageUrls = productIngram.products.images.split(',');
               for (let i = 0; i < imageUrls.length; i++) {
                 let urlImage = imageUrls[i].trim();
                 console.log(`saveImages->urlImage ${imageIndex}: ${urlImage}`);
                 process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImage ${imageIndex}: ${urlImage}`);
                 if (!urlImage.startsWith('uploads/images/')) {
                   try {
-                    let fileNameLocal = `${product.partnumber}_${i}`; // Genera un nombre de archivo único
+                    let fileNameLocal = this.generateFilename(product.partnumber, i);
                     let urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileNameLocal}`;
-                    process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImageDaru ${urlImageDaru}`);
                     let existFileLocal = await checkImageExists(urlImageDaru);
+                    console.log(`saveImages->urlImageDaru(${urlImageDaru}); existe:(${existFileLocal})`);
+                    process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImageDaru(${urlImageDaru}); existe:(${existFileLocal})`);
                     if (existFileLocal) {
-                      productBD.pictures = [];
                       let urlImageSave = `${process.env.UPLOAD_URL}images/`;
+                      // Imagenes
+                      product.pictures = [];
                       const image = new Picture();
                       image.width = '600';
                       image.height = '600';
                       image.url = path.join(urlImageSave, fileNameLocal);;
-                      productBD.pictures.push(image);
+                      product.pictures.push(image);
                       // Imagenes pequeñas
-                      productBD.sm_pictures = [];
+                      product.sm_pictures = [];
                       const imagesm = new Picture();
                       imagesm.width = '300';
                       imagesm.height = '300';
                       imagesm.url = path.join(urlImageSave, fileNameLocal);;
-                      productBD.sm_pictures.push(imagesm);
+                      product.sm_pictures.push(imagesm);
                     } else {
-                      // Si no existe el archivo localmente entonces busca las imagenes del producto
+                      // Si no existe el archivo localmente entonces busca las imagenes del producto en BDI
                       let existFile = await checkImageExists(urlImage);
-                      process.env.PRODUCTION === 'true' && logger.info(`saveImages->existFile ${urlImage}: ${existFile}`);
+                      console.log(`saveImages->urlImage(${urlImage}); existe:(${existFile})`);
+                      process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImage(${urlImage}); existe:(${existFile})`);
                       if (existFile) {
-                        let filename = this.generateFilename(product.partnumber, i);
-                        let filePath = path.join(uploadFolder, filename);
+                        let filePath = path.join(uploadFolder, fileNameLocal);
+                        console.log(`saveImages->filePath ${urlImage}: ${filePath}`);
                         process.env.PRODUCTION === 'true' && logger.info(`saveImages->filePath ${urlImage}: ${filePath}`);
                         if (fs.existsSync(filePath)) {
                           await fs.promises.unlink(filePath);
                         }
                         await downloadImage(urlImage, uploadFolder, fileNameLocal);
-                        productBD.pictures = [];
                         let urlImageSave = `${process.env.UPLOAD_URL}images/`;
+                        // Imagenes
+                        product.pictures = [];
                         const image = new Picture();
                         image.width = '600';
                         image.height = '600';
                         image.url = path.join(urlImageSave, fileNameLocal);;
-                        productBD.pictures.push(image);
+                        product.pictures.push(image);
                         // Imagenes pequeñas
-                        productBD.sm_pictures = [];
+                        product.sm_pictures = [];
                         const imagesm = new Picture();
                         imagesm.width = '300';
                         imagesm.height = '300';
                         imagesm.url = path.join(urlImageSave, fileNameLocal);;
-                        productBD.sm_pictures.push(imagesm);
+                        product.sm_pictures.push(imagesm);
                       }
                     }
-                    imageIndex++; // Incrementar imageIndex aquí, fuera de los if-else
-                    process.env.PRODUCTION === 'true' && logger.info(`saveImages->image.url ${urlImage}`);
+                    imageIndex++;
                   } catch (error) {
                     process.env.PRODUCTION === 'true' && logger.error(`saveImages->Error downloading image from ${urlImage}: ${error}`);
                   }
@@ -821,7 +822,7 @@ class ProductsService extends ResolversOperationsService {
               }
             }
           }
-          productsAdd.push(productBD);
+          productsAdd.push(product);
         }
       }
 

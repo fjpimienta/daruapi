@@ -819,9 +819,9 @@ class ProductsService extends ResolversOperationsService {
                   }
                 }
               }
-              productsAdd.push(product);
             }
           }
+          productsAdd.push(productBD);
         }
       }
 

@@ -604,6 +604,7 @@ class ProductsService extends ResolversOperationsService {
       const uploadFolder = './uploads/images/';
       const supplierId = this.getVariables().supplierId;
       const urlImageSave = `${process.env.UPLOAD_URL}images/`;
+      const dafaultImage = 'logo-icon.png';
       process.env.PRODUCTION === 'true' && logger.info(`saveImages/idProveedor: ${supplierId} \n`);
       let filter: object = {};
       if (supplierId) {
@@ -621,6 +622,24 @@ class ProductsService extends ResolversOperationsService {
       }
       const products = result.items as IProduct[];
       const idProveedor = supplierId;
+
+      // Identificar productos sin imagenes:
+      const createPicture = (width: string, height: string, url: string) => {
+        const picture = new Picture();
+        picture.width = width;
+        picture.height = height;
+        picture.url = url;
+        return picture;
+      };
+      for (let i = 0; i < products.length; i++) {
+        let product = products[i];
+        if (!product.pictures || product.pictures.length <= 0) {
+          product.pictures = [createPicture('600', '600', path.join(urlImageSave, dafaultImage))];
+          product.sm_pictures = [createPicture('300', '300', path.join(urlImageSave, dafaultImage))];
+          const updateImage = await this.modifyImages(product);
+          process.env.PRODUCTION === 'true' && logger.info(`saveImages->createPicture se reiniciaron las imagenes de ${product.partnumber}.`);
+        }
+      }
 
       // Proveedores que no tienen imagenes
       if (idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva') {
@@ -747,8 +766,8 @@ class ProductsService extends ResolversOperationsService {
             console.log(`saveImages->productIngram.products.images: ${productIngram.products.images}`);
             if (productIngram.products && productIngram.products.images !== '') {
               let imageUrls = productIngram.products.images.split(',');
-              product.pictures = [];
-              product.sm_pictures = [];
+              // product.pictures = [];
+              // product.sm_pictures = [];
               for (let i = 0; i < imageUrls.length; i++) {
                 let urlImage = imageUrls[i].trim();
                 console.log(`saveImages->urlImage ${i}: ${urlImage}`);
@@ -764,16 +783,18 @@ class ProductsService extends ResolversOperationsService {
                     logger.info(`saveImages->urlImageDaru(${urlImageDaru}); existe:(${existFileLocal})`);
                     // process.env.PRODUCTION === 'true' && logger.info(`saveImages->urlImageDaru(${urlImageDaru}); existe:(${existFileLocal})`);
                     if (existFileLocal) {
-                      const image = new Picture();                // Imagenes
-                      image.width = '600';
-                      image.height = '600';
-                      image.url = path.join(urlImageSave, fileNameLocal);
-                      product.pictures.push(image);
-                      const imagesm = new Picture();              // Imagenes pequeñas
-                      imagesm.width = '300';
-                      imagesm.height = '300';
-                      imagesm.url = path.join(urlImageSave, fileNameLocal);
-                      product.sm_pictures.push(imagesm);
+                      product.pictures = [createPicture('600', '600', path.join(urlImageSave, fileNameLocal))];
+                      product.sm_pictures = [createPicture('300', '300', path.join(urlImageSave, fileNameLocal))];
+                      // const image = new Picture();                // Imagenes
+                      // image.width = '600';
+                      // image.height = '600';
+                      // image.url = path.join(urlImageSave, fileNameLocal);
+                      // product.pictures.push(image);
+                      // const imagesm = new Picture();              // Imagenes pequeñas
+                      // imagesm.width = '300';
+                      // imagesm.height = '300';
+                      // imagesm.url = path.join(urlImageSave, fileNameLocal);
+                      // product.sm_pictures.push(imagesm);
                     } else {
                       // Si no existe el archivo localmente entonces busca las imagenes del producto en BDI
                       let existFile = await checkImageExists(urlImage);
@@ -789,34 +810,38 @@ class ProductsService extends ResolversOperationsService {
                           await fs.promises.unlink(filePath);
                         }
                         await downloadImage(urlImage, uploadFolder, fileNameLocal);
-                        // Imagenes
-                        const image = new Picture();
-                        image.width = '600';
-                        image.height = '600';
-                        image.url = path.join(urlImageSave, fileNameLocal);
-                        product.pictures.push(image);
-                        // Imagenes pequeñas
-                        const imagesm = new Picture();
-                        imagesm.width = '300';
-                        imagesm.height = '300';
-                        imagesm.url = path.join(urlImageSave, fileNameLocal);
-                        product.sm_pictures.push(imagesm);
+                        product.pictures = [createPicture('600', '600', path.join(urlImageSave, fileNameLocal))];
+                        product.sm_pictures = [createPicture('300', '300', path.join(urlImageSave, fileNameLocal))];
+                        // // Imagenes
+                        // const image = new Picture();
+                        // image.width = '600';
+                        // image.height = '600';
+                        // image.url = path.join(urlImageSave, fileNameLocal);
+                        // product.pictures.push(image);
+                        // // Imagenes pequeñas
+                        // const imagesm = new Picture();
+                        // imagesm.width = '300';
+                        // imagesm.height = '300';
+                        // imagesm.url = path.join(urlImageSave, fileNameLocal);
+                        // product.sm_pictures.push(imagesm);
                       }
                     }
                   } catch (error) {
                     process.env.PRODUCTION === 'true' && logger.error(`saveImages->Error downloading image from ${urlImage}: ${error}`);
                   }
                 } else {
-                  const image = new Picture();
-                  image.width = '600';
-                  image.height = '600';
-                  image.url = urlImage;
-                  product.pictures.push(image);
-                  const imagesm = new Picture();
-                  imagesm.width = '300';
-                  imagesm.height = '300';
-                  imagesm.url = urlImage;
-                  product.sm_pictures.push(imagesm);
+                  // const image = new Picture();
+                  // image.width = '600';
+                  // image.height = '600';
+                  // image.url = urlImage;
+                  // product.pictures.push(image);
+                  // const imagesm = new Picture();
+                  // imagesm.width = '300';
+                  // imagesm.height = '300';
+                  // imagesm.url = urlImage;
+                  // product.sm_pictures.push(imagesm);
+                  product.pictures = [createPicture('600', '600', urlImage)];
+                  product.sm_pictures = [createPicture('300', '300', urlImage)];
                   let existFile = await checkImageExists(urlImage);
                   if (!existFile) {
                     // TO DO - Recuperar Imagen de otro proveedor.
@@ -859,6 +884,40 @@ class ProductsService extends ResolversOperationsService {
         products: []
       };
     }
+  }
+
+  // Modificar Item
+  async modifyImages(product: IProduct) {
+    // Comprobar que el producto no sea nulo.
+    if (product === null) {
+      return {
+        status: false,
+        mesage: 'Producto no definido, verificar datos.',
+        product: null
+      };
+    }
+    // Comprobar que no existe
+    if (!this.checkData(product?.name || '')) {
+      return {
+        status: false,
+        message: `El Producto no se ha especificado correctamente`,
+        product: null
+      };
+    }
+    const objectUpdate = {
+      pictures: product?.pictures,
+      sm_pictures: product?.sm_pictures,
+      updaterDate: new Date().toISOString()
+    };
+    // Conocer el id de la marcar
+    const filter = { id: product?.id };
+    // Ejecutar actualización
+    const result = await this.update(this.collection, filter, objectUpdate, 'productos');
+    return {
+      status: result.status,
+      message: result.message,
+      product: result.item
+    };
   }
 
   generateFilename(partNumber: string, index: number): string {

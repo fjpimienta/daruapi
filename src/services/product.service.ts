@@ -448,15 +448,8 @@ class ProductsService extends ResolversOperationsService {
     try {
       const products = this.getVariables().products;
       let productsAdd: IProduct[] = [];
-      if (!products) {
-        process.env.PRODUCTION === 'true' && logger.info(`insertMany->No existen elementos para integrar`);
-        return {
-          status: false,
-          message: 'No existen elementos para integrar',
-          products: null
-        };
-      }
-      if (products?.length === 0) {
+      if (!products || products?.length === 0) {
+        logger.error(`insertMany->No existen elementos para integrar`);
         return {
           status: false,
           message: 'No existen elementos para integrar',
@@ -464,101 +457,156 @@ class ProductsService extends ResolversOperationsService {
         };
       }
       const id = await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 });
-      process.env.PRODUCTION === 'true' && logger.info(`insertMany/products.length: ${products.length} \n`);
       const idProveedor = products![0].suppliersProd.idProveedor;
       if (idProveedor !== 'ingram') {
-        const productsBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI()).productsBDI;
-        // const productsICECAT = (await new ExternalIcecatsService({}, {}, context).getIcecatProductLocal()).icecatProductLocal;
-        if (productsBDI && productsBDI.length > 0) {
-          process.env.PRODUCTION === 'true' && logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
-          // Crear un mapa para buscar productos por número de parte
-          const productsBDIMap = new Map<string, any>();
-          for (const productBDI of productsBDI) {
-            if (productBDI.products && productBDI.products.vendornumber) {
-              productsBDIMap.set(productBDI.products.vendornumber, productBDI);
-            } else {
-              process.env.PRODUCTION === 'true' && logger.info(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
+        const responseBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI());
+        if (!responseBDI || !responseBDI.productsBDI || responseBDI.productsBDI.length === 0) {
+          const filter = { 'suppliersProd.idProveedor': idProveedor };
+          // Recuperar los productos de Ingram dentro de DARU.
+          const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
+          if (!result || !result.items || result.items.length === 0) {
+            let j = id ? parseInt(id) : 1;
+            for (const product of products) {
+              const productC = await this.categorizarProductos(product, j);
+              productsAdd.push(productC);
+              j += 1;
             }
           }
-          // if (productsICECAT && productsICECAT.length > 0) {
-          //   console.log('productsICECAT.length: ', productsICECAT?.length);
-          //   process.env.PRODUCTION === 'true' && logger.info(`insertMany/productsICECAT.length: ${productsICECAT.length} \n`);
-          //   // Crear un mapa para buscar productos por número de parte ICECAT
-          //   const productsICECATMap = new Map<string, any>();
-          //   for (const productICECAT of productsICECAT) {
-          //     if (productICECAT.products && productICECAT.products.vendornumber) {
-          //       productsICECATMap.set(productICECAT.products.vendornumber, productICECAT);
-          //     } else {
-          //       console.log('productICECAT.products.vendornumber is undefined: ', productICECAT);
-          //       process.env.PRODUCTION === 'true' && logger.info(`productICECAT.products.vendornumber is undefined: ${productICECAT} \n`);
-          //     }
-          //   }
-          // }
-          let i = id ? parseInt(id) : 1;
-          for (const product of products) {
-            // Verificar si el producto viene categorizado
-            const productBDI = productsBDIMap.get(product.partnumber);
-            if (productBDI) {
-              // Categorias
-              if (!product.category || (product.category.length > 0 && product.category[0].name === '')) {
-                // Categorizar por BDI
-                if (productBDI.products && productBDI.products.categoriesIdIngram) {
-                  product.category = [];
-                  product.subCategory = [];
-                  const partes: string[] = productBDI.products.categoriesIdIngram.split("->", 2);
-                  if (partes && partes.length > 0) {
-                    // Categorias
-                    if (partes[0].length > 0) {
-                      const c = new Categorys();
-                      c.name = partes[0];
-                      c.slug = slugify(partes[0] || '', { lower: true });
-                      product.category.push(c);
-                    }
-                    // Subcategorias
-                    if (partes[1].length > 0) {
-                      const c = new Categorys();
-                      c.name = partes[1];
-                      c.slug = slugify(partes[1] || '', { lower: true });
-                      product.subCategory.push(c);
-                    }
-                  }
-                  console.log('product.category: ', product.category);
-                }
-                // TO DO  - Categorizar por ICECAT
-              }
-              // Imagenes
-              if (!product.pictures || (product.pictures.length > 0 && product.pictures[0].url === '')) {
-                // Imagenes por BDI
-                if (productBDI.products.images) {
-                  const urlsDeImagenes: string[] = productBDI.products.images.split(',');
-                  if (urlsDeImagenes.length > 0) {
-                    // Imagenes
-                    product.pictures = [];
-                    for (const urlImage of urlsDeImagenes) {
-                      const i = new Picture();
-                      i.width = '600';
-                      i.height = '600';
-                      i.url = urlImage;
-                      product.pictures.push(i);
-                      // Imagenes pequeñas
-                      product.sm_pictures = [];
-                      const is = new Picture();
-                      is.width = '300';
-                      is.height = '300';
-                      is.url = urlImage;
-                      product.sm_pictures.push(i);
-                    }
-                  }
-                }
-                // TO DO  - Imagenes por ICECAT
+          const productsBDILocal = result.items;
+          if (productsBDILocal && productsBDILocal.length > 0) {
+            // Crear un mapa para buscar productos por número de parte
+            const productsBDIMap = new Map<string, any>();
+            for (const productBDILocal of productsBDILocal) {
+              if (productBDILocal && productBDILocal.partnumber) {
+                productsBDIMap.set(productBDILocal.partnumber, productBDILocal);
+              } else {
+                logger.error(`insertMany->El producto: ${productBDILocal} no se localiza en la Base Local.\n`);
               }
             }
-            const productC = await this.categorizarProductos(product, i);
-            productsAdd.push(productC);
-            i += 1;
+            let i = id ? parseInt(id) : 1;
+            for (const product of products) {
+              const productBDI = productsBDIMap.get(product.partnumber);
+              if (productBDI) {
+                // Categorias
+                if (!product.category || (product.category.length > 0 && product.category[0].name === '')) {
+                  // Categorizar por BDI
+                  if (productBDI && productBDI.category) {
+                    product.category = [];
+                    product.subCategory = [];
+                    product.category = productBDI.category
+                    product.subCategory = productBDI.subCategory
+                  }
+                  // TO DO  - Categorizar por ICECAT
+                }
+                // Imagenes
+                if (!product.pictures || (product.pictures.length > 0 && product.pictures[0].url === '')) {
+                  const urlImage = product.pictures[0].url;
+                  // Imagenes por BDI
+                  if (urlImage.startsWith('uploads/images/')) {
+                    product.pictures = [];
+                    product.sm_pictures = [];
+                    product.pictures = productBDI.pictures;
+                    product.sm_pictures = productBDI.sm_pictures;
+                  }
+                  // TO DO  - Imagenes por ICECAT
+                }
+              }
+              const productC = await this.categorizarProductos(product, i);
+              productsAdd.push(productC);
+              i += 1;
+            }
+          }
+        } else {
+          const productsBDI = responseBDI.productsBDI;
+          if (productsBDI && productsBDI.length > 0) {
+            logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
+            // Crear un mapa para buscar productos por número de parte
+            const productsBDIMap = new Map<string, any>();
+            for (const productBDI of productsBDI) {
+              if (productBDI.products && productBDI.products.vendornumber) {
+                productsBDIMap.set(productBDI.products.vendornumber, productBDI);
+              } else {
+                logger.error(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
+              }
+            }
+            // if (productsICECAT && productsICECAT.length > 0) {
+            //   console.log('productsICECAT.length: ', productsICECAT?.length);
+            //   process.env.PRODUCTION === 'true' && logger.info(`insertMany/productsICECAT.length: ${productsICECAT.length} \n`);
+            //   // Crear un mapa para buscar productos por número de parte ICECAT
+            //   const productsICECATMap = new Map<string, any>();
+            //   for (const productICECAT of productsICECAT) {
+            //     if (productICECAT.products && productICECAT.products.vendornumber) {
+            //       productsICECATMap.set(productICECAT.products.vendornumber, productICECAT);
+            //     } else {
+            //       console.log('productICECAT.products.vendornumber is undefined: ', productICECAT);
+            //       process.env.PRODUCTION === 'true' && logger.info(`productICECAT.products.vendornumber is undefined: ${productICECAT} \n`);
+            //     }
+            //   }
+            // }
+            let i = id ? parseInt(id) : 1;
+            for (const product of products) {
+              // Verificar si el producto viene categorizado
+              const productBDI = productsBDIMap.get(product.partnumber);
+              if (productBDI) {
+                // Categorias
+                if (!product.category || (product.category.length > 0 && product.category[0].name === '')) {
+                  // Categorizar por BDI
+                  if (productBDI.products && productBDI.products.categoriesIdIngram) {
+                    product.category = [];
+                    product.subCategory = [];
+                    const partes: string[] = productBDI.products.categoriesIdIngram.split("->", 2);
+                    if (partes && partes.length > 0) {
+                      // Categorias
+                      if (partes[0].length > 0) {
+                        const c = new Categorys();
+                        c.name = partes[0];
+                        c.slug = slugify(partes[0] || '', { lower: true });
+                        product.category.push(c);
+                      }
+                      // Subcategorias
+                      if (partes[1].length > 0) {
+                        const c = new Categorys();
+                        c.name = partes[1];
+                        c.slug = slugify(partes[1] || '', { lower: true });
+                        product.subCategory.push(c);
+                      }
+                    }
+                  }
+                  // TO DO  - Categorizar por ICECAT
+                }
+                // Imagenes
+                if (!product.pictures || (product.pictures.length > 0 && product.pictures[0].url === '')) {
+                  // Imagenes por BDI
+                  if (productBDI.products.images) {
+                    const urlsDeImagenes: string[] = productBDI.products.images.split(',');
+                    if (urlsDeImagenes.length > 0) {
+                      // Imagenes
+                      product.pictures = [];
+                      for (const urlImage of urlsDeImagenes) {
+                        const i = new Picture();
+                        i.width = '600';
+                        i.height = '600';
+                        i.url = urlImage;
+                        product.pictures.push(i);
+                        // Imagenes pequeñas
+                        product.sm_pictures = [];
+                        const is = new Picture();
+                        is.width = '300';
+                        is.height = '300';
+                        is.url = urlImage;
+                        product.sm_pictures.push(i);
+                      }
+                    }
+                  }
+                  // TO DO  - Imagenes por ICECAT
+                }
+              }
+              const productC = await this.categorizarProductos(product, i);
+              productsAdd.push(productC);
+              i += 1;
+            }
           }
         }
-        process.env.PRODUCTION === 'true' && logger.info(`insertMany/products: ${JSON.stringify(products[0])} \n`);
       } else {
         let i = id ? parseInt(id) : 1;
         for (const product of products) {
@@ -567,7 +615,6 @@ class ProductsService extends ResolversOperationsService {
           i += 1;
         }
       }
-
       // Guardar los elementos nuevos
       if (productsAdd.length > 0) {
         let filter: object = { 'suppliersProd.idProveedor': idProveedor };
@@ -580,6 +627,7 @@ class ProductsService extends ResolversOperationsService {
             products: []
           };
         }
+        logger.error(`insertMany->Hubo un error al generar los productos. No se pudieron eliminar previamente.`);
         return {
           status: false,
           message: 'Hubo un error al generar los productos. No se pudieron eliminar previamente.',
@@ -587,12 +635,12 @@ class ProductsService extends ResolversOperationsService {
         };
       }
     } catch (error) {
+      logger.error(`insertMany->Hubo un error al generar los productos. ${error}`);
       return {
         status: false,
         message: error,
         products: []
       };
-
     }
   }
 
@@ -736,15 +784,55 @@ class ProductsService extends ResolversOperationsService {
       if (idProveedor === 'ingram') {
         const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         if (!resultBDI || !resultBDI.status) {
+          // Si no se pueden recuperar los datos del servicio de ingram
           logger.error(`saveImages->ExternalBDIService.resultBDI::${resultBDI.message}.\n`);
-          return {
-            status: resultBDI.status,
-            message: resultBDI.message,
-            products: [],
-          };
+          // Recuperar de todos los productos guardados las imagenes.
+          for (let j = 0; j < products.length; j++) {
+            let product = products[j];
+            if (product.pictures && product.pictures.length > 0) {
+              for (let i = 0; i < product.pictures.length; i++) {
+                let urlImage = product.pictures[i].url.trim();
+                try {
+                  let fileNameLocal = this.generateFilename(product.partnumber, i);
+                  let urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileNameLocal}`;
+                  let existFileLocal = await checkImageExists(urlImageDaru);
+                  if (existFileLocal) {
+                    product.pictures = [createPicture('600', '600', path.join(urlImageSave, fileNameLocal))];
+                    product.sm_pictures = [createPicture('300', '300', path.join(urlImageSave, fileNameLocal))];
+                  } else {
+                    product.pictures = [createPicture('600', '600', path.join(urlImageSave, dafaultImage))];
+                    product.sm_pictures = [createPicture('300', '300', path.join(urlImageSave, dafaultImage))];
+                  }
+                } catch (error) {
+                  logger.error(`saveImages->Error downloading image from ${urlImage}: ${error}`);
+                }
+              }
+            } else {
+              product.pictures = [createPicture('600', '600', path.join(urlImageSave, dafaultImage))];
+              product.sm_pictures = [createPicture('300', '300', path.join(urlImageSave, dafaultImage))];
+            }
+            productsAdd.push(product);
+          }
+          if (productsAdd.length > 0) {
+            let filter: object = { 'suppliersProd.idProveedor': idProveedor };
+            const delResult = await this.delList(this.collection, filter, 'producto');
+            if (delResult) {
+              const result = await this.addList(this.collection, productsAdd || [], 'products');
+              return {
+                status: result.status,
+                message: result.message,
+                products
+              };
+            }
+            logger.error(`saveImages->Hubo un error al generar los productos. No se pudieron eliminar previamente.`);
+            return {
+              status: false,
+              message: 'Hubo un error al generar los productos. No se pudieron eliminar previamente.',
+              products: []
+            };
+          }
         }
         const productsBDI = resultBDI.productsBDI;
-        console.log(`saveImages->products ingram ${productsBDI.length}.`);
         logger.info(`saveImages->products ingram: ${productsBDI.length}.\n`);
         // Crear un mapa para buscar productos por número de parte
         for (const productBDI of productsBDI) {

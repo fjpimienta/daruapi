@@ -844,6 +844,10 @@ class ProductsService extends ResolversOperationsService {
                         // product.sm_pictures = [createPicture('300', '300', path.join(urlImageSave, fileNameLocal))];
                       }
                     }
+                    const updateImage = await this.modifyImages(product);
+                    if (!updateImage.status) {
+                      logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber} por ${path.join(urlImageSave, dafaultImage)}.\n`);
+                    }
                   } catch (error) {
                     process.env.PRODUCTION === 'true' && logger.error(`saveImages->Error downloading image from ${urlImage}: ${error}`);
                   }
@@ -858,26 +862,9 @@ class ProductsService extends ResolversOperationsService {
       }
       console.log(`saveImages->productsAdd.length: ${productsAdd?.length} \n`);
       logger.info(`saveImages->productsAdd.length: ${productsAdd?.length} \n`);
-      if (productsAdd.length > 0) {
-        let filter: object = { 'suppliersProd.idProveedor': idProveedor };
-        const delResult = await this.delList(this.collection, filter, 'producto');
-        if (delResult) {
-          const result = await this.addList(this.collection, productsAdd || [], 'products');
-          return {
-            status: result.status,
-            message: result.message,
-            products
-          };
-        }
-        return {
-          status: false,
-          message: 'Hubo un error al generar los productos. No se pudieron eliminar previamente.',
-          products: []
-        };
-      }
       return {
-        status: false,
-        message: 'No hubo productos para agregar imagenes.',
+        status: true,
+        message: 'Se realizo con exito la subida de imagenes.',
         products: []
       };
     } catch (error) {

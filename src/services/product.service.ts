@@ -722,11 +722,16 @@ class ProductsService extends ResolversOperationsService {
       // Proveedor principal Ingram.
       if (idProveedor === 'ingram') {
         const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
-        if (!resultBDI.status && resultBDI.productsBDI && resultBDI.productsBDI.length > 0) {
+        if (!resultBDI || !resultBDI.productsBDI) {
+          logger.error(`saveImages->resultBDI: Error en la recuperacion de los productos de ${idProveedor}\n`);
+          return {
+            status: false,
+            message: `Error en la recuperacion de los productos de ${idProveedor}\n`,
+            products: []
+          };
+        }
+        if (!resultBDI.status || resultBDI.productsBDI.length <= 0) {
           logger.error(`saveImages->resultBDI: ${resultBDI.message} \n`);
-          if (resultBDI.productsBDI.length <= 0) {
-            resultBDI.message = 'No se han localizado productos con el Proveedor.';
-          }
           return {
             status: resultBDI.status,
             message: resultBDI.message,

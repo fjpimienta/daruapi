@@ -664,7 +664,14 @@ class ProductsService extends ResolversOperationsService {
       };
       let filter: object = {};
       if (supplierId) {
-        filter = { 'suppliersProd.idProveedor': supplierId };
+        filter = {
+          'suppliersProd.idProveedor': supplierId,
+          'pictures.url': {
+            $not: {
+              $regex: '^uploads/images'
+            }
+          }
+        };
       }
       logger.info(`saveImages->productos de ${supplierId} \n`);
       // Recuperar los productos de un proveedor
@@ -694,11 +701,13 @@ class ProductsService extends ResolversOperationsService {
           const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
           for (let j = 0; j <= 15; j++) {
             const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${sanitizedPartnumber}_${j}.jpg`;
+            // console.log(`producto: ${product.partnumber}; imagen a buscar: ${urlImage}`);
             let existFile = await checkImageExists(urlImage);
             if (existFile) {
               existOnePicture = true;
               pictures.push(createPicture('600', '600', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
               sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
+              // console.log(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
             } else {
               break;
             }
@@ -718,12 +727,13 @@ class ProductsService extends ResolversOperationsService {
       }
       console.log('productsPictures.length:', productsPictures.length);
       products = productsPictures;
-      return {
-        status: true,
-        message: 'Se realizo con exito la identificacion de imagenes.',
-        products: productsPictures
-      };
+      // return {
+      //   status: true,
+      //   message: 'Se realizo con exito la identificacion de imagenes.',
+      //   products: productsPictures
+      // };
       // Proveedor principal Ingram.
+      let savePictures = false;
       if (idProveedor === 'ingram') {
         const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         if (!resultBDI || !resultBDI.productsBDI) {
@@ -755,6 +765,7 @@ class ProductsService extends ResolversOperationsService {
         }
         // Recuperar de todos los productos guardados las imagenes.
         for (let j = 0; j < products.length; j++) {
+          savePictures = false;
           let product = products[j];
           const productIngram = productsBDIMap.get(product.partnumber);
           if (productIngram) {
@@ -777,14 +788,19 @@ class ProductsService extends ResolversOperationsService {
                     await downloadImage(urlImage, uploadFolder, fileNameLocal);
                     product.pictures.push(createPicture('600', '600', path.join(urlImageSave, fileNameLocal)));
                     product.sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, fileNameLocal)));
+                    savePictures = true;
                   }
                   // }
-                  const updateImage = await this.modifyImages(product);
-                  if (!updateImage.status) {
-                    logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber} por ${path.join(urlImageSave, dafaultImage)}.\n`);
-                  }
                 } catch (error) {
                   process.env.PRODUCTION === 'true' && logger.error(`saveImages->Error downloading image from ${urlImage}: ${error}`);
+                }
+              }
+              if (savePictures) {
+                const updateImage = await this.modifyImages(product);
+                if (updateImage.status) {
+                  logger.info(`saveImages->producto actualizado: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
+                } else {
+                  logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber} por ${path.join(urlImageSave, dafaultImage)}.\n`);
                 }
               }
             }
@@ -916,7 +932,7 @@ class ProductsService extends ResolversOperationsService {
 
   // Función para reemplazar caracteres no permitidos en los nombres de archivo
   sanitizePartnumber(partnumber: string): string {
-    return partnumber.replace(/\//g, '_');
+    return partnumber.replace(/[\/ ]/g, '_');
   }
 
   generateFilename(partNumber: string, index: number): string {

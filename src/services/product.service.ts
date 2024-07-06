@@ -716,7 +716,7 @@ class ProductsService extends ResolversOperationsService {
           if (existOnePicture) {
             product.pictures = pictures;
             product.sm_pictures = sm_pictures;
-            console.log(`  :::::  producto: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
+            logger.info(`  :::::  producto: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
             const updateImage = await this.modifyImages(product);
             if (!updateImage.status) {
               logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber} por ${path.join(urlImageSave, dafaultImage)}.\n`);
@@ -725,7 +725,17 @@ class ProductsService extends ResolversOperationsService {
           }
         }
       }
-      products = productsPictures;
+      // Si hubo productos que se encontraron las imagenes en el server daru.
+      if (productsPictures.length > 0) {
+        logger.info(`saveImages->productsPictures de ${supplierId}: ${productsPictures.length} \n`);
+        const filteredProducts = products.filter(product =>
+          !productsPictures.some(picture => picture.id === product.id)
+        );
+        if (filteredProducts.length > 0) {
+          products = filteredProducts;
+        }
+      }
+      // Si no hay productos para buscar entonces salir.
       if (products.length <= 0) {
         logger.error(`saveImages->products: No se encontraron productos sin imagenes de ${idProveedor}\n`);
         return {
@@ -735,8 +745,7 @@ class ProductsService extends ResolversOperationsService {
         };
       }
 
-      console.log('productsPictures.length:', productsPictures.length);
-      console.log(`saveImages->productsPictures de ${supplierId}: ${productsPictures.length} \n`);
+      logger.info(`saveImages->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);
 
       // Proveedor principal Ingram.
       let savePictures = false;

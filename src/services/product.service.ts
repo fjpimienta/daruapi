@@ -718,7 +718,11 @@ class ProductsService extends ResolversOperationsService {
       }
       console.log('productsPictures.length:', productsPictures.length);
       products = productsPictures;
-
+      return {
+        status: true,
+        message: 'Se realizo con exito la identificacion de imagenes.',
+        products: productsPictures
+      };
       // Proveedor principal Ingram.
       if (idProveedor === 'ingram') {
         const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
@@ -764,13 +768,6 @@ class ProductsService extends ResolversOperationsService {
                   const partnumber = product.partnumber;
                   const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
                   let fileNameLocal = this.generateFilename(sanitizedPartnumber, i);
-                  // let urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileNameLocal}`;
-                  // let existFileLocal = await checkImageExists(urlImageDaru);
-                  // if (existFileLocal) {
-                  //   product.pictures = [createPicture('600', '600', path.join(urlImageSave, fileNameLocal))];
-                  //   product.sm_pictures = [createPicture('300', '300', path.join(urlImageSave, fileNameLocal))];
-                  // } else {
-                  // Si no existe el archivo localmente entonces busca las imagenes del producto en BDI
                   let existFile = await checkImageExists(urlImage);
                   if (existFile) {
                     let filePath = path.join(uploadFolder, fileNameLocal);

@@ -735,6 +735,7 @@ class ProductsService extends ResolversOperationsService {
       // Proveedor principal Ingram.
       let savePictures = false;
       if (idProveedor === 'ingram') {
+        logger.error(`saveImages->cargar imagenes de : ${idProveedor} \n`);
         const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         if (!resultBDI || !resultBDI.productsBDI) {
           logger.error(`saveImages->resultBDI: Error en la recuperacion de los productos de ${idProveedor}\n`);

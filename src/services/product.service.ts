@@ -716,7 +716,7 @@ class ProductsService extends ResolversOperationsService {
           if (existOnePicture) {
             product.pictures = pictures;
             product.sm_pictures = sm_pictures;
-            console.log(`  :::::  producto: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
+            logger.info(`  :::::  producto: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
             const updateImage = await this.modifyImages(product);
             if (!updateImage.status) {
               logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber} por ${path.join(urlImageSave, dafaultImage)}.\n`);
@@ -725,16 +725,32 @@ class ProductsService extends ResolversOperationsService {
           }
         }
       }
-      console.log('productsPictures.length:', productsPictures.length);
-      products = productsPictures;
-      // return {
-      //   status: true,
-      //   message: 'Se realizo con exito la identificacion de imagenes.',
-      //   products: productsPictures
-      // };
+      // Si hubo productos que se encontraron las imagenes en el server daru.
+      if (productsPictures.length > 0) {
+        logger.info(`saveImages->productsPictures de ${supplierId}: ${productsPictures.length} \n`);
+        const filteredProducts = products.filter(product =>
+          !productsPictures.some(picture => picture.id === product.id)
+        );
+        if (filteredProducts.length > 0) {
+          products = filteredProducts;
+        }
+      }
+      // Si no hay productos para buscar entonces salir.
+      if (products.length <= 0) {
+        logger.error(`saveImages->products: No se encontraron productos sin imagenes de ${idProveedor}\n`);
+        return {
+          status: false,
+          message: 'No se encontraron productos sin imagenes.',
+          products: []
+        };
+      }
+
+      logger.info(`saveImages->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);
+
       // Proveedor principal Ingram.
       let savePictures = false;
       if (idProveedor === 'ingram') {
+        logger.info(`saveImages->cargar imagenes de : ${idProveedor} \n`);
         const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         if (!resultBDI || !resultBDI.productsBDI) {
           logger.error(`saveImages->resultBDI: Error en la recuperacion de los productos de ${idProveedor}\n`);
@@ -763,22 +779,23 @@ class ProductsService extends ResolversOperationsService {
             logger.error(`saveImages->Producto ${productBDI.products.vendornumber} no localizado.\n`);
           }
         }
+        logger.info(`saveImages->products a revisar: ${products.length}.\n`);
         // Recuperar de todos los productos guardados las imagenes.
-        for (let j = 0; j < products.length; j++) {
+        for (let k = 0; k < products.length; k++) {
           savePictures = false;
-          let product = products[j];
+          let product = products[k];
           const productIngram = productsBDIMap.get(product.partnumber);
           if (productIngram) {
             if (productIngram.products && productIngram.products.images !== '') {
               let imageUrls = productIngram.products.images.split(',');
               product.pictures = [];
               product.sm_pictures = [];
-              for (let i = 0; i < imageUrls.length; i++) {
-                let urlImage = imageUrls[i].trim();
+              for (let m = 0; m < imageUrls.length; m++) {
+                let urlImage = imageUrls[m].trim();
                 try {
                   const partnumber = product.partnumber;
                   const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
-                  let fileNameLocal = this.generateFilename(sanitizedPartnumber, i);
+                  let fileNameLocal = this.generateFilename(sanitizedPartnumber, m);
                   let existFile = await checkImageExists(urlImage);
                   if (existFile) {
                     let filePath = path.join(uploadFolder, fileNameLocal);

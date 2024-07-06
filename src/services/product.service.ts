@@ -722,7 +722,7 @@ class ProductsService extends ResolversOperationsService {
       // Proveedor principal Ingram.
       if (idProveedor === 'ingram') {
         const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
-        if (!resultBDI.status && resultBDI.productsBDI && resultBDI.productsBDI.length > 0) {
+        if (!resultBDI.status || !resultBDI.productsBDI && resultBDI.productsBDI.length <= 0) {
           logger.error(`saveImages->resultBDI: ${resultBDI.message} \n`);
           if (resultBDI.productsBDI.length <= 0) {
             resultBDI.message = 'No se han localizado productos con el Proveedor.';

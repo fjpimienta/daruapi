@@ -735,7 +735,7 @@ class ProductsService extends ResolversOperationsService {
       // Proveedor principal Ingram.
       let savePictures = false;
       if (idProveedor === 'ingram') {
-        logger.error(`saveImages->cargar imagenes de : ${idProveedor} \n`);
+        logger.info(`saveImages->cargar imagenes de : ${idProveedor} \n`);
         const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         if (!resultBDI || !resultBDI.productsBDI) {
           logger.error(`saveImages->resultBDI: Error en la recuperacion de los productos de ${idProveedor}\n`);
@@ -764,22 +764,23 @@ class ProductsService extends ResolversOperationsService {
             logger.error(`saveImages->Producto ${productBDI.products.vendornumber} no localizado.\n`);
           }
         }
+        logger.info(`saveImages->products a revisar: ${products.length}.\n`);
         // Recuperar de todos los productos guardados las imagenes.
-        for (let j = 0; j < products.length; j++) {
+        for (let k = 0; k < products.length; k++) {
           savePictures = false;
-          let product = products[j];
+          let product = products[k];
           const productIngram = productsBDIMap.get(product.partnumber);
           if (productIngram) {
             if (productIngram.products && productIngram.products.images !== '') {
               let imageUrls = productIngram.products.images.split(',');
               product.pictures = [];
               product.sm_pictures = [];
-              for (let i = 0; i < imageUrls.length; i++) {
-                let urlImage = imageUrls[i].trim();
+              for (let m = 0; m < imageUrls.length; m++) {
+                let urlImage = imageUrls[m].trim();
                 try {
                   const partnumber = product.partnumber;
                   const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
-                  let fileNameLocal = this.generateFilename(sanitizedPartnumber, i);
+                  let fileNameLocal = this.generateFilename(sanitizedPartnumber, m);
                   let existFile = await checkImageExists(urlImage);
                   if (existFile) {
                     let filePath = path.join(uploadFolder, fileNameLocal);

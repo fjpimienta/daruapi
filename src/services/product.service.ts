@@ -725,13 +725,19 @@ class ProductsService extends ResolversOperationsService {
           }
         }
       }
-      console.log('productsPictures.length:', productsPictures.length);
       products = productsPictures;
-      // return {
-      //   status: true,
-      //   message: 'Se realizo con exito la identificacion de imagenes.',
-      //   products: productsPictures
-      // };
+      if (products.length <= 0) {
+        logger.error(`saveImages->products: No se encontraron productos sin imagenes de ${idProveedor}\n`);
+        return {
+          status: false,
+          message: 'No se encontraron productos sin imagenes.',
+          products: []
+        };
+      }
+
+      console.log('productsPictures.length:', productsPictures.length);
+      console.log(`saveImages->productsPictures de ${supplierId}: ${productsPictures.length} \n`);
+
       // Proveedor principal Ingram.
       let savePictures = false;
       if (idProveedor === 'ingram') {

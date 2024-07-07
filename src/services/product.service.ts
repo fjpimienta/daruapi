@@ -670,6 +670,12 @@ class ProductsService extends ResolversOperationsService {
             $not: {
               $regex: '^uploads/images'
             }
+          },
+          'pictures': {
+            $exists: true,
+            $not: {
+              $size: 0
+            }
           }
         };
       }

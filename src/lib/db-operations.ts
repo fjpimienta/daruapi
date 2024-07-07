@@ -214,7 +214,17 @@ export const countElementsProducts = async (
   filter: object = { active: { $ne: false } },
 ): Promise<number> => {
   const aggregate = [
-    { $match: { price: { $gt: 0 }, ...filter } },
+    {
+      $match: {
+        price: { $gt: 0 },
+        pictures: {
+          $exists: true,
+          $not: {
+            $size: 0
+          }
+        }, ...filter
+      }
+    },
     { $sort: { partnumber: 1, sale_price: 1 }, },
     {
       $group: {
@@ -245,7 +255,17 @@ export const randomItems = async (
   items: number = 10
 ): Promise<Array<object>> => {
   const aggregate = [
-    { $match: { price: { $gt: 0 }, ...filter } },
+    {
+      $match: {
+        price: { $gt: 0 },
+        pictures: {
+          $exists: true,
+          $not: {
+            $size: 0
+          }
+        }, ...filter
+      }
+    },
     { $sort: { partnumber: 1, sale_price: 1 }, },
     {
       $group: {
@@ -290,7 +310,17 @@ export const findElementsBrandsGroup = async (
   collection: string,
 ): Promise<Array<object>> => {
   const aggregate = [
-    { $match: { price: { $gt: 0 } } },
+    {
+      $match: {
+        price: { $gt: 0 },
+        pictures: {
+          $exists: true,
+          $not: {
+            $size: 0
+          }
+        }
+      }
+    },
     { $sort: { partnumber: 1, sale_price: 1 }, },
     {
       $group: {
@@ -321,7 +351,17 @@ export const findElementsCategorysGroup = async (
   collection: string,
 ): Promise<Array<object>> => {
   const aggregate = [
-    { $match: { price: { $gt: 0 } } },
+    {
+      $match: {
+        price: { $gt: 0 },
+        pictures: {
+          $exists: true,
+          $not: {
+            $size: 0
+          }
+        }
+      }
+    },
     { $sort: { partnumber: 1, sale_price: 1 }, },
     {
       $group: {

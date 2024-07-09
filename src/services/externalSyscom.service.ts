@@ -893,8 +893,8 @@ class ExternalSyscomService extends ResolversOperationsService {
   }
 
   async getListProductsSyscom() {
-    const brands = ['ugreen', 'hilookbyhikvision'];  // Ajuste: añadir la marca 'dell'
-    const allProducts: Product[] = [];  // Ajuste: almacenar todos los productos aquí
+    const brands = ['ugreen', 'hilookbyhikvision'];
+    const allProducts: Product[] = [];
 
     for (const brand of brands) {
       try {

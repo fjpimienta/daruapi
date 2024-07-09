@@ -502,7 +502,7 @@ class ProductsService extends ResolversOperationsService {
                 if (!product.pictures || (product.pictures.length > 0 && product.pictures[0].url === '')) {
                   const urlImage = product.pictures[0].url;
                   // Imagenes por BDI
-                  if (urlImage.startsWith('uploads/images/')) {
+                  if (urlImage.startsWith('images/')) {
                     product.pictures = [];
                     product.sm_pictures = [];
                     product.pictures = productBDI.pictures;
@@ -652,7 +652,7 @@ class ProductsService extends ResolversOperationsService {
       let productsWithoutPictures: IProduct[] = [];
       const supplierId = this.getVariables().supplierId;
       const dafaultImage = 'logo-icon.png';
-      const uploadFolder = './uploads/images/';
+      const uploadFolder = `./${process.env.UPLOAD_URL}images/`;
       const urlImageSave = `${process.env.UPLOAD_URL}images/`;
       const productsBDIMap = new Map<string, any>();
       const createPicture = (width: string, height: string, url: string) => {
@@ -668,7 +668,7 @@ class ProductsService extends ResolversOperationsService {
           'suppliersProd.idProveedor': supplierId,
           'pictures.url': {
             $not: {
-              $regex: '^uploads/images'
+              $regex: '^images/'
             }
           },
           'pictures': {
@@ -695,7 +695,6 @@ class ProductsService extends ResolversOperationsService {
       // const filteredProducts = products.filter(product => product.pictures && product.pictures.length > 0);
       const idProveedor = supplierId;
       logger.info(`saveImages->productos de ${supplierId}: ${products.length} \n`);
-      console.log(`saveImages->productos de ${supplierId}: ${products.length} \n`);
       // Identificar los productos que ya tengan imagenes
       for (let i = 0; i < products.length; i++) {
         existOnePicture = false;
@@ -707,13 +706,13 @@ class ProductsService extends ResolversOperationsService {
           const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
           for (let j = 0; j <= 15; j++) {
             const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${sanitizedPartnumber}_${j}.jpg`;
-            // console.log(`producto: ${product.partnumber}; imagen a buscar: ${urlImage}`);
+            logger.info(`saveImages->producto: ${product.partnumber}; imagen a buscar: ${urlImage}`);
             let existFile = await checkImageExists(urlImage);
             if (existFile) {
               existOnePicture = true;
               pictures.push(createPicture('600', '600', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
               sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
-              // console.log(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
+              console.log(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
             } else {
               break;
             }
@@ -776,7 +775,7 @@ class ProductsService extends ResolversOperationsService {
         }
         // Si se pueden recuperar los datos del servicio de ingram
         const productsBDI = resultBDI.productsBDI;
-        logger.info(`saveImages->products ingram: ${productsBDI.length}.\n`);
+        logger.info(`saveImages->products ${idProveedor}: ${productsBDI.length}.\n`);
         // Crear un mapa para buscar productos por número de parte
         for (const productBDI of productsBDI) {
           if (productBDI.products && productBDI.products.vendornumber) {
@@ -860,15 +859,18 @@ class ProductsService extends ResolversOperationsService {
       }
       // Proveedores que si tienen imagenes
       if (idProveedor === 'syscom') {
-        for (let j = 0; j < products.length; j++) {
-          let product = products[j];
-          for (let i = 0; i < product.pictures.length; i++) {
-            let image = product.pictures[i];
+        for (let l = 0; l < products.length; l++) {
+          let product = products[l];
+          for (let k = 0; k < product.pictures.length; k++) {
+            let image = product.pictures[k];
             let urlImage = image.url;
-            logger.info(`saveImages->producto: ${product.partnumber}; urlImage ${i}: ${urlImage}.\n`);
-            // if (!urlImage.startsWith('uploads/images/' && product.partnumber)) {
+            logger.info(`saveImages->producto: ${product.partnumber}; urlImage ${k}: ${urlImage}.\n`);
+            console.log(`saveImages->producto: ${product.partnumber}; urlImage ${k}: ${urlImage}.\n`);
+            // if (!urlImage.startsWith('images/' && product.partnumber)) {
             try {
-              let fileNameLocal = `${product.partnumber}_${i}`;
+              // let fileNameLocal = `${product.partnumber}_${k}`;
+              const sanitizedPartnumber = this.sanitizePartnumber(product.partnumber);
+              let fileNameLocal = this.generateFilename(sanitizedPartnumber, k);
               // let urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileNameLocal}`;
               // let existFileLocal = await checkImageExists(urlImageDaru);
               // if (existFileLocal) {
@@ -877,13 +879,14 @@ class ProductsService extends ResolversOperationsService {
               // Si no existe el archivo localmente entonces busca las imagenes del producto
               // let existFile = await checkImageExists(urlImage);
               // if (existFile) {
-              let filename = this.generateFilename(product.partnumber, i);
+              let filename = this.generateFilename(product.partnumber, k);
               let filePath = path.join(uploadFolder, filename);
               if (fs.existsSync(filePath)) {
                 await fs.promises.unlink(filePath);
               }
               await downloadImage(urlImage, uploadFolder, fileNameLocal);
               image.url = path.join(urlImageSave, fileNameLocal);
+              console.log('image.url: ', image.url);
               // }
               // }
             } catch (error) {

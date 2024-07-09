@@ -6,14 +6,15 @@ import logger from '../utils/logger';
 
 const downloadImage = (url: string, destFolder: string, filename: string): Promise<string> => {
   return new Promise((resolve, reject) => {
-    // Ensure the destination folder exists
     if (!fs.existsSync(destFolder)) {
       fs.mkdirSync(destFolder, { recursive: true });
     }
     const filePath = path.join(destFolder, filename);
+    logger.info(`filePath: ${filePath}`);
     const protocol = url.startsWith('https') ? https : http;
     logger.info(`Starting download from: ${url}`);
-    const request = (protocol.get(url, (response: IncomingMessage) => {
+
+    const request = protocol.get(url, (response: IncomingMessage) => {
       if (!response || response.statusCode === null) {
         const errorMessage = `No valid response from: ${url}`;
         logger.error(errorMessage);
@@ -47,7 +48,7 @@ const downloadImage = (url: string, destFolder: string, filename: string): Promi
             file.close(() => {
               logger.info(`Successfully downloaded image: ${filePath}`);
               resolve(filename);
-            });  // Cierra el archivo y resuelve la promesa
+            });
           });
           file.on('error', (err) => {
             logger.error(`File stream error: ${err.message}`);
@@ -61,7 +62,13 @@ const downloadImage = (url: string, destFolder: string, filename: string): Promi
           });
         }
       }
-    }) as ClientRequest);
+    }) as ClientRequest;
+
+    // Agregar un timeout a la solicitud
+    request.setTimeout(30000, () => { // 30 segundos de timeout
+      logger.error(`Request timed out after 30 seconds: ${url}`);
+      request.abort();
+    });
 
     request.on('error', (err) => {
       logger.error(`Request error: ${err.message}`);

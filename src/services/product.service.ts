@@ -706,13 +706,13 @@ class ProductsService extends ResolversOperationsService {
           const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
           for (let j = 0; j <= 15; j++) {
             const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${sanitizedPartnumber}_${j}.jpg`;
-            logger.info(`saveImages->producto: ${product.partnumber}; imagen a buscar: ${urlImage}`);
+            // logger.info(`saveImages->producto: ${product.partnumber}; imagen a buscar: ${urlImage}`);
             let existFile = await checkImageExists(urlImage);
             if (existFile) {
               existOnePicture = true;
               pictures.push(createPicture('600', '600', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
               sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
-              console.log(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
+              // console.log(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
             } else {
               break;
             }
@@ -721,7 +721,7 @@ class ProductsService extends ResolversOperationsService {
           if (existOnePicture) {
             product.pictures = pictures;
             product.sm_pictures = sm_pictures;
-            logger.info(`  :::::  producto: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
+            // logger.info(`  :::::  producto: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
             const updateImage = await this.modifyImages(product);
             if (!updateImage.status) {
               logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber} por ${path.join(urlImageSave, dafaultImage)}.\n`);
@@ -732,7 +732,7 @@ class ProductsService extends ResolversOperationsService {
       }
       // Si hubo productos que se encontraron las imagenes en el server daru.
       if (productsPictures.length > 0) {
-        logger.info(`saveImages->productsPictures de ${supplierId}: ${productsPictures.length} \n`);
+        logger.info(`saveImages->productsPictures DARU de ${supplierId}: ${productsPictures.length} \n`);
         const filteredProducts = products.filter(product =>
           !productsPictures.some(picture => picture.id === product.id)
         );
@@ -865,20 +865,9 @@ class ProductsService extends ResolversOperationsService {
             let image = product.pictures[k];
             let urlImage = image.url;
             logger.info(`saveImages->producto: ${product.partnumber}; urlImage ${k}: ${urlImage}.\n`);
-            console.log(`saveImages->producto: ${product.partnumber}; urlImage ${k}: ${urlImage}.\n`);
-            // if (!urlImage.startsWith('images/' && product.partnumber)) {
             try {
-              // let fileNameLocal = `${product.partnumber}_${k}`;
               const sanitizedPartnumber = this.sanitizePartnumber(product.partnumber);
               let fileNameLocal = this.generateFilename(sanitizedPartnumber, k);
-              // let urlImageDaru = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${fileNameLocal}`;
-              // let existFileLocal = await checkImageExists(urlImageDaru);
-              // if (existFileLocal) {
-              //   image.url = path.join(urlImageSave, fileNameLocal);
-              // } else {
-              // Si no existe el archivo localmente entonces busca las imagenes del producto
-              // let existFile = await checkImageExists(urlImage);
-              // if (existFile) {
               let filename = this.generateFilename(product.partnumber, k);
               let filePath = path.join(uploadFolder, filename);
               if (fs.existsSync(filePath)) {
@@ -886,27 +875,15 @@ class ProductsService extends ResolversOperationsService {
               }
               await downloadImage(urlImage, uploadFolder, fileNameLocal);
               image.url = path.join(urlImageSave, fileNameLocal);
-              console.log('image.url: ', image.url);
-              // }
-              // }
             } catch (error) {
               logger.error(`saveImages->No se encontro la imagen ${urlImage} del producto ${product.partnumber}:: ${error}.\n`);
               image.url = path.join(urlImageSave, dafaultImage);
             }
-            // } else {
-            //   let urlImageDaru = `${process.env.API_URL}${urlImage}`;
-            //   let existFile = await checkImageExists(urlImageDaru);
-            //   if (!existFile) {
-            //     logger.error(`saveImages->No se encontro la imagen ${urlImageDaru} del producto ${product.partnumber}.\n`);
-            //     // TO DO - Recuperar Imagen de otro proveedor.
-            //   }
-            // }
           }
           product.sm_pictures = product.pictures;
           productsAdd.push(product);
         }
       }
-      console.log(`saveImages->productsAdd.length: ${productsAdd?.length} \n`);
       logger.info(`saveImages->productsAdd.length: ${productsAdd?.length} \n`);
       return {
         status: true,
@@ -914,6 +891,7 @@ class ProductsService extends ResolversOperationsService {
         products: []
       };
     } catch (error) {
+      logger.error(`saveImages->error: ${error} \n`);
       return {
         status: false,
         message: error,

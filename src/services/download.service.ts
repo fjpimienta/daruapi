@@ -10,9 +10,7 @@ const downloadImage = (url: string, destFolder: string, filename: string): Promi
       fs.mkdirSync(destFolder, { recursive: true });
     }
     const filePath = path.join(destFolder, filename);
-    logger.info(`filePath: ${filePath}`);
     const protocol = url.startsWith('https') ? https : http;
-    logger.info(`Starting download from: ${url}`);
 
     const request = protocol.get(url, (response: IncomingMessage) => {
       if (!response || response.statusCode === null) {
@@ -21,7 +19,7 @@ const downloadImage = (url: string, destFolder: string, filename: string): Promi
         fs.unlink(filePath, () => reject(errorMessage));
         return;
       }
-      logger.info(`Response status code: ${response.statusCode}`);
+      // logger.info(`Response status code: ${response.statusCode}`);
       if (response.statusCode !== 200) {
         fs.unlink(filePath, () => {
           let errorMessage;
@@ -46,7 +44,7 @@ const downloadImage = (url: string, destFolder: string, filename: string): Promi
           response.pipe(file);
           file.on('finish', () => {
             file.close(() => {
-              logger.info(`Successfully downloaded image: ${filePath}`);
+              // logger.info(`Successfully downloaded image: ${filePath}`);
               resolve(filename);
             });
           });

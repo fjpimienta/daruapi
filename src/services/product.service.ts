@@ -834,7 +834,7 @@ class ProductsService extends ResolversOperationsService {
         }
       }
       // Proveedores que no tienen imagenes
-      if (idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva' || idProveedor === 'syscom') {
+      if (idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva') {
         const productsBDI = (await this.listAll(this.collection, this.catalogName, 1, -1, { 'suppliersProd.idProveedor': { $ne: 'ingram' } })).items;
         console.log(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
         logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);

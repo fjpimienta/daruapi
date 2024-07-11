@@ -679,7 +679,6 @@ class ProductsService extends ResolversOperationsService {
           }
         };
       }
-      logger.info(`saveImages->productos de ${supplierId} \n`);
       // Recuperar los productos de un proveedor
       const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
       if (!result || !result.items || result.items.length === 0) {
@@ -820,6 +819,7 @@ class ProductsService extends ResolversOperationsService {
               if (savePictures) {
                 const updateImage = await this.modifyImages(product);
                 if (updateImage.status) {
+                  productsAdd.push(product);
                   logger.info(`saveImages->producto actualizado: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
                 } else {
                   logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber} por ${path.join(urlImageSave, dafaultImage)}.\n`);
@@ -829,7 +829,6 @@ class ProductsService extends ResolversOperationsService {
           } else {
             logger.error(`saveImages->No existen imagenes del producto ${product.partnumber} en Ingram.\n`);
           }
-          productsAdd.push(product);
         }
       }
       // Proveedores que no tienen imagenes

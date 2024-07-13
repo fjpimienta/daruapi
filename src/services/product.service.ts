@@ -2,10 +2,9 @@ import slugify from 'slugify';
 import { ACTIVE_VALUES_FILTER, COLLECTIONS } from '../config/constants';
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { findAllElements, findOneElement, findSubcategoryProduct } from '../lib/db-operations';
+import { findOneElement, findSubcategoryProduct } from '../lib/db-operations';
 import { asignDocumentId } from '../lib/db-operations';
 import ResolversOperationsService from './resolvers-operaciones.service';
-import { pagination } from '../lib/pagination';
 import { IPicture, IProduct } from '../interfaces/product.interface';
 import ExternalIcecatsService from './externalIcecat.service';
 import ExternalIngramService from './externalIngram.service';
@@ -13,9 +12,7 @@ import { Categorys, Picture } from '../models/product.models';
 import ExternalBDIService from './externalBDI.service';
 import path from 'path';
 import logger from '../utils/logger';
-import checkImageExists from './checkimage.service';
-import fs from 'fs';
-import { downloadImage } from './download.service';
+import { MAX_CONCURRENT_DOWNLOADS, checkImageExists, downloadImage, downloadQueue, imageCache } from './download.service';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
@@ -502,7 +499,7 @@ class ProductsService extends ResolversOperationsService {
                 if (!product.pictures || (product.pictures.length > 0 && product.pictures[0].url === '')) {
                   const urlImage = product.pictures[0].url;
                   // Imagenes por BDI
-                  if (urlImage.startsWith('images/')) {
+                  if (urlImage.startsWith('uploads/images/')) {
                     product.pictures = [];
                     product.sm_pictures = [];
                     product.pictures = productBDI.pictures;
@@ -668,7 +665,7 @@ class ProductsService extends ResolversOperationsService {
           'suppliersProd.idProveedor': supplierId,
           'pictures.url': {
             $not: {
-              $regex: '^images/'
+              '$regex': '^uploads\\\\images'
             }
           },
           'pictures': {
@@ -730,17 +727,20 @@ class ProductsService extends ResolversOperationsService {
         }
       }
       // Si hubo productos que se encontraron las imagenes en el server daru.
+      logger.info(`Productos con imagenes actualizadas / productsPictures.length: ${productsPictures.length}`);
       if (productsPictures.length > 0) {
         logger.info(`saveImages->productsPictures DARU de ${supplierId}: ${productsPictures.length} \n`);
-        const filteredProducts = products.filter(product =>
-          !productsPictures.some(picture => picture.id === product.id)
-        );
+        const productIdsWithImages = new Set(productsPictures.map(picture => picture.id));
+        const filteredProducts = products.filter(product => !productIdsWithImages.has(product.id));
         if (filteredProducts.length > 0) {
-          products = filteredProducts;
+          productsWithoutPictures = filteredProducts;
         }
+        products = productsWithoutPictures;
       }
+      logger.info(`Productos con imagenes pendientes de actualizar / productsWithoutPictures.length: ${productsWithoutPictures.length}`);
+
       // Si no hay productos para buscar entonces salir.
-      if (products.length <= 0) {
+      if (productsWithoutPictures.length <= 0) {
         logger.error(`saveImages->products: No se encontraron productos sin imagenes de ${idProveedor}\n`);
         return {
           status: false,
@@ -751,8 +751,28 @@ class ProductsService extends ResolversOperationsService {
 
       logger.info(`saveImages->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);
 
+      // Descarga multiple de archivos
+      const downloadImages = async (imageUrls: string[], destFolder: string, partnumber: string, product: any): Promise<void> => {
+        await Promise.all(imageUrls.map(async (url: string, index) => {
+          const filename = this.generateFilename(this.sanitizePartnumber(partnumber), index);
+          const filePath = path.join(destFolder, filename);
+          logger.info(`saveImages->filePath ${filePath} \n`);
+          if (imageCache.has(url)) {
+            product.pictures[index].url = path.join(urlImageSave, imageCache.get(url)!);
+          } else {
+            const downloadPromise = downloadImage(url, destFolder, filename);
+            downloadQueue.push(downloadPromise);
+            if (downloadQueue.length > MAX_CONCURRENT_DOWNLOADS) {
+              await Promise.race(downloadQueue);
+              downloadQueue.splice(0, 1);
+            }
+            await downloadPromise;
+            imageCache.set(url, filename);
+            product.pictures[index].url = path.join(urlImageSave, filename);
+          }
+        }));
+      };
       // Proveedor principal Ingram.
-      let savePictures = false;
       if (idProveedor === 'ingram') {
         logger.info(`saveImages->cargar imagenes de : ${idProveedor} \n`);
         const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
@@ -772,9 +792,11 @@ class ProductsService extends ResolversOperationsService {
             products: []
           };
         }
+
         // Si se pueden recuperar los datos del servicio de ingram
         const productsBDI = resultBDI.productsBDI;
         logger.info(`saveImages->products ${idProveedor}: ${productsBDI.length}.\n`);
+
         // Crear un mapa para buscar productos por número de parte
         for (const productBDI of productsBDI) {
           if (productBDI.products && productBDI.products.vendornumber) {
@@ -783,54 +805,32 @@ class ProductsService extends ResolversOperationsService {
             logger.error(`saveImages->Producto ${productBDI.products.vendornumber} no localizado.\n`);
           }
         }
+
         logger.info(`saveImages->products a revisar: ${products.length}.\n`);
+
         // Recuperar de todos los productos guardados las imagenes.
         for (let k = 0; k < products.length; k++) {
-          savePictures = false;
           let product = products[k];
           const productIngram = productsBDIMap.get(product.partnumber);
-          if (productIngram) {
-            if (productIngram.products && productIngram.products.images !== '') {
-              let imageUrls = productIngram.products.images.split(',');
-              product.pictures = [];
-              product.sm_pictures = [];
-              for (let m = 0; m < imageUrls.length; m++) {
-                let urlImage = imageUrls[m].trim();
-                try {
-                  const partnumber = product.partnumber;
-                  const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
-                  let fileNameLocal = this.generateFilename(sanitizedPartnumber, m);
-                  let existFile = await checkImageExists(urlImage);
-                  if (existFile) {
-                    let filePath = path.join(uploadFolder, fileNameLocal);
-                    if (fs.existsSync(filePath)) {
-                      await fs.promises.unlink(filePath);
-                    }
-                    await downloadImage(urlImage, uploadFolder, fileNameLocal);
-                    product.pictures.push(createPicture('600', '600', path.join(urlImageSave, fileNameLocal)));
-                    product.sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, fileNameLocal)));
-                    savePictures = true;
-                  }
-                  // }
-                } catch (error) {
-                  process.env.PRODUCTION === 'true' && logger.error(`saveImages->Error downloading image from ${urlImage}: ${error}`);
-                }
-              }
-              if (savePictures) {
-                const updateImage = await this.modifyImages(product);
-                if (updateImage.status) {
-                  productsAdd.push(product);
-                  logger.info(`saveImages->producto actualizado: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
-                } else {
-                  logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber} por ${path.join(urlImageSave, dafaultImage)}.\n`);
-                }
-              }
+          if (productIngram && productIngram.products && productIngram.products.images !== '') {
+            let imageUrls = productIngram.products.images.split(',');
+            product.pictures = [];
+            product.sm_pictures = [];
+            await downloadImages(imageUrls.map((url: string) => url.trim()), uploadFolder, product.partnumber, product);
+            const updateImage = await this.modifyImages(product);
+            if (updateImage.status) {
+              productsAdd.push(product);
+              logger.info(`saveImages->producto actualizado: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
+            } else {
+              logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber} por ${path.join(urlImageSave, dafaultImage)}.\n`);
             }
           } else {
             logger.error(`saveImages->No existen imagenes del producto ${product.partnumber} en Ingram.\n`);
           }
         }
       }
+
+
       // Proveedores que no tienen imagenes
       if (idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva') {
         const productsBDI = (await this.listAll(this.collection, this.catalogName, 1, -1, { 'suppliersProd.idProveedor': { $ne: 'ingram' } })).items;
@@ -856,29 +856,13 @@ class ProductsService extends ResolversOperationsService {
           }
         }
       }
+
       // Proveedores que si tienen imagenes
       if (idProveedor === 'syscom') {
         for (let l = 0; l < products.length; l++) {
           let product = products[l];
-          for (let k = 0; k < product.pictures.length; k++) {
-            let image = product.pictures[k];
-            let urlImage = image.url;
-            logger.info(`saveImages->producto: ${product.partnumber}; urlImage ${k}: ${urlImage}.\n`);
-            try {
-              const sanitizedPartnumber = this.sanitizePartnumber(product.partnumber);
-              let fileNameLocal = this.generateFilename(sanitizedPartnumber, k);
-              let filename = this.generateFilename(product.partnumber, k);
-              let filePath = path.join(uploadFolder, filename);
-              if (fs.existsSync(filePath)) {
-                await fs.promises.unlink(filePath);
-              }
-              await downloadImage(urlImage, uploadFolder, fileNameLocal);
-              image.url = path.join(urlImageSave, fileNameLocal);
-            } catch (error) {
-              logger.error(`saveImages->No se encontro la imagen ${urlImage} del producto ${product.partnumber}:: ${error}.\n`);
-              image.url = path.join(urlImageSave, dafaultImage);
-            }
-          }
+          let imageUrls = product.pictures.map((image) => image.url);
+          await downloadImages(imageUrls, uploadFolder, product.partnumber, product);
           product.sm_pictures = product.pictures;
           productsAdd.push(product);
         }

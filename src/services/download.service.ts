@@ -1,83 +1,79 @@
 import http, { ClientRequest, IncomingMessage } from 'http';
 import https from 'https';
-import fs from 'fs';
-import * as path from 'path';
 import logger from '../utils/logger';
+import fs from 'fs';
+import path from 'path';
+import sharp from 'sharp';
 
-const downloadImage = (url: string, destFolder: string, filename: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    if (!fs.existsSync(destFolder)) {
-      fs.mkdirSync(destFolder, { recursive: true });
-    }
-    const filePath = path.join(destFolder, filename);
-    const protocol = url.startsWith('https') ? https : http;
+const MAX_CONCURRENT_DOWNLOADS = 10;
+const downloadQueue: Promise<void>[] = [];
+const imageCache = new Map<string, string>();
 
-    const request = protocol.get(url, (response: IncomingMessage) => {
-      if (!response || response.statusCode === null) {
-        const errorMessage = `No valid response from: ${url}`;
-        logger.error(errorMessage);
-        fs.unlink(filePath, () => reject(errorMessage));
-        return;
+const downloadImage = async (url: string, destFolder: string, filename: string, maxRetries = 2, retryDelay = 5000): Promise<void> => {
+  let retries = 0;
+  while (retries < maxRetries) {
+    try {
+      if (!fs.existsSync(destFolder)) {
+        fs.mkdirSync(destFolder, { recursive: true });
       }
-      // logger.info(`Response status code: ${response.statusCode}`);
-      if (response.statusCode !== 200) {
-        fs.unlink(filePath, () => {
-          let errorMessage;
-          if (response.statusCode === 404) {
-            errorMessage = `Image not found: ${url} (404)`;
-          } else {
-            errorMessage = `Failed to get '${url}' (${response.statusCode})`;
-          }
-          logger.error(`response(if) - errorMessage: ${errorMessage}`);
-          return reject(errorMessage);
+
+      const filePath = path.join(destFolder, filename);
+      const protocol = url.startsWith('https') ? https : http;
+
+      const response = await new Promise<IncomingMessage>((resolve, reject) => {
+        const request = protocol.get(url, (res) => {
+          resolve(res);
         });
-      } else {
-        const contentType = response.headers['content-type'];
-        if (!contentType || !contentType.startsWith('image')) {
-          fs.unlink(filePath, () => {
-            const errorMessage = `Invalid content type '${contentType}' for URL: ${url}`;
-            logger.error(`response(else) - errorMessage: ${errorMessage}`);
-            return reject(errorMessage);
-          });
-        } else {
-          const file = fs.createWriteStream(filePath);
-          response.pipe(file);
-          file.on('finish', () => {
-            file.close(() => {
-              // logger.info(`Successfully downloaded image: ${filePath}`);
-              resolve(filename);
-            });
-          });
-          file.on('error', (err) => {
-            logger.error(`File stream error: ${err.message}`);
-            fs.unlink(filePath, () => reject(err.message));
-          });
-          response.on('error', (err) => {
-            logger.error(`Response stream error: ${err.message}`);
-            file.close(() => {
-              fs.unlink(filePath, () => reject(err.message));
-            });
-          });
-        }
+
+        request.on('error', (err) => {
+          reject(err);
+        });
+
+        request.setTimeout(30000, () => {
+          logger.error(`Request timed out after 30 seconds: ${url}`);
+          request.abort();
+        });
+      });
+
+      if (response.statusCode !== 200) {
+        throw new Error(`Failed to get '${url}' (${response.statusCode})`);
       }
-    }) as ClientRequest;
 
-    // Agregar un timeout a la solicitud
-    request.setTimeout(30000, () => { // 30 segundos de timeout
-      logger.error(`Request timed out after 30 seconds: ${url}`);
-      request.abort();
-    });
+      const contentType = response.headers['content-type'];
+      if (!contentType || !contentType.startsWith('image')) {
+        throw new Error(`Invalid content type '${contentType}' for URL: ${url}`);
+      }
 
-    request.on('error', (err) => {
-      logger.error(`Request error: ${err.message}`);
-      fs.unlink(filePath, () => reject(err.message));
-    });
-  });
+      const file = fs.createWriteStream(filePath);
+      response.pipe(file);
+
+      await new Promise((resolve, reject) => {
+        file.on('finish', resolve);
+        file.on('error', (err) => {
+          reject(err);
+        });
+      });
+
+      // Optimize the image using sharp
+      await sharp(filePath)
+        .resize(400, 400, { fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 80 })
+        .toFile(filePath);
+
+      logger.info(`Image saved to: ${filePath}`);
+      return;
+    } catch (error) {
+      retries++;
+      logger.error(`Error downloading image from ${url}. Retrying (${retries}/${maxRetries})...`);
+      await new Promise((resolve) => setTimeout(resolve, retryDelay));
+    }
+  }
+  logger.error(`Maximum number of retries reached for ${url}`);
 };
 
-const checkImageExists = (url: string): Promise<boolean> => {
+const checkImageExists = async (url: string): Promise<boolean> => {
+  const protocol = url.startsWith('https') ? https : http;
   return new Promise((resolve) => {
-    const protocol = url.startsWith('https') ? https : http;
     (protocol.get(url, (res) => {
       resolve(res.statusCode === 200);
     }) as ClientRequest).on('error', () => {
@@ -86,4 +82,4 @@ const checkImageExists = (url: string): Promise<boolean> => {
   });
 };
 
-export { downloadImage, checkImageExists };
+export { downloadImage, checkImageExists, imageCache, downloadQueue, MAX_CONCURRENT_DOWNLOADS };

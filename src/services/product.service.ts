@@ -665,7 +665,7 @@ class ProductsService extends ResolversOperationsService {
           'suppliersProd.idProveedor': supplierId,
           'pictures.url': {
             $not: {
-              '$regex': '^uploads\\\\images'
+              '$regex': '^uploads'
             }
           },
           'pictures': {
@@ -757,18 +757,35 @@ class ProductsService extends ResolversOperationsService {
           const filename = this.generateFilename(this.sanitizePartnumber(partnumber), index);
           const filePath = path.join(destFolder, filename);
           logger.info(`saveImages->filePath ${filePath} \n`);
-          if (imageCache.has(url)) {
-            product.pictures[index].url = path.join(urlImageSave, imageCache.get(url)!);
-          } else {
-            const downloadPromise = downloadImage(url, destFolder, filename);
-            downloadQueue.push(downloadPromise);
-            if (downloadQueue.length > MAX_CONCURRENT_DOWNLOADS) {
-              await Promise.race(downloadQueue);
-              downloadQueue.splice(0, 1);
+
+          try {
+            if (imageCache.has(url)) {
+              if (product.pictures[index]) {
+                product.pictures[index].url = path.join(urlImageSave, imageCache.get(url)!);
+              }
+            } else {
+              const downloadPromise = downloadImage(url, destFolder, filename);
+              downloadQueue.push(downloadPromise);
+              if (downloadQueue.length > MAX_CONCURRENT_DOWNLOADS) {
+                await Promise.race(downloadQueue);
+                downloadQueue.splice(0, 1);
+              }
+              await downloadPromise;
+              imageCache.set(url, filename);
+              if (product.pictures[index]) {
+                product.pictures[index].url = path.join(urlImageSave, filename);
+              } else {
+                logger.error(`saveImages->error: product.pictures[${index}] is undefined`);
+                // Establecer una URL de imagen de reemplazo o un valor predeterminado
+                product.pictures[index] = { url: 'https://via.placeholder.com/150' };
+              }
             }
-            await downloadPromise;
-            imageCache.set(url, filename);
-            product.pictures[index].url = path.join(urlImageSave, filename);
+          } catch (error) {
+            logger.error(`saveImages->error: ${error}`);
+            // Establecer una URL de imagen de reemplazo o un valor predeterminado
+            if (product.pictures[index]) {
+              product.pictures[index].url = 'https://via.placeholder.com/150';
+            }
           }
         }));
       };

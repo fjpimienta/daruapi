@@ -60,7 +60,7 @@ const downloadImage = async (url: string, destFolder: string, filename: string, 
         .jpeg({ quality: 80 })
         .toFile(filePath);
 
-      logger.info(`Image saved to: ${filePath}`);
+      // logger.info(`Image saved to: ${filePath}`);
       return;
     } catch (error) {
       retries++;
@@ -68,7 +68,7 @@ const downloadImage = async (url: string, destFolder: string, filename: string, 
       await new Promise((resolve) => setTimeout(resolve, retryDelay));
     }
   }
-  logger.error(`Maximum number of retries reached for ${url}`);
+  // logger.error(`Maximum number of retries reached for ${url}`);
 };
 
 const checkImageExists = async (url: string): Promise<boolean> => {

@@ -756,7 +756,7 @@ class ProductsService extends ResolversOperationsService {
         await Promise.all(imageUrls.map(async (url: string, index) => {
           const filename = this.generateFilename(this.sanitizePartnumber(partnumber), index);
           const filePath = path.join(destFolder, filename);
-          logger.info(`saveImages->filePath ${filePath} \n`);
+          // logger.info(`saveImages->filePath ${filePath} \n`);
 
           try {
             if (imageCache.has(url)) {
@@ -777,14 +777,14 @@ class ProductsService extends ResolversOperationsService {
               } else {
                 logger.error(`saveImages->error: product.pictures[${index}] is undefined`);
                 // Establecer una URL de imagen de reemplazo o un valor predeterminado
-                product.pictures[index] = { url: 'https://via.placeholder.com/150' };
+                product.pictures[index] = { url: `${urlImageSave}${dafaultImage}`  };
               }
             }
           } catch (error) {
             logger.error(`saveImages->error: ${error}`);
             // Establecer una URL de imagen de reemplazo o un valor predeterminado
             if (product.pictures[index]) {
-              product.pictures[index].url = 'https://via.placeholder.com/150';
+              product.pictures[index].url = `${urlImageSave}${dafaultImage}`;
             }
           }
         }));
@@ -846,7 +846,6 @@ class ProductsService extends ResolversOperationsService {
           }
         }
       }
-
 
       // Proveedores que no tienen imagenes
       if (idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva') {

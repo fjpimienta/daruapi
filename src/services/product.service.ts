@@ -665,7 +665,7 @@ class ProductsService extends ResolversOperationsService {
           'suppliersProd.idProveedor': supplierId,
           'pictures.url': {
             $not: {
-              '$regex': '^uploads\\\\images'
+              '$regex': '^uploads'
             }
           },
           'pictures': {

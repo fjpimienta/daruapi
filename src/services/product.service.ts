@@ -693,63 +693,71 @@ class ProductsService extends ResolversOperationsService {
       logger.info(`saveImages->productos de ${supplierId}: ${products.length} \n`);
 
       // ============================== Temporal
-      // // Identificar los productos que ya tengan imagenes
-      // for (let i = 0; i < products.length; i++) {
-      //   existOnePicture = false;
-      //   let product = products[i];
-      //   let pictures: Picture[] = [];
-      //   let sm_pictures: Picture[] = [];
-      //   if (product.partnumber !== '') {
-      //     const partnumber = product.partnumber;
-      //     const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
-      //     for (let j = 0; j <= 15; j++) {
-      //       const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${sanitizedPartnumber}_${j}.jpg`;
-      //       // logger.info(`saveImages->producto: ${product.partnumber}; imagen a buscar: ${urlImage}`);
-      //       let existFile = await checkImageExists(urlImage);
-      //       if (existFile) {
-      //         existOnePicture = true;
-      //         pictures.push(createPicture('600', '600', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
-      //         sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
-      //         // console.log(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
-      //       } else {
-      //         break;
-      //       }
-      //     }
-      //     // Si no hay fotos del producto.
-      //     if (existOnePicture) {
-      //       product.pictures = pictures;
-      //       product.sm_pictures = sm_pictures;
-      //       // logger.info(`  :::::  producto: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
-      //       const updateImage = await this.modifyImages(product);
-      //       if (!updateImage.status) {
-      //         logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber} por ${path.join(urlImageSave, dafaultImage)}.\n`);
-      //       }
-      //       productsPictures.push(product);
-      //     }
-      //   }
-      // }
-      // // Si hubo productos que se encontraron las imagenes en el server daru.
-      // logger.info(`Productos con imagenes actualizadas / productsPictures.length: ${productsPictures.length}`);
-      // if (productsPictures.length > 0) {
-      //   logger.info(`saveImages->productsPictures DARU de ${supplierId}: ${productsPictures.length} \n`);
-      //   const productIdsWithImages = new Set(productsPictures.map(picture => picture.id));
-      //   const filteredProducts = products.filter(product => !productIdsWithImages.has(product.id));
-      //   if (filteredProducts.length > 0) {
-      //     productsWithoutPictures = filteredProducts;
-      //   }
-      //   products = productsWithoutPictures;
-      // }
-      // logger.info(`Productos con imagenes pendientes de actualizar / productsWithoutPictures.length: ${productsWithoutPictures.length}`);
+      // Identificar los productos que ya tengan imagenes
+      for (let i = 0; i < products.length; i++) {
+        existOnePicture = false;
+        let product = products[i];
+        let pictures: Picture[] = [];
+        let sm_pictures: Picture[] = [];
+        if (product.partnumber !== '') {
+          const partnumber = product.partnumber;
+          const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
+          for (let j = 0; j <= 15; j++) {
+            const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${sanitizedPartnumber}_${j}.jpg`;
+            // logger.info(`saveImages->producto: ${product.partnumber}; imagen a buscar: ${urlImage}`);
+            let existFile = await checkImageExists(urlImage);
+            if (existFile) {
+              existOnePicture = true;
+              pictures.push(createPicture('600', '600', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
+              sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
+              // console.log(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
+            } else {
+              break;
+            }
+          }
+          // Si no hay fotos del producto.
+          if (existOnePicture) {
+            product.pictures = pictures;
+            product.sm_pictures = sm_pictures;
+            // logger.info(`  :::::  producto: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
+            const updateImage = await this.modifyImages(product);
+            if (!updateImage.status) {
+              logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber} por ${path.join(urlImageSave, dafaultImage)}.\n`);
+            }
+            productsPictures.push(product);
+          }
+        }
+      }
+
+      // // Out
+      // return {
+      //   status: true,
+      //   message: 'Fin.',
+      //   products
+      // };
+
+      // Si hubo productos que se encontraron las imagenes en el server daru.
+      logger.info(`Productos con imagenes actualizadas / productsPictures.length: ${productsPictures.length}`);
+      if (productsPictures.length > 0) {
+        logger.info(`saveImages->productsPictures DARU de ${supplierId}: ${productsPictures.length} \n`);
+        const productIdsWithImages = new Set(productsPictures.map(picture => picture.id));
+        const filteredProducts = products.filter(product => !productIdsWithImages.has(product.id));
+        if (filteredProducts.length > 0) {
+          productsWithoutPictures = filteredProducts;
+        }
+        products = productsWithoutPictures;
+      }
+      logger.info(`Productos con imagenes pendientes de actualizar / productsWithoutPictures.length: ${productsWithoutPictures.length}`);
       
-      // // Si no hay productos para buscar entonces salir.
-      // if (productsWithoutPictures.length <= 0) {
-      //   logger.error(`saveImages->products: No se encontraron productos sin imagenes de ${idProveedor}\n`);
-      //   return {
-      //     status: false,
-      //     message: 'No se encontraron productos sin imagenes.',
-      //     products: []
-      //   };
-      // }
+      // Si no hay productos para buscar entonces salir.
+      if (productsWithoutPictures.length <= 0) {
+        logger.error(`saveImages->products: No se encontraron productos sin imagenes de ${idProveedor}\n`);
+        return {
+          status: false,
+          message: 'No se encontraron productos sin imagenes.',
+          products: []
+        };
+      }
       // ============================== Temporal
 
       logger.info(`saveImages->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);

@@ -729,13 +729,6 @@ class ProductsService extends ResolversOperationsService {
         }
       }
 
-      // // Out
-      // return {
-      //   status: true,
-      //   message: 'Fin.',
-      //   products
-      // };
-
       // Si hubo productos que se encontraron las imagenes en el server daru.
       logger.info(`Productos con imagenes actualizadas / productsPictures.length: ${productsPictures.length}`);
       if (productsPictures.length > 0) {
@@ -746,9 +739,11 @@ class ProductsService extends ResolversOperationsService {
           productsWithoutPictures = filteredProducts;
         }
         products = productsWithoutPictures;
+      } else {
+        productsWithoutPictures = products;
       }
       logger.info(`Productos con imagenes pendientes de actualizar / productsWithoutPictures.length: ${productsWithoutPictures.length}`);
-      
+
       // Si no hay productos para buscar entonces salir.
       if (productsWithoutPictures.length <= 0) {
         logger.error(`saveImages->products: No se encontraron productos sin imagenes de ${idProveedor}\n`);
@@ -761,6 +756,13 @@ class ProductsService extends ResolversOperationsService {
       // ============================== Temporal
 
       logger.info(`saveImages->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);
+
+      // // Out
+      // return {
+      //   status: true,
+      //   message: 'Fin.',
+      //   products
+      // };
 
       // Descarga multiple de archivos
       const downloadImages = async (imageUrls: string[], destFolder: string, partnumber: string, product: any): Promise<void> => {
@@ -788,7 +790,7 @@ class ProductsService extends ResolversOperationsService {
               } else {
                 logger.error(`saveImages->error: product.pictures[${index}] is undefined`);
                 // Establecer una URL de imagen de reemplazo o un valor predeterminado
-                product.pictures[index] = { url: `${urlImageSave}${dafaultImage}`  };
+                product.pictures[index] = { url: `${urlImageSave}${dafaultImage}` };
               }
             }
           } catch (error) {

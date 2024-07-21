@@ -359,6 +359,7 @@ class ExternalDaisytekService extends ResolversOperationsService {
           itemData.sm_pictures = [];
           itemData.especificaciones = [];
         }
+        itemData.sheetJson = '';
       }
     }
     return itemData;

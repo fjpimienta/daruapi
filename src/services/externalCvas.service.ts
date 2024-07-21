@@ -874,6 +874,7 @@ class ExternalCvasService extends ResolversOperationsService {
           especP.valor = item.peso;
           itemData.especificaciones.push(especP);
         }
+        itemData.sheetJson = '';
       }
     }
     return itemData;

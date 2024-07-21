@@ -430,7 +430,8 @@ class ProductsService extends ResolversOperationsService {
       descuentos: product?.descuentos,
       promociones: product?.promociones,
       especificaciones: product?.especificaciones,
-      registerDate: new Date().toISOString()
+      registerDate: new Date().toISOString(),
+      sheetJson: product?.sheetJson
     };
     const result = await this.add(this.collection, productObject, 'producto');
     return {

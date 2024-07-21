@@ -501,7 +501,7 @@ class ExternalBDIService extends ResolversOperationsService {
           itemData.especificaciones.push({ tipo: 'Característica', valor: atributo });
         }
       }
-
+      itemData.sheetJson = '';
     }
     return itemData;
   }

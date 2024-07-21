@@ -615,6 +615,7 @@ class ExternalCtsService extends ResolversOperationsService {
       //   console.log('item: ', item)
       //   console.log('itemData: ', itemData)
       // }
+      itemData.sheetJson = '';
     }
     return itemData;
   }

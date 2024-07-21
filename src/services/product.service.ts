@@ -912,6 +912,252 @@ class ProductsService extends ResolversOperationsService {
     }
   }
 
+  // Guardar Jsons
+  async saveJsons(context: IContextData) {
+    try {
+      let productsAdd: IProduct[] = [];
+      let productsJsons: IProduct[] = [];
+      let productsWithoutJsons: IProduct[] = [];
+      const supplierId = this.getVariables().supplierId;
+      const uploadFolder = `./${process.env.UPLOAD_URL}files/`;
+      const urlJsonSave = `${process.env.UPLOAD_URL}files/`;
+      const productsBDIMap = new Map<string, any>();
+
+      let filter: object = {};
+      if (supplierId) {
+        filter = {
+          'suppliersProd.idProveedor': supplierId,
+          'sheetJson': {
+            $not: {
+              '$regex': '^uploads'
+            }
+          }
+        };
+      }
+      // Recuperar los productos de un proveedor
+      const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
+      if (!result || !result.items || result.items.length === 0) {
+        logger.error(`saveJsons->listAll.products:: No existen elementos para integrar de ${supplierId}.\n`);
+        return {
+          status: false,
+          message: 'No existen elementos para recuperar los json',
+          products: []
+        };
+      }
+      let existOnePicture = false;
+      let products = result.items as IProduct[];
+      // const filteredProducts = products.filter(product => product.pictures && product.pictures.length > 0);
+      const idProveedor = supplierId;
+      logger.info(`saveJsons->productos de ${supplierId}: ${products.length} \n`);
+
+      // ============================== Temporal
+      // Identificar los productos que ya tengan imagenes
+      for (let i = 0; i < products.length; i++) {
+        existOnePicture = false;
+        let product = products[i];
+        if (product.partnumber !== '') {
+          const partnumber = product.partnumber;
+          const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
+          const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}files/${sanitizedPartnumber}.jpg`;
+          // logger.info(`saveJsons->producto: ${product.partnumber}; imagen a buscar: ${urlImage}`);
+          let existFile = await checkImageExists(urlImage);
+          if (existFile) {
+            existOnePicture = true;
+            // console.log(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
+          } else {
+            break;
+          }
+          // Si no hay fotos del producto.
+          if (existOnePicture) {
+            // logger.info(`  :::::  producto: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
+            const updateImage = await this.modifyJsons(product);
+            if (!updateImage.status) {
+              logger.error(`saveJsons->No se pudo reiniciar los json de ${product.partnumber}.\n`);
+            }
+            productsJsons.push(product);
+          }
+        }
+      }
+
+      // Si hubo productos que se encontraron los json en el server daru.
+      logger.info(`Productos con jsons actualizados / productsJsons.length: ${productsJsons.length}`);
+      if (productsJsons.length > 0) {
+        logger.info(`saveJsons->productsJsons DARU de ${supplierId}: ${productsJsons.length} \n`);
+        const productIdsWithJsons = new Set(productsJsons.map(picture => picture.id));
+        const filteredProducts = products.filter(product => !productIdsWithJsons.has(product.id));
+        if (filteredProducts.length > 0) {
+          productsWithoutJsons = filteredProducts;
+        }
+        products = productsWithoutJsons;
+      } else {
+        productsWithoutJsons = products;
+      }
+      logger.info(`Productos con imagenes pendientes de actualizar / productsWithoutJsons.length: ${productsWithoutJsons.length}`);
+
+      // Si no hay productos para buscar entonces salir.
+      if (productsWithoutJsons.length <= 0) {
+        logger.error(`saveJsons->products: No se encontraron productos sin imagenes de ${idProveedor}\n`);
+        return {
+          status: false,
+          message: 'No se encontraron productos sin imagenes.',
+          products: []
+        };
+      }
+      // ============================== Temporal
+
+      logger.info(`saveJsons->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);
+
+      // Out
+      return {
+        status: true,
+        message: 'Fin.',
+        products
+      };
+
+      // Descarga multiple de archivos
+      const downloadJsons = async (imageUrls: string[], destFolder: string, partnumber: string, product: any): Promise<void> => {
+        await Promise.all(imageUrls.map(async (url: string, index) => {
+          const filename = this.generateFilenameJson(this.sanitizePartnumber(partnumber), index);
+          const filePath = path.join(destFolder, filename);
+          // logger.info(`saveJsons->filePath ${filePath} \n`);
+
+          try {
+            if (imageCache.has(url)) {
+              if (product.pictures[index]) {
+                product.pictures[index].url = path.join(urlJsonSave, imageCache.get(url)!);
+              }
+            } else {
+              const downloadPromise = downloadImage(url, destFolder, filename);
+              downloadQueue.push(downloadPromise);
+              if (downloadQueue.length > MAX_CONCURRENT_DOWNLOADS) {
+                await Promise.race(downloadQueue);
+                downloadQueue.splice(0, 1);
+              }
+              await downloadPromise;
+              imageCache.set(url, filename);
+              if (product.pictures[index]) {
+                product.pictures[index].url = path.join(urlJsonSave, filename);
+              } else {
+                logger.error(`saveJsons->error: product.pictures[${index}] is undefined`);
+                // Establecer una URL de imagen de reemplazo o un valor predeterminado
+              }
+            }
+          } catch (error) {
+            logger.error(`saveJsons->error: ${error}`);
+            // Establecer una URL de imagen de reemplazo o un valor predeterminado
+          }
+        }));
+      };
+      // Proveedor principal Ingram.
+      if (idProveedor === 'ingram') {
+        logger.info(`saveJsons->cargar imagenes de : ${idProveedor} \n`);
+        const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
+        if (!resultBDI || !resultBDI.productsBDI) {
+          logger.error(`saveJsons->resultBDI: Error en la recuperacion de los productos de ${idProveedor}\n`);
+          return {
+            status: false,
+            message: `Error en la recuperacion de los productos de ${idProveedor}\n`,
+            products: []
+          };
+        }
+        if (!resultBDI.status || resultBDI.productsBDI.length <= 0) {
+          logger.error(`saveJsons->resultBDI: ${resultBDI.message} \n`);
+          return {
+            status: resultBDI.status,
+            message: resultBDI.message,
+            products: []
+          };
+        }
+
+        // Si se pueden recuperar los datos del servicio de ingram
+        const productsBDI = resultBDI.productsBDI;
+        logger.info(`saveJsons->products ${idProveedor}: ${productsBDI.length}.\n`);
+
+        // Crear un mapa para buscar productos por número de parte
+        for (const productBDI of productsBDI) {
+          if (productBDI.products && productBDI.products.vendornumber) {
+            productsBDIMap.set(productBDI.products.vendornumber, productBDI);
+          } else {
+            logger.error(`saveJsons->Producto ${productBDI.products.vendornumber} no localizado.\n`);
+          }
+        }
+
+        logger.info(`saveJsons->products a revisar: ${products.length}.\n`);
+
+        // Recuperar de todos los productos guardados los json.
+        for (let k = 0; k < products.length; k++) {
+          let product = products[k];
+          const productIngram = productsBDIMap.get(product.partnumber);
+          if (productIngram && productIngram.products && productIngram.products.sheetJson !== '') {
+            let imageUrls = productIngram.products.sheetJson;
+            product.pictures = [];
+            product.sm_pictures = [];
+            await downloadJsons(imageUrls.map((url: string) => url.trim()), uploadFolder, product.partnumber, product);
+            const updateImage = await this.modifyJsons(product);
+            if (updateImage.status) {
+              productsAdd.push(product);
+              logger.info(`saveJsons->producto actualizado: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
+            } else {
+              logger.error(`saveJsons->No se pudo reiniciar los json de ${product.partnumber}.\n`);
+            }
+          } else {
+            logger.error(`saveJsons->No existen imagenes del producto ${product.partnumber} en Ingram.\n`);
+          }
+        }
+      }
+
+      // Proveedores que no tienen imagenes
+      if (idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva') {
+        const productsBDI = (await this.listAll(this.collection, this.catalogName, 1, -1, { 'suppliersProd.idProveedor': { $ne: 'ingram' } })).items;
+        console.log(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
+        logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
+        if (productsBDI && productsBDI.length > 0) {
+          const productsBDIMap = new Map<string, any>();
+          for (const productBDI of productsBDI) {
+            if (productBDI && productBDI.partnumber) {
+              productsBDIMap.set(productBDI.partnumber, productBDI);
+            }
+          }
+          // Procesa la carga de imagenes.
+          logger.info(`insertMany/products.length: ${products?.length} \n`);
+          for (const product of products) {
+            const productBDI = productsBDIMap.get(product.partnumber);
+            if (productBDI) {
+              product.pictures = productBDI.pictures;
+              product.sm_pictures = productBDI.sm_pictures;
+            } else {
+              productsWithoutJsons.push(product);
+            }
+          }
+        }
+      }
+
+      // Proveedores que si tienen imagenes
+      if (idProveedor === 'syscom') {
+        for (let l = 0; l < products.length; l++) {
+          let product = products[l];
+          let imageUrls = product.pictures.map((image) => image.url);
+          await downloadJsons(imageUrls, uploadFolder, product.partnumber, product);
+          product.sm_pictures = product.pictures;
+          productsAdd.push(product);
+        }
+      }
+      logger.info(`saveJsons->productsAdd.length: ${productsAdd?.length} \n`);
+      return {
+        status: true,
+        message: 'Se realizo con exito la subida de imagenes.',
+        products: []
+      };
+    } catch (error) {
+      logger.error(`saveJsons->error: ${error} \n`);
+      return {
+        status: false,
+        message: error,
+        products: []
+      };
+    }
+  }
+
   // Modificar Item
   async modifyImages(product: IProduct) {
     // Comprobar que el producto no sea nulo.
@@ -946,6 +1192,39 @@ class ProductsService extends ResolversOperationsService {
     };
   }
 
+  // Modificar Item
+  async modifyJsons(product: IProduct) {
+    // Comprobar que el producto no sea nulo.
+    if (product === null) {
+      return {
+        status: false,
+        mesage: 'Producto no definido, verificar datos.',
+        product: null
+      };
+    }
+    // Comprobar que no existe
+    if (!this.checkData(product?.name || '')) {
+      return {
+        status: false,
+        message: `El Producto no se ha especificado correctamente`,
+        product: null
+      };
+    }
+    const objectUpdate = {
+      sheetJson: product?.sheetJson,
+      updaterDate: new Date().toISOString()
+    };
+    // Conocer el id de la marcar
+    const filter = { id: product?.id };
+    // Ejecutar actualización
+    const result = await this.update(this.collection, filter, objectUpdate, 'productos');
+    return {
+      status: result.status,
+      message: result.message,
+      product: result.item
+    };
+  }
+
   // Función para reemplazar caracteres no permitidos en los nombres de archivo
   sanitizePartnumber(partnumber: string): string {
     return partnumber.replace(/[\/ ]/g, '_');
@@ -953,6 +1232,10 @@ class ProductsService extends ResolversOperationsService {
 
   generateFilename(partNumber: string, index: number): string {
     return `${partNumber}_${index}.jpg`;
+  }
+
+  generateFilenameJson(partNumber: string, index: number): string {
+    return `${partNumber}_${index}.json`;
   }
 
   async categorizarProductos(product: IProduct, i: number) {

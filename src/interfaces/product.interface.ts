@@ -34,6 +34,7 @@ export interface IProduct {
   descuentos: IDescuentos;
   promociones: IPromociones;
   registerDate?: String;
+  sheetJson: String;
   especificaciones: IEspecificacion[];
   especificacionesBullet: IEspecificacionBullet[];
 }

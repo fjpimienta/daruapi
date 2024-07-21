@@ -20,6 +20,9 @@ const resolversProductMutation: IResolvers = {
     },
     async addImages(_, variables, context) {
       return new ProductsService(_, variables, context).saveImages(context);
+    },
+    async addJsons(_, variables, context) {
+      return new ProductsService(_, variables, context).saveJsons(context);
     }
   }
 };

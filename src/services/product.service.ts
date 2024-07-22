@@ -510,6 +510,7 @@ class ProductsService extends ResolversOperationsService {
                 }
               }
               const productC = await this.categorizarProductos(product, i);
+              productC.sheetJson = '';
               productsAdd.push(productC);
               i += 1;
             }
@@ -600,6 +601,7 @@ class ProductsService extends ResolversOperationsService {
                 }
               }
               const productC = await this.categorizarProductos(product, i);
+              productC.sheetJson = '';
               productsAdd.push(productC);
               i += 1;
             }
@@ -609,6 +611,7 @@ class ProductsService extends ResolversOperationsService {
         let i = id ? parseInt(id) : 1;
         for (const product of products) {
           const productC = await this.categorizarProductos(product, i);
+          product.sheetJson = product.sheetJson;
           productsAdd.push(productC);
           i += 1;
         }

@@ -1019,38 +1019,66 @@ class ProductsService extends ResolversOperationsService {
       // };
 
       // Descarga multiple de archivos
-      const downloadJsons = async (imageUrls: string[], destFolder: string, partnumber: string, product: any): Promise<void> => {
-        await Promise.all(imageUrls.map(async (url: string, index) => {
-          const filename = this.generateFilenameJson(this.sanitizePartnumber(partnumber), index);
-          const filePath = path.join(destFolder, filename);
-          // logger.info(`saveJsons->filePath ${filePath} \n`);
+      // const downloadJsons = async (imageUrls: string[], destFolder: string, partnumber: string, product: any): Promise<void> => {
+      //   await Promise.all(imageUrls.map(async (url: string, index) => {
+      //     const filename = this.generateFilenameJson(this.sanitizePartnumber(partnumber), index);
+      //     const filePath = path.join(destFolder, filename);
+      //     // logger.info(`saveJsons->filePath ${filePath} \n`);
 
-          try {
-            if (imageCache.has(url)) {
-              if (product.pictures[index]) {
-                product.pictures[index].url = path.join(urlJsonSave, imageCache.get(url)!);
-              }
-            } else {
-              const downloadPromise = downloadImage(url, destFolder, filename);
-              downloadQueue.push(downloadPromise);
-              if (downloadQueue.length > MAX_CONCURRENT_DOWNLOADS) {
-                await Promise.race(downloadQueue);
-                downloadQueue.splice(0, 1);
-              }
-              await downloadPromise;
-              imageCache.set(url, filename);
-              if (product.pictures[index]) {
-                product.pictures[index].url = path.join(urlJsonSave, filename);
-              } else {
-                logger.error(`saveJsons->error: product.pictures[${index}] is undefined`);
-                // Establecer una URL de imagen de reemplazo o un valor predeterminado
-              }
+      //     try {
+      //       if (imageCache.has(url)) {
+      //         if (product.pictures[index]) {
+      //           product.pictures[index].url = path.join(urlJsonSave, imageCache.get(url)!);
+      //         }
+      //       } else {
+      //         const downloadPromise = downloadImage(url, destFolder, filename);
+      //         downloadQueue.push(downloadPromise);
+      //         if (downloadQueue.length > MAX_CONCURRENT_DOWNLOADS) {
+      //           await Promise.race(downloadQueue);
+      //           downloadQueue.splice(0, 1);
+      //         }
+      //         await downloadPromise;
+      //         imageCache.set(url, filename);
+      //         if (product.pictures[index]) {
+      //           product.pictures[index].url = path.join(urlJsonSave, filename);
+      //         } else {
+      //           logger.error(`saveJsons->error: product.pictures[${index}] is undefined`);
+      //           // Establecer una URL de imagen de reemplazo o un valor predeterminado
+      //         }
+      //       }
+      //     } catch (error) {
+      //       logger.error(`saveJsons->error: ${error}`);
+      //       // Establecer una URL de imagen de reemplazo o un valor predeterminado
+      //     }
+      //   }));
+      // };
+      const downloadJsons = async (imageUrl: string, destFolder: string, partnumber: string, product: any): Promise<void> => {
+        const filename = this.generateFilenameJson(this.sanitizePartnumber(partnumber), 0);
+        const filePath = path.join(destFolder, filename);
+  
+        try {
+          if (imageCache.has(imageUrl)) {
+            if (product.pictures[0]) {
+              product.pictures[0].url = path.join(urlJsonSave, imageCache.get(imageUrl)!);
             }
-          } catch (error) {
-            logger.error(`saveJsons->error: ${error}`);
-            // Establecer una URL de imagen de reemplazo o un valor predeterminado
+          } else {
+            const downloadPromise = downloadImage(imageUrl, destFolder, filename);
+            downloadQueue.push(downloadPromise);
+            if (downloadQueue.length > MAX_CONCURRENT_DOWNLOADS) {
+              await Promise.race(downloadQueue);
+              downloadQueue.splice(0, 1);
+            }
+            await downloadPromise;
+            imageCache.set(imageUrl, filename);
+            if (product.pictures[0]) {
+              product.pictures[0].url = path.join(urlJsonSave, filename);
+            } else {
+              logger.error(`saveJsons->error: product.pictures[0] is undefined`);
+            }
           }
-        }));
+        } catch (error) {
+          logger.error(`saveJsons->error: ${error}`);
+        }
       };
       // Proveedor principal Ingram.
       if (idProveedor === 'ingram') {
@@ -1093,10 +1121,9 @@ class ProductsService extends ResolversOperationsService {
           let product = products[k];
           const productIngram = productsBDIMap.get(product.partnumber);
           if (productIngram && productIngram.products && productIngram.products.sheetJson !== '') {
-            let imageUrls = productIngram.products.sheetJson;
-            product.pictures = [];
-            product.sm_pictures = [];
-            await downloadJsons(imageUrls.map((url: string) => url.trim()), uploadFolder, product.partnumber, product);
+            let jsonUrls = productIngram.products.sheetJson;
+            // await downloadJsons(jsonUrls.map((url: string) => url.trim()), uploadFolder, product.partnumber, product);
+            await downloadJsons(jsonUrls, uploadFolder, product.partnumber, product);
             const updateImage = await this.modifyJsons(product);
             if (updateImage.status) {
               productsAdd.push(product);
@@ -1140,7 +1167,7 @@ class ProductsService extends ResolversOperationsService {
       if (idProveedor === 'syscom') {
         for (let l = 0; l < products.length; l++) {
           let product = products[l];
-          let imageUrls = product.pictures.map((image) => image.url);
+          let imageUrls = product.sheetJson as string;
           await downloadJsons(imageUrls, uploadFolder, product.partnumber, product);
           product.sm_pictures = product.pictures;
           productsAdd.push(product);

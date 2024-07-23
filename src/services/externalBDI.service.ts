@@ -172,7 +172,10 @@ class ExternalBDIService extends ResolversOperationsService {
       "report": "json",
       "filters": {
         "active": true
-      }
+      },
+      "manufacturer": [
+        "apple"
+      ]
     });
     const options = {
       method: 'POST',
@@ -214,7 +217,10 @@ class ExternalBDIService extends ResolversOperationsService {
       "report": "json",
       "filters": {
         "active": true
-      }
+      },
+      "manufacturer": [
+        "apple"
+      ]
     });
     const options = {
       method: 'POST',
@@ -501,6 +507,7 @@ class ExternalBDIService extends ResolversOperationsService {
           itemData.especificaciones.push({ tipo: 'Característica', valor: atributo });
         }
       }
+
       itemData.sheetJson = item.products.sheetJson;
     }
     return itemData;

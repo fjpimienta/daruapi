@@ -1056,27 +1056,27 @@ class ProductsService extends ResolversOperationsService {
       const downloadJsons = async (imageUrl: string, destFolder: string, partnumber: string, product: any): Promise<void> => {
         const filename = this.generateFilenameJson(this.sanitizePartnumber(partnumber), 0);
         const filePath = path.join(destFolder, filename);
-  
+
         try {
-          if (imageCache.has(imageUrl)) {
-            if (product.pictures[0]) {
-              product.pictures[0].url = path.join(urlJsonSave, imageCache.get(imageUrl)!);
-            }
-          } else {
-            const downloadPromise = downloadJson(imageUrl, destFolder, filename);
-            downloadQueue.push(downloadPromise);
-            if (downloadQueue.length > MAX_CONCURRENT_DOWNLOADS) {
-              await Promise.race(downloadQueue);
-              downloadQueue.splice(0, 1);
-            }
-            await downloadPromise;
-            imageCache.set(imageUrl, filename);
-            if (product.pictures[0]) {
-              product.pictures[0].url = path.join(urlJsonSave, filename);
-            } else {
-              logger.error(`saveJsons->error: product.pictures[0] is undefined`);
-            }
+          // if (imageCache.has(imageUrl)) {
+          //   if (product.saveJsons) {
+          //     product.saveJsons = path.join(urlJsonSave, imageCache.get(imageUrl)!);
+          //   }
+          // } else {
+          const downloadPromise = downloadJson(imageUrl, destFolder, filename);
+          downloadQueue.push(downloadPromise);
+          if (downloadQueue.length > MAX_CONCURRENT_DOWNLOADS) {
+            await Promise.race(downloadQueue);
+            downloadQueue.splice(0, 1);
           }
+          await downloadPromise;
+          imageCache.set(imageUrl, filename);
+          if (product.pictures[0]) {
+            product.pictures[0].url = path.join(urlJsonSave, filename);
+          } else {
+            logger.error(`saveJsons->error: product.pictures[0] is undefined`);
+          }
+          // }
         } catch (error) {
           logger.error(`saveJsons->error: ${error}`);
         }

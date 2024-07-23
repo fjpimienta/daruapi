@@ -10,6 +10,7 @@ const downloadQueue: Promise<void>[] = [];
 
 const downloadJson = async (url: string, destFolder: string, filename: string, maxRetries = 2, retryDelay = 5000): Promise<void> => {
   let retries = 0;
+  logger.info(`url file saved to: ${url}`);
   while (retries < maxRetries) {
     try {
       if (!fs.existsSync(destFolder)) {

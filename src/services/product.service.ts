@@ -13,6 +13,7 @@ import ExternalBDIService from './externalBDI.service';
 import path from 'path';
 import logger from '../utils/logger';
 import { MAX_CONCURRENT_DOWNLOADS, checkImageExists, downloadImage, downloadQueue, imageCache } from './download.service';
+import { downloadJson } from './downloadJson.service';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
@@ -1062,7 +1063,7 @@ class ProductsService extends ResolversOperationsService {
               product.pictures[0].url = path.join(urlJsonSave, imageCache.get(imageUrl)!);
             }
           } else {
-            const downloadPromise = downloadImage(imageUrl, destFolder, filename);
+            const downloadPromise = downloadJson(imageUrl, destFolder, filename);
             downloadQueue.push(downloadPromise);
             if (downloadQueue.length > MAX_CONCURRENT_DOWNLOADS) {
               await Promise.race(downloadQueue);

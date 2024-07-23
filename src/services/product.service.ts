@@ -1011,12 +1011,12 @@ class ProductsService extends ResolversOperationsService {
 
       logger.info(`saveJsons->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);
 
-      // Out
-      return {
-        status: true,
-        message: 'Fin.',
-        products
-      };
+      // // Out
+      // return {
+      //   status: true,
+      //   message: 'Fin.',
+      //   products
+      // };
 
       // Descarga multiple de archivos
       const downloadJsons = async (imageUrls: string[], destFolder: string, partnumber: string, product: any): Promise<void> => {

@@ -924,8 +924,8 @@ class ProductsService extends ResolversOperationsService {
       let productsJsons: IProduct[] = [];
       let productsWithoutJsons: IProduct[] = [];
       const supplierId = this.getVariables().supplierId;
-      const uploadFolder = `./${process.env.UPLOAD_URL}files/`;
-      const urlJsonSave = `${process.env.UPLOAD_URL}files/`;
+      const uploadFolder = `./${process.env.UPLOAD_URL}jsons/`;
+      const urlJsonSave = `${process.env.UPLOAD_URL}jsons/`;
       const productsBDIMap = new Map<string, any>();
 
       let filter: object = {};
@@ -949,31 +949,31 @@ class ProductsService extends ResolversOperationsService {
           products: []
         };
       }
-      let existOnePicture = false;
+      let existOneJson = false;
       let products = result.items as IProduct[];
       // const filteredProducts = products.filter(product => product.pictures && product.pictures.length > 0);
       const idProveedor = supplierId;
       logger.info(`saveJsons->productos de ${supplierId}: ${products.length} \n`);
 
       // ============================== Temporal
-      // Identificar los productos que ya tengan imagenes
+      // Identificar los productos que ya tengan jsons
       for (let i = 0; i < products.length; i++) {
-        existOnePicture = false;
+        existOneJson = false;
         let product = products[i];
         if (product.partnumber !== '') {
           const partnumber = product.partnumber;
           const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
-          const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}files/${sanitizedPartnumber}.jpg`;
-          // logger.info(`saveJsons->producto: ${product.partnumber}; imagen a buscar: ${urlImage}`);
+          const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
+          logger.info(`saveJsons->producto: ${product.partnumber}; imagen a buscar: ${urlImage}`);
           let existFile = await checkImageExists(urlImage);
           if (existFile) {
-            existOnePicture = true;
-            // console.log(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
+            existOneJson = true;
+            logger.info(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
           } else {
             break;
           }
           // Si no hay fotos del producto.
-          if (existOnePicture) {
+          if (existOneJson) {
             // logger.info(`  :::::  producto: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
             const updateImage = await this.modifyJsons(product);
             if (!updateImage.status) {
@@ -988,7 +988,7 @@ class ProductsService extends ResolversOperationsService {
       logger.info(`Productos con jsons actualizados / productsJsons.length: ${productsJsons.length}`);
       if (productsJsons.length > 0) {
         logger.info(`saveJsons->productsJsons DARU de ${supplierId}: ${productsJsons.length} \n`);
-        const productIdsWithJsons = new Set(productsJsons.map(picture => picture.id));
+        const productIdsWithJsons = new Set(productsJsons.map(jsonProd => jsonProd.id));
         const filteredProducts = products.filter(product => !productIdsWithJsons.has(product.id));
         if (filteredProducts.length > 0) {
           productsWithoutJsons = filteredProducts;
@@ -1071,10 +1071,10 @@ class ProductsService extends ResolversOperationsService {
           }
           await downloadPromise;
           imageCache.set(imageUrl, filename);
-          if (product.pictures[0]) {
-            product.pictures[0].url = path.join(urlJsonSave, filename);
+          if (product.sheetJson) {
+            product.sheetJson = path.join(urlJsonSave, filename);
           } else {
-            logger.error(`saveJsons->error: product.pictures[0] is undefined`);
+            logger.error(`saveJsons->error: product.sheetJson is undefined`);
           }
           // }
         } catch (error) {
@@ -1083,7 +1083,7 @@ class ProductsService extends ResolversOperationsService {
       };
       // Proveedor principal Ingram.
       if (idProveedor === 'ingram') {
-        logger.info(`saveJsons->cargar imagenes de : ${idProveedor} \n`);
+        logger.info(`saveJsons->cargar jsons de : ${idProveedor} \n`);
         const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         if (!resultBDI || !resultBDI.productsBDI) {
           logger.error(`saveJsons->resultBDI: Error en la recuperacion de los productos de ${idProveedor}\n`);
@@ -1117,7 +1117,7 @@ class ProductsService extends ResolversOperationsService {
 
         logger.info(`saveJsons->products a revisar: ${products.length}.\n`);
 
-        // Recuperar de todos los productos guardados los json.
+        // Recuperar de todos los productos guardados con json.
         for (let k = 0; k < products.length; k++) {
           let product = products[k];
           const productIngram = productsBDIMap.get(product.partnumber);
@@ -1125,10 +1125,10 @@ class ProductsService extends ResolversOperationsService {
             let jsonUrls = productIngram.products.sheetJson;
             // await downloadJsons(jsonUrls.map((url: string) => url.trim()), uploadFolder, product.partnumber, product);
             await downloadJsons(jsonUrls, uploadFolder, product.partnumber, product);
-            const updateImage = await this.modifyJsons(product);
-            if (updateImage.status) {
+            const updateJson = await this.modifyJsons(product);
+            if (updateJson.status) {
               productsAdd.push(product);
-              logger.info(`saveJsons->producto actualizado: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
+              logger.info(`saveJsons->producto actualizado: ${product.partnumber}; json guardado: ${product.sheetJson}`);
             } else {
               logger.error(`saveJsons->No se pudo reiniciar los json de ${product.partnumber}.\n`);
             }
@@ -1138,7 +1138,7 @@ class ProductsService extends ResolversOperationsService {
         }
       }
 
-      // Proveedores que no tienen imagenes
+      // Proveedores que no tienen jsons
       if (idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva') {
         const productsBDI = (await this.listAll(this.collection, this.catalogName, 1, -1, { 'suppliersProd.idProveedor': { $ne: 'ingram' } })).items;
         console.log(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
@@ -1150,7 +1150,7 @@ class ProductsService extends ResolversOperationsService {
               productsBDIMap.set(productBDI.partnumber, productBDI);
             }
           }
-          // Procesa la carga de imagenes.
+          // Procesa la carga de jsons.
           logger.info(`insertMany/products.length: ${products?.length} \n`);
           for (const product of products) {
             const productBDI = productsBDIMap.get(product.partnumber);
@@ -1164,7 +1164,7 @@ class ProductsService extends ResolversOperationsService {
         }
       }
 
-      // Proveedores que si tienen imagenes
+      // Proveedores que si tienen jsons
       if (idProveedor === 'syscom') {
         for (let l = 0; l < products.length; l++) {
           let product = products[l];
@@ -1177,7 +1177,7 @@ class ProductsService extends ResolversOperationsService {
       logger.info(`saveJsons->productsAdd.length: ${productsAdd?.length} \n`);
       return {
         status: true,
-        message: 'Se realizo con exito la subida de imagenes.',
+        message: 'Se realizo con exito la subida de jsons.',
         products: []
       };
     } catch (error) {

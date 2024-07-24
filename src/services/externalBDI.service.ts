@@ -171,12 +171,8 @@ class ExternalBDIService extends ResolversOperationsService {
     const raw = JSON.stringify({
       "report": "json",
       "filters": {
-        "search": "BR700G",
-        // "active": true
+        "active": true
       },
-      // "manufacturer": [
-      //   "apple"
-      // ]
     });
     const options = {
       method: 'POST',
@@ -217,12 +213,8 @@ class ExternalBDIService extends ResolversOperationsService {
     const raw = JSON.stringify({
       "report": "json",
       "filters": {
-        "search": "BR700G",
-        // "active": true
+        "active": true
       },
-      // "manufacturer": [
-      //   "apple"
-      // ]
     });
     const options = {
       method: 'POST',

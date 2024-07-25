@@ -13,7 +13,7 @@ import ExternalBDIService from './externalBDI.service';
 import path from 'path';
 import logger from '../utils/logger';
 import { MAX_CONCURRENT_DOWNLOADS, checkImageExists, downloadImage, downloadQueue, imageCache } from './download.service';
-import { downloadJson } from './downloadJson.service';
+import { checkFileExistsJson, downloadJson } from './downloadJson.service';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
@@ -762,12 +762,12 @@ class ProductsService extends ResolversOperationsService {
 
       logger.info(`saveImages->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);
 
-      // // Out
-      // return {
-      //   status: true,
-      //   message: 'Fin.',
-      //   products
-      // };
+      // Out
+      return {
+        status: true,
+        message: 'Fin.',
+        products
+      };
 
       // Descarga multiple de archivos
       const downloadImages = async (imageUrls: string[], destFolder: string, partnumber: string, product: any): Promise<void> => {
@@ -960,21 +960,17 @@ class ProductsService extends ResolversOperationsService {
       for (let i = 0; i < products.length; i++) {
         existOneJson = false;
         let product = products[i];
+        // logger.info(`saveJsons->producto sheetJson: ${product.partnumber}; imagen a buscar: ${product.sheetJson}`);
         if (product.partnumber !== '') {
           const partnumber = product.partnumber;
           const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
           const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
-          logger.info(`saveJsons->producto: ${product.partnumber}; imagen a buscar: ${urlImage}`);
-          let existFile = await checkImageExists(urlImage);
+          let existFile = await checkFileExistsJson(urlImage);
+          // logger.info(`saveJsons->producto: ${product.partnumber}; imagen a buscar: ${urlImage}; existe: ${existFile}`);
+          // Si hay fotos del producto.
           if (existFile) {
-            existOneJson = true;
-            logger.info(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
-          } else {
-            break;
-          }
-          // Si no hay fotos del producto.
-          if (existOneJson) {
-            // logger.info(`  :::::  producto: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
+            // logger.info(`  :::::  producto: ${product.partnumber}; json guardado: ${urlImage}`);
+            product.sheetJson = `${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;;
             const updateImage = await this.modifyJsons(product);
             if (!updateImage.status) {
               logger.error(`saveJsons->No se pudo reiniciar los json de ${product.partnumber}.\n`);
@@ -983,6 +979,13 @@ class ProductsService extends ResolversOperationsService {
           }
         }
       }
+
+      // // Out
+      // return {
+      //   status: true,
+      //   message: 'Fin.',
+      //   products: productsJsons
+      // };
 
       // Si hubo productos que se encontraron los json en el server daru.
       logger.info(`Productos con jsons actualizados / productsJsons.length: ${productsJsons.length}`);
@@ -997,62 +1000,21 @@ class ProductsService extends ResolversOperationsService {
       } else {
         productsWithoutJsons = products;
       }
-      logger.info(`Productos con imagenes pendientes de actualizar / productsWithoutJsons.length: ${productsWithoutJsons.length}`);
+      logger.info(`Productos con jsons pendientes de actualizar / productsWithoutJsons.length: ${productsWithoutJsons.length}`);
 
       // Si no hay productos para buscar entonces salir.
       if (productsWithoutJsons.length <= 0) {
-        logger.error(`saveJsons->products: No se encontraron productos sin imagenes de ${idProveedor}\n`);
+        logger.error(`saveJsons->products: No se encontraron productos sin jsons de ${idProveedor}\n`);
         return {
           status: false,
-          message: 'No se encontraron productos sin imagenes.',
+          message: 'No se encontraron productos sin jsons.',
           products: []
         };
       }
       // ============================== Temporal
 
-      logger.info(`saveJsons->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);
+      logger.info(`saveJsons->productos a buscar jsons de ${supplierId}: ${products.length} \n`);
 
-      // // Out
-      // return {
-      //   status: true,
-      //   message: 'Fin.',
-      //   products
-      // };
-
-      // Descarga multiple de archivos
-      // const downloadJsons = async (imageUrls: string[], destFolder: string, partnumber: string, product: any): Promise<void> => {
-      //   await Promise.all(imageUrls.map(async (url: string, index) => {
-      //     const filename = this.generateFilenameJson(this.sanitizePartnumber(partnumber), index);
-      //     const filePath = path.join(destFolder, filename);
-      //     // logger.info(`saveJsons->filePath ${filePath} \n`);
-
-      //     try {
-      //       if (imageCache.has(url)) {
-      //         if (product.pictures[index]) {
-      //           product.pictures[index].url = path.join(urlJsonSave, imageCache.get(url)!);
-      //         }
-      //       } else {
-      //         const downloadPromise = downloadImage(url, destFolder, filename);
-      //         downloadQueue.push(downloadPromise);
-      //         if (downloadQueue.length > MAX_CONCURRENT_DOWNLOADS) {
-      //           await Promise.race(downloadQueue);
-      //           downloadQueue.splice(0, 1);
-      //         }
-      //         await downloadPromise;
-      //         imageCache.set(url, filename);
-      //         if (product.pictures[index]) {
-      //           product.pictures[index].url = path.join(urlJsonSave, filename);
-      //         } else {
-      //           logger.error(`saveJsons->error: product.pictures[${index}] is undefined`);
-      //           // Establecer una URL de imagen de reemplazo o un valor predeterminado
-      //         }
-      //       }
-      //     } catch (error) {
-      //       logger.error(`saveJsons->error: ${error}`);
-      //       // Establecer una URL de imagen de reemplazo o un valor predeterminado
-      //     }
-      //   }));
-      // };
       const downloadJsons = async (imageUrl: string, destFolder: string, partnumber: string, product: any): Promise<void> => {
         const filename = this.generateFilenameJson(this.sanitizePartnumber(partnumber), 0);
         const filePath = path.join(destFolder, filename);
@@ -1249,6 +1211,8 @@ class ProductsService extends ResolversOperationsService {
     // Conocer el id de la marcar
     const filter = { id: product?.id };
     // Ejecutar actualización
+    // console.log('filter: ', filter);
+    // console.log('objectUpdate: ', objectUpdate);
     const result = await this.update(this.collection, filter, objectUpdate, 'productos');
     return {
       status: result.status,

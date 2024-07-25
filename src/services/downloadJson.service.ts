@@ -69,7 +69,7 @@ const downloadJson = async (url: string, destFolder: string, filename: string, m
   logger.error(`Maximum number of retries reached for ${url}`);
 };
 
-const checkFileExists = async (url: string): Promise<boolean> => {
+const checkFileExistsJson = async (url: string): Promise<boolean> => {
   const protocol = url.startsWith('https') ? https : http;
   return new Promise((resolve) => {
     (protocol.get(url, (res) => {
@@ -80,4 +80,4 @@ const checkFileExists = async (url: string): Promise<boolean> => {
   });
 };
 
-export { downloadJson, checkFileExists, downloadQueue, MAX_CONCURRENT_DOWNLOADS };
+export { downloadJson, checkFileExistsJson, downloadQueue, MAX_CONCURRENT_DOWNLOADS };

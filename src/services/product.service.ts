@@ -1117,8 +1117,7 @@ class ProductsService extends ResolversOperationsService {
           for (const product of products) {
             const productBDI = productsBDIMap.get(product.partnumber);
             if (productBDI) {
-              product.pictures = productBDI.pictures;
-              product.sm_pictures = productBDI.sm_pictures;
+              product.sheetJson = productBDI.sheetJson;
             } else {
               productsWithoutJsons.push(product);
             }
@@ -1132,7 +1131,7 @@ class ProductsService extends ResolversOperationsService {
           let product = products[l];
           let imageUrls = product.sheetJson as string;
           await downloadJsons(imageUrls, uploadFolder, product.partnumber, product);
-          product.sm_pictures = product.pictures;
+          product.sheetJson = product.sheetJson;
           productsAdd.push(product);
         }
       }

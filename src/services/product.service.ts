@@ -14,6 +14,7 @@ import path from 'path';
 import logger from '../utils/logger';
 import { MAX_CONCURRENT_DOWNLOADS, checkImageExists, downloadImage, downloadQueue, imageCache } from './download.service';
 import { checkFileExistsJson, downloadJson } from './downloadJson.service';
+import { IProductBDI } from '../models/productBDI.models';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
@@ -33,6 +34,7 @@ class ProductsService extends ResolversOperationsService {
     const categories = variables.categories;
     const subCategories = variables.subCategories;
     const supplierId = variables.supplierId;
+    const withImages = variables.withImages;
     let filter: object;
     const regExp = new RegExp('.*' + filterName + '.*', 'i');
     if (filterName === '' || filterName === undefined) {
@@ -84,6 +86,20 @@ class ProductsService extends ResolversOperationsService {
     if (supplierId) {
       filter = { ...filter, ...{ 'suppliersProd.idProveedor': supplierId } };
     }
+    // Filtrar solo productos que tengan imagenes.
+    if (withImages) {
+      filter = {
+        ...filter, ...{
+          pictures: {
+            $exists: true,
+            $not: {
+              $size: 0
+            }
+          },
+        }
+      }
+    }
+
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
     const result = await this.listProducts(this.collection, this.catalogName, page, itemsPage, filter);
@@ -447,7 +463,8 @@ class ProductsService extends ResolversOperationsService {
     try {
       const products = this.getVariables().products;
       let productsAdd: IProduct[] = [];
-      if (!products || products?.length === 0) {
+      // Validar que existan productos para integrar.
+      if (!products || products.length === 0) {
         logger.error(`insertMany->No existen elementos para integrar`);
         return {
           status: false,
@@ -455,15 +472,19 @@ class ProductsService extends ResolversOperationsService {
           products: null
         };
       }
+      // Recupera el siguiente elemento de la tabla.
       const id = await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 });
-      const idProveedor = products![0].suppliersProd.idProveedor;
+      const idProveedor = products[0].suppliersProd.idProveedor;
+      let existingProductsMap = new Map();
       if (idProveedor !== 'ingram') {
-        const responseBDI = (await new ExternalBDIService({}, {}, context).getProductsBDI());
+        const responseBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         if (!responseBDI || !responseBDI.productsBDI || responseBDI.productsBDI.length === 0) {
           const filter = { 'suppliersProd.idProveedor': idProveedor };
-          // Recuperar los productos de Ingram dentro de DARU.
           const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
-          if (!result || !result.items || result.items.length === 0) {
+          console.log('result: ', result);
+          if (result && result.items && result.items.length > 0) {
+            existingProductsMap = new Map(result.items.map(item => [item.partnumber, item]));
+          } else {
             let j = id ? parseInt(id) : 1;
             for (const product of products) {
               const productC = await this.categorizarProductos(product, j);
@@ -471,171 +492,71 @@ class ProductsService extends ResolversOperationsService {
               j += 1;
             }
           }
-          const productsBDILocal = result.items;
-          if (productsBDILocal && productsBDILocal.length > 0) {
-            // Crear un mapa para buscar productos por número de parte
-            const productsBDIMap = new Map<string, any>();
-            for (const productBDILocal of productsBDILocal) {
-              if (productBDILocal && productBDILocal.partnumber) {
-                productsBDIMap.set(productBDILocal.partnumber, productBDILocal);
-              } else {
-                logger.error(`insertMany->El producto: ${productBDILocal} no se localiza en la Base Local.\n`);
-              }
-            }
-            let i = id ? parseInt(id) : 1;
-            for (const product of products) {
-              const productBDI = productsBDIMap.get(product.partnumber);
-              if (productBDI) {
-                // Categorias
-                if (!product.category || (product.category.length > 0 && product.category[0].name === '')) {
-                  // Categorizar por BDI
-                  if (productBDI && productBDI.category) {
-                    product.category = [];
-                    product.subCategory = [];
-                    product.category = productBDI.category
-                    product.subCategory = productBDI.subCategory
-                  }
-                  // TO DO  - Categorizar por ICECAT
-                }
-                // Imagenes
-                if (!product.pictures || (product.pictures.length > 0 && product.pictures[0].url === '')) {
-                  const urlImage = product.pictures[0].url;
-                  // Imagenes por BDI
-                  if (urlImage.startsWith('uploads/images/')) {
-                    product.pictures = [];
-                    product.sm_pictures = [];
-                    product.pictures = productBDI.pictures;
-                    product.sm_pictures = productBDI.sm_pictures;
-                  }
-                  // TO DO  - Imagenes por ICECAT
-                }
-              }
-              const productC = await this.categorizarProductos(product, i);
-              productC.sheetJson = '';
-              productsAdd.push(productC);
-              i += 1;
-            }
-          }
         } else {
           const productsBDI = responseBDI.productsBDI;
-          if (productsBDI && productsBDI.length > 0) {
-            logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
-            // Crear un mapa para buscar productos por número de parte
-            const productsBDIMap = new Map<string, any>();
-            for (const productBDI of productsBDI) {
-              if (productBDI.products && productBDI.products.vendornumber) {
-                productsBDIMap.set(productBDI.products.vendornumber, productBDI);
-              } else {
-                logger.error(`productBDI.products.vendornumber is undefined: ${productBDI} \n`);
-              }
+          existingProductsMap = new Map(productsBDI.map((productBDI: IProductBDI) => [productBDI.products.vendornumber, productBDI]));
+        }
+      }
+      console.log('products.length: ', products.length);
+      console.log('existingProductsMap: ', existingProductsMap);
+
+      let bulkOperations = [];
+      let i = id ? parseInt(id) : 1;
+      for (const product of products) {
+        const productBDI = existingProductsMap.get(product.partnumber);
+        console.log('productBDI: ', productBDI);
+        if (productBDI) {
+          if (!product.category || (product.category.length > 0 && product.category[0].name === '')) {
+            if (productBDI.products && productBDI.products.categoriesIdIngram) {
+              const partes = productBDI.products.categoriesIdIngram.split("->");
+              product.category = partes.length > 0 ? [{ name: partes[0], slug: slugify(partes[0], { lower: true }), pivot: { product_id: '', product_category_id: '' } }] : [];
+              product.subCategory = partes.length > 1 ? [{ name: partes[1], slug: slugify(partes[1], { lower: true }), pivot: { product_id: '', product_category_id: '' } }] : [];
             }
-            // if (productsICECAT && productsICECAT.length > 0) {
-            //   console.log('productsICECAT.length: ', productsICECAT?.length);
-            //   process.env.PRODUCTION === 'true' && logger.info(`insertMany/productsICECAT.length: ${productsICECAT.length} \n`);
-            //   // Crear un mapa para buscar productos por número de parte ICECAT
-            //   const productsICECATMap = new Map<string, any>();
-            //   for (const productICECAT of productsICECAT) {
-            //     if (productICECAT.products && productICECAT.products.vendornumber) {
-            //       productsICECATMap.set(productICECAT.products.vendornumber, productICECAT);
-            //     } else {
-            //       console.log('productICECAT.products.vendornumber is undefined: ', productICECAT);
-            //       process.env.PRODUCTION === 'true' && logger.info(`productICECAT.products.vendornumber is undefined: ${productICECAT} \n`);
-            //     }
-            //   }
-            // }
-            let i = id ? parseInt(id) : 1;
-            for (const product of products) {
-              // Verificar si el producto viene categorizado
-              const productBDI = productsBDIMap.get(product.partnumber);
-              if (productBDI) {
-                // Categorias
-                if (!product.category || (product.category.length > 0 && product.category[0].name === '')) {
-                  // Categorizar por BDI
-                  if (productBDI.products && productBDI.products.categoriesIdIngram) {
-                    product.category = [];
-                    product.subCategory = [];
-                    const partes: string[] = productBDI.products.categoriesIdIngram.split("->", 2);
-                    if (partes && partes.length > 0) {
-                      // Categorias
-                      if (partes[0].length > 0) {
-                        const c = new Categorys();
-                        c.name = partes[0];
-                        c.slug = slugify(partes[0] || '', { lower: true });
-                        product.category.push(c);
-                      }
-                      // Subcategorias
-                      if (partes[1].length > 0) {
-                        const c = new Categorys();
-                        c.name = partes[1];
-                        c.slug = slugify(partes[1] || '', { lower: true });
-                        product.subCategory.push(c);
-                      }
-                    }
-                  }
-                  // TO DO  - Categorizar por ICECAT
-                }
-                // Imagenes
-                if (!product.pictures || (product.pictures.length > 0 && product.pictures[0].url === '')) {
-                  // Imagenes por BDI
-                  if (productBDI.products.images) {
-                    const urlsDeImagenes: string[] = productBDI.products.images.split(',');
-                    if (urlsDeImagenes.length > 0) {
-                      // Imagenes
-                      product.pictures = [];
-                      for (const urlImage of urlsDeImagenes) {
-                        const i = new Picture();
-                        i.width = '600';
-                        i.height = '600';
-                        i.url = urlImage;
-                        product.pictures.push(i);
-                        // Imagenes pequeñas
-                        product.sm_pictures = [];
-                        const is = new Picture();
-                        is.width = '300';
-                        is.height = '300';
-                        is.url = urlImage;
-                        product.sm_pictures.push(i);
-                      }
-                    }
-                  }
-                  // TO DO  - Imagenes por ICECAT
-                }
-              }
-              const productC = await this.categorizarProductos(product, i);
-              productC.sheetJson = '';
-              productsAdd.push(productC);
-              i += 1;
+          }
+
+          if (!product.pictures || (product.pictures.length > 0 && product.pictures[0].url === '')) {
+            if (productBDI.products.images) {
+              const urlsDeImagenes = productBDI.products.images.split(',');
+              product.pictures = urlsDeImagenes.map((urlImage: IPicture) => ({ width: '600', height: '600', url: urlImage }));
+              product.sm_pictures = urlsDeImagenes.map((urlImage: IPicture) => ({ width: '300', height: '300', url: urlImage }));
             }
           }
         }
-      } else {
-        let i = id ? parseInt(id) : 1;
-        for (const product of products) {
-          const productC = await this.categorizarProductos(product, i);
-          product.sheetJson = product.sheetJson;
-          productsAdd.push(productC);
-          i += 1;
-        }
+
+        const productC = await this.categorizarProductos(product, i);
+        productC.sheetJson = '';
+        productsAdd.push(productC);
+        i += 1;
+        console.log('productsAdd.length: ', productsAdd.length);
+
+        bulkOperations.push({
+          updateOne: {
+            filter: { partnumber: product.partnumber, 'suppliersProd.idProveedor': idProveedor },
+            update: { $set: productC },
+            upsert: true
+          }
+        });
       }
-      // Guardar los elementos nuevos
-      if (productsAdd.length > 0) {
-        let filter: object = { 'suppliersProd.idProveedor': idProveedor };
-        const delResult = await this.delList(this.collection, filter, 'producto');
-        if (delResult) {
-          const result = await this.addList(this.collection, productsAdd || [], 'products');
-          return {
-            status: result.status,
-            message: result.message,
-            products: []
-          };
-        }
-        logger.error(`insertMany->Hubo un error al generar los productos. No se pudieron eliminar previamente.`);
+      console.log('bulkOperations.length: ', bulkOperations.length);
+
+      if (bulkOperations.length > 0) {
+        const bulkResult = await this.getDB().collection(this.collection).bulkWrite(bulkOperations);
+
+        // Verifica si se realizaron actualizaciones o inserciones
+        const isSuccess = (bulkResult.matchedCount || 0) > 0 || (bulkResult.insertedCount || 0) > 0;
+
         return {
-          status: false,
-          message: 'Hubo un error al generar los productos. No se pudieron eliminar previamente.',
-          products: []
+          status: isSuccess,
+          message: isSuccess ? 'Productos actualizados/integrados correctamente' : 'No se realizaron actualizaciones/inserciones',
+          products: productsAdd
         };
       }
+
+      return {
+        status: false,
+        message: 'No se realizaron operaciones de actualización/inserción',
+        products: []
+      };
     } catch (error) {
       logger.error(`insertMany->Hubo un error al generar los productos. ${error}`);
       return {
@@ -980,12 +901,12 @@ class ProductsService extends ResolversOperationsService {
         }
       }
 
-      // // Out
-      // return {
-      //   status: true,
-      //   message: 'Fin.',
-      //   products: productsJsons
-      // };
+      // Out
+      return {
+        status: true,
+        message: 'Fin.',
+        products: productsJsons
+      };
 
       // Si hubo productos que se encontraron los json en el server daru.
       logger.info(`Productos con jsons actualizados / productsJsons.length: ${productsJsons.length}`);

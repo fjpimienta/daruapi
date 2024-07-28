@@ -113,12 +113,7 @@ class ResolversOperationsService {
         {
           $match: {
             price: { $gt: 0 },
-            pictures: {
-              $exists: true,
-              $not: {
-                $size: 0
-              }
-            }, ...filter
+            ...filter
           }
         },
         { $sort: { partnumber: 1, sale_price: 1 }, },

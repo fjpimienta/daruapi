@@ -25,8 +25,8 @@ export interface IProduct {
   brands: IBrands[];
   model: string;
   peso: number;
-  pictures: IPicture[];
-  sm_pictures: IPicture[];
+  pictures?: IPicture[];
+  sm_pictures?: IPicture[];
   variants: IVariant[];
   unidadDeMedida?: IUnidadDeMedida;
   active: boolean;
@@ -34,7 +34,7 @@ export interface IProduct {
   descuentos: IDescuentos;
   promociones: IPromociones;
   registerDate?: String;
-  sheetJson: String;
+  sheetJson?: String;
   especificaciones: IEspecificacion[];
   especificacionesBullet: IEspecificacionBullet[];
 }

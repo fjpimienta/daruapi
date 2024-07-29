@@ -461,6 +461,7 @@ class ProductsService extends ResolversOperationsService {
 
   async insertMany(context: IContextData) {
     try {
+      let firstsProducts: boolean = true;
       const products = this.getVariables().products;
       let productsAdd: IProduct[] = [];
       // Validar que existan productos para integrar.
@@ -474,6 +475,11 @@ class ProductsService extends ResolversOperationsService {
       }
       // Recupera el siguiente elemento de la tabla.
       const id = await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 });
+      if (id && parseInt(id) > 1) {
+        firstsProducts = false;
+      }
+      console.log('id: ', id);
+      console.log('firstsProducts: ', firstsProducts);
       const idProveedor = products[0].suppliersProd.idProveedor;
       let existingProductsMap = new Map();
       if (idProveedor !== 'ingram') {
@@ -481,13 +487,14 @@ class ProductsService extends ResolversOperationsService {
         if (!responseBDI || !responseBDI.productsBDI || responseBDI.productsBDI.length === 0) {
           const filter = { 'suppliersProd.idProveedor': idProveedor };
           const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
-          console.log('result: ', result);
+          // console.log('result: ', result);
           if (result && result.items && result.items.length > 0) {
             existingProductsMap = new Map(result.items.map(item => [item.partnumber, item]));
           } else {
             let j = id ? parseInt(id) : 1;
+            console.log('j: ', j);
             for (const product of products) {
-              const productC = await this.categorizarProductos(product, j);
+              const productC = await this.categorizarProductos(product, j, firstsProducts);
               productsAdd.push(productC);
               j += 1;
             }
@@ -498,13 +505,13 @@ class ProductsService extends ResolversOperationsService {
         }
       }
       console.log('products.length: ', products.length);
-      console.log('existingProductsMap: ', existingProductsMap);
+      // console.log('existingProductsMap: ', existingProductsMap);
 
       let bulkOperations = [];
       let i = id ? parseInt(id) : 1;
+      console.log('i: ', i);
       for (const product of products) {
         const productBDI = existingProductsMap.get(product.partnumber);
-        console.log('productBDI: ', productBDI);
         if (productBDI) {
           if (!product.category || (product.category.length > 0 && product.category[0].name === '')) {
             if (productBDI.products && productBDI.products.categoriesIdIngram) {
@@ -522,13 +529,10 @@ class ProductsService extends ResolversOperationsService {
             }
           }
         }
-
-        const productC = await this.categorizarProductos(product, i);
+        const productC = await this.categorizarProductos(product, i, firstsProducts);
         productC.sheetJson = '';
         productsAdd.push(productC);
         i += 1;
-        console.log('productsAdd.length: ', productsAdd.length);
-
         bulkOperations.push({
           updateOne: {
             filter: { partnumber: product.partnumber, 'suppliersProd.idProveedor': idProveedor },
@@ -543,12 +547,13 @@ class ProductsService extends ResolversOperationsService {
         const bulkResult = await this.getDB().collection(this.collection).bulkWrite(bulkOperations);
 
         // Verifica si se realizaron actualizaciones o inserciones
-        const isSuccess = (bulkResult.matchedCount || 0) > 0 || (bulkResult.insertedCount || 0) > 0;
+        const isSuccess = (bulkResult.matchedCount || 0) > 0 || (bulkResult.upsertedCount || 0) > 0;
+        console.log('isSuccess: ', isSuccess);
 
         return {
           status: isSuccess,
-          message: isSuccess ? 'Productos actualizados/integrados correctamente' : 'No se realizaron actualizaciones/inserciones',
-          products: productsAdd
+          message: isSuccess ? 'Se han actualizado los productos.' : 'No se han actualizado los productos.',
+          products: []
         };
       }
 
@@ -776,7 +781,7 @@ class ProductsService extends ResolversOperationsService {
             const updateImage = await this.modifyImages(product);
             if (updateImage.status) {
               productsAdd.push(product);
-              logger.info(`saveImages->producto actualizado: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
+              logger.info(`saveImages->producto actualizado: ${product.partnumber}; imagenes guardadas: ${product.pictures?.length}`);
             } else {
               logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber} por ${path.join(urlImageSave, dafaultImage)}.\n`);
             }
@@ -816,8 +821,8 @@ class ProductsService extends ResolversOperationsService {
       if (idProveedor === 'syscom') {
         for (let l = 0; l < products.length; l++) {
           let product = products[l];
-          let imageUrls = product.pictures.map((image) => image.url);
-          await downloadImages(imageUrls, uploadFolder, product.partnumber, product);
+          let imageUrls = product.pictures?.map((image) => image.url);
+          await downloadImages(imageUrls||[], uploadFolder, product.partnumber, product);
           product.sm_pictures = product.pictures;
           productsAdd.push(product);
         }
@@ -1154,10 +1159,16 @@ class ProductsService extends ResolversOperationsService {
     return `${partNumber}_${index}.json`;
   }
 
-  async categorizarProductos(product: IProduct, i: number) {
+  async categorizarProductos(product: IProduct, i: number, firstsProducts: boolean) {
     // Clasificar Categorias y Subcategorias
     if (product.subCategory && product.subCategory.length > 0) {
-      product.id = i.toString();
+      if (firstsProducts) {
+        product.id = i.toString();
+      } else {
+        delete product.id;
+        delete product.pictures;
+        delete product.sm_pictures;
+      }
       if (product.price === null) {
         product.price = 0;
         product.sale_price = 0;

@@ -28,6 +28,7 @@ export interface IVariables {
   active?: string;
   filterName?: string;
   offer?: boolean;
+  withImages?: boolean;
   filterBranch?: string;
   slug?: string;
   pagination?: IPaginationOptions;

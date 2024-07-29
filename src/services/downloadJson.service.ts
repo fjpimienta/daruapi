@@ -3,15 +3,14 @@ import https from 'https';
 import logger from '../utils/logger';
 import fs from 'fs';
 import path from 'path';
-import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
 
 const MAX_CONCURRENT_DOWNLOADS = 10;
 const downloadQueue: Promise<void>[] = [];
-const imageCache = new Map<string, string>();
 
-const downloadImage = async (url: string, destFolder: string, filename: string, maxRetries = 2, retryDelay = 5000): Promise<void> => {
+const downloadJson = async (url: string, destFolder: string, filename: string, maxRetries = 2, retryDelay = 5000): Promise<void> => {
   let retries = 0;
+  logger.info(`url file saved to: ${url}`);
   while (retries < maxRetries) {
     try {
       if (!fs.existsSync(destFolder)) {
@@ -42,7 +41,7 @@ const downloadImage = async (url: string, destFolder: string, filename: string, 
       }
 
       const contentType = response.headers['content-type'];
-      if (!contentType || !contentType.startsWith('image')) {
+      if (!contentType || !contentType.includes('application/json')) {
         throw new Error(`Invalid content type '${contentType}' for URL: ${url}`);
       }
 
@@ -55,23 +54,14 @@ const downloadImage = async (url: string, destFolder: string, filename: string, 
         });
       });
 
-      // Optimize the image using sharp
-      try {
-        await sharp(tempFilePath)
-          .resize(400, 400, { fit: 'inside', withoutEnlargement: true })
-          .jpeg({ quality: 80 })
-          .toFile(filePath);
-      } catch (sharpError) {
-        throw new Error(`Error processing image with sharp: ${sharpError}`);
-      } finally {
-        fs.unlinkSync(tempFilePath);  // Ensure the temp file is deleted
-      }
+      // Move the temp file to the final destination
+      fs.renameSync(tempFilePath, filePath);
 
-      logger.info(`Image saved to: ${filePath}`);
+      logger.info(`JSON file saved to: ${filePath}`);
       return;
     } catch (error) {
       retries++;
-      logger.error(`Error downloading image from ${url}. Retrying (${retries}/${maxRetries})...`);
+      logger.error(`Error downloading JSON from ${url}. Retrying (${retries}/${maxRetries})...`);
       logger.error(error);
       await new Promise((resolve) => setTimeout(resolve, retryDelay));
     }
@@ -79,7 +69,7 @@ const downloadImage = async (url: string, destFolder: string, filename: string, 
   logger.error(`Maximum number of retries reached for ${url}`);
 };
 
-const checkImageExists = async (url: string): Promise<boolean> => {
+const checkFileExistsJson = async (url: string): Promise<boolean> => {
   const protocol = url.startsWith('https') ? https : http;
   return new Promise((resolve) => {
     (protocol.get(url, (res) => {
@@ -90,4 +80,4 @@ const checkImageExists = async (url: string): Promise<boolean> => {
   });
 };
 
-export { downloadImage, checkImageExists, imageCache, downloadQueue, MAX_CONCURRENT_DOWNLOADS };
+export { downloadJson, checkFileExistsJson, downloadQueue, MAX_CONCURRENT_DOWNLOADS };

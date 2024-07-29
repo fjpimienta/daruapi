@@ -33,6 +33,7 @@ input ProductInput {
   suppliersProd: SupplierProdInput
   descuentos: DescuentosInput
   promociones: PromocionesInput
+  sheetJson: String
   especificaciones: [EspecificacionInput]
   especificacionesBullet: [EspecificacionBulletInput]
 }

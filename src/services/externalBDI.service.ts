@@ -172,7 +172,7 @@ class ExternalBDIService extends ResolversOperationsService {
       "report": "json",
       "filters": {
         "active": true
-      }
+      },
     });
     const options = {
       method: 'POST',
@@ -214,7 +214,7 @@ class ExternalBDIService extends ResolversOperationsService {
       "report": "json",
       "filters": {
         "active": true
-      }
+      },
     });
     const options = {
       method: 'POST',
@@ -502,7 +502,11 @@ class ExternalBDIService extends ResolversOperationsService {
         }
       }
 
+      itemData.sheetJson = item.products.sheetJson;
     }
+    logger.info(`getBrandsBDI.item: \n ${JSON.stringify(item)} \n`);
+    logger.info(`getBrandsBDI.productPrice: \n ${JSON.stringify(productPrice)} \n`);
+    logger.info(`getBrandsBDI.itemData: \n ${JSON.stringify(itemData)} \n`);
     return itemData;
   }
 

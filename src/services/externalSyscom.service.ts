@@ -1147,6 +1147,7 @@ class ExternalSyscomService extends ResolversOperationsService {
       itemData.especificaciones.push({ tipo: 'Link', valor: item.link });
       itemData.especificaciones.push({ tipo: 'Link_privado', valor: item.link_privado });
       itemData.especificacionesBullet = item.especificacionesBullet;
+      itemData.sheetJson = '';
     }
     return itemData;
   }

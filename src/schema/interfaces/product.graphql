@@ -33,6 +33,7 @@ interface Product {
   descuentos: Descuentos
   promociones: Promociones
   generalInfo: GeneralInfo
+  sheetJson: String
   especificaciones: [Especificacion]
   especificacionesBullet: [EspecificacionBullet]
 }

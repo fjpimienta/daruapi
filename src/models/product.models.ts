@@ -35,7 +35,8 @@ export class Product implements IProduct {
   suppliersProd: SupplierProd = { idProveedor: '', codigo: '', price: 0, cantidad: 0, sale_price: 0, moneda: '', branchOffices: [], category: { name: '', slug: '', pivot: { product_id: '', product_category_id: '' } }, subCategory: { name: '', slug: '', pivot: { product_id: '', product_category_id: '' } } };
   descuentos: Descuentos = { total_descuento: 0, moneda_descuento: '', precio_descuento: 0 };
   promociones: Promociones = { clave_promocion: '', descripcion_promocion: '', inicio_promocion: '', vencimiento_promocion: '', disponible_en_promocion: 0, porciento: 0, };
-  registerDate?: String = '';
+  registerDate?: string = '';
+  sheetJson: string = '';
   especificaciones: Especificacion[] = [];
   especificacionesBullet: EspecificacionBullet[] = [];
 }

@@ -474,25 +474,33 @@ class ProductsService extends ResolversOperationsService {
         };
       }
       // Recupera el siguiente elemento de la tabla.
-      const id = await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 });
-      if (id && parseInt(id) > 1) {
+      let id = parseInt(await asignDocumentId(this.getDB(), this.collection, {
+        registerDate: -1
+      }));
+      id = id ? id : 1;
+
+      if (isNaN(id)) {
+        throw new Error('ID is not a number');
+      }
+
+      if (id > 1) {
         firstsProducts = false;
       }
-      console.log('id: ', id);
-      console.log('firstsProducts: ', firstsProducts);
+
       const idProveedor = products[0].suppliersProd.idProveedor;
       let existingProductsMap = new Map();
+      let allExistingProducts = [];
+
       if (idProveedor !== 'ingram') {
         const responseBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         if (!responseBDI || !responseBDI.productsBDI || responseBDI.productsBDI.length === 0) {
           const filter = { 'suppliersProd.idProveedor': idProveedor };
           const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
-          // console.log('result: ', result);
           if (result && result.items && result.items.length > 0) {
+            allExistingProducts = result.items;
             existingProductsMap = new Map(result.items.map(item => [item.partnumber, item]));
           } else {
-            let j = id ? parseInt(id) : 1;
-            console.log('j: ', j);
+            let j = id;
             for (const product of products) {
               const productC = await this.categorizarProductos(product, j, firstsProducts);
               productsAdd.push(productC);
@@ -501,15 +509,28 @@ class ProductsService extends ResolversOperationsService {
           }
         } else {
           const productsBDI = responseBDI.productsBDI;
+          allExistingProducts = productsBDI.map((productBDI: IProductBDI) => productBDI.products);
           existingProductsMap = new Map(productsBDI.map((productBDI: IProductBDI) => [productBDI.products.vendornumber, productBDI]));
         }
       }
       console.log('products.length: ', products.length);
-      // console.log('existingProductsMap: ', existingProductsMap);
 
       let bulkOperations = [];
-      let i = id ? parseInt(id) : 1;
-      console.log('i: ', i);
+      let i = id;
+
+      const newProductPartNumbers = new Set(products.map(product => product.partnumber));
+
+      // Inactivar productos existentes que no están en la nueva lista de productos
+      const productsToInactivate = allExistingProducts.filter((existingProduct: any) => !newProductPartNumbers.has(existingProduct.partnumber));
+      for (const productToInactivate of productsToInactivate) {
+        bulkOperations.push({
+          updateOne: {
+            filter: { partnumber: productToInactivate.partnumber, 'suppliersProd.idProveedor': idProveedor },
+            update: { $set: { active: false } }
+          }
+        });
+      }
+
       for (const product of products) {
         const productBDI = existingProductsMap.get(product.partnumber);
         if (productBDI) {
@@ -524,15 +545,17 @@ class ProductsService extends ResolversOperationsService {
           if (!product.pictures || (product.pictures.length > 0 && product.pictures[0].url === '')) {
             if (productBDI.products.images) {
               const urlsDeImagenes = productBDI.products.images.split(',');
-              product.pictures = urlsDeImagenes.map((urlImage: IPicture) => ({ width: '600', height: '600', url: urlImage }));
-              product.sm_pictures = urlsDeImagenes.map((urlImage: IPicture) => ({ width: '300', height: '300', url: urlImage }));
+              product.pictures = urlsDeImagenes.map((urlImage: string) => ({ width: '600', height: '600', url: urlImage }));
+              product.sm_pictures = urlsDeImagenes.map((urlImage: string) => ({ width: '300', height: '300', url: urlImage }));
             }
           }
         }
+
         const productC = await this.categorizarProductos(product, i, firstsProducts);
         productC.sheetJson = '';
         productsAdd.push(productC);
         i += 1;
+
         bulkOperations.push({
           updateOne: {
             filter: { partnumber: product.partnumber, 'suppliersProd.idProveedor': idProveedor },
@@ -548,7 +571,6 @@ class ProductsService extends ResolversOperationsService {
 
         // Verifica si se realizaron actualizaciones o inserciones
         const isSuccess = (bulkResult.matchedCount || 0) > 0 || (bulkResult.upsertedCount || 0) > 0;
-        console.log('isSuccess: ', isSuccess);
 
         return {
           status: isSuccess,
@@ -822,7 +844,7 @@ class ProductsService extends ResolversOperationsService {
         for (let l = 0; l < products.length; l++) {
           let product = products[l];
           let imageUrls = product.pictures?.map((image) => image.url);
-          await downloadImages(imageUrls||[], uploadFolder, product.partnumber, product);
+          await downloadImages(imageUrls || [], uploadFolder, product.partnumber, product);
           product.sm_pictures = product.pictures;
           productsAdd.push(product);
         }
@@ -1160,12 +1182,12 @@ class ProductsService extends ResolversOperationsService {
   }
 
   async categorizarProductos(product: IProduct, i: number, firstsProducts: boolean) {
+    // Asignar el id siempre
+    product.id = i.toString();
+
     // Clasificar Categorias y Subcategorias
     if (product.subCategory && product.subCategory.length > 0) {
-      if (firstsProducts) {
-        product.id = i.toString();
-      } else {
-        delete product.id;
+      if (!firstsProducts) {
         delete product.pictures;
         delete product.sm_pictures;
       }

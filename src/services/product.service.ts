@@ -516,7 +516,7 @@ class ProductsService extends ResolversOperationsService {
       console.log('products.length: ', products.length);
 
       let bulkOperations = [];
-      let i = id;
+      let nextId = id; // Inicializamos nextId con el id recuperado
 
       const newProductPartNumbers = new Set(products.map(product => product.partnumber));
 
@@ -549,17 +549,35 @@ class ProductsService extends ResolversOperationsService {
               product.sm_pictures = urlsDeImagenes.map((urlImage: string) => ({ width: '300', height: '300', url: urlImage }));
             }
           }
+
+          // No modificar el id para productos existentes
+          const existingProduct = existingProductsMap.get(product.partnumber);
+          if (existingProduct) {
+            product.id = existingProduct.id;
+          }
         }
 
-        const productC = await this.categorizarProductos(product, i, firstsProducts);
+        // Asignar un nuevo id solo si el producto es nuevo
+        if (!existingProductsMap.has(product.partnumber)) {
+          product.id = nextId.toString();
+          nextId += 1; // Incrementamos el nextId para el siguiente nuevo producto
+        }
+
+        const productC = await this.categorizarProductos(product, nextId, firstsProducts);
+
         productC.sheetJson = '';
         productsAdd.push(productC);
-        i += 1;
+
+        // Combinamos los updates en un solo objeto
+        const updateData = {
+          ...productC,
+          active: true
+        };
 
         bulkOperations.push({
           updateOne: {
             filter: { partnumber: product.partnumber, 'suppliersProd.idProveedor': idProveedor },
-            update: { $set: productC },
+            update: { $set: updateData },
             upsert: true
           }
         });
@@ -592,6 +610,42 @@ class ProductsService extends ResolversOperationsService {
         products: []
       };
     }
+  }
+
+  async categorizarProductos(product: IProduct, i: number, firstsProducts: boolean) {
+    // Asignar el id solo si es un nuevo producto y no tiene uno
+    if (!product.id) {
+      product.id = i.toString();
+    }
+
+    // Clasificar Categorias y Subcategorias
+    if (product.subCategory && product.subCategory.length > 0) {
+      if (!firstsProducts) {
+        delete product.pictures;
+        delete product.sm_pictures;
+      }
+      if (product.price === null) {
+        product.price = 0;
+        product.sale_price = 0;
+      }
+      const resultCat: any = await findSubcategoryProduct(
+        this.getDB(),
+        this.collectionCat,
+        product.subCategory[0].slug
+      );
+      if (resultCat.categoria && resultCat.categoria.slug) {
+        product.category[0].slug = resultCat.categoria.slug;
+        product.category[0].name = resultCat.categoria.description;
+      }
+      if (resultCat.subCategoria && resultCat.subCategoria.slug) {
+        product.subCategory[0].slug = resultCat.subCategoria.slug;
+        product.subCategory[0].name = resultCat.subCategoria.description;
+      }
+      product.slug = slugify(product?.name || '', { lower: true });
+      product.active = true;
+      product.registerDate = new Date().toISOString();
+    }
+    return await product;
   }
 
   // Guardar Imagenes
@@ -1179,40 +1233,6 @@ class ProductsService extends ResolversOperationsService {
 
   generateFilenameJson(partNumber: string, index: number): string {
     return `${partNumber}_${index}.json`;
-  }
-
-  async categorizarProductos(product: IProduct, i: number, firstsProducts: boolean) {
-    // Asignar el id siempre
-    product.id = i.toString();
-
-    // Clasificar Categorias y Subcategorias
-    if (product.subCategory && product.subCategory.length > 0) {
-      if (!firstsProducts) {
-        delete product.pictures;
-        delete product.sm_pictures;
-      }
-      if (product.price === null) {
-        product.price = 0;
-        product.sale_price = 0;
-      }
-      const resultCat: any = await findSubcategoryProduct(
-        this.getDB(),
-        this.collectionCat,
-        product.subCategory[0].slug
-      );
-      if (resultCat.categoria && resultCat.categoria.slug) {
-        product.category[0].slug = resultCat.categoria.slug;
-        product.category[0].name = resultCat.categoria.description;
-      }
-      if (resultCat.subCategoria && resultCat.subCategoria.slug) {
-        product.subCategory[0].slug = resultCat.subCategoria.slug;
-        product.subCategory[0].name = resultCat.subCategoria.description;
-      }
-      product.slug = slugify(product?.name || '', { lower: true });
-      product.active = true;
-      product.registerDate = new Date().toISOString();
-    }
-    return await product;
   }
 
   // Modificar Item

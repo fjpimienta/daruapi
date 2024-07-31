@@ -594,6 +594,40 @@ class ProductsService extends ResolversOperationsService {
     }
   }
 
+  async categorizarProductos(product: IProduct, i: number, firstsProducts: boolean) {
+    // Asignar el id siempre
+    product.id = i.toString();
+
+    // Clasificar Categorias y Subcategorias
+    if (product.subCategory && product.subCategory.length > 0) {
+      if (!firstsProducts) {
+        delete product.pictures;
+        delete product.sm_pictures;
+      }
+      if (product.price === null) {
+        product.price = 0;
+        product.sale_price = 0;
+      }
+      const resultCat: any = await findSubcategoryProduct(
+        this.getDB(),
+        this.collectionCat,
+        product.subCategory[0].slug
+      );
+      if (resultCat.categoria && resultCat.categoria.slug) {
+        product.category[0].slug = resultCat.categoria.slug;
+        product.category[0].name = resultCat.categoria.description;
+      }
+      if (resultCat.subCategoria && resultCat.subCategoria.slug) {
+        product.subCategory[0].slug = resultCat.subCategoria.slug;
+        product.subCategory[0].name = resultCat.subCategoria.description;
+      }
+      product.slug = slugify(product?.name || '', { lower: true });
+      product.active = true;
+      product.registerDate = new Date().toISOString();
+    }
+    return await product;
+  }
+
   // Guardar Imagenes
   async saveImages(context: IContextData) {
     try {
@@ -1179,40 +1213,6 @@ class ProductsService extends ResolversOperationsService {
 
   generateFilenameJson(partNumber: string, index: number): string {
     return `${partNumber}_${index}.json`;
-  }
-
-  async categorizarProductos(product: IProduct, i: number, firstsProducts: boolean) {
-    // Asignar el id siempre
-    product.id = i.toString();
-
-    // Clasificar Categorias y Subcategorias
-    if (product.subCategory && product.subCategory.length > 0) {
-      if (!firstsProducts) {
-        delete product.pictures;
-        delete product.sm_pictures;
-      }
-      if (product.price === null) {
-        product.price = 0;
-        product.sale_price = 0;
-      }
-      const resultCat: any = await findSubcategoryProduct(
-        this.getDB(),
-        this.collectionCat,
-        product.subCategory[0].slug
-      );
-      if (resultCat.categoria && resultCat.categoria.slug) {
-        product.category[0].slug = resultCat.categoria.slug;
-        product.category[0].name = resultCat.categoria.description;
-      }
-      if (resultCat.subCategoria && resultCat.subCategoria.slug) {
-        product.subCategory[0].slug = resultCat.subCategoria.slug;
-        product.subCategory[0].name = resultCat.subCategoria.description;
-      }
-      product.slug = slugify(product?.name || '', { lower: true });
-      product.active = true;
-      product.registerDate = new Date().toISOString();
-    }
-    return await product;
   }
 
   // Modificar Item

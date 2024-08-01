@@ -674,12 +674,12 @@ class ProductsService extends ResolversOperationsService {
             $not: {
               '$regex': '^uploads'
             }
-          },
-          'pictures': {
-            $exists: true,
-            $not: {
-              $size: 0
-            }
+            // },
+            // 'pictures': {
+            //   $exists: true,
+            //   $not: {
+            //     $size: 0
+            //   }
           }
         };
       }
@@ -764,12 +764,12 @@ class ProductsService extends ResolversOperationsService {
 
       logger.info(`saveImages->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);
 
-      // Out
-      return {
-        status: true,
-        message: 'Fin.',
-        products
-      };
+      // // Out
+      // return {
+      //   status: true,
+      //   message: 'Fin.',
+      //   products
+      // };
 
       // Descarga multiple de archivos
       const downloadImages = async (imageUrls: string[], destFolder: string, partnumber: string, product: any): Promise<void> => {
@@ -982,12 +982,12 @@ class ProductsService extends ResolversOperationsService {
         }
       }
 
-      // Out
-      return {
-        status: true,
-        message: 'Fin.',
-        products: productsJsons
-      };
+      // // Out
+      // return {
+      //   status: true,
+      //   message: 'Fin.',
+      //   products: productsJsons
+      // };
 
       // Si hubo productos que se encontraron los json en el server daru.
       logger.info(`Productos con jsons actualizados / productsJsons.length: ${productsJsons.length}`);

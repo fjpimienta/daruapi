@@ -330,7 +330,7 @@ class ExternalBDIService extends ResolversOperationsService {
     let price = 0;
     let salePrice = 0;
     itemData.id = undefined;
-    if (item && item.inventory > 0) {
+    if (item) {                      // && item.inventory > 0
       disponible = item.inventory;
       let featured = false;
       itemData.id = item.sku;

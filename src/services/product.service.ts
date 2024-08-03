@@ -1018,7 +1018,7 @@ class ProductsService extends ResolversOperationsService {
       logger.info(`saveJsons->productos a buscar jsons de ${supplierId}: ${products.length} \n`);
 
       const downloadJsons = async (imageUrl: string, destFolder: string, partnumber: string, product: any): Promise<void> => {
-        const filename = this.generateFilenameJson(this.sanitizePartnumber(partnumber), 0);
+        const filename = this.generateFilenameJson(this.sanitizePartnumber(partnumber));
         const filePath = path.join(destFolder, filename);
 
         try {
@@ -1231,8 +1231,8 @@ class ProductsService extends ResolversOperationsService {
     return `${partNumber}_${index}.jpg`;
   }
 
-  generateFilenameJson(partNumber: string, index: number): string {
-    return `${partNumber}_${index}.json`;
+  generateFilenameJson(partNumber: string): string {
+    return `${partNumber}.json`;
   }
 
   // Modificar Item

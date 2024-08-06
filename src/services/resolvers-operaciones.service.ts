@@ -21,6 +21,11 @@ class ResolversOperationsService {
   }
 
   // Variables
+
+  protected getRoot() {
+    return this.root;
+  }
+  
   protected getContext(): IContextData {
     return this.context;
   }

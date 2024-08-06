@@ -8,13 +8,15 @@ import ResolversOperationsService from './resolvers-operaciones.service';
 import { IPicture, IProduct } from '../interfaces/product.interface';
 import ExternalIcecatsService from './externalIcecat.service';
 import ExternalIngramService from './externalIngram.service';
-import { Categorys, Picture } from '../models/product.models';
+import { Categorys, Especificacion, Picture } from '../models/product.models';
 import ExternalBDIService from './externalBDI.service';
 import path from 'path';
 import logger from '../utils/logger';
 import { MAX_CONCURRENT_DOWNLOADS, checkImageExists, downloadImage, downloadQueue, imageCache } from './download.service';
 import { checkFileExistsJson, downloadJson } from './downloadJson.service';
-import { IProductBDI } from '../models/productBDI.models';
+import { Attribute, IProductBDI } from '../models/productBDI.models';
+import fetch from 'node-fetch';
+import TraslateService from './traducciones.services';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
@@ -111,6 +113,30 @@ class ProductsService extends ResolversOperationsService {
     };
   }
 
+
+  // // Función para obtener el JSON desde una URL y procesarlo
+  // async fetchAndProcessJson(url: string): Promise<any> {
+  //   try {
+  //     const response = await fetch(url);
+  //     if (!response.ok) {
+  //       throw new Error(`Error al obtener el JSON: ${response.statusText}`);
+  //     }
+  //     const data: Attribute[] = await response.json();
+  //     return await this.generateOutput(data);
+  //   } catch (error) {
+  //     console.error('Error al procesar el JSON:', error);
+  //   }
+  // }
+
+  // // Función para generar la salida con los datos obtenidos
+  // async generateOutput(data: Attribute[]): Promise<Especificacion[]> {
+  //   const especificaciones: Especificacion[] = [];
+  //   data.forEach(item => {
+  //     especificaciones.push({ tipo: item.attributeName, valor: item.attributeValue });
+  //   });
+  //   return await especificaciones;
+  // }
+
   // Obtener detalles del item
   async details(variables: IVariables, context: IContextData) {
     const result = await this.get(this.collection);
@@ -122,152 +148,37 @@ class ProductsService extends ResolversOperationsService {
         product: null
       };
     }
-    const variableLocal = {
-      brandIcecat: product.brands[0].slug,
-      productIcecat: product.partnumber
-    }
-    const icecatExt = await new ExternalIcecatsService({}, variableLocal, context).getIcecatProductLocal();
+    if (product.sheetJson) {
+      const urlImage = `${process.env.API_URL}${product.sheetJson}`;
+      console.log('urlImage: ', urlImage);
+      // Crear una instancia de TraslateService
+      // const translateService = new TraslateService(this.root, this.variables, this.context);
+      const translateService = new TraslateService(this.getRoot(), this.getVariables(), this.getContext());
+      console.log('translateService: ', translateService);
 
-    if (icecatExt.status && product.suppliersProd.idProveedor !== 'syscom') {
-      if (icecatExt.icecatProductLocal) {
-        const generalInfo: any = {};
-        generalInfo.IcecatId = 0;
-        generalInfo.Title = icecatExt.icecatProductLocal.ShortSummaryDescription;
-        const titleInfo = {
-          GeneratedIntTitle: icecatExt.icecatProductLocal.ShortSummaryDescription,
-          GeneratedLocalTitle: {
-            Value: icecatExt.icecatProductLocal.LongSummaryDescription,
-            Language: 'ES'
-          },
-          BrandLocalTitle: {
-            Value: '',
-            Language: 'ES'
-          }
-        };
-        generalInfo.TitleInfo = titleInfo;
-        generalInfo.Brand = icecatExt.icecatProductLocal.Supplier;
-        generalInfo.BrandLogo = `/assets/brands/${icecatExt.icecatProductLocal.Supplier}`;
-        generalInfo.brandPartCode = icecatExt.icecatProductLocal.Prod_id;
-        const gtin: string[] = [];
-        // if (icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC && icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC.includes('|')) {
-        //   gtin.push(...icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC.split('|'));
-        // } else {
-        //   gtin.push(icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC);
-        // }
-        // Temporal
-        gtin.push(icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC);
-        // Fin temporal
-        generalInfo.GTIN = gtin;
-        const category = {
-          CategoryID: slugify(icecatExt.icecatProductLocal.Category || '', { lower: true }),
-          Name: {
-            Value: icecatExt.icecatProductLocal.Category,
-            Language: 'ES'
-          }
-        };
-        generalInfo.Category = category;
-        const summaryDescription = {
-          ShortSummaryDescription: icecatExt.icecatProductLocal.ShortSummaryDescription,
-          LongSummaryDescription: icecatExt.icecatProductLocal.LongSummaryDescription
-        }
-        generalInfo.SummaryDescription = summaryDescription;
-        const generatedBulletP: string[] = [];
 
-        if (icecatExt.icecatProductLocal.technicalSpecifications) {
-          for (const spec of icecatExt.icecatProductLocal.technicalSpecifications) {
-            const headerName = spec.headerName;
-            const attributeName = spec.attributeName;
-            const attributeValue = spec.attributeValue;
-            const bulletPoint = `${attributeName}: ${attributeValue}`;
-            generatedBulletP.push(bulletPoint);
-          }
-        }
-        const generatedBulletPoints = {
-          Language: 'ES',
-          Values: generatedBulletP
-        }
-        generalInfo.GeneratedBulletPoints = generatedBulletPoints;
-        product.generalInfo = generalInfo;
+      // Usar la instancia para llamar a fetchAndProcessJson
+      const jsonProduct = await translateService.fetchAndProcessJson(urlImage);
 
-        if (icecatExt.icecatProductLocal.ProductGallery && icecatExt.icecatProductLocal.ProductGallery.includes('|')) {
-          const imagenes: string[] = icecatExt.icecatProductLocal.ProductGallery.split('|');
-          if (imagenes.length > 0) {
-            product.pictures = [];
-            product.sm_pictures = [];
-            for (const pictureI of imagenes) {
-              if (pictureI !== '') {
-                const pict: IPicture = {
-                  width: '500',
-                  height: '500',
-                  url: pictureI
-                };
-                product.pictures.push(pict);
-                const pict_sm: IPicture = {
-                  width: '300',
-                  height: '300',
-                  url: pictureI
-                };
-                product.sm_pictures.push(pict_sm);
-              }
-            }
-          }
-        }
-      }
+      // const jsonProduct = await TraslateService.fetchAndProcessJson(urlImage);
+      console.log('jsonProduct: ', jsonProduct);
     } else {
-      const icecat = await new ExternalIcecatsService({}, variableLocal, context).getICecatProductInt(variableLocal);
-      if (icecat.status && product.suppliersProd.idProveedor !== 'syscom') {
-        if (icecat.icecatProduct.GeneralInfo && icecat.icecatProduct.GeneralInfo.IcecatId !== '') {
-          product.generalInfo = icecat.icecatProduct.GeneralInfo;
-        }
-        if (icecat.icecatProduct.Gallery.length > 0) {
-          product.pictures = [];
-          product.sm_pictures = [];
-          for (const pictureI of icecat.icecatProduct.Gallery) {
-            if (pictureI.Pic500x500 !== '') {
-              const pict: IPicture = {
-                width: pictureI.Pic500x500Width,
-                height: pictureI.Pic500x500Height,
-                url: pictureI.Pic500x500
-              };
-              product.pictures.push(pict);
-              const pict_sm: IPicture = {
-                width: pictureI.LowWidth,
-                height: pictureI.LowHeight,
-                url: pictureI.LowPic
-              };
-              product.sm_pictures.push(pict_sm);
-            } else {
-              if (pictureI.Pic !== '') {
-                const pict: IPicture = {
-                  width: pictureI.PicWidth,
-                  height: pictureI.PicHeight,
-                  url: pictureI.Pic
-                };
-                product.pictures.push(pict);
-                const pict_sm: IPicture = {
-                  width: pictureI.LowWidth,
-                  height: pictureI.LowHeight,
-                  url: pictureI.ThumbPic
-                };
-                product.sm_pictures.push(pict_sm);
-              }
-            }
-          }
-        }
-      } else {
-        const variableI = {
-          vendorPartNumber: product.partnumber,
-          upc: product.upc
-        }
-        const ingram = await new ExternalIngramService({}, variableI, context).getIngramProduct({});
-        if (ingram.ingramProduct) {
+      const variableLocal = {
+        brandIcecat: product.brands[0].slug,
+        productIcecat: product.partnumber
+      }
+
+      const icecatExt = await new ExternalIcecatsService({}, variableLocal, context).getIcecatProductLocal();
+
+      if (icecatExt.status && product.suppliersProd.idProveedor !== 'syscom') {
+        if (icecatExt.icecatProductLocal) {
           const generalInfo: any = {};
           generalInfo.IcecatId = 0;
-          generalInfo.Title = ingram.ingramProduct.description;
+          generalInfo.Title = icecatExt.icecatProductLocal.ShortSummaryDescription;
           const titleInfo = {
-            GeneratedIntTitle: ingram.ingramProduct.description,
+            GeneratedIntTitle: icecatExt.icecatProductLocal.ShortSummaryDescription,
             GeneratedLocalTitle: {
-              Value: ingram.ingramProduct.productDetailDescription,
+              Value: icecatExt.icecatProductLocal.LongSummaryDescription,
               Language: 'ES'
             },
             BrandLocalTitle: {
@@ -276,29 +187,36 @@ class ProductsService extends ResolversOperationsService {
             }
           };
           generalInfo.TitleInfo = titleInfo;
-          generalInfo.Brand = ingram.ingramProduct.brand ? ingram.ingramProduct.vendorName.toUpperCase() : '';
-          generalInfo.BrandLogo = `/assets/brands/${ingram.ingramProduct.vendorName}`;
-          generalInfo.brandPartCode = ingram.ingramProduct.vendorPartNumber;
+          generalInfo.Brand = icecatExt.icecatProductLocal.Supplier;
+          generalInfo.BrandLogo = `/assets/brands/${icecatExt.icecatProductLocal.Supplier}`;
+          generalInfo.brandPartCode = icecatExt.icecatProductLocal.Prod_id;
           const gtin: string[] = [];
-          gtin.push(ingram.ingramProduct.upc);
+          // if (icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC && icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC.includes('|')) {
+          //   gtin.push(...icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC.split('|'));
+          // } else {
+          //   gtin.push(icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC);
+          // }
+          // Temporal
+          gtin.push(icecatExt.icecatProductLocal.Requested_GTIN_EAN_UPC);
+          // Fin temporal
           generalInfo.GTIN = gtin;
           const category = {
-            CategoryID: product.subCategory[0].slug,
+            CategoryID: slugify(icecatExt.icecatProductLocal.Category || '', { lower: true }),
             Name: {
-              Value: product.subCategory[0].name,
+              Value: icecatExt.icecatProductLocal.Category,
               Language: 'ES'
             }
           };
           generalInfo.Category = category;
           const summaryDescription = {
-            ShortSummaryDescription: ingram.ingramProduct.description,
-            LongSummaryDescription: ingram.ingramProduct.productDetailDescription
+            ShortSummaryDescription: icecatExt.icecatProductLocal.ShortSummaryDescription,
+            LongSummaryDescription: icecatExt.icecatProductLocal.LongSummaryDescription
           }
           generalInfo.SummaryDescription = summaryDescription;
           const generatedBulletP: string[] = [];
 
-          if (ingram.ingramProduct.technicalSpecifications) {
-            for (const spec of ingram.ingramProduct.technicalSpecifications) {
+          if (icecatExt.icecatProductLocal.technicalSpecifications) {
+            for (const spec of icecatExt.icecatProductLocal.technicalSpecifications) {
               const headerName = spec.headerName;
               const attributeName = spec.attributeName;
               const attributeValue = spec.attributeValue;
@@ -312,49 +230,175 @@ class ProductsService extends ResolversOperationsService {
           }
           generalInfo.GeneratedBulletPoints = generatedBulletPoints;
           product.generalInfo = generalInfo;
-        } else {
-          const generalInfo: any = {};
-          generalInfo.IcecatId = 0;
-          generalInfo.Title = product.name;
-          const titleInfo = {
-            GeneratedIntTitle: product.name,
-            GeneratedLocalTitle: {
-              Value: product.short_desc,
-              Language: 'ES'
-            },
-            BrandLocalTitle: {
-              Value: '',
-              Language: 'ES'
-            }
-          };
-          generalInfo.TitleInfo = titleInfo;
-          generalInfo.Brand = product.brand ? product.brand.toUpperCase() : '';
-          generalInfo.BrandLogo = `/assets/brands/${product.brand}`;
-          generalInfo.brandPartCode = product.partnumber;
-          const gtin: string[] = [];
-          gtin.push(product.upc);
-          generalInfo.GTIN = gtin;
-          const category = { CategoryID: product.subCategory[0].slug, Name: { Value: product.subCategory[0].name, Language: 'ES' } };
-          generalInfo.Category = category;
-          const summaryDescription = {
-            ShortSummaryDescription: product.name,
-            LongSummaryDescription: product.short_desc
-          }
-          generalInfo.SummaryDescription = summaryDescription;
-          const generatedBulletP: string[] = [];
-          if (product.category[0].name) generatedBulletP.push('Categoria: ' + product.category[0].name);
-          if (product.model) generatedBulletP.push('Modelo: ' + product.model);
-          if (product.sustituto) generatedBulletP.push('Sustituo: ' + product.sustituto);
-          if (product.upc) generatedBulletP.push('Codigo Universal: ' + product.upc);
-          const generatedBulletPoints = {
-            Language: 'ES',
-            Values: generatedBulletP
-          }
-          generalInfo.GeneratedBulletPoints = generatedBulletPoints;
 
-          product.generalInfo = generalInfo;
+          if (icecatExt.icecatProductLocal.ProductGallery && icecatExt.icecatProductLocal.ProductGallery.includes('|')) {
+            const imagenes: string[] = icecatExt.icecatProductLocal.ProductGallery.split('|');
+            if (imagenes.length > 0) {
+              product.pictures = [];
+              product.sm_pictures = [];
+              for (const pictureI of imagenes) {
+                if (pictureI !== '') {
+                  const pict: IPicture = {
+                    width: '500',
+                    height: '500',
+                    url: pictureI
+                  };
+                  product.pictures.push(pict);
+                  const pict_sm: IPicture = {
+                    width: '300',
+                    height: '300',
+                    url: pictureI
+                  };
+                  product.sm_pictures.push(pict_sm);
+                }
+              }
+            }
+          }
+        }
+      } else {
+        const icecat = await new ExternalIcecatsService({}, variableLocal, context).getICecatProductInt(variableLocal);
+        if (icecat.status && product.suppliersProd.idProveedor !== 'syscom') {
+          if (icecat.icecatProduct.GeneralInfo && icecat.icecatProduct.GeneralInfo.IcecatId !== '') {
+            product.generalInfo = icecat.icecatProduct.GeneralInfo;
+          }
+          if (icecat.icecatProduct.Gallery.length > 0) {
+            product.pictures = [];
+            product.sm_pictures = [];
+            for (const pictureI of icecat.icecatProduct.Gallery) {
+              if (pictureI.Pic500x500 !== '') {
+                const pict: IPicture = {
+                  width: pictureI.Pic500x500Width,
+                  height: pictureI.Pic500x500Height,
+                  url: pictureI.Pic500x500
+                };
+                product.pictures.push(pict);
+                const pict_sm: IPicture = {
+                  width: pictureI.LowWidth,
+                  height: pictureI.LowHeight,
+                  url: pictureI.LowPic
+                };
+                product.sm_pictures.push(pict_sm);
+              } else {
+                if (pictureI.Pic !== '') {
+                  const pict: IPicture = {
+                    width: pictureI.PicWidth,
+                    height: pictureI.PicHeight,
+                    url: pictureI.Pic
+                  };
+                  product.pictures.push(pict);
+                  const pict_sm: IPicture = {
+                    width: pictureI.LowWidth,
+                    height: pictureI.LowHeight,
+                    url: pictureI.ThumbPic
+                  };
+                  product.sm_pictures.push(pict_sm);
+                }
+              }
+            }
+          }
+        } else {
+          const variableI = {
+            vendorPartNumber: product.partnumber,
+            upc: product.upc
+          }
+          const ingram = await new ExternalIngramService({}, variableI, context).getIngramProduct({});
+          if (ingram.ingramProduct) {
+            const generalInfo: any = {};
+            generalInfo.IcecatId = 0;
+            generalInfo.Title = ingram.ingramProduct.description;
+            const titleInfo = {
+              GeneratedIntTitle: ingram.ingramProduct.description,
+              GeneratedLocalTitle: {
+                Value: ingram.ingramProduct.productDetailDescription,
+                Language: 'ES'
+              },
+              BrandLocalTitle: {
+                Value: '',
+                Language: 'ES'
+              }
+            };
+            generalInfo.TitleInfo = titleInfo;
+            generalInfo.Brand = ingram.ingramProduct.brand ? ingram.ingramProduct.vendorName.toUpperCase() : '';
+            generalInfo.BrandLogo = `/assets/brands/${ingram.ingramProduct.vendorName}`;
+            generalInfo.brandPartCode = ingram.ingramProduct.vendorPartNumber;
+            const gtin: string[] = [];
+            gtin.push(ingram.ingramProduct.upc);
+            generalInfo.GTIN = gtin;
+            const category = {
+              CategoryID: product.subCategory[0].slug,
+              Name: {
+                Value: product.subCategory[0].name,
+                Language: 'ES'
+              }
+            };
+            generalInfo.Category = category;
+            const summaryDescription = {
+              ShortSummaryDescription: ingram.ingramProduct.description,
+              LongSummaryDescription: ingram.ingramProduct.productDetailDescription
+            }
+            generalInfo.SummaryDescription = summaryDescription;
+            const generatedBulletP: string[] = [];
+
+            if (ingram.ingramProduct.technicalSpecifications) {
+              for (const spec of ingram.ingramProduct.technicalSpecifications) {
+                const headerName = spec.headerName;
+                const attributeName = spec.attributeName;
+                const attributeValue = spec.attributeValue;
+                const bulletPoint = `${attributeName}: ${attributeValue}`;
+                generatedBulletP.push(bulletPoint);
+              }
+            }
+            const generatedBulletPoints = {
+              Language: 'ES',
+              Values: generatedBulletP
+            }
+            generalInfo.GeneratedBulletPoints = generatedBulletPoints;
+            product.generalInfo = generalInfo;
+          } else {
+            const generalInfo: any = {};
+            generalInfo.IcecatId = 0;
+            generalInfo.Title = product.name;
+            const titleInfo = {
+              GeneratedIntTitle: product.name,
+              GeneratedLocalTitle: {
+                Value: product.short_desc,
+                Language: 'ES'
+              },
+              BrandLocalTitle: {
+                Value: '',
+                Language: 'ES'
+              }
+            };
+            generalInfo.TitleInfo = titleInfo;
+            generalInfo.Brand = product.brand ? product.brand.toUpperCase() : '';
+            generalInfo.BrandLogo = `/assets/brands/${product.brand}`;
+            generalInfo.brandPartCode = product.partnumber;
+            const gtin: string[] = [];
+            gtin.push(product.upc);
+            generalInfo.GTIN = gtin;
+            const category = { CategoryID: product.subCategory[0].slug, Name: { Value: product.subCategory[0].name, Language: 'ES' } };
+            generalInfo.Category = category;
+            const summaryDescription = {
+              ShortSummaryDescription: product.name,
+              LongSummaryDescription: product.short_desc
+            }
+            generalInfo.SummaryDescription = summaryDescription;
+            const generatedBulletP: string[] = [];
+            if (product.category[0].name) generatedBulletP.push('Categoria: ' + product.category[0].name);
+            if (product.model) generatedBulletP.push('Modelo: ' + product.model);
+            if (product.sustituto) generatedBulletP.push('Sustituo: ' + product.sustituto);
+            if (product.upc) generatedBulletP.push('Codigo Universal: ' + product.upc);
+            const generatedBulletPoints = {
+              Language: 'ES',
+              Values: generatedBulletP
+            }
+            generalInfo.GeneratedBulletPoints = generatedBulletPoints;
+
+            product.generalInfo = generalInfo;
+          }
         }
       }
+
     }
     return {
       status: result.status,
@@ -1224,7 +1268,7 @@ class ProductsService extends ResolversOperationsService {
 
   // Función para reemplazar caracteres no permitidos en los nombres de archivo
   sanitizePartnumber(partnumber: string): string {
-    return partnumber.replace(/[\/ ]/g, '_');
+    return partnumber.replace(/[\/ #]/g, '_');
   }
 
   generateFilename(partNumber: string, index: number): string {

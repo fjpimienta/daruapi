@@ -606,8 +606,8 @@ class ProductsService extends ResolversOperationsService {
           product.id = nextId.toString();
           nextId += 1; // Incrementamos el nextId para el siguiente nuevo producto
         }
-
-        const productC = await this.categorizarProductos(product, nextId, firstsProducts);
+        const idP = parseInt(product.id || nextId.toString());
+        const productC = await this.categorizarProductos(product, idP, firstsProducts); // Use product.id instead of nextId
 
         productC.sheetJson = '';
         productsAdd.push(productC);

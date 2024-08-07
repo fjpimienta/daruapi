@@ -83,3 +83,10 @@ export class ICategoryParentBDI {
   id: number = 0;
   name: string = '';
 }
+
+export class Attribute {
+  headerName: string = '';
+  attributeName: string = '';
+  attributeDisplay: string = '';
+  attributeValue: string = '';
+}

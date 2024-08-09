@@ -32,7 +32,7 @@ const downloadImage = async (url: string, destFolder: string, filename: string, 
         });
 
         request.setTimeout(30000, () => {
-          logger.error(`Request timed out after 30 seconds: ${url}`);
+          // logger.error(`Request timed out after 30 seconds: ${url}`);
           request.abort();
         });
       });
@@ -67,16 +67,16 @@ const downloadImage = async (url: string, destFolder: string, filename: string, 
         fs.unlinkSync(tempFilePath);  // Ensure the temp file is deleted
       }
 
-      logger.info(`Image saved to: ${filePath}`);
+      // logger.info(`Image saved to: ${filePath}`);
       return;
     } catch (error) {
       retries++;
-      logger.error(`Error downloading image from ${url}. Retrying (${retries}/${maxRetries})...`);
+      // logger.error(`Error downloading image from ${url}. Retrying (${retries}/${maxRetries})...`);
       logger.error(error);
       await new Promise((resolve) => setTimeout(resolve, retryDelay));
     }
   }
-  logger.error(`Maximum number of retries reached for ${url}`);
+  // logger.error(`Maximum number of retries reached for ${url}`);
 };
 
 const checkImageExists = async (url: string): Promise<boolean> => {

@@ -717,12 +717,6 @@ class ProductsService extends ResolversOperationsService {
             $not: {
               '$regex': '^uploads'
             }
-            // },
-            // 'pictures': {
-            //   $exists: true,
-            //   $not: {
-            //     $size: 0
-            //   }
           }
         };
       }
@@ -769,7 +763,6 @@ class ProductsService extends ResolversOperationsService {
           if (existOnePicture) {
             product.pictures = pictures;
             product.sm_pictures = sm_pictures;
-            // logger.info(`  :::::  producto: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
             const updateImage = await this.modifyImages(product);
             if (!updateImage.status) {
               logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber}.\n`);
@@ -780,7 +773,7 @@ class ProductsService extends ResolversOperationsService {
       }
 
       // Si hubo productos que se encontraron las imagenes en el server daru.
-      logger.info(`Productos con imagenes actualizadas / productsPictures.length: ${productsPictures.length}`);
+      // logger.info(`Productos con imagenes actualizadas / productsPictures.length: ${productsPictures.length}`);
       if (productsPictures.length > 0) {
         logger.info(`saveImages->productsPictures DARU de ${supplierId}: ${productsPictures.length} \n`);
         const productIdsWithImages = new Set(productsPictures.map(picture => picture.id));
@@ -900,7 +893,7 @@ class ProductsService extends ResolversOperationsService {
             const updateImage = await this.modifyImages(product);
             if (updateImage.status) {
               productsAdd.push(product);
-              logger.info(`saveImages->producto actualizado: ${product.partnumber}; imagenes guardadas: ${product.pictures?.length}`);
+              // logger.info(`saveImages->producto actualizado: ${product.partnumber}; imagenes guardadas: ${product.pictures?.length}`);
             } else {
               logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber}.\n`);
             }
@@ -913,7 +906,6 @@ class ProductsService extends ResolversOperationsService {
       // Proveedores que no tienen imagenes
       if (idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva') {
         const productsBDI = (await this.listAll(this.collection, this.catalogName, 1, -1, { 'suppliersProd.idProveedor': { $ne: 'ingram' } })).items;
-        console.log(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
         logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
         if (productsBDI && productsBDI.length > 0) {
           const productsBDIMap = new Map<string, any>();
@@ -1033,7 +1025,7 @@ class ProductsService extends ResolversOperationsService {
       // };
 
       // Si hubo productos que se encontraron los json en el server daru.
-      logger.info(`Productos con jsons actualizados / productsJsons.length: ${productsJsons.length}`);
+      // logger.info(`Productos con jsons actualizados / productsJsons.length: ${productsJsons.length}`);
       if (productsJsons.length > 0) {
         logger.info(`saveJsons->productsJsons DARU de ${supplierId}: ${productsJsons.length} \n`);
         const productIdsWithJsons = new Set(productsJsons.map(jsonProd => jsonProd.id));
@@ -1135,7 +1127,7 @@ class ProductsService extends ResolversOperationsService {
             const updateJson = await this.modifyJsons(product);
             if (updateJson.status) {
               productsAdd.push(product);
-              logger.info(`saveJsons->producto actualizado: ${product.partnumber}; json guardado: ${product.sheetJson}`);
+              // logger.info(`saveJsons->producto actualizado: ${product.partnumber}; json guardado: ${product.sheetJson}`);
             } else {
               logger.error(`saveJsons->No se pudo reiniciar los json de ${product.partnumber}.\n`);
             }
@@ -1148,7 +1140,6 @@ class ProductsService extends ResolversOperationsService {
       // Proveedores que no tienen jsons
       if (idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva') {
         const productsBDI = (await this.listAll(this.collection, this.catalogName, 1, -1, { 'suppliersProd.idProveedor': { $ne: 'ingram' } })).items;
-        console.log(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
         logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
         if (productsBDI && productsBDI.length > 0) {
           const productsBDIMap = new Map<string, any>();

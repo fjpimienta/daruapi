@@ -6,5 +6,7 @@ type Query {
   productsBDI: ResultBDI
   productsPricesBDI: ResultBDI
   listProductsBDI: ResultBDI
-  existenciaProductoBDI: ResultBDI
+  existenciaProductoBDI(
+    existenciaProducto: SupplierProdInput
+  ): ResultBDI
 }

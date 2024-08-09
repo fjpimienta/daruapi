@@ -8,6 +8,8 @@ import logger from '../utils/logger';
 import { BranchOffices, Brands, Categorys, Descuentos, Especificacion, Picture, Product, SupplierProd, UnidadDeMedida } from '../models/product.models';
 import slugify from 'slugify';
 import ConfigsService from './config.service';
+import { IVariables } from '../interfaces/variable.interface';
+import { IBranchOffices } from '../interfaces/product.interface';
 
 class ExternalBDIService extends ResolversOperationsService {
   collection = COLLECTIONS.INGRAM_PRODUCTS;
@@ -201,7 +203,7 @@ class ExternalBDIService extends ResolversOperationsService {
     };
   }
 
-  async getProductsPricesBDI() {
+  async getProductsPricesBDI(partNumberIngram: string = '') {
     const token = await this.getTokenBDI();
     if (!token || !token.status) {
       return {
@@ -213,7 +215,8 @@ class ExternalBDIService extends ResolversOperationsService {
     const raw = JSON.stringify({
       "report": "json",
       "filters": {
-        "active": true
+        "active": true,
+        ...(partNumberIngram && { search: partNumberIngram })
       },
     });
     const options = {
@@ -275,8 +278,8 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
 
-    const listProductsBDI = (await this.getProductsBDI()).productsBDI;
-    const listProductsPricesBDI = (await this.getProductsPricesBDI()).productsPricesBDI;
+    const listProductsBDI = responseProducts.productsBDI;
+    const listProductsPricesBDI = responsePrices.productsPricesBDI;
     if (listProductsBDI && listProductsPricesBDI) {
       const productos: Product[] = [];
       if (listProductsBDI.length > 0 && listProductsPricesBDI.length > 0) {
@@ -521,6 +524,81 @@ class ExternalBDIService extends ResolversOperationsService {
     return year + '-' + monthS + '-' + dtS;
   }
 
+  async getExistenciaProductoBDI(variables: IVariables) {
+    const { existenciaProducto } = variables;
+    const existenciaProductoIngram = { ...existenciaProducto };
+    const products = [];
+    if (!existenciaProducto) {
+      return {
+        status: true,
+        message: 'No hubo cambio en los almacenes. Verificar API.',
+        existenciaProductoBDI: {},
+      };
+    }
+    const token = await this.getTokenBDI();
+    if (!token || !token.status) {
+      return {
+        status: token.status,
+        message: token.message,
+        existenciaProductoBDI: null,
+      };
+    }
+    products.push({ ingramPartNumber: existenciaProducto.codigo });
+    for (const product of products) {
+      let branchOffices: IBranchOffices[] = [];
+      const responsePrices = await this.getProductsPricesBDI(product.ingramPartNumber);
+      if (!responsePrices.status) {
+        return {
+          status: responsePrices.status,
+          message: responsePrices.message,
+          existenciaProductoBDI: [],
+        };
+      }
+      if (responsePrices.productsPricesBDI && responsePrices.productsPricesBDI.length <= 0) {
+        return {
+          status: responsePrices.status,
+          message: 'No hay precios en el servicio del Proveedor',
+          existenciaProductoBDI: [],
+        };
+      }
+      const listProductsPricesBDI = responsePrices.productsPricesBDI;
+      if (listProductsPricesBDI && listProductsPricesBDI.length > 0) {
+        const listProductPricesBDI = responsePrices.productsPricesBDI[0];
+        existenciaProductoIngram.price = listProductPricesBDI.price;
+        existenciaProductoIngram.moneda = listProductPricesBDI.currencyCode;
+        existenciaProductoIngram.cantidad = listProductPricesBDI.inventory;
+        for (const warehouse of listProductPricesBDI.brs) {
+          if (warehouse.inventory > 1) {
+            const branchOffice: IBranchOffices = {
+              id: warehouse.id,
+              name: warehouse.name,
+              estado: warehouse.name,
+              cantidad: warehouse.inventory,
+              cp: '',
+              latitud: '',
+              longitud: ''
+            }
+            branchOffices.push(branchOffice);
+          }
+        }
+      }
+      existenciaProductoIngram.branchOffices = branchOffices;
+    }
+    // Generar
+    if (existenciaProductoIngram) {
+      return {
+        status: true,
+        message: `Se ha generado la disponbilidad de precios de productos.`,
+        existenciaProductoBDI: existenciaProductoIngram,
+      };
+    } else {
+      return {
+        status: false,
+        message: `No se ha generado la lista de precios de productos.`,
+        existenciaProductoBDI: [],
+      };
+    }
+  }
 }
 
 export default ExternalBDIService;

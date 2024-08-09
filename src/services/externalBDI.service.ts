@@ -196,6 +196,7 @@ class ExternalBDIService extends ResolversOperationsService {
     const data = await response.json();
     process.env.PRODUCTION === 'true' && logger.info(`getProductsBDI.data: \n ${JSON.stringify(data)} \n`);
     const products = data.products;
+    logger.info(`getProductsBDI.products.length: \n ${JSON.stringify(products.length)} \n`);
     return {
       status: true,
       message: 'Esta es la lista de Productos de BDI',
@@ -239,6 +240,7 @@ class ExternalBDIService extends ResolversOperationsService {
     const data = await response.json();
     process.env.PRODUCTION === 'true' && logger.info(`getProductsPricesBDI.data: \n ${JSON.stringify(data)} \n`);
     const productsPrices = data.products;
+    logger.info(`getProductsBDI.productsPrices.length: \n ${JSON.stringify(productsPrices.length)} \n`);
     return {
       status: true,
       message: 'Esta es la lista de Precios de Productos de BDI',

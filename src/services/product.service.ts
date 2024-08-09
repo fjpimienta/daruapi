@@ -101,7 +101,6 @@ class ProductsService extends ResolversOperationsService {
         }
       }
     }
-
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
     const result = await this.listProducts(this.collection, this.catalogName, page, itemsPage, filter);
@@ -773,7 +772,7 @@ class ProductsService extends ResolversOperationsService {
             // logger.info(`  :::::  producto: ${product.partnumber}; imagenes guardadas: ${product.pictures.length}`);
             const updateImage = await this.modifyImages(product);
             if (!updateImage.status) {
-              logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber} por ${path.join(urlImageSave, dafaultImage)}.\n`);
+              logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber}.\n`);
             }
             productsPictures.push(product);
           }
@@ -841,15 +840,15 @@ class ProductsService extends ResolversOperationsService {
               } else {
                 logger.error(`saveImages->error: product.pictures[${index}] is undefined`);
                 // Establecer una URL de imagen de reemplazo o un valor predeterminado
-                product.pictures[index] = { url: `${urlImageSave}${dafaultImage}` };
+                // product.pictures[index] = { url: `${urlImageSave}${dafaultImage}` };
               }
             }
           } catch (error) {
             logger.error(`saveImages->error: ${error}`);
             // Establecer una URL de imagen de reemplazo o un valor predeterminado
-            if (product.pictures[index]) {
-              product.pictures[index].url = `${urlImageSave}${dafaultImage}`;
-            }
+            // if (product.pictures[index]) {
+            //   product.pictures[index].url = `${urlImageSave}${dafaultImage}`;
+            // }
           }
         }));
       };
@@ -903,7 +902,7 @@ class ProductsService extends ResolversOperationsService {
               productsAdd.push(product);
               logger.info(`saveImages->producto actualizado: ${product.partnumber}; imagenes guardadas: ${product.pictures?.length}`);
             } else {
-              logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber} por ${path.join(urlImageSave, dafaultImage)}.\n`);
+              logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber}.\n`);
             }
           } else {
             logger.error(`saveImages->No existen imagenes del producto ${product.partnumber} en Ingram.\n`);

@@ -830,14 +830,14 @@ class ProductsService extends ResolversOperationsService {
               imageCache.set(url, filename);
               if (product.pictures[index]) {
                 product.pictures[index].url = path.join(urlImageSave, filename);
-              } else {
-                logger.error(`saveImages->error: product.pictures[${index}] is undefined`);
+                // } else {
+                // logger.error(`saveImages->error: product.pictures[${index}] is undefined`);
                 // Establecer una URL de imagen de reemplazo o un valor predeterminado
                 // product.pictures[index] = { url: `${urlImageSave}${dafaultImage}` };
               }
             }
           } catch (error) {
-            logger.error(`saveImages->error: ${error}`);
+            logger.error(`saveImages-> error.downloadImages: ${error}`);
             // Establecer una URL de imagen de reemplazo o un valor predeterminado
             // if (product.pictures[index]) {
             //   product.pictures[index].url = `${urlImageSave}${dafaultImage}`;
@@ -945,7 +945,7 @@ class ProductsService extends ResolversOperationsService {
         products: []
       };
     } catch (error) {
-      logger.error(`saveImages->error: ${error} \n`);
+      // logger.error(`saveImages->error: ${error} \n`);
       return {
         status: false,
         message: error,
@@ -1072,12 +1072,12 @@ class ProductsService extends ResolversOperationsService {
           imageCache.set(imageUrl, filename);
           if (product.sheetJson) {
             product.sheetJson = path.join(urlJsonSave, filename);
-          } else {
-            logger.error(`saveJsons->error: product.sheetJson is undefined`);
+            // } else {
+            //   logger.error(`saveJsons->error: product.sheetJson is undefined`);
           }
           // }
         } catch (error) {
-          logger.error(`saveJsons->error: ${error}`);
+          logger.error(`saveJsons->error.downloadJsons: ${error}`);
         }
       };
       // Proveedor principal Ingram.
@@ -1178,7 +1178,7 @@ class ProductsService extends ResolversOperationsService {
         products: []
       };
     } catch (error) {
-      logger.error(`saveJsons->error: ${error} \n`);
+      // logger.error(`saveJsons->error: ${error} \n`);
       return {
         status: false,
         message: error,

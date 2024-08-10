@@ -604,7 +604,7 @@ class ProductsService extends ResolversOperationsService {
         const idP = parseInt(product.id || nextId.toString());
         const productC = await this.categorizarProductos(product, idP, firstsProducts); // Use product.id instead of nextId
 
-        productC.sheetJson = '';
+        productC.sheetJson = product.sheetJson;
         productsAdd.push(productC);
 
         // Combinamos los updates en un solo objeto
@@ -621,7 +621,7 @@ class ProductsService extends ResolversOperationsService {
           }
         });
       }
-      console.log('bulkOperations.length: ', bulkOperations.length);
+      logger.info(`insertMany->bulkOperations.length: ${bulkOperations.length} \n`);
 
       if (bulkOperations.length > 0) {
         const bulkResult = await this.getDB().collection(this.collection).bulkWrite(bulkOperations);

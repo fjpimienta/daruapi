@@ -38,7 +38,7 @@ const downloadImage = async (url: string, destFolder: string, filename: string, 
       });
 
       if (response.statusCode !== 200) {
-        throw new Error(`Failed to get '${url}' (${response.statusCode})`);
+        // throw new Error(`Failed to get '${url}' (${response.statusCode})`);
       }
 
       const contentType = response.headers['content-type'];

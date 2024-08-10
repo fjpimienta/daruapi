@@ -173,7 +173,7 @@ class ExternalBDIService extends ResolversOperationsService {
     const raw = JSON.stringify({
       "report": "json",
       "filters": {
-        "active": true
+        "inactive": true
       },
     });
     const options = {
@@ -216,7 +216,7 @@ class ExternalBDIService extends ResolversOperationsService {
     const raw = JSON.stringify({
       "report": "json",
       "filters": {
-        "active": true,
+        "inactive": true,
         ...(partNumberIngram && { search: partNumberIngram })
       },
     });

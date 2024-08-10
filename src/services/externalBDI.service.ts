@@ -75,7 +75,7 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
     const data = await response.json();
-    process.env.PRODUCTION === 'true' && logger.info(`getBrandsBDI.data: \n ${JSON.stringify(data)} \n`);
+    // process.env.PRODUCTION === 'true' && logger.info(`getBrandsBDI.data: \n ${JSON.stringify(data)} \n`);
     const brands = data.manufacturer;
     return {
       status: true,
@@ -110,7 +110,7 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
     const data = await response.json();
-    process.env.PRODUCTION === 'true' && logger.info(`getCategoriesBDI.data: \n ${JSON.stringify(data)} \n`);
+    // process.env.PRODUCTION === 'true' && logger.info(`getCategoriesBDI.data: \n ${JSON.stringify(data)} \n`);
     const brands = data.categories;
     return {
       status: true,
@@ -194,7 +194,7 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
     const data = await response.json();
-    process.env.PRODUCTION === 'true' && logger.info(`getProductsBDI.data: \n ${JSON.stringify(data)} \n`);
+    // process.env.PRODUCTION === 'true' && logger.info(`getProductsBDI.data: \n ${JSON.stringify(data)} \n`);
     const products = data.products;
     logger.info(`getProductsBDI.products.length: \n ${JSON.stringify(products.length)} \n`);
     return {
@@ -238,7 +238,7 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
     const data = await response.json();
-    process.env.PRODUCTION === 'true' && logger.info(`getProductsPricesBDI.data: \n ${JSON.stringify(data)} \n`);
+    // process.env.PRODUCTION === 'true' && logger.info(`getProductsPricesBDI.data: \n ${JSON.stringify(data)} \n`);
     const productsPrices = data.products;
     logger.info(`getProductsBDI.productsPrices.length: \n ${JSON.stringify(productsPrices.length)} \n`);
     return {
@@ -282,31 +282,29 @@ class ExternalBDIService extends ResolversOperationsService {
 
     const listProductsBDI = responseProducts.productsBDI;
     const listProductsPricesBDI = responsePrices.productsPricesBDI;
-    if (listProductsBDI && listProductsPricesBDI) {
+    if (listProductsBDI?.length > 0 && listProductsPricesBDI?.length > 0) {
+      const db = this.db;
+      const config = await new ConfigsService({}, { id: '1' }, { db }).details();
+      const { minimum_offer: stockMinimo, exchange_rate: exchangeRate } = config.config;
       const productos: Product[] = [];
-      if (listProductsBDI.length > 0 && listProductsPricesBDI.length > 0) {
-        const db = this.db;
-        const config = await new ConfigsService({}, { id: '1' }, { db }).details();
-        const stockMinimo = config.config.minimum_offer;
-        const exchangeRate = config.config.exchange_rate;
-        for (const product of listProductsBDI) {
-          for (const productsP of listProductsPricesBDI) {
-            if (product.sku === productsP.sku) {
-              const itemData: Product = await this.setProduct('ingram', product, productsP, null, stockMinimo, exchangeRate);
-              if (itemData.id !== undefined) {
-                productos.push(itemData);
-              }
-            }
+      const productMap = new Map(listProductsPricesBDI.map((p: any) => [p.sku, p]));
+      for (const product of listProductsBDI) {
+        const productsP = productMap.get(product.sku);
+        if (productsP) {
+          const itemData: Product = await this.setProduct('ingram', product, productsP, null, stockMinimo, exchangeRate);
+          if (itemData.id !== undefined) {
+            productos.push(itemData);
           }
         }
       }
-      return await {
+      logger.info(`getProductsBDI.productos.length: \n ${JSON.stringify(productos.length)} \n`);
+      return {
         status: true,
         message: `Productos listos para agregar.`,
         listProductsBDI: productos
-      }
+      };
     } else {
-      logger.info('No se pudieron recuperar los productos del proveedor');
+      // logger.info('No se pudieron recuperar los productos del proveedor');
       return {
         status: false,
         message: 'No se pudieron recuperar los productos del proveedor.',
@@ -509,9 +507,6 @@ class ExternalBDIService extends ResolversOperationsService {
 
       itemData.sheetJson = item.products.sheetJson;
     }
-    logger.info(`getBrandsBDI.item: \n ${JSON.stringify(item)} \n`);
-    logger.info(`getBrandsBDI.productPrice: \n ${JSON.stringify(productPrice)} \n`);
-    logger.info(`getBrandsBDI.itemData: \n ${JSON.stringify(itemData)} \n`);
     return itemData;
   }
 

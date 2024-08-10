@@ -10,7 +10,7 @@ const MAX_CONCURRENT_DOWNLOADS = 10;
 const downloadQueue: Promise<void>[] = [];
 const imageCache = new Map<string, string>();
 
-const downloadImage = async (url: string, destFolder: string, filename: string, maxRetries = 2, retryDelay = 5000): Promise<void> => {
+const downloadImage = async (url: string, destFolder: string, filename: string, maxRetries = 1, retryDelay = 5000): Promise<void> => {
   let retries = 0;
   while (retries < maxRetries) {
     try {

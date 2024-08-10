@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 const MAX_CONCURRENT_DOWNLOADS = 10;
 const downloadQueue: Promise<void>[] = [];
 
-const downloadJson = async (url: string, destFolder: string, filename: string, maxRetries = 2, retryDelay = 5000): Promise<void> => {
+const downloadJson = async (url: string, destFolder: string, filename: string, maxRetries = 1, retryDelay = 5000): Promise<void> => {
   let retries = 0;
   // logger.info(`url file saved to: ${url}`);
   while (retries < maxRetries) {

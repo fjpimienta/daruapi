@@ -556,13 +556,10 @@ class ProductsService extends ResolversOperationsService {
           existingProductsMap = new Map(productsBDI.map((productBDI: IProductBDI) => [productBDI.products.vendornumber, productBDI]));
         }
       }
-      console.log('products.length: ', products.length);
-
+      logger.info(`insertMany->products DARU de ${idProveedor}: ${products.length} \n`);
       let bulkOperations = [];
       let nextId = id; // Inicializamos nextId con el id recuperado
-
       const newProductPartNumbers = new Set(products.map(product => product.partnumber));
-
       // Inactivar productos existentes que no están en la nueva lista de productos
       const productsToInactivate = allExistingProducts.filter((existingProduct: any) => !newProductPartNumbers.has(existingProduct.partnumber));
       for (const productToInactivate of productsToInactivate) {
@@ -573,7 +570,6 @@ class ProductsService extends ResolversOperationsService {
           }
         });
       }
-
       for (const product of products) {
         const productBDI = existingProductsMap.get(product.partnumber);
         if (productBDI) {

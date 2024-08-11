@@ -26,6 +26,9 @@ const resolversBDIQuery: IResolvers = {
     },
     async existenciaProductoBDI(_, variables, context) {
       return new ExternalBDIService(_, variables, context).getExistenciaProductoBDI(variables);
+    },
+    async shippingIngramRates(_, variables, context) {
+      return new ExternalBDIService(_, variables, context).getShippingIngramRates(variables);
     }
   }
 };

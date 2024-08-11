@@ -210,20 +210,20 @@ type orderBDI {
 
 type ShippingBDI {
   currencyCode: String
-  totalFreightAmount: Int
-  totalTaxAmount: Int
-  totalFees: Int
-  totalNetAmount: Int
-  grossAmount: Int
-  freightEstimate: FreightEstimate
+  totalFreightAmount: Float
+  totalTaxAmount: Float
+  totalFees: Float
+  totalNetAmount: Float
+  grossAmount: Float
+  freightEstimate: [FreightEstimate]
 }
 
 type FreightEstimate {
   branch: String
   branchName: String
-  cost: Int
+  cost: Float
   label: String
-  totalWeight: Int
+  totalWeight: Float
   transitDays: Int
   carrierList: [String]
 }

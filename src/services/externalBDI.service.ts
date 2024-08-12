@@ -660,6 +660,76 @@ class ExternalBDIService extends ResolversOperationsService {
     }
   }
 
+  async setorderIngramBDI(variables: IVariables) {
+    const { orderIngramBdi } = variables;
+    try {
+      console.log('orderIngramBdi: ', orderIngramBdi);
+      if (!orderIngramBdi) {
+        return {
+          status: false,
+          message: `Verificar los valores requeridos para la creacion de la orden.`,
+          orderIngramBDI: {}
+        }
+      }
+      const token = await this.getTokenBDI();
+      if (!token || !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          orderIngramBDI: null,
+        };
+      }
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenBDI.token
+        },
+        body: JSON.stringify({
+          orderNumberClient: orderIngramBdi.orderNumberClient,
+          company: orderIngramBdi.company,
+          note: orderIngramBdi.note,
+          nameClient: orderIngramBdi.nameClient,
+          street: orderIngramBdi.street,
+          colony: orderIngramBdi.colony,
+          phoneNumber: orderIngramBdi.phoneNumber,
+          city: orderIngramBdi.city,
+          state: orderIngramBdi.state,
+          cp: orderIngramBdi.cp,
+          email: orderIngramBdi.email,
+          branch: orderIngramBdi.branch,
+          products: orderIngramBdi.products,
+          carrier: orderIngramBdi.carrier
+        })
+      };
+      console.log('options: ', options);
+      const url = 'https://admin.bdicentralapi.net/api/order';
+      const response = await fetch(url, options);
+      console.log('response: ', response);
+      if (response.status < 200 || response.status >= 300) {
+        return {
+          status: false,
+          message: `Error en el servicio del proveedor (${response.status}::${response.statusText})`,
+          orderIngramBDI: null
+        };
+      }
+      const data = await response.json();
+      console.log('data: ', data);
+      const shipping = data;
+      return {
+        status: true,
+        message: 'Esta es el costo del envio',
+        orderIngramBDI: shipping
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        orderIngramBDI: null,
+      };
+    }
+  }
+
 }
 
 export default ExternalBDIService;

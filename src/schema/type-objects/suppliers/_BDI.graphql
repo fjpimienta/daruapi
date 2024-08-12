@@ -202,7 +202,7 @@ type LocationsBDI {
   alias: String
 }
 
-type orderBDI {
+type OrderBDI {
   orderNumberClient: String
   orderNumberIngram: String
   message: String

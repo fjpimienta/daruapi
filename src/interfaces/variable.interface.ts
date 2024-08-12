@@ -22,7 +22,7 @@ import { IIcommktContact } from './suppliers/_Icommkt.interface';
 import { IOrderIngram } from './suppliers/_Ingram.interface';
 import { IOrderSyscom } from './suppliers/_Syscom.interface';
 import { IOrderDaisytek } from './suppliers/_Daisyteks.interface';
-import { IShippingBDIInput } from './suppliers/_BDIShipments.interface';
+import { IOrderIngramInput, IShippingBDIInput } from './suppliers/_BDIShipments.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -148,6 +148,7 @@ export interface IVariables {
   pedidoIngram?: IOrderIngram;
   // BDI
   shippingBdiInput?: IShippingBDIInput;
+  orderIngramBdi?: IOrderIngramInput;
   // products
   partNumber?: string;
   // icommkt

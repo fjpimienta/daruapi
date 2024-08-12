@@ -14,3 +14,25 @@ export interface IProductShipmentIngram {
   branch: string;
   carrier: string;
 }
+
+export interface IOrderIngramInput {
+  orderNumberClient: string;
+  company: string;
+  note: string;
+  nameClient: string;
+  street: string;
+  colony: string;
+  phoneNumber: string;
+  city: string;
+  state: string;
+  cp: string;
+  email: string;
+  branch: string;
+  products: IProductOrderIngram[];
+  carrier: string;
+}
+
+export interface IProductOrderIngram {
+  sku: string;
+  qty: number;
+}

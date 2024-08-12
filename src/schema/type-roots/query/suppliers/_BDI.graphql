@@ -9,4 +9,10 @@ type Query {
   existenciaProductoBDI(
     existenciaProducto: SupplierProdInput
   ): ResultBDI
+  shippingIngramRates(
+    shippingBdiInput: ShippingBDIInput
+  ): ResultBDI
+  orderIngramBDI(
+    orderIngramBdi: OrderIngramInput
+  ): ResultBDI
 }

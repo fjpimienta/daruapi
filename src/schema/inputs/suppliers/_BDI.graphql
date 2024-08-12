@@ -1,0 +1,38 @@
+input ShippingBDIInput {
+  street: String
+  colony: String
+  phoneNumber: String
+  city: String
+  state: String
+  cp: String
+  products: [ProductShipmentIngramInput]
+}
+
+input ProductShipmentIngramInput {
+  sku: String
+  qty: Int
+  branch: String
+  carrier: String
+}
+
+input OrderIngramInput {
+  orderNumberClient: String
+  company: String
+  note: String
+  nameClient: String
+  street: String
+  colony: String
+  phoneNumber: String
+  city: String
+  state: String
+  cp: String
+  email: String
+  branch: String
+  products:  [ProductOrderIngram]
+  carrier: String
+}
+
+input ProductOrderIngram {
+  sku: String
+  qty: Int
+}

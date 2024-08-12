@@ -648,7 +648,7 @@ class ExternalBDIService extends ResolversOperationsService {
       const shipping = data;
       return {
         status: true,
-        message: 'Esta es el costo del envio',
+        message: 'Este es el costo del envio',
         shippingIngramRates: shipping
       };
     } catch (error: any) {

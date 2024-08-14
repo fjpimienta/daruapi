@@ -203,8 +203,9 @@ type LocationsBDI {
 }
 
 type OrderBDI {
+  statuscode: Int
   orderNumberClient: String
-  orderNumberIngram: String
+  ingramNumberOrder: String
   message: String
 }
 

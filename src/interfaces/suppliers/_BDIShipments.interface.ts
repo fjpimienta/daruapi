@@ -56,8 +56,9 @@ export interface IOrderIngram {
 }
 
 export interface IOrderResponseIngram {
+  statuscode: number;
   orderNumberClient: string;
-  orderNumberIngram: string;
+  ingramNumberOrder: string;
   message: string;
 }
 

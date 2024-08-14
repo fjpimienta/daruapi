@@ -309,14 +309,11 @@ class DeliverysService extends ResolversOperationsService {
             case 'ingram':
               status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
               const orderIngram: IOrderIngram = await this.setOrder(id, delivery, warehouse, context);
-              ordersIngram.push(orderIngram);
-              console.log('ordersIngram: ', ordersIngram);
               process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.orderIngram: \n ${JSON.stringify(orderIngram)} \n`);
               const orderResponseIngram = await this.EfectuarPedidos(supplier, orderIngram, context)
                 .then(async (result) => {
                   return await result;
                 });
-              console.log('orderResponseIngram: ', orderResponseIngram);
               process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderResponseIngram: \n ${JSON.stringify(orderResponseIngram)} \n`);
               if (!orderResponseIngram.status) {
                 status = 'ERROR PEDIDO PROVEEDOR';
@@ -324,11 +321,10 @@ class DeliverysService extends ResolversOperationsService {
                 messageError = orderResponseIngram.message;
                 break;
               }
-              orderIngram.orderResponseIngram = orderResponseIngram.saveOrderSyscom;
+              orderIngram.orderResponseIngram = orderResponseIngram.orderIngramBDI;
               process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderIngram: \n ${JSON.stringify(orderIngram)} \n`);
-              console.log('orderIngram: ', orderIngram);
               ordersIngram.push(orderIngram);
-              console.log('ordersIngram: ', ordersIngram);
+              console.log('EfectuarPedidos.ordersIngram: ', ordersIngram);
               break;
           }
         }
@@ -347,12 +343,12 @@ class DeliverysService extends ResolversOperationsService {
       deliveryUpdate.ordersCt = ordersCts;
       deliveryUpdate.ordersCva = ordersCvas;
       deliveryUpdate.ordersSyscom = ordersSyscoms;
+      deliveryUpdate.ordersIngram = ordersIngram;
       deliveryUpdate.chargeOpenpay = chargeOpenpay;
       deliveryUpdate.lastUpdate = new Date().toISOString();
       deliveryUpdate.status = status;
       deliveryUpdate.messageError = messageError;
       deliveryUpdate.statusError = statusError;
-
       process.env.PRODUCTION === 'true' && logger.info(`modify.deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
       const filter = { id: id.toString() };
       const resultUpdate = await this.updateForce(this.collection, filter, deliveryUpdate, 'Pedido');
@@ -622,7 +618,7 @@ class DeliverysService extends ResolversOperationsService {
             state: this.removeAccents(dir?.d_estado || ''),
             cp: dir?.d_codigo.padStart(5, '0') || '',
             email: user.email,
-            branch: '10',
+            branch: warehouse.id,
             products: productsIngram,
             carrier: 'E1',
           }
@@ -711,10 +707,8 @@ class DeliverysService extends ResolversOperationsService {
           });
         return await pedidosSyscom;
       case 'ingram':
-        console.log('EfectuarPedidos.order: ', order);
         const pedidosIngram = await new ExternalBDIService({}, { orderIngramBdi: order }, context).setOrderIngramBDI({ orderIngramBdi: order })
           .then(async resultPedido => {
-            console.log('EfectuarPedidos.resultPedido: ', resultPedido);
             return await resultPedido;
           });
         return await pedidosIngram;

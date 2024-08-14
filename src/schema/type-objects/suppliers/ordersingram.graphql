@@ -22,7 +22,8 @@ type IProductOrderIngram {
 }
 
 type IOrderResponseIngram {
+  statuscode: Int
   orderNumberClient: String
-  orderNumberIngram: String
+  ingramNumberOrder: String
   message: String
 }

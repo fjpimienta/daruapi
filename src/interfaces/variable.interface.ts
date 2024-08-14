@@ -19,7 +19,7 @@ import { ICaptureChargeOpenpay, ICardOpenpay, IChargeOpenpay, ICustomerOpenpay, 
 import { IWelcome } from './welcome.interface';
 import { ICupon } from './cupon.interface';
 import { IIcommktContact } from './suppliers/_Icommkt.interface';
-import { IOrderIngram } from './suppliers/_Ingram.interface';
+import { IOrderIngramX } from './suppliers/_Ingram.interface';
 import { IOrderSyscom } from './suppliers/_Syscom.interface';
 import { IOrderDaisytek } from './suppliers/_Daisyteks.interface';
 import { IOrderIngramInput, IShippingBDIInput } from './suppliers/_BDIShipments.interface';
@@ -69,8 +69,8 @@ export interface IVariables {
   ordersCt?: IOrderCt[];
   orderCva?: IOrderCva;
   ordersCva?: IOrderCva[];
-  orderIngram?: IOrderIngram;
-  orderIngrams?: IOrderIngram[];
+  orderIngram?: IOrderIngramX;
+  orderIngrams?: IOrderIngramX[];
   name?: string;
   typeApi?: string;
   nameApi?: string;
@@ -145,7 +145,7 @@ export interface IVariables {
   allRecords?: Boolean;
   imSKU?: string;
   idOrderIngram?: string;
-  pedidoIngram?: IOrderIngram;
+  pedidoIngram?: IOrderIngramX;
   // BDI
   shippingBdiInput?: IShippingBDIInput;
   orderIngramBdi?: IOrderIngramInput;

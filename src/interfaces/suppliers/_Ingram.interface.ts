@@ -209,7 +209,7 @@ export interface IAvailabilityByWarehouse {
   };
 }
 
-export interface IOrderIngram {
+export interface IOrderIngramX {
   customerOrderNumber: string;
   endCustomerOrderNumber: string;
   notes: string;

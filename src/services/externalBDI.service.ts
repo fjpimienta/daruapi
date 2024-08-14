@@ -21,8 +21,8 @@ class ExternalBDIService extends ResolversOperationsService {
   }
 
   async getTokenBDI() {
-    const username = 'admin@daru.im';
-    const password = 'daru.01.02';
+    const username = 'bdimx@customer.com';
+    const password = 'yIP9fj4I8g';
     const optionsBDI = {
       method: 'POST',
       headers: {
@@ -660,10 +660,9 @@ class ExternalBDIService extends ResolversOperationsService {
     }
   }
 
-  async setorderIngramBDI(variables: IVariables) {
+  async setOrderIngramBDI(variables: IVariables) {
     const { orderIngramBdi } = variables;
     try {
-      console.log('orderIngramBdi: ', orderIngramBdi);
       if (!orderIngramBdi) {
         return {
           status: false,
@@ -680,7 +679,7 @@ class ExternalBDIService extends ResolversOperationsService {
         };
       }
       const options = {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token.tokenBDI.token
@@ -702,7 +701,6 @@ class ExternalBDIService extends ResolversOperationsService {
           carrier: orderIngramBdi.carrier
         })
       };
-      console.log('options: ', options);
       const url = 'https://admin.bdicentralapi.net/api/order';
       const response = await fetch(url, options);
       console.log('response: ', response);

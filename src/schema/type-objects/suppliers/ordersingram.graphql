@@ -1,0 +1,28 @@
+type OrderIngram {
+  orderNumberClient: String
+  company: String
+  note: String
+  nameClient: String
+  street: String
+  colony: String
+  phoneNumber: String
+  city: String
+  state: String
+  cp: String
+  email: String
+  branch: String
+  products: [IProductOrderIngram]
+  carrier: String
+  orderResponseIngram: IOrderResponseIngram
+}
+
+type IProductOrderIngram {
+  sku: String
+  qty: Int
+}
+
+type IOrderResponseIngram {
+  orderNumberClient: String
+  orderNumberIngram: String
+  message: String
+}

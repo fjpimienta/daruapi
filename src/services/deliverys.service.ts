@@ -19,7 +19,8 @@ import ExternalCtsService from './externalCts.service';
 import logger from '../utils/logger';
 import { IOrderSyscom } from '../interfaces/suppliers/_Syscom.interface';
 import ExternalSyscomService from './externalSyscom.service';
-import { IOrderResponseSyscom } from '../interfaces/suppliers/ordersyscomresponse.interface';
+import { IOrderIngram, IOrderIngramInput, IProductOrderIngram } from '../interfaces/suppliers/_BDIShipments.interface';
+import ExternalBDIService from './externalBDI.service';
 
 class DeliverysService extends ResolversOperationsService {
   collection = COLLECTIONS.DELIVERYS;
@@ -194,6 +195,7 @@ class DeliverysService extends ResolversOperationsService {
       const ordersCts: IOrderCt[] = [];
       const ordersCvas: IOrderCva[] = [];
       const ordersSyscoms: IOrderSyscom[] = [];
+      const ordersIngram: IOrderIngram[] = [];
       const warehouses: IWarehouse[] = delivery?.warehouses || [];
       const idTransactionOpenpay = delivery.chargeOpenpay.id;
       const resultOpenpay = await new ExternalOpenpayService({}, { idTransactionOpenpay }, context).oneCharge({ idTransactionOpenpay })
@@ -303,6 +305,30 @@ class DeliverysService extends ResolversOperationsService {
               orderSyscom.orderResponseSyscom = orderResponseSyscom.saveOrderSyscom;
               process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderSyscom: \n ${JSON.stringify(orderSyscom)} \n`);
               ordersSyscoms.push(orderSyscom);
+              break;
+            case 'ingram':
+              status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
+              const orderIngram: IOrderIngram = await this.setOrder(id, delivery, warehouse, context);
+              ordersIngram.push(orderIngram);
+              console.log('ordersIngram: ', ordersIngram);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.orderIngram: \n ${JSON.stringify(orderIngram)} \n`);
+              const orderResponseIngram = await this.EfectuarPedidos(supplier, orderIngram, context)
+                .then(async (result) => {
+                  return await result;
+                });
+              console.log('orderResponseIngram: ', orderResponseIngram);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderResponseIngram: \n ${JSON.stringify(orderResponseIngram)} \n`);
+              if (!orderResponseIngram.status) {
+                status = 'ERROR PEDIDO PROVEEDOR';
+                statusError = true;
+                messageError = orderResponseIngram.message;
+                break;
+              }
+              orderIngram.orderResponseIngram = orderResponseIngram.saveOrderSyscom;
+              process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderIngram: \n ${JSON.stringify(orderIngram)} \n`);
+              console.log('orderIngram: ', orderIngram);
+              ordersIngram.push(orderIngram);
+              console.log('ordersIngram: ', ordersIngram);
               break;
           }
         }
@@ -574,6 +600,33 @@ class DeliverysService extends ResolversOperationsService {
             orderResponseSyscom: null as any
           };
           return orderSyscom;
+        case 'ingram':
+          const productsIngram: IProductOrderIngram[] = [];
+          for (const idPI in Object.keys(warehouse.productShipments)) {
+            const prod: IProductShipment = warehouse.productShipments[idPI];
+            const productIngram: IProductOrderIngram = {
+              sku: prod.producto || '',
+              qty: prod.cantidad || 0
+            };
+            productsIngram.push(productIngram);
+          }
+          const orderIngram: IOrderIngramInput = {
+            orderNumberClient: 'DARU-' + idDelivery.toString().padStart(6, '0'),
+            company: this.removeAccents(user?.name?.toUpperCase() + ' ' + user?.lastname?.toUpperCase()),
+            note: 'Pedido: DARU-' + idDelivery.toString().padStart(6, '0') + ' - ' + delivery.deliveryId,
+            nameClient: this.removeAccents(user?.name?.toUpperCase() + ' ' + user?.lastname?.toUpperCase()),
+            street: this.removeAccents(dir?.directions || ''),
+            colony: this.removeAccents(dir?.d_asenta || ''),
+            phoneNumber: dir?.phone ? dir?.phone : '',
+            city: this.removeAccents(dir?.d_mnpio || ''),
+            state: this.removeAccents(dir?.d_estado || ''),
+            cp: dir?.d_codigo.padStart(5, '0') || '',
+            email: user.email,
+            branch: '10',
+            products: productsIngram,
+            carrier: 'E1',
+          }
+          return orderIngram;
       }
       return '';
     }
@@ -656,7 +709,15 @@ class DeliverysService extends ResolversOperationsService {
           .then(async resultPedido => {
             return await resultPedido;
           });
-        return await pedidosSyscom
+        return await pedidosSyscom;
+      case 'ingram':
+        console.log('EfectuarPedidos.order: ', order);
+        const pedidosIngram = await new ExternalBDIService({}, { orderIngramBdi: order }, context).setOrderIngramBDI({ orderIngramBdi: order })
+          .then(async resultPedido => {
+            console.log('EfectuarPedidos.resultPedido: ', resultPedido);
+            return await resultPedido;
+          });
+        return await pedidosIngram;
     }
   }
 

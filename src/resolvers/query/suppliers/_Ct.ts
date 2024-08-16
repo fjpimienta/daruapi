@@ -9,6 +9,9 @@ const resolversCtsQuery: IResolvers = {
     async shippingCtRates(_, variables, context) {
       return new ExternalCtsService(_, variables, context).setShippingCtRates(variables);
     },
+    async tipoCambioCT(_, __, context) {
+      return new ExternalCtsService(_, __, context).getTipoCambio();
+    },
     async jsonProductsCt(_, __, context) {
       return new ExternalCtsService(_, __, context).getJsonProductsCt();
     },

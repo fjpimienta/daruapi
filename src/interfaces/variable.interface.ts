@@ -23,6 +23,7 @@ import { IOrderIngramX } from './suppliers/_Ingram.interface';
 import { IOrderSyscom } from './suppliers/_Syscom.interface';
 import { IOrderDaisytek } from './suppliers/_Daisyteks.interface';
 import { IOrderIngramInput, IShippingBDIInput } from './suppliers/_BDIShipments.interface';
+import { ISliders } from './sliders.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -59,6 +60,7 @@ export interface IVariables {
   order?: IOrder;
   orders?: IOrder[];
   config?: IConfig;
+  sliders?: ISliders;
   welcome?: IWelcome;
   welcomes?: IWelcome[];
   warehouse?: IWarehouse;
@@ -149,6 +151,7 @@ export interface IVariables {
   // BDI
   shippingBdiInput?: IShippingBDIInput;
   orderIngramBdi?: IOrderIngramInput;
+  type?: string;
   // products
   partNumber?: string;
   // icommkt

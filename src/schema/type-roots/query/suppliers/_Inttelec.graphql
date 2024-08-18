@@ -1,0 +1,11 @@
+type Query {
+  tokenInttelec: ResultInttelec
+  productsInttelec: ResultInttelec
+  listProductsInttelec: ResultInttelec
+  existenciaProductoInttelec(
+    existenciaProducto: SupplierProdInput
+  ): ResultInttelec
+  addOrderInttelec(
+    orderInttelec: OrderInttelecInput
+  ): ResultInttelec
+}

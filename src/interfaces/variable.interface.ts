@@ -24,6 +24,7 @@ import { IOrderSyscom } from './suppliers/_Syscom.interface';
 import { IOrderDaisytek } from './suppliers/_Daisyteks.interface';
 import { IOrderIngramInput, IShippingBDIInput } from './suppliers/_BDIShipments.interface';
 import { ISliders } from './sliders.interface';
+import { IOrderInttelec } from './suppliers/_Inttelecs.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -171,4 +172,7 @@ export interface IVariables {
   // daisytek
   partNumberDaisytek?: string;
   orderDaisytek?: IOrderDaisytek;
+  // inttelec
+  partNumberInttelec?: string;
+  orderInttelec?: IOrderInttelec;
 }

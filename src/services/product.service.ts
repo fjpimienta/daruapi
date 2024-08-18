@@ -895,7 +895,7 @@ class ProductsService extends ResolversOperationsService {
       }
 
       // Proveedores que no tienen imagenes
-      if (idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva') {
+      if (idProveedor === 'inttelec' || idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva') {
         const productsBDI = (await this.listAll(this.collection, this.catalogName, 1, -1, { 'suppliersProd.idProveedor': { $ne: 'ingram' } })).items;
         logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
         if (productsBDI && productsBDI.length > 0) {
@@ -1129,7 +1129,7 @@ class ProductsService extends ResolversOperationsService {
       }
 
       // Proveedores que no tienen jsons
-      if (idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva') {
+      if (idProveedor === 'inttelec' || idProveedor === 'daisytek' || idProveedor === 'ct' || idProveedor === 'cva') {
         const productsBDI = (await this.listAll(this.collection, this.catalogName, 1, -1, { 'suppliersProd.idProveedor': { $ne: 'ingram' } })).items;
         logger.info(`insertMany/productsBDI.length: ${productsBDI.length} \n`);
         if (productsBDI && productsBDI.length > 0) {

@@ -84,13 +84,14 @@ class ExternalInttelecService extends ResolversOperationsService {
           const exchangeRate = config.config.exchange_rate;
           for (const product of listProductsInttelec) {
             if (product.sku !== '') {
-              const itemData: Product = await this.setProduct('daisytek', product, null, stockMinimo, exchangeRate);
+              const itemData: Product = await this.setProduct('inttelec', product, null, stockMinimo, exchangeRate);
               if (itemData.id !== undefined) {
                 productos.push(itemData);
               }
             }
           }
         }
+        console.log('productos: ', productos);
         return await {
           status: true,
           message: `Productos listos para agregar.`,
@@ -144,7 +145,7 @@ class ExternalInttelecService extends ResolversOperationsService {
         },
         redirect: 'follow' as RequestRedirect
       };
-      const url = 'https://www.daisytek.com.mx/api/products/full-catalog';
+      const url = 'https://www.inttelec.com.mx/api/products/full-catalog';
       console.log('options: ', options);
       const response = await fetch(url, options);
       if (response.status < 200 || response.status >= 300) {
@@ -271,20 +272,27 @@ class ExternalInttelecService extends ResolversOperationsService {
     let price = 0;
     let salePrice = 0;
     itemData.id = undefined;
+    console.log('item.warehouses: ', item.warehouses);
+
     if (item && item.warehouses) {
-      if (item.price && item.price > 0) {
+      console.log('item.price: ', item.price);
+      console.log('item.price.price_unit: ', item.price.price_unit);
+      if (item.price && item.price.length > 0 && item.price[0].price_unit > 0) {
         const branchOfficesInttelec: BranchOffices[] = [];
         const existenciaProductoInttelec: IWarehousesInttelec = item.warehouses;
+        console.log('existenciaProductoInttelec: ', existenciaProductoInttelec);
         // const almacenesConExistencia: IWarehousesInttelec = {};
         for (const [key, almacen] of Object.entries(existenciaProductoInttelec)) {
-          if (almacen && almacen.stock >= stockMinimo) {
-            disponible += almacen.stock;
+          console.log('almacen: ', almacen);
+          if (almacen && almacen.available_quantity >= stockMinimo) {
+            disponible += almacen.available_quantity;
             almacen.id = key;
             // almacenesConExistencia[key] = almacen;
             const almacenTmp = this.getAlmacenCant(almacen);
             branchOfficesInttelec.push(almacenTmp)
           }
         }
+        console.log('disponible: ', disponible);
         if (disponible > 0) {
           let featured = false;
           itemData.id = item.sku;

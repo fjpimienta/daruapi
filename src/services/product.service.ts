@@ -2,7 +2,7 @@ import slugify from 'slugify';
 import { ACTIVE_VALUES_FILTER, COLLECTIONS } from '../config/constants';
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
-import { findOneElement, findSubcategoryProduct } from '../lib/db-operations';
+import { asignDocumentIdInt, findOneElement, findSubcategoryProduct } from '../lib/db-operations';
 import { asignDocumentId } from '../lib/db-operations';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import { IPicture, IProduct } from '../interfaces/product.interface';
@@ -517,23 +517,18 @@ class ProductsService extends ResolversOperationsService {
         };
       }
       // Recupera el siguiente elemento de la tabla.
-      let id = parseInt(await asignDocumentId(this.getDB(), this.collection, {
-        registerDate: -1
-      }));
+      let id = parseInt(await asignDocumentIdInt(this.getDB(), this.collection));
       id = id ? id : 1;
 
       if (isNaN(id)) {
         throw new Error('ID is not a number');
       }
-
       if (id > 1) {
         firstsProducts = false;
       }
-
       const idProveedor = products[0].suppliersProd.idProveedor;
       let existingProductsMap = new Map();
       let allExistingProducts = [];
-
       if (idProveedor !== 'ingram') {
         const responseBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         if (!responseBDI || !responseBDI.productsBDI || responseBDI.productsBDI.length === 0) {

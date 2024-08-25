@@ -24,8 +24,8 @@
   "author": "Francisco Jesus Perez Pimienta <francisco.pimienta@daru.mx>",
   "license": "MIT",
   "engines": {
-    "node": "18.17.0",
-    "npm": "9.6.7"
+    "node": "18.20.4",
+    "npm": "10.7.0"
   },
   "dependencies": {
     "@graphql-tools/load-files": "^6.6.1",

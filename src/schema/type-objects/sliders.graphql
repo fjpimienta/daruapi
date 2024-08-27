@@ -1,0 +1,10 @@
+type Sliders {
+  id: String!
+  type: String!
+  imageUrl: String!
+  title1: String!
+  title2: String!
+  subtitle: String!
+  url: String!
+  urlTitle: String!
+}

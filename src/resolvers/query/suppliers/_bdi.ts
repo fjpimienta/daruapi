@@ -31,7 +31,7 @@ const resolversBDIQuery: IResolvers = {
       return new ExternalBDIService(_, variables, context).getShippingIngramRates(variables);
     },
     async orderIngramBDI(_, variables, context) {
-      return new ExternalBDIService(_, variables, context).setorderIngramBDI(variables);
+      return new ExternalBDIService(_, variables, context).setOrderIngramBDI(variables);
     }
   }
 };

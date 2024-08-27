@@ -155,6 +155,42 @@ class ExternalCtsService extends ResolversOperationsService {
     };
   }
 
+  async getTipoCambio() {
+    const token = await this.getTokenCt();
+    if (token && !token.status) {
+      return {
+        status: token.status,
+        message: token.message,
+        shippingCtRates: null
+      };
+    }
+    const options = {
+      method: 'POST',
+      headers: {
+        'x-auth': token.tokenCt.token,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    const url = 'http://connect.ctonline.mx:3001/pedido/tipoCambio';
+    const response = await fetch(url, options);
+    logger.info(`getTipoCambio.response: \n ${JSON.stringify(response)} \n`);
+    const data = await response.json();
+    process.env.PRODUCTION === 'true' && logger.info(`getTipoCambio.data: \n ${JSON.stringify(data)} \n`);
+    if (response.ok) {
+      return {
+        status: true,
+        message: 'La información que hemos pedido se ha cargado correctamente',
+        tipoCambio: data.tipoCambio
+      }
+    }
+    return {
+      status: false,
+      message: 'Error en el servicio. ' + JSON.stringify(data),
+      tipoCambio: null
+    };
+  }
+
   buscarAlmacenesConExistencia(existenciaProducto: ISupplierProd, existenciaProductoCt: IExistenciaAlmacen[]): IExistenciaAlmacen[] {
     const { cantidad } = existenciaProducto;
     const almacenesConExistencia = existenciaProductoCt.filter((almacen) => {

@@ -8,6 +8,7 @@ type ResultCts implements Result {
   jsonProductsCt: [ResponseCtsJsonProducts]
   jsonProductsCtHP: [ResponseCtsJsonProducts]
   shippingCtRates: ResponseCtsShipping
+  tipoCambioCT: Float
   orderCt: ResponseCtOrder
   confirmOrderCt: ResponseCtsConfirOrder
   listOrdersCt: [ResponseCtsListOrders]

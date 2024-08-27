@@ -1,0 +1,9 @@
+type ResultInttelec implements Result {
+  status: Boolean!
+  message: String!
+  tokenInttelec: TokenInttelec
+  productsInttelec: [ProductInttelec]
+  listProductsInttelec: [Product]
+  existenciaProductoInttelec: ResponseSupplierProd
+  addOrderInttelec: OrderResponseInttelec
+}

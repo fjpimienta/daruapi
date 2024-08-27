@@ -1,0 +1,6 @@
+type Mutation {
+   addSliders(sliders: SlidersInput!): ResultSliders
+   updateSliders(sliders: SlidersInput!): ResultSliders
+   deleteSliders(id: ID!): ResultSliders
+   blockSliders(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultSliders
+}

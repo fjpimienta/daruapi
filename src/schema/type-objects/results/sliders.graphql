@@ -1,0 +1,7 @@
+type ResultSliders implements Result{
+  "Estado de la operacion"
+  status: Boolean!
+  "Mensaje de la operacion para dar feedback"
+  message: String!
+  sliders: [Sliders]
+}

@@ -841,10 +841,10 @@ class ProductsService extends ResolversOperationsService {
         logger.info(`saveImages->cargar imagenes de : ${idProveedor} \n`);
         const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         if (!resultBDI || !resultBDI.productsBDI) {
-          logger.error(`saveImages->resultBDI: Error en la recuperacion de los productos de ${idProveedor}\n`);
+          logger.error(`saveImages->resultBDI: ${resultBDI.message} \n`);
           return {
-            status: false,
-            message: `Error en la recuperacion de los productos de ${idProveedor}\n`,
+            status: resultBDI.status,
+            message: resultBDI.message,
             products: []
           };
         }

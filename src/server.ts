@@ -29,7 +29,7 @@ const httpsOptions = {
 };
 
 // Ruta donde se guardarán los archivos
-const uploadFolder = './uploads/files';
+const uploadFolder = path.join(__dirname, '../uploads/files');
 
 // Verificar y crear la carpeta de destino si no existe
 if (!fs.existsSync(uploadFolder)) {

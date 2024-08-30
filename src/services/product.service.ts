@@ -551,7 +551,6 @@ class ProductsService extends ResolversOperationsService {
           existingProductsMap = new Map(productsBDI.map((productBDI: IProductBDI) => [productBDI.products.vendornumber, productBDI]));
         }
       }
-      logger.info(`insertMany->products DARU de ${idProveedor}: ${products.length} \n`);
       let bulkOperations = [];
       let nextId = id; // Inicializamos nextId con el id recuperado
       const newProductPartNumbers = new Set(products.map(product => product.partnumber));
@@ -590,7 +589,6 @@ class ProductsService extends ResolversOperationsService {
             product.id = existingProduct.id;
           }
         }
-
         // Asignar un nuevo id solo si el producto es nuevo
         if (!existingProductsMap.has(product.partnumber)) {
           product.id = nextId.toString();
@@ -598,16 +596,13 @@ class ProductsService extends ResolversOperationsService {
         }
         const idP = parseInt(product.id || nextId.toString());
         const productC = await this.categorizarProductos(product, idP, firstsProducts); // Use product.id instead of nextId
-
         productC.sheetJson = product.sheetJson;
         productsAdd.push(productC);
-
         // Combinamos los updates en un solo objeto
         const updateData = {
           ...productC,
           active: true
         };
-
         bulkOperations.push({
           updateOne: {
             filter: { partnumber: product.partnumber, 'suppliersProd.idProveedor': idProveedor },
@@ -616,21 +611,16 @@ class ProductsService extends ResolversOperationsService {
           }
         });
       }
-      logger.info(`insertMany->bulkOperations.length: ${bulkOperations.length} \n`);
-
       if (bulkOperations.length > 0) {
         const bulkResult = await this.getDB().collection(this.collection).bulkWrite(bulkOperations);
-
         // Verifica si se realizaron actualizaciones o inserciones
         const isSuccess = (bulkResult.matchedCount || 0) > 0 || (bulkResult.upsertedCount || 0) > 0;
-
         return {
           status: isSuccess,
           message: isSuccess ? 'Se han actualizado los productos.' : 'No se han actualizado los productos.',
           products: []
         };
       }
-
       return {
         status: false,
         message: 'No se realizaron operaciones de actualización/inserción',
@@ -739,7 +729,7 @@ class ProductsService extends ResolversOperationsService {
           const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
           for (let j = 0; j <= 15; j++) {
             const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${sanitizedPartnumber}_${j}.jpg`;
-            // logger.info(`saveImages->producto: ${product.partnumber}; imagen a buscar: ${urlImage}`);
+            // logger.info(`saveImages->producto: ${product.partnumber}; imagen: ${urlImage}`);
             let existFile = await checkImageExists(urlImage);
             if (existFile) {
               existOnePicture = true;
@@ -791,12 +781,12 @@ class ProductsService extends ResolversOperationsService {
 
       logger.info(`saveImages->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);
 
-      // // Out
-      // return {
-      //   status: true,
-      //   message: 'Fin.',
-      //   products
-      // };
+      // Out
+      return {
+        status: true,
+        message: 'Fin.',
+        products
+      };
 
       // Descarga multiple de archivos
       const downloadImages = async (imageUrls: string[], destFolder: string, partnumber: string, product: any): Promise<void> => {
@@ -994,10 +984,10 @@ class ProductsService extends ResolversOperationsService {
           const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
           const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
           let existFile = await checkFileExistsJson(urlImage);
-          // logger.info(`saveJsons->producto: ${product.partnumber}; imagen a buscar: ${urlImage}; existe: ${existFile}`);
+          // logger.info(`saveJsons->prod:${product.partnumber}; json:${urlImage}; exis:(${existFile})`);
           // Si hay fotos del producto.
           if (existFile) {
-            // logger.info(`  :::::  producto: ${product.partnumber}; json guardado: ${urlImage}`);
+            // logger.info(`  :::::  producto: ${product.partnumber}; json: ${urlImage}`);
             product.sheetJson = `${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;;
             const updateImage = await this.modifyJsons(product);
             if (!updateImage.status) {
@@ -1008,12 +998,12 @@ class ProductsService extends ResolversOperationsService {
         }
       }
 
-      // // Out
-      // return {
-      //   status: true,
-      //   message: 'Fin.',
-      //   products: productsJsons
-      // };
+      // Out
+      return {
+        status: true,
+        message: 'Fin.',
+        products: productsJsons
+      };
 
       // Si hubo productos que se encontraron los json en el server daru.
       // logger.info(`Productos con jsons actualizados / productsJsons.length: ${productsJsons.length}`);

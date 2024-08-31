@@ -679,7 +679,6 @@ class ProductsService extends ResolversOperationsService {
       let productsPictures: IProduct[] = [];
       let productsWithoutPictures: IProduct[] = [];
       const supplierId = this.getVariables().supplierId;
-      const dafaultImage = 'logo-icon.png';
       const uploadFolder = `./${process.env.UPLOAD_URL}images/`;
       const urlImageSave = `${process.env.UPLOAD_URL}images/`;
       const productsBDIMap = new Map<string, any>();
@@ -777,17 +776,18 @@ class ProductsService extends ResolversOperationsService {
           products: []
         };
       }
-      // ============================== Temporal
 
       logger.info(`saveImages->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);
 
-      // Out
-      return {
-        status: true,
-        message: 'Fin.',
-        products
-      };
+      // // Out
+      // return {
+      //   status: true,
+      //   message: 'Fin.',
+      //   products
+      // };
+      // ============================== Temporal
 
+      
       // Descarga multiple de archivos
       const downloadImages = async (imageUrls: string[], destFolder: string, partnumber: string, product: any): Promise<void> => {
         await Promise.all(imageUrls.map(async (url: string, index) => {
@@ -856,11 +856,11 @@ class ProductsService extends ResolversOperationsService {
           if (productBDI.products && productBDI.products.vendornumber) {
             productsBDIMap.set(productBDI.products.vendornumber, productBDI);
           } else {
-            logger.error(`saveImages->Producto ${productBDI.products.vendornumber} no localizado.\n`);
+            // logger.error(`saveImages->Producto ${productBDI.products.vendornumber} no localizado.\n`);
           }
         }
 
-        logger.info(`saveImages->products a revisar: ${products.length}.\n`);
+        // logger.info(`saveImages->products a revisar: ${products.length}.\n`);
 
         // Recuperar de todos los productos guardados las imagenes.
         for (let k = 0; k < products.length; k++) {
@@ -978,11 +978,12 @@ class ProductsService extends ResolversOperationsService {
       for (let i = 0; i < products.length; i++) {
         existOneJson = false;
         let product = products[i];
-        // logger.info(`saveJsons->producto sheetJson: ${product.partnumber}; imagen a buscar: ${product.sheetJson}`);
+        logger.info(`saveJsons->prod: ${product.partnumber}; json: ${product.sheetJson}`);
         if (product.partnumber !== '') {
           const partnumber = product.partnumber;
           const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
           const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
+          // logger.info(`URL del JSON: ${urlImage}`);
           let existFile = await checkFileExistsJson(urlImage);
           // logger.info(`saveJsons->prod:${product.partnumber}; json:${urlImage}; exis:(${existFile})`);
           // Si hay fotos del producto.
@@ -998,12 +999,12 @@ class ProductsService extends ResolversOperationsService {
         }
       }
 
-      // Out
-      return {
-        status: true,
-        message: 'Fin.',
-        products: productsJsons
-      };
+      // // Out
+      // return {
+      //   status: true,
+      //   message: 'Fin.',
+      //   products: productsJsons
+      // };
 
       // Si hubo productos que se encontraron los json en el server daru.
       // logger.info(`Productos con jsons actualizados / productsJsons.length: ${productsJsons.length}`);

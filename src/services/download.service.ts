@@ -81,8 +81,11 @@ const downloadImage = async (url: string, destFolder: string, filename: string, 
 
 const checkImageExists = async (url: string): Promise<boolean> => {
   const protocol = url.startsWith('https') ? https : http;
+  const options = {
+    rejectUnauthorized: false  // Ignorar problemas de certificado SSL
+  };
   return new Promise((resolve) => {
-    (protocol.get(url, (res) => {
+    (protocol.get(url, options, (res) => {
       resolve(res.statusCode === 200);
     }) as ClientRequest).on('error', () => {
       resolve(false);

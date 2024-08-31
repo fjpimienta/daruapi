@@ -922,7 +922,7 @@ class ProductsService extends ResolversOperationsService {
               existOnePicture = true;
               pictures.push(createPicture('600', '600', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
               sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
-              // console.log(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
+              logger.info(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
             } else {
               break;
             }
@@ -1197,15 +1197,15 @@ class ProductsService extends ResolversOperationsService {
         existOneJson = false;
         let product = products[i];
         if (product.partnumber !== '') {
-          logger.info(`prod:${product.partnumber}; json:${product.sheetJson}`);
+          // logger.info(`prod:${product.partnumber}; json:${product.sheetJson}`);
           const partnumber = product.partnumber;
           const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
           const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
           let existFile = await checkFileExistsJson(urlImage);
-          logger.info(`json:${urlImage}; exist:(${existFile})`);
+          // logger.info(`json:${urlImage}; exist:(${existFile})`);
           // Si hay archivo json.
           if (existFile) {
-            logger.info(`  :::::  json guardado: ${urlImage}`);
+            // logger.info(`  :::::  json guardado: ${urlImage}`);
             product.sheetJson = `${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;;
             const updateImage = await this.modifyJsons(product);
             if (!updateImage.status) {

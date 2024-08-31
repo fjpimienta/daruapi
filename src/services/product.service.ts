@@ -1196,15 +1196,13 @@ class ProductsService extends ResolversOperationsService {
       for (let i = 0; i < products.length; i++) {
         existOneJson = false;
         let product = products[i];
-        logger.info(`prod:${product.partnumber}; json:${product.sheetJson}`);
         if (product.partnumber !== '') {
-          // logger.info(`partnumber: ${product.partnumber}`);
+          logger.info(`prod:${product.partnumber}; json:${product.sheetJson}`);
           const partnumber = product.partnumber;
           const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
           const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
-          // logger.info(`saveJsons->  urlImage:${urlImage}`);
           let existFile = await checkFileExistsJson(urlImage);
-          // logger.info(`json:${urlImage}; exist:(${existFile})`);
+          logger.info(`json:${urlImage}; exist:(${existFile})`);
           // Si hay archivo json.
           if (existFile) {
             logger.info(`  :::::  json guardado: ${urlImage}`);

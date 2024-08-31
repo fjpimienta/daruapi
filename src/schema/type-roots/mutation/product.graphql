@@ -7,5 +7,7 @@ type Mutation {
    deleteProduct(id: ID!): ResultProduct
    blockProduct(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultProduct
    addImages(supplierId: String): ResultProduct
+   searchImages(supplierId: String): ResultProduct
    addJsons(supplierId: String): ResultProduct
+   searchJsons(supplierId: String): ResultProduct
 }

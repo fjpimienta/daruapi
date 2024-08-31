@@ -74,10 +74,28 @@ const checkFileExistsJson = async (url: string): Promise<boolean> => {
   const options = {
     rejectUnauthorized: false  // Ignorar problemas de certificado SSL
   };
+
+  logger.info(`Verificando la existencia del archivo en la URL: ${url}`);
+
   return new Promise((resolve) => {
-    (protocol.get(url, options, (res) => {
-      resolve(res.statusCode === 200);
-    }) as ClientRequest).on('error', () => {
+    const request = protocol.get(url, options, (res) => {
+      const fileExists = res.statusCode === 200;
+      if (fileExists) {
+        logger.info(`El archivo existe en la URL: ${url} (Status Code: ${res.statusCode})`);
+      } else {
+        logger.warn(`El archivo NO existe en la URL: ${url} (Status Code: ${res.statusCode})`);
+      }
+      resolve(fileExists);
+    });
+
+    request.on('error', (err) => {
+      logger.error(`Error al verificar la URL: ${url} - Error: ${err.message}`);
+      resolve(false);
+    });
+
+    request.setTimeout(30000, () => {
+      logger.error(`La solicitud a la URL: ${url} ha superado el tiempo de espera y ha sido abortada.`);
+      request.abort();
       resolve(false);
     });
   });

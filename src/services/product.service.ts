@@ -672,8 +672,8 @@ class ProductsService extends ResolversOperationsService {
     return await product;
   }
 
-  // Guardar Imagenes
-  async saveImages(context: IContextData) {
+  // Cargar Nuevas Imagenes
+  async addNewImages(context: IContextData) {
     try {
       let productsAdd: IProduct[] = [];
       let productsPictures: IProduct[] = [];
@@ -716,78 +716,6 @@ class ProductsService extends ResolversOperationsService {
       const idProveedor = supplierId;
       logger.info(`saveImages->productos de ${supplierId}: ${products.length} \n`);
 
-      // ============================== Temporal
-      // Identificar los productos que ya tengan imagenes
-      for (let i = 0; i < products.length; i++) {
-        existOnePicture = false;
-        let product = products[i];
-        let pictures: Picture[] = [];
-        let sm_pictures: Picture[] = [];
-        if (product.partnumber !== '') {
-          const partnumber = product.partnumber;
-          const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
-          for (let j = 0; j <= 15; j++) {
-            const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${sanitizedPartnumber}_${j}.jpg`;
-            // logger.info(`saveImages->producto: ${product.partnumber}; imagen: ${urlImage}`);
-            let existFile = await checkImageExists(urlImage);
-            if (existFile) {
-              existOnePicture = true;
-              pictures.push(createPicture('600', '600', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
-              sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
-              // console.log(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
-            } else {
-              break;
-            }
-          }
-          // Si no hay fotos del producto.
-          if (existOnePicture) {
-            product.pictures = pictures;
-            product.sm_pictures = sm_pictures;
-            const updateImage = await this.modifyImages(product);
-            if (!updateImage.status) {
-              logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber}.\n`);
-            }
-            productsPictures.push(product);
-          }
-        }
-      }
-
-      // Si hubo productos que se encontraron las imagenes en el server daru.
-      // logger.info(`Productos con imagenes actualizadas / productsPictures.length: ${productsPictures.length}`);
-      if (productsPictures.length > 0) {
-        logger.info(`saveImages->productsPictures DARU de ${supplierId}: ${productsPictures.length} \n`);
-        const productIdsWithImages = new Set(productsPictures.map(picture => picture.id));
-        const filteredProducts = products.filter(product => !productIdsWithImages.has(product.id));
-        if (filteredProducts.length > 0) {
-          productsWithoutPictures = filteredProducts;
-        }
-        products = productsWithoutPictures;
-      } else {
-        productsWithoutPictures = products;
-      }
-      logger.info(`Productos con imagenes pendientes de actualizar / productsWithoutPictures.length: ${productsWithoutPictures.length}`);
-
-      // Si no hay productos para buscar entonces salir.
-      if (productsWithoutPictures.length <= 0) {
-        logger.error(`saveImages->products: No se encontraron productos sin imagenes de ${idProveedor}\n`);
-        return {
-          status: false,
-          message: 'No se encontraron productos sin imagenes.',
-          products: []
-        };
-      }
-
-      logger.info(`saveImages->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);
-
-      // // Out
-      // return {
-      //   status: true,
-      //   message: 'Fin.',
-      //   products
-      // };
-      // ============================== Temporal
-
-      
       // Descarga multiple de archivos
       const downloadImages = async (imageUrls: string[], destFolder: string, partnumber: string, product: any): Promise<void> => {
         await Promise.all(imageUrls.map(async (url: string, index) => {
@@ -935,8 +863,127 @@ class ProductsService extends ResolversOperationsService {
     }
   }
 
-  // Guardar Jsons
-  async saveJsons(context: IContextData) {
+  // Guardar Imagenes
+  async updateImages(context: IContextData) {
+    try {
+      let productsPictures: IProduct[] = [];
+      let productsWithoutPictures: IProduct[] = [];
+      const supplierId = this.getVariables().supplierId;
+      const urlImageSave = `${process.env.UPLOAD_URL}images/`;
+      const createPicture = (width: string, height: string, url: string) => {
+        const picture = new Picture();
+        picture.width = width;
+        picture.height = height;
+        picture.url = url;
+        return picture;
+      };
+      let filter: object = {};
+      if (supplierId) {
+        filter = {
+          'suppliersProd.idProveedor': supplierId,
+          'pictures.url': {
+            $not: {
+              '$regex': '^uploads'
+            }
+          }
+        };
+      }
+      // Recuperar los productos de un proveedor
+      const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
+      if (!result || !result.items || result.items.length === 0) {
+        logger.error(`saveImages->listAll.products:: No existen elementos para integrar de ${supplierId}.\n`);
+        return {
+          status: false,
+          message: 'No existen elementos para recuperar las imagenes',
+          products: []
+        };
+      }
+      let existOnePicture = false;
+      let products = result.items as IProduct[];
+      // const filteredProducts = products.filter(product => product.pictures && product.pictures.length > 0);
+      const idProveedor = supplierId;
+      logger.info(`saveImages->productos de ${supplierId}: ${products.length} \n`);
+
+      // ============================== Temporal
+      // Identificar los productos que ya tengan imagenes
+      for (let i = 0; i < products.length; i++) {
+        existOnePicture = false;
+        let product = products[i];
+        let pictures: Picture[] = [];
+        let sm_pictures: Picture[] = [];
+        if (product.partnumber !== '') {
+          const partnumber = product.partnumber;
+          const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
+          for (let j = 0; j <= 15; j++) {
+            const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${sanitizedPartnumber}_${j}.jpg`;
+            // logger.info(`saveImages->producto: ${product.partnumber}; imagen: ${urlImage}`);
+            let existFile = await checkImageExists(urlImage);
+            if (existFile) {
+              existOnePicture = true;
+              pictures.push(createPicture('600', '600', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
+              sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
+              // console.log(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
+            } else {
+              break;
+            }
+          }
+          // Si no hay fotos del producto.
+          if (existOnePicture) {
+            product.pictures = pictures;
+            product.sm_pictures = sm_pictures;
+            const updateImage = await this.modifyImages(product);
+            if (!updateImage.status) {
+              logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber}.\n`);
+            }
+            productsPictures.push(product);
+          }
+        }
+      }
+
+      // Si hubo productos que se encontraron las imagenes en el server daru.
+      // logger.info(`Productos con imagenes actualizadas / productsPictures.length: ${productsPictures.length}`);
+      if (productsPictures.length > 0) {
+        logger.info(`saveImages->productsPictures DARU de ${supplierId}: ${productsPictures.length} \n`);
+        const productIdsWithImages = new Set(productsPictures.map(picture => picture.id));
+        const filteredProducts = products.filter(product => !productIdsWithImages.has(product.id));
+        if (filteredProducts.length > 0) {
+          productsWithoutPictures = filteredProducts;
+        }
+        products = productsWithoutPictures;
+      } else {
+        productsWithoutPictures = products;
+      }
+      logger.info(`Productos con imagenes pendientes de actualizar / productsWithoutPictures.length: ${productsWithoutPictures.length}`);
+
+      // Si no hay productos para buscar entonces salir.
+      if (productsWithoutPictures.length <= 0) {
+        logger.error(`saveImages->products: No se encontraron productos sin imagenes de ${idProveedor}\n`);
+        return {
+          status: false,
+          message: 'No se encontraron productos sin imagenes.',
+          products: []
+        };
+      }
+      logger.info(`saveImages->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);
+      // Out
+      return {
+        status: true,
+        message: 'Fin.',
+        products
+      };
+
+    } catch (error) {
+      // logger.error(`saveImages->error: ${error} \n`);
+      return {
+        status: false,
+        message: error,
+        products: []
+      };
+    }
+  }
+
+  // Cargar Nuevos Jsons
+  async addNewJsons(context: IContextData) {
     try {
       let productsAdd: IProduct[] = [];
       let productsJsons: IProduct[] = [];
@@ -972,67 +1019,6 @@ class ProductsService extends ResolversOperationsService {
       // const filteredProducts = products.filter(product => product.pictures && product.pictures.length > 0);
       const idProveedor = supplierId;
       logger.info(`saveJsons->productos de ${supplierId}: ${products.length} \n`);
-
-      // ============================== Temporal
-      // Identificar los productos que ya tengan jsons
-      for (let i = 0; i < products.length; i++) {
-        existOneJson = false;
-        let product = products[i];
-        logger.info(`saveJsons->prod: ${product.partnumber}; json: ${product.sheetJson}`);
-        if (product.partnumber !== '') {
-          const partnumber = product.partnumber;
-          const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
-          const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
-          // logger.info(`URL del JSON: ${urlImage}`);
-          let existFile = await checkFileExistsJson(urlImage);
-          // logger.info(`saveJsons->prod:${product.partnumber}; json:${urlImage}; exis:(${existFile})`);
-          // Si hay fotos del producto.
-          if (existFile) {
-            // logger.info(`  :::::  producto: ${product.partnumber}; json: ${urlImage}`);
-            product.sheetJson = `${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;;
-            const updateImage = await this.modifyJsons(product);
-            if (!updateImage.status) {
-              logger.error(`saveJsons->No se pudo reiniciar los json de ${product.partnumber}.\n`);
-            }
-            productsJsons.push(product);
-          }
-        }
-      }
-
-      // // Out
-      // return {
-      //   status: true,
-      //   message: 'Fin.',
-      //   products: productsJsons
-      // };
-
-      // Si hubo productos que se encontraron los json en el server daru.
-      // logger.info(`Productos con jsons actualizados / productsJsons.length: ${productsJsons.length}`);
-      if (productsJsons.length > 0) {
-        logger.info(`saveJsons->productsJsons DARU de ${supplierId}: ${productsJsons.length} \n`);
-        const productIdsWithJsons = new Set(productsJsons.map(jsonProd => jsonProd.id));
-        const filteredProducts = products.filter(product => !productIdsWithJsons.has(product.id));
-        if (filteredProducts.length > 0) {
-          productsWithoutJsons = filteredProducts;
-        }
-        products = productsWithoutJsons;
-      } else {
-        productsWithoutJsons = products;
-      }
-      logger.info(`Productos con jsons pendientes de actualizar / productsWithoutJsons.length: ${productsWithoutJsons.length}`);
-
-      // Si no hay productos para buscar entonces salir.
-      if (productsWithoutJsons.length <= 0) {
-        logger.error(`saveJsons->products: No se encontraron productos sin jsons de ${idProveedor}\n`);
-        return {
-          status: false,
-          message: 'No se encontraron productos sin jsons.',
-          products: []
-        };
-      }
-      // ============================== Temporal
-
-      logger.info(`saveJsons->productos a buscar jsons de ${supplierId}: ${products.length} \n`);
 
       const downloadJsons = async (imageUrl: string, destFolder: string, partnumber: string, product: any): Promise<void> => {
         const filename = this.generateFilenameJson(this.sanitizePartnumber(partnumber));
@@ -1159,6 +1145,113 @@ class ProductsService extends ResolversOperationsService {
         message: 'Se realizo con exito la subida de jsons.',
         products: []
       };
+    } catch (error) {
+      // logger.error(`saveJsons->error: ${error} \n`);
+      return {
+        status: false,
+        message: error,
+        products: []
+      };
+    }
+  }
+
+  // Guardar Jsons
+  async updateJsons(context: IContextData) {
+    try {
+      let productsAdd: IProduct[] = [];
+      let productsJsons: IProduct[] = [];
+      let productsWithoutJsons: IProduct[] = [];
+      const supplierId = this.getVariables().supplierId;
+      const uploadFolder = `./${process.env.UPLOAD_URL}jsons/`;
+      const urlJsonSave = `${process.env.UPLOAD_URL}jsons/`;
+      const productsBDIMap = new Map<string, any>();
+
+      let filter: object = {};
+      if (supplierId) {
+        filter = {
+          'suppliersProd.idProveedor': supplierId,
+          'sheetJson': {
+            $not: {
+              '$regex': '^uploads'
+            }
+          }
+        };
+      }
+      // Recuperar los productos de un proveedor
+      const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
+      if (!result || !result.items || result.items.length === 0) {
+        logger.error(`saveJsons->listAll.products:: No existen elementos para integrar de ${supplierId}.\n`);
+        return {
+          status: false,
+          message: 'No existen elementos para recuperar los json',
+          products: []
+        };
+      }
+      let existOneJson = false;
+      let products = result.items as IProduct[];
+      // const filteredProducts = products.filter(product => product.pictures && product.pictures.length > 0);
+      const idProveedor = supplierId;
+      logger.info(`saveJsons->productos de ${supplierId}: ${products.length} \n`);
+
+      // Identificar los productos que ya tengan jsons
+      for (let i = 0; i < products.length; i++) {
+        existOneJson = false;
+        let product = products[i];
+        logger.info(`saveJsons->prod: ${product.partnumber}; json: ${product.sheetJson}`);
+        if (product.partnumber !== '') {
+          const partnumber = product.partnumber;
+          const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
+          const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
+          // logger.info(`URL del JSON: ${urlImage}`);
+          let existFile = await checkFileExistsJson(urlImage);
+          // logger.info(`saveJsons->prod:${product.partnumber}; json:${urlImage}; exis:(${existFile})`);
+          // Si hay fotos del producto.
+          if (existFile) {
+            // logger.info(`  :::::  producto: ${product.partnumber}; json: ${urlImage}`);
+            product.sheetJson = `${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;;
+            const updateImage = await this.modifyJsons(product);
+            if (!updateImage.status) {
+              logger.error(`saveJsons->No se pudo reiniciar los json de ${product.partnumber}.\n`);
+            }
+            productsJsons.push(product);
+          }
+        }
+      }
+
+      // Si hubo productos que se encontraron los json en el server daru.
+      // logger.info(`Productos con jsons actualizados / productsJsons.length: ${productsJsons.length}`);
+      if (productsJsons.length > 0) {
+        logger.info(`saveJsons->productsJsons DARU de ${supplierId}: ${productsJsons.length} \n`);
+        const productIdsWithJsons = new Set(productsJsons.map(jsonProd => jsonProd.id));
+        const filteredProducts = products.filter(product => !productIdsWithJsons.has(product.id));
+        if (filteredProducts.length > 0) {
+          productsWithoutJsons = filteredProducts;
+        }
+        products = productsWithoutJsons;
+      } else {
+        productsWithoutJsons = products;
+      }
+      logger.info(`Productos con jsons pendientes de actualizar / productsWithoutJsons.length: ${productsWithoutJsons.length}`);
+
+      // Si no hay productos para buscar entonces salir.
+      if (productsWithoutJsons.length <= 0) {
+        logger.error(`saveJsons->products: No se encontraron productos sin jsons de ${idProveedor}\n`);
+        return {
+          status: false,
+          message: 'No se encontraron productos sin jsons.',
+          products: []
+        };
+      }
+
+      logger.info(`saveJsons->productsAdd.length: ${productsAdd?.length} \n`);
+
+      // Out
+      return {
+        status: true,
+        message: 'Se realizo con exito la subida de jsons.',
+        products: productsJsons
+      };
+
     } catch (error) {
       // logger.error(`saveJsons->error: ${error} \n`);
       return {

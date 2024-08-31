@@ -1192,22 +1192,22 @@ class ProductsService extends ResolversOperationsService {
       // const filteredProducts = products.filter(product => product.pictures && product.pictures.length > 0);
       const idProveedor = supplierId;
       logger.info(`saveJsons->productos de ${supplierId}: ${products.length} \n`);
-
       // Identificar los productos que ya tengan jsons
       for (let i = 0; i < products.length; i++) {
         existOneJson = false;
         let product = products[i];
-        logger.info(`saveJsons->prod: ${product.partnumber}; json: ${product.sheetJson}`);
+        logger.info(`prod:${product.partnumber}; json:${product.sheetJson}`);
         if (product.partnumber !== '') {
+          // logger.info(`partnumber: ${product.partnumber}`);
           const partnumber = product.partnumber;
           const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
           const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
-          // logger.info(`URL del JSON: ${urlImage}`);
+          // logger.info(`saveJsons->  urlImage:${urlImage}`);
           let existFile = await checkFileExistsJson(urlImage);
-          // logger.info(`saveJsons->prod:${product.partnumber}; json:${urlImage}; exis:(${existFile})`);
-          // Si hay fotos del producto.
+          // logger.info(`json:${urlImage}; exist:(${existFile})`);
+          // Si hay archivo json.
           if (existFile) {
-            // logger.info(`  :::::  producto: ${product.partnumber}; json: ${urlImage}`);
+            logger.info(`  :::::  json guardado: ${urlImage}`);
             product.sheetJson = `${process.env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;;
             const updateImage = await this.modifyJsons(product);
             if (!updateImage.status) {

@@ -173,7 +173,6 @@ class ExternalBDIService extends ResolversOperationsService {
     const raw = JSON.stringify({
       "report": "json",
       "filters": {
-        "active": false,
         "inactive": true
       },
     });

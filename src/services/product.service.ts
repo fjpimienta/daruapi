@@ -1100,7 +1100,7 @@ class ProductsService extends ResolversOperationsService {
               logger.error(`saveJsons->No se pudo reiniciar los json de ${product.partnumber}.\n`);
             }
           } else {
-            logger.error(`saveJsons->No existen imagenes del producto ${product.partnumber} en Ingram.\n`);
+            logger.error(`saveJsons->No existe json del producto ${product.partnumber} en Ingram.\n`);
           }
         }
       }

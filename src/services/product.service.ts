@@ -98,6 +98,9 @@ class ProductsService extends ResolversOperationsService {
               $size: 0
             }
           },
+          "pictures.url": {
+            $regex: "^uploads"
+          }
         }
       }
     }

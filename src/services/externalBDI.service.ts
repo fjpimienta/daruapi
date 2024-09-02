@@ -21,8 +21,8 @@ class ExternalBDIService extends ResolversOperationsService {
   }
 
   async getTokenBDI() {
-    const username = 'admin@daru.im';
-    const password = 'daru.01.02';
+    const username = 'bdimx@customer.com';
+    const password = 'yIP9fj4I8g';
     const optionsBDI = {
       method: 'POST',
       headers: {

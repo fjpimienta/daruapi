@@ -1,25 +1,37 @@
-// fileService.ts
-
 import express, { Request, Response } from 'express';
 import path from 'path';
-import fs from 'fs'; // Agregamos la importación de fs
+import fs from 'fs';
 
 const fileService = express.Router();
 
-// Utiliza __dirname para obtener la ruta del directorio actual
 const appDir = __dirname;
 
 fileService.get('/:filename', (req: Request, res: Response) => {
   const { filename } = req.params;
-  // Utiliza la ruta del directorio actual (__dirname) para construir el filePath
   const filePath = path.join(appDir, '..', '..', 'uploads', 'files', filename);
-  // Verifica si el archivo existe antes de enviarlo
+
   if (fs.existsSync(filePath)) {
-    // Puedes agregar lógica adicional aquí, como verificar si el archivo existe
     res.sendFile(filePath);
   } else {
     res.status(404).json({ error: 'Archivo no encontrado' });
   }
 });
+
+// Función para cargar y normalizar el JSON
+export const loadAndNormalizeJson = (jsonData: any) => { // Cambia el parámetro para aceptar datos JSON
+  const normalizedData: Record<string, Record<string, string[]>> = {};
+  jsonData.forEach((item: any) => {
+    const attributeName = item.attributeName.toLowerCase();
+    const attributeValue = item.attributeValue.toLowerCase();
+    if (!normalizedData[attributeName]) {
+      normalizedData[attributeName] = {};
+    }
+    if (!normalizedData[attributeName][attributeValue]) {
+      normalizedData[attributeName][attributeValue] = [];
+    }
+    normalizedData[attributeName][attributeValue].push(item.attributeDisplay);
+  });
+  return normalizedData;
+};
 
 export default fileService;

@@ -9,4 +9,5 @@ type ResultProduct implements Result{
   products: [Product!]!
   productId: String
   productField: Product
+  productJson: String
 }

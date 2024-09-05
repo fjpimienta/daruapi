@@ -1,7 +1,7 @@
 "Definiciones de los tipos de raíz"
 type Query {
-   "Mostrar lista de productos"
-   products (
+  "Mostrar lista de productos"
+  products (
       "Pagina seleccionada para acceder a ella"
       page: Int=1, 
       "Etiquetas por pagina que se obtendran por pagina"
@@ -16,11 +16,12 @@ type Query {
       categories: [String]
       subCategories: [String]
       withImages: Boolean=true
-   ): ResultProduct
-   "Item del producto seleccionado"
-   product(id: ID!): ResultProduct
-   productId: ResultProduct
-   productField(
+  ): ResultProduct
+  "Item del producto seleccionado"
+  product(id: ID!): ResultProduct
+  productId: ResultProduct
+  productField(
     partNumber: String
   ): ResultProduct
+  oneJson(productId: String): ResultProduct
 }

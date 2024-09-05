@@ -8,15 +8,18 @@ import ResolversOperationsService from './resolvers-operaciones.service';
 import { IPicture, IProduct } from '../interfaces/product.interface';
 import ExternalIcecatsService from './externalIcecat.service';
 import ExternalIngramService from './externalIngram.service';
-import { Categorys, Especificacion, Picture } from '../models/product.models';
+import { Picture } from '../models/product.models';
 import ExternalBDIService from './externalBDI.service';
 import path from 'path';
 import logger from '../utils/logger';
 import { MAX_CONCURRENT_DOWNLOADS, checkImageExists, downloadImage, downloadQueue, imageCache } from './download.service';
 import { checkFileExistsJson, downloadJson } from './downloadJson.service';
-import { Attribute, IProductBDI } from '../models/productBDI.models';
-import fetch from 'node-fetch';
+import { IProductBDI } from '../models/productBDI.models';
 import TraslateService from './traducciones.services';
+import { loadAndNormalizeJson } from './fileService'; // Ajusta la ruta según tu estructura de carpetas
+import { env } from 'process';
+import http from 'http';
+import https from 'https';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
@@ -1470,6 +1473,71 @@ class ProductsService extends ResolversOperationsService {
       name: value
     });
   }
-}
 
+  // Buscar json por el partnumber
+  async readJson(): Promise<{ status: boolean; message: string; product: any }> {
+    const productId = this.getVariables().productId;
+    if (productId == null) {
+      return {
+        status: false,
+        message: 'Producto no definido, verificar datos.',
+        product: null
+      };
+    }
+    const urlJson = `${env.API_URL}${env.UPLOAD_URL}/jsons/${productId}.json`;
+    const client = urlJson.startsWith('https') ? https : http;
+    try {
+      const jsonData: any = await new Promise<any>((resolve, reject) => {
+        const options: https.RequestOptions = {
+          rejectUnauthorized: false // Ignorar errores de certificado (solo para desarrollo)
+        };
+        client.get(urlJson, options, (response) => {
+          let data = '';
+          if (response.statusCode !== 200) {
+            reject(new Error(`Error: ${response.statusCode}`));
+            return;
+          }
+          response.on('data', (chunk) => {
+            data += chunk;
+          });
+          response.on('end', () => {
+            try {
+              const parsedData = JSON.parse(data);
+              resolve(parsedData);
+            } catch (error) {
+              reject(new Error('Respuesta no es un JSON válido'));
+            }
+          });
+        }).on('error', (error) => {
+          reject(error);
+        });
+      });
+      // Cargar y normalizar el JSON
+      const normalizedData = loadAndNormalizeJson(jsonData);
+      console.log('normalizedData: ', normalizedData);
+      // Buscar el producto por su ID en los datos normalizados
+      const product = normalizedData['productid']?.[productId.toLowerCase()] || null;
+      console.log('product: ', product);
+      if (product) {
+        return {
+          status: true,
+          message: 'Producto encontrado',
+          product: product
+        };
+      } else {
+        return {
+          status: false,
+          message: 'Producto no encontrado',
+          product: null
+        };
+      }
+    } catch (error) {
+      return {
+        status: false,
+        message: (error as Error).message,
+        product: null
+      };
+    }
+  }
+}
 export default ProductsService;

@@ -783,7 +783,7 @@ class ProductsService extends ResolversOperationsService {
 
         // Si se pueden recuperar los datos del servicio de ingram
         const productsBDI = resultBDI.productsBDI;
-        logger.info(`saveImages->products ${idProveedor}: ${productsBDI.length}.\n`);
+        logger.info(`saveImages->productsBDI ${idProveedor}: ${productsBDI.length}.\n`);
 
         // Crear un mapa para buscar productos por número de parte
         for (const productBDI of productsBDI) {
@@ -797,6 +797,8 @@ class ProductsService extends ResolversOperationsService {
         // logger.info(`saveImages->products a revisar: ${products.length}.\n`);
 
         // Recuperar de todos los productos guardados las imagenes.
+        logger.info(`saveImages->products ${idProveedor}: ${products.length}.\n`);
+
         for (let k = 0; k < products.length; k++) {
           let product = products[k];
           const productIngram = productsBDIMap.get(product.partnumber);

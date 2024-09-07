@@ -165,7 +165,7 @@ class ExternalCtsService extends ResolversOperationsService {
       };
     }
     const options = {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'x-auth': token.tokenCt.token,
         'Content-Type': 'application/json'

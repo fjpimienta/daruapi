@@ -21,6 +21,11 @@ class ResolversOperationsService {
   }
 
   // Variables
+
+  protected getRoot() {
+    return this.root;
+  }
+  
   protected getContext(): IContextData {
     return this.context;
   }
@@ -86,7 +91,7 @@ class ResolversOperationsService {
         },
         status: true,
         message: `Lista de ${listElement} cargada correctamente`,
-        items: findElements(this.getDB(), collection, filter, paginationData, sort)
+        items: await findElements(this.getDB(), collection, filter, paginationData, sort)
       };
     } catch (error) {
       return {
@@ -110,7 +115,12 @@ class ResolversOperationsService {
       const paginationData = await paginationProducts(this.getDB(), collection, page, itemsPage, filter);
       // Agregamos la etapa de agregación para encontrar el registro con el menor "sale_price" por "partnumber"
       const aggregate = [
-        { $match: { price: { $gt: 0 }, ...filter } },
+        {
+          $match: {
+            price: { $gt: 0 },
+            ...filter
+          }
+        },
         { $sort: { partnumber: 1, sale_price: 1 }, },
         {
           $group: {
@@ -131,7 +141,7 @@ class ResolversOperationsService {
         },
         status: true,
         message: `Lista de ${listElement} cargada correctamente`,
-        items: findElementsProducts(this.getDB(), collection, aggregate),
+        items: await findElementsProducts(this.getDB(), collection, aggregate),
       };
     } catch (error) {
       return {

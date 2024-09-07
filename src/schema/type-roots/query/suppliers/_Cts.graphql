@@ -11,6 +11,7 @@ type Query {
     destinoCt: String="",
     productosCt: [ProductShipmentCtInput]
   ): ResultCts
+  tipoCambioCT: ResultCts
   orderCt(
     idPedido: Int,
     almacen: String="",

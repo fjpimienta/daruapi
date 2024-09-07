@@ -893,58 +893,59 @@ class ExternalSyscomService extends ResolversOperationsService {
   }
 
   async getListProductsSyscom() {
-    try {
-      const brand = 'ugreen';
-      const listProductsSyscom = (await this.getListProductsSyscomByBrand(brand)).listProductsSyscomByBrand;
-      const sucursal = (await this.getSucursalSyscom('31000')).sucursalSyscom;
-      let branchOffice: BranchOffices = new BranchOffices();
-      branchOffice.id = sucursal ? sucursal.codigo : 'chihuahua';
-      branchOffice.name = sucursal ? sucursal.nombre_sucursal : 'Matriz Chihuahua';
-      branchOffice.estado = sucursal ? sucursal.estado : 'Chihuahua';
-      branchOffice.cantidad = 0;
-      branchOffice.cp = sucursal ? sucursal.codigo_postal : '31000';
-      branchOffice.latitud = '';
-      branchOffice.longitud = '';
-      if (listProductsSyscom) {
-        const productos: Product[] = [];
-        if (listProductsSyscom && listProductsSyscom.length > 0) {
-          const db = this.db;
-          const config = await new ConfigsService({}, { id: '1' }, { db }).details();
-          const stockMinimo = config.config.minimum_offer;
-          const exchangeRate = config.config.exchange_rate;
-          for (const product of listProductsSyscom) {
-            if (product.producto_id !== '') {
-              const itemData: Product = await this.setProduct('syscom', product, null, stockMinimo, exchangeRate, branchOffice);
-              if (itemData.id !== undefined) {
-                productos.push(itemData);
+    const brands = ['ugreen', 'hilookbyhikvision'];
+    const allProducts: Product[] = [];
+
+    for (const brand of brands) {
+      try {
+        const listProductsSyscom = (await this.getListProductsSyscomByBrand(brand)).listProductsSyscomByBrand;
+        const sucursal = (await this.getSucursalSyscom('31000')).sucursalSyscom;
+        let branchOffice: BranchOffices = new BranchOffices();
+        branchOffice.id = sucursal ? sucursal.codigo : 'chihuahua';
+        branchOffice.name = sucursal ? sucursal.nombre_sucursal : 'Matriz Chihuahua';
+        branchOffice.estado = sucursal ? sucursal.estado : 'Chihuahua';
+        branchOffice.cantidad = 0;
+        branchOffice.cp = sucursal ? sucursal.codigo_postal : '31000';
+        branchOffice.latitud = '';
+        branchOffice.longitud = '';
+        if (listProductsSyscom) {
+          if (listProductsSyscom.length > 0) {
+            const db = this.db;
+            const config = await new ConfigsService({}, { id: '1' }, { db }).details();
+            const stockMinimo = config.config.minimum_offer;
+            const exchangeRate = config.config.exchange_rate;
+            for (const product of listProductsSyscom) {
+              if (product.producto_id !== '') {
+                const itemData: Product = await this.setProduct('syscom', product, null, stockMinimo, exchangeRate, branchOffice);
+                if (itemData.id !== undefined) {
+                  allProducts.push(itemData);  // Ajuste: agregar productos al array global
+                }
               }
             }
           }
-          return await {
-            status: true,
-            message: `Productos listos para agregar.`,
-            listProductsSyscom: productos
-          }
+        } else {
+          logger.info(`No se pudieron recuperar los productos del proveedor para la marca ${brand}`);
         }
-        return await {
-          status: false,
-          message: `No se encontratos los productos del proveedor.`,
-          listProductsSyscom: productos
-        }
-
-      } else {
-        logger.info('No se pudieron recuperar los productos del proveedor');
+      } catch (error: any) {
         return {
           status: false,
-          message: 'No se pudieron recuperar los productos del proveedor.',
+          message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
           listProductsSyscom: null,
         };
       }
-    } catch (error: any) {
+    }
+
+    if (allProducts.length > 0) {
+      return {
+        status: true,
+        message: `Productos listos para agregar.`,
+        listProductsSyscom: allProducts
+      };
+    } else {
       return {
         status: false,
-        message: 'Error en el servicio. ' + (error.message || JSON.stringify(error)),
-        listProductsSyscom: null,
+        message: `No se encontraron productos de los proveedores.`,
+        listProductsSyscom: allProducts
       };
     }
   }
@@ -1078,14 +1079,14 @@ class ExternalSyscomService extends ResolversOperationsService {
         itemData.subCategory = [];
         item.categorias.forEach((category: any) => {
           // Categorias
-          if (category.nivel === 1 || category.nivel === 2) {
+          if (category.nivel === 1 || category.nivel === 3) {
             const c = new Categorys();
             c.name = category.nombre;
             c.slug = slugify(category.nombre, { lower: true });
             itemData.category.push(c);
           }
           // Subcategorias
-          if (category.nivel === 3) {
+          if (category.nivel === 2) {
             const c = new Categorys();
             c.name = category.nombre;
             c.slug = slugify(category.nombre, { lower: true });
@@ -1146,6 +1147,7 @@ class ExternalSyscomService extends ResolversOperationsService {
       itemData.especificaciones.push({ tipo: 'Link', valor: item.link });
       itemData.especificaciones.push({ tipo: 'Link_privado', valor: item.link_privado });
       itemData.especificacionesBullet = item.especificacionesBullet;
+      itemData.sheetJson = '';
     }
     return itemData;
   }

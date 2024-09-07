@@ -14,6 +14,9 @@ const resolversProductsQuery: IResolvers = {
     },
     async productField(_, variables, context) {
       return new ProductsService(_, variables, context).getProductField();
+    },
+    async oneJson(_, variables, context) {
+      return new ProductsService(_, variables, context).readJson();
     }
   },
 };

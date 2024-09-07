@@ -5,9 +5,11 @@ import fetch from 'node-fetch';
 import { COLLECTIONS } from '../config/constants';
 import { Db } from 'mongodb';
 import logger from '../utils/logger';
-import { BranchOffices, Brands, Categorys, Descuentos, Picture, Product, SupplierProd, UnidadDeMedida } from '../models/product.models';
+import { BranchOffices, Brands, Categorys, Descuentos, Especificacion, Picture, Product, SupplierProd, UnidadDeMedida } from '../models/product.models';
 import slugify from 'slugify';
 import ConfigsService from './config.service';
+import { IVariables } from '../interfaces/variable.interface';
+import { IBranchOffices } from '../interfaces/product.interface';
 
 class ExternalBDIService extends ResolversOperationsService {
   collection = COLLECTIONS.INGRAM_PRODUCTS;
@@ -73,7 +75,7 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
     const data = await response.json();
-    process.env.PRODUCTION === 'true' && logger.info(`getBrandsBDI.data: \n ${JSON.stringify(data)} \n`);
+    // process.env.PRODUCTION === 'true' && logger.info(`getBrandsBDI.data: \n ${JSON.stringify(data)} \n`);
     const brands = data.manufacturer;
     return {
       status: true,
@@ -108,7 +110,7 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
     const data = await response.json();
-    process.env.PRODUCTION === 'true' && logger.info(`getCategoriesBDI.data: \n ${JSON.stringify(data)} \n`);
+    // process.env.PRODUCTION === 'true' && logger.info(`getCategoriesBDI.data: \n ${JSON.stringify(data)} \n`);
     const brands = data.categories;
     return {
       status: true,
@@ -172,7 +174,7 @@ class ExternalBDIService extends ResolversOperationsService {
       "report": "json",
       "filters": {
         "active": true
-      }
+      },
     });
     const options = {
       method: 'POST',
@@ -192,8 +194,9 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
     const data = await response.json();
-    process.env.PRODUCTION === 'true' && logger.info(`getProductsBDI.data: \n ${JSON.stringify(data)} \n`);
+    // process.env.PRODUCTION === 'true' && logger.info(`getProductsBDI.data: \n ${JSON.stringify(data)} \n`);
     const products = data.products;
+    logger.info(`getProductsBDI.products.length: \n ${JSON.stringify(products.length)} \n`);
     return {
       status: true,
       message: 'Esta es la lista de Productos de BDI',
@@ -201,7 +204,7 @@ class ExternalBDIService extends ResolversOperationsService {
     };
   }
 
-  async getProductsPricesBDI() {
+  async getProductsPricesBDI(partNumberIngram: string = '') {
     const token = await this.getTokenBDI();
     if (!token || !token.status) {
       return {
@@ -213,8 +216,9 @@ class ExternalBDIService extends ResolversOperationsService {
     const raw = JSON.stringify({
       "report": "json",
       "filters": {
-        "active": true
-      }
+        "active": true,
+        ...(partNumberIngram && { search: partNumberIngram })
+      },
     });
     const options = {
       method: 'POST',
@@ -234,8 +238,9 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
     const data = await response.json();
-    process.env.PRODUCTION === 'true' && logger.info(`getProductsPricesBDI.data: \n ${JSON.stringify(data)} \n`);
+    // process.env.PRODUCTION === 'true' && logger.info(`getProductsPricesBDI.data: \n ${JSON.stringify(data)} \n`);
     const productsPrices = data.products;
+    logger.info(`getProductsBDI.productsPrices.length: \n ${JSON.stringify(productsPrices.length)} \n`);
     return {
       status: true,
       message: 'Esta es la lista de Precios de Productos de BDI',
@@ -244,33 +249,62 @@ class ExternalBDIService extends ResolversOperationsService {
   }
 
   async getListProductsBDI() {
-    const listProductsBDI = (await this.getProductsBDI()).productsBDI;
-    const listProductsPricesBDI = (await this.getProductsPricesBDI()).productsPricesBDI;
-    if (listProductsBDI && listProductsPricesBDI) {
+    const responseProducts = await this.getProductsBDI();
+    if (!responseProducts.status) {
+      return {
+        status: responseProducts.status,
+        message: responseProducts.message,
+        listProductsBDI: null,
+      };
+    }
+    if (responseProducts.productsBDI && responseProducts.productsBDI.length <= 0) {
+      return {
+        status: responseProducts.status,
+        message: 'No hay productos en el servicio del Proveedor',
+        listProductsBDI: null,
+      };
+    }
+    const responsePrices = await this.getProductsPricesBDI();
+    if (!responsePrices.status) {
+      return {
+        status: responsePrices.status,
+        message: responsePrices.message,
+        listProductsBDI: null,
+      };
+    }
+    if (responsePrices.productsPricesBDI && responsePrices.productsPricesBDI.length <= 0) {
+      return {
+        status: responsePrices.status,
+        message: 'No hay precios en el servicio del Proveedor',
+        listProductsBDI: null,
+      };
+    }
+
+    const listProductsBDI = responseProducts.productsBDI;
+    const listProductsPricesBDI = responsePrices.productsPricesBDI;
+    if (listProductsBDI?.length > 0 && listProductsPricesBDI?.length > 0) {
+      const db = this.db;
+      const config = await new ConfigsService({}, { id: '1' }, { db }).details();
+      const { minimum_offer: stockMinimo, exchange_rate: exchangeRate } = config.config;
       const productos: Product[] = [];
-      if (listProductsBDI.length > 0 && listProductsPricesBDI.length > 0) {
-        const db = this.db;
-        const config = await new ConfigsService({}, { id: '1' }, { db }).details();
-        const stockMinimo = config.config.minimum_offer;
-        const exchangeRate = config.config.exchange_rate;
-        for (const product of listProductsBDI) {
-          for (const productsP of listProductsPricesBDI) {
-            if (product.sku === productsP.sku) {
-              const itemData: Product = await this.setProduct('ingram', product, productsP, null, stockMinimo, exchangeRate);
-              if (itemData.id !== undefined) {
-                productos.push(itemData);
-              }
-            }
+      const productMap = new Map(listProductsPricesBDI.map((p: any) => [p.sku, p]));
+      for (const product of listProductsBDI) {
+        const productsP = productMap.get(product.sku);
+        if (productsP) {
+          const itemData: Product = await this.setProduct('ingram', product, productsP, null, stockMinimo, exchangeRate);
+          if (itemData.id !== undefined) {
+            productos.push(itemData);
           }
         }
       }
-      return await {
+      logger.info(`getProductsBDI.productos.length: \n ${JSON.stringify(productos.length)} \n`);
+      return {
         status: true,
         message: `Productos listos para agregar.`,
         listProductsBDI: productos
-      }
+      };
     } else {
-      logger.info('No se pudieron recuperar los productos del proveedor');
+      // logger.info('No se pudieron recuperar los productos del proveedor');
       return {
         status: false,
         message: 'No se pudieron recuperar los productos del proveedor.',
@@ -299,7 +333,7 @@ class ExternalBDIService extends ResolversOperationsService {
     let price = 0;
     let salePrice = 0;
     itemData.id = undefined;
-    if (item && item.inventory > 0) {
+    if (item) {                      // && item.inventory > 0
       disponible = item.inventory;
       let featured = false;
       itemData.id = item.sku;
@@ -441,6 +475,37 @@ class ExternalBDIService extends ResolversOperationsService {
           }
         }
       }
+
+      const especificaciones: Especificacion[] = [];
+      if (item.products.weight) {
+        itemData.especificaciones.push({ tipo: 'Peso', valor: item.products.weight });
+      }
+      if (item.products.height) {
+        itemData.especificaciones.push({ tipo: 'Altura', valor: item.products.height });
+      }
+      if (item.products.width) {
+        itemData.especificaciones.push({ tipo: 'Ancho', valor: item.products.width });
+      }
+      if (item.products.length) {
+        itemData.especificaciones.push({ tipo: 'Longitud', valor: item.products.length });
+      }
+      if (item.products.dimensionUnit) {
+        itemData.especificaciones.push({ tipo: 'Unidad de Dimensiones', valor: item.products.dimensionUnit });
+      }
+      if (item.products.weightUnit) {
+        itemData.especificaciones.push({ tipo: 'Unidad de Peso', valor: item.products.weightUnit });
+      }
+
+      itemData.especificaciones.push(...especificaciones);
+      const atributosPrincipales = item.products.listPrimaryAttribute;
+      if (atributosPrincipales && atributosPrincipales.length > 0) {
+        for (let i = 0; i < atributosPrincipales.length; i++) {
+          const atributo = atributosPrincipales[i];
+          itemData.especificaciones.push({ tipo: 'Característica', valor: atributo });
+        }
+      }
+
+      itemData.sheetJson = item.products.sheetJson;
     }
     return itemData;
   }
@@ -454,6 +519,213 @@ class ExternalBDIService extends ResolversOperationsService {
     dtS = dt < 10 ? '0' + dt : dt.toString();
     monthS = month < 10 ? '0' + month : month.toString();
     return year + '-' + monthS + '-' + dtS;
+  }
+
+  async getExistenciaProductoBDI(variables: IVariables) {
+    const { existenciaProducto } = variables;
+    const existenciaProductoIngram = { ...existenciaProducto };
+    const products = [];
+    if (!existenciaProducto) {
+      return {
+        status: true,
+        message: 'No hubo cambio en los almacenes. Verificar API.',
+        existenciaProductoBDI: {},
+      };
+    }
+    const token = await this.getTokenBDI();
+    if (!token || !token.status) {
+      return {
+        status: token.status,
+        message: token.message,
+        existenciaProductoBDI: null,
+      };
+    }
+    products.push({ ingramPartNumber: existenciaProducto.codigo });
+    for (const product of products) {
+      let branchOffices: IBranchOffices[] = [];
+      const responsePrices = await this.getProductsPricesBDI(product.ingramPartNumber);
+      if (!responsePrices.status) {
+        return {
+          status: responsePrices.status,
+          message: responsePrices.message,
+          existenciaProductoBDI: [],
+        };
+      }
+      if (responsePrices.productsPricesBDI && responsePrices.productsPricesBDI.length <= 0) {
+        return {
+          status: responsePrices.status,
+          message: 'No hay precios en el servicio del Proveedor',
+          existenciaProductoBDI: [],
+        };
+      }
+      const listProductsPricesBDI = responsePrices.productsPricesBDI;
+      if (listProductsPricesBDI && listProductsPricesBDI.length > 0) {
+        const listProductPricesBDI = responsePrices.productsPricesBDI[0];
+        existenciaProductoIngram.price = listProductPricesBDI.price;
+        existenciaProductoIngram.moneda = listProductPricesBDI.currencyCode;
+        existenciaProductoIngram.cantidad = listProductPricesBDI.inventory;
+        for (const warehouse of listProductPricesBDI.brs) {
+          if (warehouse.inventory > 1) {
+            const branchOffice: IBranchOffices = {
+              id: warehouse.id,
+              name: warehouse.name,
+              estado: warehouse.name,
+              cantidad: warehouse.inventory,
+              cp: '',
+              latitud: '',
+              longitud: ''
+            }
+            branchOffices.push(branchOffice);
+          }
+        }
+      }
+      existenciaProductoIngram.branchOffices = branchOffices;
+    }
+    // Generar
+    if (existenciaProductoIngram) {
+      return {
+        status: true,
+        message: `Se ha generado la disponbilidad de precios de productos.`,
+        existenciaProductoBDI: existenciaProductoIngram,
+      };
+    } else {
+      return {
+        status: false,
+        message: `No se ha generado la lista de precios de productos.`,
+        existenciaProductoBDI: [],
+      };
+    }
+  }
+
+  async getShippingIngramRates(variables: IVariables) {
+    const { shippingBdiInput } = variables;
+    try {
+      console.log('shippingBdiInput: ', shippingBdiInput);
+      if (!shippingBdiInput) {
+        return {
+          status: false,
+          message: `Verificar los valores requeridos para la disponibilidad del envio.`,
+          shippingIngramRates: {}
+        }
+      }
+      const token = await this.getTokenBDI();
+      if (!token || !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          shippingIngramRates: null,
+        };
+      }
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenBDI.token
+        },
+        body: JSON.stringify({
+          street: shippingBdiInput.street,
+          colony: shippingBdiInput.colony,
+          phoneNumber: shippingBdiInput.phoneNumber,
+          city: shippingBdiInput.city,
+          state: shippingBdiInput.state,
+          cp: shippingBdiInput.cp,
+          products: shippingBdiInput.products
+        })
+      };
+      console.log('options: ', options);
+      const url = 'https://admin.bdicentralapi.net/api/shipping';
+      const response = await fetch(url, options);
+      console.log('response: ', response);
+      if (response.status < 200 || response.status >= 300) {
+        return {
+          status: false,
+          message: `Error en el servicio del proveedor (${response.status}::${response.statusText})`,
+          shippingIngramRates: null
+        };
+      }
+      const data = await response.json();
+      console.log('data: ', data);
+      const shipping = data;
+      return {
+        status: true,
+        message: 'Este es el costo del envio',
+        shippingIngramRates: shipping
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        shippingIngramRates: null,
+      };
+    }
+  }
+
+  async setOrderIngramBDI(variables: IVariables) {
+    const { orderIngramBdi } = variables;
+    try {
+      if (!orderIngramBdi) {
+        return {
+          status: false,
+          message: `Verificar los valores requeridos para la creacion de la orden.`,
+          orderIngramBDI: {}
+        }
+      }
+      const token = await this.getTokenBDI();
+      if (!token || !token.status) {
+        return {
+          status: token.status,
+          message: token.message,
+          orderIngramBDI: null,
+        };
+      }
+      const options = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token.tokenBDI.token
+        },
+        body: JSON.stringify({
+          orderNumberClient: orderIngramBdi.orderNumberClient,
+          company: orderIngramBdi.company,
+          note: orderIngramBdi.note,
+          nameClient: orderIngramBdi.nameClient,
+          street: orderIngramBdi.street,
+          colony: orderIngramBdi.colony,
+          phoneNumber: orderIngramBdi.phoneNumber,
+          city: orderIngramBdi.city,
+          state: orderIngramBdi.state,
+          cp: orderIngramBdi.cp,
+          email: orderIngramBdi.email,
+          branch: orderIngramBdi.branch,
+          products: orderIngramBdi.products,
+          carrier: orderIngramBdi.carrier
+        })
+      };
+      const url = 'https://admin.bdicentralapi.net/api/order';
+      const response = await fetch(url, options);
+      console.log('response: ', response);
+      if (response.status < 200 || response.status >= 300) {
+        return {
+          status: false,
+          message: `Error en el servicio del proveedor (${response.status}::${response.statusText})`,
+          orderIngramBDI: null
+        };
+      }
+      const data = await response.json();
+      console.log('data: ', data);
+      const shipping = data;
+      return {
+        status: true,
+        message: 'Esta es el costo del envio',
+        orderIngramBDI: shipping
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        message: 'Error en el servicio. ' + (error.detail || JSON.stringify(error)),
+        orderIngramBDI: null,
+      };
+    }
   }
 
 }

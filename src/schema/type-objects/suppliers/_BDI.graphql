@@ -61,9 +61,16 @@ type ProductDetailsBDI {
   productDetailDescription: String
   vendornumber: String
   upcnumber: String
+  weight: Int
+  height: Int
+  width: Int
+  length: Int
+  dimensionUnit: String
+  weightUnit: String
   images: String
   categoriesIdIngram: String
   manufacturerIdIngram: String
+  listPrimaryAttribute: [String]
   manufacturerIngram: ManufacturerBDI
   categoriesIngram: CategoryBDI
   sheet: String
@@ -195,28 +202,29 @@ type LocationsBDI {
   alias: String
 }
 
-type orderBDI {
+type OrderBDI {
+  statuscode: Int
   orderNumberClient: String
-  orderNumberIngram: String
+  ingramNumberOrder: String
   message: String
 }
 
 type ShippingBDI {
   currencyCode: String
-  totalFreightAmount: Int
-  totalTaxAmount: Int
-  totalFees: Int
-  totalNetAmount: Int
-  grossAmount: Int
-  freightEstimate: FreightEstimate
+  totalFreightAmount: Float
+  totalTaxAmount: Float
+  totalFees: Float
+  totalNetAmount: Float
+  grossAmount: Float
+  freightEstimate: [FreightEstimate]
 }
 
 type FreightEstimate {
   branch: String
   branchName: String
-  cost: Int
+  cost: Float
   label: String
-  totalWeight: Int
+  totalWeight: Float
   transitDays: Int
   carrierList: [String]
 }

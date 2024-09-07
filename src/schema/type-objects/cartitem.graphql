@@ -32,6 +32,7 @@ type Cartitem {
   suppliersProd: SupplierProd
   descuentos: Descuentos
   promociones: Promociones
+  sheetJson: String
   especificaciones: [Especificacion]
   especificacionesBullet: [EspecificacionBullet]
   qty: Int

@@ -9,4 +9,6 @@ type ResultBDI implements Result {
   productsPricesBDI: [ProductPriceBDI]
   listProductsBDI: [Product]
   existenciaProductoBDI: ResponseSupplierProd
+  shippingIngramRates: ShippingBDI
+  orderIngramBDI: OrderBDI
 }

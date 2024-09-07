@@ -332,6 +332,7 @@ class ExternalIngramService extends ResolversOperationsService {
           itemData.especificaciones.push({ tipo: 'Longitud', valor: productJson.length });
           itemData.especificaciones.push({ tipo: 'Ancho', valor: productJson.width });
           itemData.especificaciones.push({ tipo: 'Altura', valor: productJson.height });
+          itemData.sheetJson = productJson.sheetJson;
         }
       }
       return itemData;

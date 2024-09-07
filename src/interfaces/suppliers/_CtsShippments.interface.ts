@@ -9,11 +9,13 @@ export interface IProductoCt {
 }
 
 export interface IAlmacenes {
-  almacenes: IAlmacen[]
+  promociones: IPromocion[];
+  almacen: IAlmacen;
 }
 
 export interface IAlmacen {
-  [key: string]: number | IPromocion;
+  key: string
+  value: number;
 }
 
 export interface IExistenciaAlmacen {
@@ -35,6 +37,7 @@ export interface IAlmacenPromocion {
 
 export interface IPromocion {
   precio: number;
+  porciento: number;
   vigente: IVigencia;
 }
 
@@ -194,15 +197,4 @@ export interface IExistencia {
 export interface IEspecificacion {
   tipo: string;
   valor: string;
-}
-
-export interface IPromocion {
-  tipo: string;
-  promocion: number;
-  vigencia: IVigencia
-}
-
-export interface IVigencia {
-  inicio: string;
-  fin: string;
 }

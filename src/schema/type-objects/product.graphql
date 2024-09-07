@@ -35,12 +35,19 @@ type Product {
   descuentos: Descuentos
   promociones: Promociones
   generalInfo: GeneralInfo
+  sheetJson: String
   especificaciones: [Especificacion]
+  especificacionesBullet: [EspecificacionBullet]
 }
 
 type Especificacion {
   tipo: String
   valor: String
+}
+
+type EspecificacionBullet {
+  tipo: String
+  valor: [String]
 }
 
 type Categorys {

@@ -1,0 +1,108 @@
+input OrderSyscomInput {
+  tipo_entrega: String
+  direccion: DireccionSyscomInput
+  metodo_pago: String
+  fletera: String
+  productos: [ProductoSyscomInput]
+  moneda: String
+  uso_cfdi: String
+  tipo_pago: String
+  orden_compra: String
+  ordenar: Boolean
+  iva_frontera: Boolean
+  forzar: Boolean
+  testmode: Boolean
+  orderResponseSyscom: OrderResponseSyscomInput
+}
+
+input DireccionSyscomInput {
+  atencion_a: String
+  calle: String
+  num_ext: String
+  num_int: String
+  colonia: String
+  codigo_postal: String
+  pais: String
+  estado: String
+  ciudad: String
+  telefono: String
+}
+
+input ProductoSyscomInput {
+  id: Int
+  tipo: String
+  cantidad: Int
+}
+
+input OrderResponseSyscomInput {
+  error: String
+  cliente: ClienteSyscomInput
+  resumen: ResumenSyscomInput
+  datos_entrega: IDireccionSyscomInput
+  productos: [ProductoSyscomInput]
+  totales: TotalesSyscomInput
+}
+
+input ClienteSyscomInput {
+  num_cliente: String
+  rfc: String
+  whatsapp: String
+  email: String
+  telefono: String
+  direccion: IDireccionSyscomInput
+}
+
+input IDireccionSyscomInput {
+  calle: String
+  num_exterior: String
+  num_interior: String
+  colonia: String
+  ciudad: String
+  estado: String
+  pais: String
+}
+
+input ResumenSyscomInput {
+  peso_total: Float
+  peso_vol_total: Float
+  moneda: String
+  forma_pago: Int
+  tipo_cambio: String
+  plazo: String
+  codigo_pago: String
+  folio: String
+  folio_pedido: String
+  fecha_creacion: String
+  iva_aplicado: Int
+}
+
+input ProductoSyscomInput {
+  id: Int
+  cantidad: Int
+  tipo: String
+  modelo: String
+  titulo: String
+  marca: String
+  link: String
+  imagen: String
+  precio_lista: String
+  precio_oferta: String
+  precio_unitario: String
+  importe: Float
+  descuentos: DescuentosSyscomInput
+}
+
+input TotalesSyscomInput {
+  subtotal: Float
+  flete: Float
+  iva: Float
+  total: Float
+}
+
+input DescuentosSyscomInput {
+  distribucion: Float
+  clasificacion: String
+  volumen: Float
+  financiero: Float
+}
+

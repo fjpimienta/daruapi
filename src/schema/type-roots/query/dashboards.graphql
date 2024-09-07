@@ -1,0 +1,14 @@
+type Query {
+  importBySupplier(
+    supplierId: String
+  ): ResultDashboard
+  importBySupplierByMonth(
+    year: Int,
+    month: String,
+    supplierId: String
+  ): ResultDashboard
+  importBySupplierByWeek (
+    supplierId: String,
+    weekNumber: Int
+  ): ResultDashboard
+}

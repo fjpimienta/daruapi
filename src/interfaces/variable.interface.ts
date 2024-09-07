@@ -19,12 +19,19 @@ import { ICaptureChargeOpenpay, ICardOpenpay, IChargeOpenpay, ICustomerOpenpay, 
 import { IWelcome } from './welcome.interface';
 import { ICupon } from './cupon.interface';
 import { IIcommktContact } from './suppliers/_Icommkt.interface';
+import { IOrderIngramX } from './suppliers/_Ingram.interface';
+import { IOrderSyscom } from './suppliers/_Syscom.interface';
+import { IOrderDaisytek } from './suppliers/_Daisyteks.interface';
+import { IOrderIngramInput, IShippingBDIInput } from './suppliers/_BDIShipments.interface';
+import { ISliders } from './sliders.interface';
+import { IOrderInttelec } from './suppliers/_Inttelecs.interface';
 
 export interface IVariables {
   id?: string | number;
   active?: string;
   filterName?: string;
   offer?: boolean;
+  withImages?: boolean;
   filterBranch?: string;
   slug?: string;
   pagination?: IPaginationOptions;
@@ -45,6 +52,8 @@ export interface IVariables {
   shopProduct?: IShopProduct;
   supplier?: ISupplier;
   suppliers?: ISupplier[];
+  supplierId?: string;
+  weekNumber?: number;
   apiproveedor?: IApiproveedor;
   c_pais?: string;
   country?: ICountry;
@@ -52,6 +61,7 @@ export interface IVariables {
   order?: IOrder;
   orders?: IOrder[];
   config?: IConfig;
+  sliders?: ISliders;
   welcome?: IWelcome;
   welcomes?: IWelcome[];
   warehouse?: IWarehouse;
@@ -62,6 +72,8 @@ export interface IVariables {
   ordersCt?: IOrderCt[];
   orderCva?: IOrderCva;
   ordersCva?: IOrderCva[];
+  orderIngram?: IOrderIngramX;
+  orderIngrams?: IOrderIngramX[];
   name?: string;
   typeApi?: string;
   nameApi?: string;
@@ -135,9 +147,32 @@ export interface IVariables {
   upc?: string;
   allRecords?: Boolean;
   imSKU?: string;
+  idOrderIngram?: string;
+  pedidoIngram?: IOrderIngramX;
+  // BDI
+  shippingBdiInput?: IShippingBDIInput;
+  orderIngramBdi?: IOrderIngramInput;
+  type?: string;
   // products
   partNumber?: string;
   // icommkt
-  icommkContactInput?: IIcommktContact
-  icommkContactInputs?: [IIcommktContact]
+  icommkContactInput?: IIcommktContact;
+  icommkContactInputs?: [IIcommktContact];
+  // searchs
+  year?: number;
+  month?: string;
+  // syscom
+  paisName?: string;
+  coloniaName?: string;
+  sucursalName?: string;
+  categoryId?: string;
+  productId?: string;
+  facturaId?: string;
+  orderSyscomInput?: IOrderSyscom;
+  // daisytek
+  partNumberDaisytek?: string;
+  orderDaisytek?: IOrderDaisytek;
+  // inttelec
+  partNumberInttelec?: string;
+  orderInttelec?: IOrderInttelec;
 }

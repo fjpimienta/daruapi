@@ -1,16 +1,22 @@
+import { Db } from 'mongodb';
+import slugify from 'slugify';
+import fetch from 'node-fetch';
+import logger from '../utils/logger';
+import ConfigsService from './config.service';
+import ResolversOperationsService from './resolvers-operaciones.service';
+import { IVariables } from '../interfaces/variable.interface';
 import { IContextData } from '../interfaces/context-data.interface';
 import { IBranchOffices } from '../interfaces/product.interface';
 import { IResponseProductCva } from '../interfaces/suppliers/_CvasShippments.interface';
-import { IVariables } from '../interfaces/variable.interface';
-import fetch from 'node-fetch';
-import logger from '../utils/logger';
-
+import { BranchOffices, Brands, Categorys, Descuentos, Especificacion, Picture, Product, Promociones, SupplierProd, UnidadDeMedida } from '../models/product.models';
 const xml2js = require('xml2js');
-const decode = require('he');
 
-class ExternalCvasService {
-
-  constructor(private root: object, private variables: object, private context: IContextData) { }
+class ExternalCvasService extends ResolversOperationsService {
+  private db: Db;
+  constructor(root: object, variables: object, context: IContextData) {
+    super(root, variables, context);
+    this.db = context.db!;
+  }
 
   async getTokenCva() {
     const token = '7ee694a5bae5098487a5a8b9d8392666';
@@ -55,7 +61,6 @@ class ExternalCvasService {
         &lt;/PEDIDO&gt;
     </XMLOC>`;
 
-      const token = await this.getTokenCva();
 
       const options = {
         method: 'POST',
@@ -80,7 +85,7 @@ class ExternalCvasService {
 
       const url = 'https://www.grupocva.com/pedidos_web/pedidos_ws_cva.php';
       const response = await fetch(url, options);
-      logger.info(`setOrderCva.data: \n ${JSON.stringify(response)} \n`);
+      logger.info(`setOrderCva.response: \n ${JSON.stringify(response)} \n`);
       const content = await response.text();
       const data = await this.parseXmlToJson(content, wsdl);
       if (data) {
@@ -468,23 +473,22 @@ class ExternalCvasService {
       return {
         status: true,
         message: 'No hubo cambio en los almacenes. Verificar API.',
-        existenciaProductoCt: existenciaProducto,
+        existenciaProductoCva: existenciaProducto,
       };
     }
     const codigoCva = existenciaProducto?.codigo;
-    const disponibilidadAlmacenes = existenciaProducto?.cantidad;
     try {
       let url = '';
       if (codigoCva) {
         url = `http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=${cliente}&codigo=${codigoCva}&promos=1&porcentajes=1&sucursales=1&TotalSuc=1&MonedaPesos=1&tc=1&upc=1&dimen=1`;
       }
       const response = await fetch(url);
-      logger.info(`getExistenciaProductoCva.data: \n ${JSON.stringify(response)} \n`);
+      logger.info(`getExistenciaProductoCva.response: \n ${JSON.stringify(response)} \n`);
       const xml = await response.text();
       let data = await this.parseXmlToJson(xml, 'lista_precios.xml')
       if (data) {
         let branchOffices: IBranchOffices[] = [];
-        branchOffices = await this.setCvaAlmacenes(data, disponibilidadAlmacenes);
+        branchOffices = await this.setCvaAlmacenes(data, 1);
         existenciaProducto.branchOffices = branchOffices;
       }
       return data
@@ -595,10 +599,86 @@ class ExternalCvasService {
   async getListProductsCva(): Promise<{
     status: boolean;
     message: string;
-    listProductsCva: IResponseProductCva[] | null;
+    listProductsCva: Product[] | [];
   }> {
-    const products: IResponseProductCva[] = [];
+    const db = this.db;
+    const products: Product[] = [];
+    const productos: Product[] = [];
+    const config = await new ConfigsService({}, { id: '1' }, { db }).details();
+    const stockMinimo = config.config.minimum_offer;
+    const exchangeRate = config.config.exchange_rate;
     const groups = (await this.getListGroupsCva()).listGroupsCva;
+    const almacenes = (await this.getListSucursalesCva()).listSucursalesCva;
+    function excludeGroups(groupsToExclude: string[], allGroups: { grupo: string }[]): { grupo: string }[] {
+      const filteredGroups = allGroups.filter(groupObj => !groupsToExclude.includes(groupObj.grupo));
+      return filteredGroups;
+    }
+    // Grupos para excluir
+    const groupsToExclude = [
+      "ACCESO VIDEOCONFERENCIA",
+      "AIRE ACONDICIONADO",
+      "ALARMAS",
+      "ASPIRADORAS",
+      "BASCULA",
+      "CAFETERA",
+      "CALCULADORA",
+      "CABLEADO ESTRUCTURADO",
+      "CONCENTRADOR DE OXIGENO",
+      "CONTADOR DE BILLETES",
+      "CONSOLAS",
+      "CONTROLES",
+      "COPIADORA",
+      "CURSO",
+      "DIGITALIZADOR",
+      "DRONES",
+      "EMPAQUES",
+      "FREIDORA DE AIRE",
+      "FAX",
+      "FUNDAS",
+      "HANDHELD",
+      "HIDROLAVADORAS",
+      "INSUMOS",
+      "INSUMOS GHIA",
+      "INTERFON",
+      "JUGUETES",
+      "KIOSKO",
+      "LICUADORA",
+      "LINEA BLANCA",
+      "MAQUINA PARA CORTAR CABELLO",
+      "MAQUINAS DE COSER",
+      "MAQUINAS DE ESCRIBIR",
+      "MATERIALES PARA PRODUCCION GHIA",
+      "MUEBLES PARA OFICINA",
+      "PCS",
+      "PASE",
+      "PARTES",
+      "PIZARRON",
+      "PORTA RETRATO DIGITAL",
+      "POLIZAS DE GARANTIA",
+      "PRODUCTOS DE LIMPIEZA",
+      "PROMOCIONALES",
+      "RADIO RELOJ",
+      "RASURADORA",
+      "REFACCIONES",
+      "EFACCIONES GHIA / HAIER",
+      "REFACCIONES PARA UPS",
+      "REFACCIONES GHIA / HAIER",
+      "REPRODUCTORES",
+      "SERVICIOS CLOUD CVA",
+      "SERVICIOS METROCARRIER",
+      "SERVICIOS VIDEOCONFERENCIA",
+      "SINTONIZADOR",
+      "SOLUCION INTERWRITE",
+      "SOLUCIONES GSM",
+      "VENTILADORES",
+      "TRITURADORA DE DOCUMENTOS",
+      "VENTILADORES",
+      "TERMOMETRO",
+      "TIPO DE CONECTIVIDAD",
+      "PIZARRON",
+      "CAMARAS"
+    ];
+    // Obtener la lista de grupos excluyendo los especificados
     for (const group of groups) {
       const prodByBrand = await this.getListPricesCva({ groupName: group.grupo });
       if (prodByBrand && prodByBrand.listPricesCva && Array.isArray(prodByBrand.listPricesCva)) {
@@ -606,17 +686,336 @@ class ExternalCvasService {
       }
     }
 
-    return products.length > 0
-      ? {
-        status: true,
-        message: 'La información que hemos pedido se ha cargado correctamente',
-        listProductsCva: products
+    if (products.length > 0) {
+      let i = 1;
+      for (const product of products) {
+        let itemData = new Product();
+        product.id = i.toString();
+        itemData = await this.setProduct('cva', product, null, null, almacenes, stockMinimo, exchangeRate);
+        if (itemData.id !== undefined) {
+          let tieneValorCero = false;
+          for (let especificacion of itemData.especificaciones) {
+            if (especificacion.tipo === 'Longitud' && especificacion.valor == '0') {
+              tieneValorCero = true;
+              break;
+            }
+            if (especificacion.tipo === 'Ancho' && especificacion.valor == '0') {
+              tieneValorCero = true;
+              break;
+            }
+            if (especificacion.tipo === 'Altura' && especificacion.valor == '0') {
+              tieneValorCero = true;
+              break;
+            }
+          }
+          if (!tieneValorCero) {
+            productos.push(itemData);
+          }
+        }
+        i += 1;
       }
-      : {
+      return await {
+        status: true,
+        message: 'Productos listos para agregar.',
+        listProductsCva: productos
+      }
+    } else {
+      return await {
         status: false,
-        message: 'Error en el servicio. Consultar con el Administrador.',
-        listProductsCva: null
-      };
+        message: 'No se encontraron productos para ingresar.',
+        listProductsCva: []
+      }
+    }
+  }
+
+  async setProduct(proveedor: string, item: any, productJson: any = null, imagenes: any = null, almacenes: any[], stockMinimo: number, exchangeRate: number) {
+    const utilidad: number = 1.08;
+    const iva: number = 1.16;
+    const itemData = new Product();
+    const unidad = new UnidadDeMedida();
+    const b = new Brands();
+    const s = new SupplierProd();
+    const i = new Picture();
+    const is = new Picture();
+    const desc = new Descuentos();
+    const promo = new Promociones();
+    let disponible = 0;
+    let salePrice = 0;
+    itemData.id = undefined;
+    let branchOffices: BranchOffices[] = [];
+    if (item.ExsTotal >= stockMinimo) {                  // Si existencias totales.
+      let featured = false;
+      branchOffices = this.getCvaAlmacenes(item, almacenes, stockMinimo);
+      if (branchOffices.length > 0) {
+        for (const branchOffice of branchOffices) {
+          disponible += branchOffice.cantidad;
+        }
+        itemData.id = item.id;
+        itemData.name = item.descripcion;
+        itemData.slug = slugify(item.descripcion, { lower: true });
+        itemData.short_desc = item.clave + '. Grupo: ' + item.grupo;
+        itemData.price = item.precio === '' || isNaN(parseFloat(item.precio)) ? 0 : parseFloat(item.precio) * utilidad * iva;
+        itemData.review = 0;
+        itemData.ratings = 0;
+        itemData.until = this.getFechas(new Date());
+        itemData.top = false;
+        if (item.PrecioDescuento !== 'Sin Descuento') {
+          desc.total_descuento = item.TotalDescuento === '' || isNaN(parseFloat(item.TotalDescuento)) ? 0 : parseFloat(item.TotalDescuento) * parseFloat(item.tipocambio) * utilidad * iva;
+          desc.moneda_descuento = item.MonedaDescuento;
+          desc.precio_descuento = item.PrecioDescuento === '' || isNaN(parseFloat(item.PrecioDescuento)) ? 0 : parseFloat(item.PrecioDescuento) * utilidad * iva;
+          salePrice = desc.precio_descuento;
+        }
+        itemData.descuentos = desc;
+        if (item.DisponibleEnPromocion !== 'Sin Descuento') {
+          promo.clave_promocion = item.ClavePromocion;
+          promo.descripcion_promocion = item.DescripcionPromocion;
+          promo.vencimiento_promocion = item.VencimientoPromocion;
+          promo.disponible_en_promocion = item.DisponibleEnPromocion === '' || isNaN(parseFloat(item.DisponibleEnPromocion)) ? 0 : parseFloat(item.DisponibleEnPromocion) * utilidad * iva;
+          promo.porciento = 0;
+        }
+        itemData.sale_price = salePrice;
+        featured = (item.PrecioDescuento > 0 && item.PrecioDescuento < item.precio) ? true : false;
+        itemData.featured = featured;
+        itemData.exchangeRate = item.tipocambio > 0 ? item.tipocambio : exchangeRate;
+        itemData.promociones = promo;
+        itemData.new = false;
+        itemData.sold = '';
+        itemData.stock = disponible;
+        itemData.sku = item.clave;
+        itemData.partnumber = item.codigo_fabricante;
+        itemData.upc = item.clave;
+        unidad.id = 'PZ';
+        unidad.name = 'Pieza';
+        unidad.slug = 'pieza';
+        itemData.unidadDeMedida = unidad;
+        // Categorias
+        itemData.category = [];
+        if (item.solucion) {
+          const c = new Categorys();
+          c.name = item.solucion;
+          c.slug = slugify(item.solucion, { lower: true });
+          itemData.category.push(c);
+        } else {
+          const c = new Categorys();
+          c.name = '';
+          c.slug = '';
+          itemData.category.push(c);
+        }
+        // SubCategorias
+        itemData.subCategory = [];
+        if (item.grupo) {
+          const c1 = new Categorys();
+          c1.name = item.grupo;
+          c1.slug = slugify(item.grupo, { lower: true });
+          itemData.subCategory.push(c1);
+        } else {
+          const c1 = new Categorys();
+          c1.name = '';
+          c1.slug = '';
+          itemData.subCategory.push(c1);
+        }
+        // Marcas
+        itemData.brand = item.marca.toLowerCase();
+        itemData.brands = [];
+        b.name = item.marca;
+        b.slug = slugify(item.marca, { lower: true });
+        itemData.brands.push(b);
+        // SupplierProd
+        s.idProveedor = proveedor;
+        s.codigo = item.codigo_fabricante;
+        s.price = item.precio;
+        s.cantidad = stockMinimo;
+        s.sale_price = item.PrecioDescuento === '' || isNaN(parseFloat(item.PrecioDescuento)) ? 0 : parseFloat(item.PrecioDescuento);
+        s.moneda = item.moneda === 'Pesos' ? 'MXN' : 'USD';
+        s.branchOffices = branchOffices;
+        s.category = new Categorys();
+        s.subCategory = new Categorys();
+        if (item.solucion) {
+          s.category.slug = slugify(item.solucion, { lower: true });;
+          s.category.name = item.solucion;
+        }
+        if (item.grupo) {
+          s.subCategory.slug = slugify(item.grupo, { lower: true });;
+          s.subCategory.name = item.grupo;
+        }
+        itemData.suppliersProd = s;
+        // Imagenes
+        itemData.pictures = [];
+        // const i = new Picture();
+        i.width = '600';
+        i.height = '600';
+        i.url = item.imagen;
+        itemData.pictures.push(i);
+        // Imagenes pequeñas
+        itemData.sm_pictures = [];
+        // const is = new Picture();
+        is.width = '300';
+        is.height = '300';
+        is.url = item.imagen;
+        itemData.variants = [];
+        itemData.sm_pictures.push(is);
+        itemData.especificaciones = [];
+        if (item.dimensiones) {
+          const especD: Especificacion = new Especificacion();
+          especD.tipo = 'Dimensiones';
+          especD.valor = item.dimensiones;
+          itemData.especificaciones.push(especD);
+          const dimensionesArray = item.dimensiones.split(',').map(Number);
+          if (dimensionesArray.length === 3) {
+            const [longitud, ancho, altura] = dimensionesArray;
+            itemData.especificaciones.push({ tipo: 'Longitud', valor: longitud });
+            itemData.especificaciones.push({ tipo: 'Ancho', valor: ancho });
+            itemData.especificaciones.push({ tipo: 'Altura', valor: altura });
+          }
+        }
+        if (item.peso) {
+          const especP: Especificacion = new Especificacion();
+          especP.tipo = 'Peso';
+          especP.valor = item.peso;
+          itemData.especificaciones.push(especP);
+        }
+        itemData.sheetJson = '';
+      }
+    }
+    return itemData;
+  }
+
+  getCvaAlmacenes(item: any, cvaAlmacenes: any[], stockMinimo: number = 1): BranchOffices[] {
+    const branchOffices: BranchOffices[] = [];
+    if (cvaAlmacenes.length > 0) {
+      cvaAlmacenes.forEach(almacen => {
+        let cantidad = 0;
+        const branchOffice = new BranchOffices();
+        branchOffice.id = almacen.clave;
+        branchOffice.name = almacen.nombre;
+        branchOffice.estado = almacen.nombre;
+        branchOffice.cp = almacen.cp;
+        branchOffice.latitud = '';
+        branchOffice.longitud = '';
+        branchOffice.cantidad = cantidad;
+        switch (almacen.clave) {
+          case '1':
+            cantidad = parseInt(item.VENTAS_GUADALAJARA, 10);
+            break;
+          case '3':
+            cantidad = parseInt(item.VENTAS_MORELIA, 10);
+            break;
+          case '4':
+            cantidad = parseInt(item.VENTAS_LEON, 10);
+            break;
+          case '5':
+            cantidad = parseInt(item.VENTAS_CULIACAN, 10);
+            break;
+          case '6':
+            cantidad = parseInt(item.VENTAS_QUERETARO, 10);
+            break;
+          case '7':
+            cantidad = parseInt(item.VENTAS_TORREON, 10);
+            break;
+          case '8':
+            cantidad = parseInt(item.VENTAS_TEPIC, 10);
+            break;
+          case '9':
+            cantidad = parseInt(item.VENTAS_MONTERREY, 10);
+            break;
+          case '10':
+            cantidad = parseInt(item.VENTAS_PUEBLA, 10);
+            break;
+          case '11':
+            cantidad = parseInt(item.VENTAS_VERACRUZ, 10);
+            break;
+          case '12':
+            cantidad = parseInt(item.disponible, 10);
+            break;
+          case '13':
+            cantidad = parseInt(item.VENTAS_TUXTLA, 10);
+            break;
+          case '14':
+            cantidad = parseInt(item.VENTAS_HERMOSILLO, 10);
+            break;
+          case '18':
+            cantidad = parseInt(item.VENTAS_MERIDA, 10);
+            break;
+          case '19':
+            cantidad = parseInt(item.VENTAS_CANCUN, 10);
+            break;
+          case '23':
+            cantidad = parseInt(item.VENTAS_AGUASCALIENTES, 10);
+            break;
+          case '24':
+            cantidad = parseInt(item.VENTAS_DF_TALLER, 10);
+            break;
+          case '26':
+            cantidad = parseInt(item.VENTAS_SAN_LUIS_POTOSI, 10);
+            break;
+          case '27':
+            cantidad = parseInt(item.VENTAS_CHIHUAHUA, 10);
+            break;
+          case '28':
+            cantidad = parseInt(item.VENTAS_DURANGO, 10);
+            break;
+          case '29':
+            cantidad = parseInt(item.VENTAS_TOLUCA, 10);
+            break;
+          case '31':
+            cantidad = parseInt(item.VENTAS_OAXACA, 10);
+            break;
+          case '32':
+            cantidad = parseInt(item.VENTAS_LAPAZ, 10);
+            break;
+          case '33':
+            cantidad = parseInt(item.VENTAS_TIJUANA, 10);
+            break;
+          case '35':
+            cantidad = parseInt(item.VENTAS_COLIMA, 10);
+            break;
+          case '36':
+            cantidad = parseInt(item.VENTAS_ZACATECAS, 10);
+            break;
+          case '38':
+            cantidad = parseInt(item.VENTAS_CAMPECHE, 10);
+            break;
+          case '39':
+            cantidad = parseInt(item.VENTAS_TAMPICO, 10);
+            break;
+          case '40':
+            cantidad = parseInt(item.VENTAS_PACHUCA, 10);
+            break;
+          case '43':
+            cantidad = parseInt(item.VENTAS_ACAPULCO, 10);
+            break;
+          case '46':
+            cantidad = parseInt(item.disponibleCD, 10);
+            break;
+          case '47':
+            cantidad = parseInt(item.VENTAS_CUERNAVACA, 10);
+            break;
+          case '51':
+            cantidad = parseInt(item.VENTAS_CEDISCDMX, 10);
+            break;
+          case '52':
+            cantidad = parseInt(item.VENTAS_ASPHALT, 10);
+
+            break;
+        }
+        if (cantidad >= stockMinimo) {
+          branchOffice.cantidad = cantidad;
+          branchOffices.push(branchOffice);
+        }
+      });
+    }
+    return branchOffices;
+  }
+
+  getFechas(fecha: Date) {
+    let dtS = '';
+    let monthS = '';
+    const year = fecha.getFullYear();
+    const month = (fecha.getMonth() + 1);
+    const dt = fecha.getDate();
+    dtS = dt < 10 ? '0' + dt : dt.toString();
+    monthS = month < 10 ? '0' + month : month.toString();
+    return year + '-' + monthS + '-' + dtS;
   }
 
   async getListProductsCvaByGroup(): Promise<{

@@ -13,6 +13,8 @@ type Delivery {
   warehouses: [Warehouse]!
   ordersCt: [OrderCt]
   ordersCva: [OrderCva]
+  ordersSyscom: [OrderSyscom]
+  ordersIngram: [OrderIngram]
   invoiceConfig: InvoiceConfigI
   statusError: Boolean
   messageError: String

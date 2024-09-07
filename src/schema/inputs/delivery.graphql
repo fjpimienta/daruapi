@@ -12,6 +12,7 @@ input DeliveryInput {
   warehouses: [WarehouseInput]!
   ordersCt: [OrderCtInput]
   ordersCva: [OrderCvaInput]
+  ordersSyscom: [OrderSyscomInput]
   invoiceConfig: InvoiceConfigInput
   statusError: Boolean
   messageError: String

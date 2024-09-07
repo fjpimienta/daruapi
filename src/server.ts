@@ -29,7 +29,7 @@ const httpsOptions = {
 };
 
 // Ruta donde se guardarán los archivos
-const uploadFolder = './uploads/files';
+const uploadFolder = path.join(__dirname, '../uploads/files');
 
 // Verificar y crear la carpeta de destino si no existe
 if (!fs.existsSync(uploadFolder)) {
@@ -80,6 +80,9 @@ async function init(): Promise<void> {
   // Agrega el servicio de archivos a la aplicación
   app.use('/files', fileService);
 
+  // Configurar el directorio estático
+  app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
   await server.start();
   server.applyMiddleware({ app });
 
@@ -116,7 +119,7 @@ async function init(): Promise<void> {
 
   const httpServer: Server = createServer(app);
   const httpsServer: https.Server = https.createServer(httpsOptions, app);
-  const PORT: number | string = process.env.PORT || 3002;
+  const PORT: number | string = process.env.PORT || 3001;
   httpsServer.listen(PORT, () => {
     if (process.env.PRODUCTION !== 'true') {
       logger.info('=================SERVER API GRAPHQL=====================');

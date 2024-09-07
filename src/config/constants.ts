@@ -30,6 +30,7 @@ export enum COLLECTIONS {
   VIEW_BUDGET_PRODUCTS = 'view_budgets_products',
   ORDERS = 'orders',
   CONFIG = 'config',
+  SLIDERS = 'sliders',
   WELCOMES = 'welcomes',
   WAREHOUSES = 'warehouses',
   SHIPPINGS = 'shippings',

@@ -1,11 +1,15 @@
 type Query {
   tokenIngram: ResultIngram
+  listProductsIngram: ResultIngram
   ingramProduct(
     ingramPartNumber: String
     vendorPartNumber: String
     upc: String
   ): ResultIngram
   ingramProducts: ResultIngram
+  existenciaProductoIngram(
+    existenciaProducto: SupplierProdInput
+  ): ResultIngram
   pricesIngram(
     allRecords: Boolean = false
   ): ResultIngram
@@ -13,4 +17,11 @@ type Query {
     imSKU: String
   ): ResultIngram
   catalogIngrams: ResultIngram
+  orderIngram(
+    pedidoIngram: OrderIngramInput
+  ): ResultIngram
+  orderOneIngram(
+    idOrderIngram: String
+  ): ResultIngram
+  orderListIngram: ResultIngram
 }

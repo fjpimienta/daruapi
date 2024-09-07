@@ -28,6 +28,29 @@ export const asignDocumentId = async (
   return String(+lastElement[0].id + 1);
 };
 
+export const asignDocumentIdInt = async (
+  database: Db,
+  collection: string
+) => {
+  const lastElement = await database
+    .collection(collection)
+    .aggregate([{
+      $addFields: {
+        idAsInt: { $toInt: "$id" } // Convierte el campo id a entero
+      }
+    }, {
+      $sort: { idAsInt: -1 } // Ordena por el campo idAsInt de mayor a menor
+    }, {
+      $limit: 1 // Limita el resultado a 1 documento
+    }])
+    .toArray();
+  if (lastElement.length === 0) {
+    return '1';
+  }
+  return String(lastElement[0].idAsInt + 1);
+};
+
+
 /**
  * @param database Base de datos con la que estamos trabajando
  * @param collection Coleccion deonde queremos buscar el ultimo elemento
@@ -214,7 +237,17 @@ export const countElementsProducts = async (
   filter: object = { active: { $ne: false } },
 ): Promise<number> => {
   const aggregate = [
-    { $match: filter, },
+    {
+      $match: {
+        price: { $gt: 0 },
+        pictures: {
+          $exists: true,
+          $not: {
+            $size: 0
+          }
+        }, ...filter
+      }
+    },
     { $sort: { partnumber: 1, sale_price: 1 }, },
     {
       $group: {
@@ -245,6 +278,17 @@ export const randomItems = async (
   items: number = 10
 ): Promise<Array<object>> => {
   const aggregate = [
+    {
+      $match: {
+        price: { $gt: 0 },
+        pictures: {
+          $exists: true,
+          $not: {
+            $size: 0
+          }
+        }, ...filter
+      }
+    },
     { $sort: { partnumber: 1, sale_price: 1 }, },
     {
       $group: {
@@ -289,6 +333,17 @@ export const findElementsBrandsGroup = async (
   collection: string,
 ): Promise<Array<object>> => {
   const aggregate = [
+    {
+      $match: {
+        price: { $gt: 0 },
+        pictures: {
+          $exists: true,
+          $not: {
+            $size: 0
+          }
+        }
+      }
+    },
     { $sort: { partnumber: 1, sale_price: 1 }, },
     {
       $group: {
@@ -319,6 +374,17 @@ export const findElementsCategorysGroup = async (
   collection: string,
 ): Promise<Array<object>> => {
   const aggregate = [
+    {
+      $match: {
+        price: { $gt: 0 },
+        pictures: {
+          $exists: true,
+          $not: {
+            $size: 0
+          }
+        }
+      }
+    },
     { $sort: { partnumber: 1, sale_price: 1 }, },
     {
       $group: {

@@ -69,7 +69,7 @@ class External99minutosService extends ResolversOperationsService {
     if (result.ok) {
       return {
         status: true,
-        message: 'La información que hemos pedido se ha cargado correctamente',
+        message: 'La información del promedio se ha cargado correctamente',
         coverage: {
           traceId: data.traceId,
           message: data.message,
@@ -116,7 +116,7 @@ class External99minutosService extends ResolversOperationsService {
     if (result.ok) {
       return {
         status: true,
-        message: 'La información que hemos pedido se ha cargado correctamente',
+        message: 'La información del costo del envio se ha cargado correctamente',
         shippingRates: {
           traceId: data.traceId,
           message: data.message,

@@ -70,6 +70,8 @@ export interface IAdditionalInformation {
 export interface IIngramProduct {
   ingramPartNumber: string;
   vendorPartNumber: string;
+  category: String
+  subCategory: String
   upc: string;
   customerPartNumber: string;
   productAuthorized: string;
@@ -194,4 +196,55 @@ export interface ICatalogIngram {
   yIfPartStockedAtIM: string;
   rebateAppliedToCostYN: string;
   substituteIMPartNumber: string;
+}
+
+export interface IAvailabilityByWarehouse {
+  warehouseId: number;
+  location: string;
+  quantityAvailable: number;
+  quantityBackordered: number;
+  backOrderInfo?: {
+    quantity: number;
+    etaDate: string;
+  };
+}
+
+export interface IOrderIngramX {
+  customerOrderNumber: string;
+  endCustomerOrderNumber: string;
+  notes: string;
+  resellerInfo: IResellerInfo;
+  shipToInfo: IShipToInfoInput;
+  lines: ILinesInput[];
+  additionalAttributes: IAdditionalAttributesInput[];
+}
+
+export interface IResellerInfo {
+  contact: string;
+  companyName: string;
+  email: string;
+  phoneNumber: string;
+}
+
+export interface IShipToInfoInput {
+  contact: string;
+  companyName: string;
+  addressLine1: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  countryCode: string;
+  phoneNumber: string;
+  email: string;
+}
+
+export interface ILinesInput {
+  customerLineNumber: string;
+  ingramPartNumber: string;
+  quantity: number;
+}
+
+export interface IAdditionalAttributesInput {
+  attributeName: string;
+  attributeValue: string;
 }

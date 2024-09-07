@@ -25,3 +25,43 @@ input CatalogIngramInput {
   rebateAppliedToCostYN: String
   substituteIMPartNumber: String
 }
+
+input OrderIngramInputX {
+  customerOrderNumber: String
+  endCustomerOrderNumber: String
+  notes: String
+  resellerInfo: ResellerInfoInput
+  shipToInfo: ShipToInfoInput
+  lines: [LinesInput]
+  additionalAttributes: [AdditionalAttributesInput]
+}
+
+input ResellerInfoInput {
+  contact: String
+  companyName: String
+  email: String
+  phoneNumber: String
+}
+
+input ShipToInfoInput {
+  contact: String
+  companyName: String
+  addressLine1: String
+  city: String
+  state: String
+  postalCode: String
+  countryCode: String
+  phoneNumber: String
+  email: String
+}
+
+input LinesInput {
+  customerLineNumber: String
+  ingramPartNumber: String
+  quantity: Int
+}
+
+input AdditionalAttributesInput {
+  attributeName: String
+  attributeValue: String
+}

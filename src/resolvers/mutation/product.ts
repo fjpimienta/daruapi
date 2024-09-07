@@ -17,6 +17,18 @@ const resolversProductMutation: IResolvers = {
     },
     async blockProduct(_, { id, unblock, admin }, context) {
       return new ProductsService(_, { id }, context).unblock(unblock, admin);
+    },
+    async addImages(_, variables, context) {
+      return new ProductsService(_, variables, context).addNewImages(context);
+    },
+    async searchImages(_, variables, context) {
+      return new ProductsService(_, variables, context).updateImages(context);
+    },
+    async addJsons(_, variables, context) {
+      return new ProductsService(_, variables, context).addNewJsons(context);
+    },
+    async searchJsons(_, variables, context) {
+      return new ProductsService(_, variables, context).updateJsons(context);
     }
   }
 };

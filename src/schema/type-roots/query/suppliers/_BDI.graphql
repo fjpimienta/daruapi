@@ -1,0 +1,18 @@
+type Query {
+  tokenBDI: ResultBDI
+  brandsBDI: ResultBDI
+  categoriesBDI: ResultBDI
+  locationsBDI: ResultBDI
+  productsBDI: ResultBDI
+  productsPricesBDI: ResultBDI
+  listProductsBDI: ResultBDI
+  existenciaProductoBDI(
+    existenciaProducto: SupplierProdInput
+  ): ResultBDI
+  shippingIngramRates(
+    shippingBdiInput: ShippingBDIInput
+  ): ResultBDI
+  orderIngramBDI(
+    orderIngramBdi: OrderIngramInput
+  ): ResultBDI
+}

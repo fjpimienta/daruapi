@@ -1,0 +1,43 @@
+type Query {
+  tokenSyscom: ResultSyscom
+  oneBrandSyscom(
+    brandName: String
+  ): ResultSyscom
+  listBrandsSyscom: ResultSyscom
+  oneCategorySyscom(
+    categoryId: String
+  ): ResultSyscom
+  listCategorysSyscom: ResultSyscom
+  listProductsSyscomByBrand(
+    brandName: String
+  ): ResultSyscom
+  listProductsSyscom: ResultSyscom
+  existenciaProductoSyscom(
+    existenciaProducto: SupplierProdInput
+  ): ResultSyscom
+  metodosPagosSyscom: ResultSyscom
+  fleterasSyscom: ResultSyscom
+  cfdisSyscom: ResultSyscom
+  tipoCambioSyscom: ResultSyscom
+  paisSyscom(
+    paisName: String
+  ): ResultSyscom
+  estadoByCP(
+    cp: Int
+  ): ResultSyscom
+  coloniaByCP(
+    cp: Int
+    coloniaName: String
+  ): ResultSyscom
+  sucursalSyscom(
+    cp: Int
+    coloniaName: String
+  ): ResultSyscom
+  saveOrderSyscom(
+    orderSyscomInput: OrderSyscomInput
+  ): ResultSyscom
+  facturasSyscom: ResultSyscom
+  facturaSyscom(
+    facturaId: String
+  ): ResultSyscom
+}

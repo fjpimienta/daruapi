@@ -17,6 +17,10 @@ import ExternalOpenpayService from './externalOpenpay.service';
 import { IChargeOpenpay } from '../interfaces/suppliers/_Openpay.interface';
 import ExternalCtsService from './externalCts.service';
 import logger from '../utils/logger';
+import { IOrderSyscom } from '../interfaces/suppliers/_Syscom.interface';
+import ExternalSyscomService from './externalSyscom.service';
+import { IOrderIngram, IOrderIngramInput, IProductOrderIngram } from '../interfaces/suppliers/_BDIShipments.interface';
+import ExternalBDIService from './externalBDI.service';
 
 class DeliverysService extends ResolversOperationsService {
   collection = COLLECTIONS.DELIVERYS;
@@ -61,7 +65,7 @@ class DeliverysService extends ResolversOperationsService {
   // Obtener detalles del item
   async details() {
     const response = await this.getByDelivery(this.collection);
-    process.env.PRODUCTION !== 'true' && logger.info(`delivery.details: \n ${JSON.stringify(response)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`delivery.details: \n ${JSON.stringify(response)} \n`);
     return {
       status: response.status,
       message: response.message,
@@ -72,7 +76,7 @@ class DeliverysService extends ResolversOperationsService {
   // Obtener el siguiente elemento
   async next() {
     const response = await this.nextId(this.collection);
-    process.env.PRODUCTION !== 'true' && logger.info(`delivery.next: \n ${JSON.stringify(response)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`delivery.next: \n ${JSON.stringify(response)} \n`);
     return {
       status: response.status,
       message: response.message,
@@ -82,18 +86,18 @@ class DeliverysService extends ResolversOperationsService {
 
   // Insert Delivery
   async insert(context: IContextData) {
-    process.env.PRODUCTION !== 'true' && logger.info(` \n Log para delivery.insert \n`);
+    process.env.PRODUCTION === 'true' && logger.info(` \n Log para delivery.insert \n`);
     let status = 'PEDIDO CREADO'
     const delivery = this.getVariables().delivery;
     const idDelivery = await asignDocumentId(this.getDB(), this.collection, { registerDate: -1 });
-    process.env.PRODUCTION !== 'true' && logger.info(`insert.asignDocumentId.idDelivery: \n ${JSON.stringify(idDelivery)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`insert.asignDocumentId.idDelivery: \n ${JSON.stringify(idDelivery)} \n`);
     if (delivery) {
       delivery.id = idDelivery;
       delivery.status = status;
       delivery.registerDate = new Date().toISOString();
       // Insertar Pedido Inicial
       const result = await this.add(this.collection, delivery, 'delivery');
-      process.env.PRODUCTION !== 'true' && logger.info(`insert.add.result: \n ${JSON.stringify(result)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`insert.add.result: \n ${JSON.stringify(result)} \n`);
       if (result && result.status) {
         // Realizar el Cargo al Cliente
         const chargeOpenpay: any = { chargeOpenpay: delivery.chargeOpenpay }
@@ -116,7 +120,7 @@ class DeliverysService extends ResolversOperationsService {
             }
           });
         // Si el cargo es correcto actualizar estatus del pedido
-        process.env.PRODUCTION !== 'true' && logger.info(`insert.createCharge.resultOpenpay: \n ${JSON.stringify(resultOpenpay)} \n`);
+        process.env.PRODUCTION === 'true' && logger.info(`insert.createCharge.resultOpenpay: \n ${JSON.stringify(resultOpenpay)} \n`);
         if (resultOpenpay && resultOpenpay.status) {
           const deliveryUpdate: IDelivery = result.item as IDelivery;
           deliveryUpdate.status = status;
@@ -146,50 +150,52 @@ class DeliverysService extends ResolversOperationsService {
         deliveryUpdate.lastUpdate = new Date().toISOString();
         const filter = { id: idDelivery };
         const resultUpdate = await this.update(this.collection, filter, deliveryUpdate, 'Pedido');
-        process.env.PRODUCTION !== 'true' && logger.info(`insert.update.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
+        process.env.PRODUCTION === 'true' && logger.info(`insert.update.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
         if (resultUpdate && resultUpdate.status) {
-          process.env.PRODUCTION !== 'true' && logger.info(` \n ${resultOpenpay.message} \n`);
+          process.env.PRODUCTION === 'true' && logger.info(` \n ${resultOpenpay.message} \n`);
           return await {
             status: resultOpenpay.status,
             message: resultOpenpay.message,
             delivery: resultUpdate.item
           }
         }
-        process.env.PRODUCTION !== 'true' && logger.info(` \n ${resultOpenpay.message} \n`);
+        process.env.PRODUCTION === 'true' && logger.info(` \n ${resultOpenpay.message} \n`);
         return await {
           status: resultOpenpay.status,
           message: resultOpenpay.message,
           delivery: result.item
         }
       }
-      process.env.PRODUCTION !== 'true' && logger.info(` \n ${result.message} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(` \n ${result.message} \n`);
       return {
         status: result.status,
         message: result.message,
         delivery: null
       };
     }
-    process.env.PRODUCTION !== 'true' && logger.info(` \n Compra no definida, verificar datos. \n`);
+    process.env.PRODUCTION === 'true' && logger.info(` \n Compra no definida, verificar datos. \n`);
     return {
       status: false,
-      mesage: 'Compra no definida, verificar datos.',
+      message: 'Compra no definida, verificar datos.',
       delivery: null
     };
   }
 
   // Update Delivery
   async modify(context: IContextData) {
-    process.env.PRODUCTION !== 'true' && logger.info(` \n Log para delivery.modify \n`);
+    process.env.PRODUCTION === 'true' && logger.info(` \n Log para delivery.modify \n`);
     let status = 'AUTORIZANDO CARGO';
     let statusError = false;
     let messageError = '';
     const delivery = this.getVariables().delivery;
-    process.env.PRODUCTION !== 'true' && logger.info(`modify.getVariables().delivery: \n ${JSON.stringify(delivery)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`modify.getVariables().delivery: \n ${JSON.stringify(delivery)} \n`);
     // Si el pago fue autorizado.
     if (delivery) {
       const id = delivery.id ? parseInt(delivery.id) : 0;
       const ordersCts: IOrderCt[] = [];
       const ordersCvas: IOrderCva[] = [];
+      const ordersSyscoms: IOrderSyscom[] = [];
+      const ordersIngram: IOrderIngram[] = [];
       const warehouses: IWarehouse[] = delivery?.warehouses || [];
       const idTransactionOpenpay = delivery.chargeOpenpay.id;
       const resultOpenpay = await new ExternalOpenpayService({}, { idTransactionOpenpay }, context).oneCharge({ idTransactionOpenpay })
@@ -211,7 +217,7 @@ class DeliverysService extends ResolversOperationsService {
             };
           }
         });
-      process.env.PRODUCTION !== 'true' && logger.info(`modify.oneCharge.resultOpenpay: \n ${JSON.stringify(resultOpenpay)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`modify.oneCharge.resultOpenpay: \n ${JSON.stringify(resultOpenpay)} \n`);
       let chargeOpenpay: IChargeOpenpay;
       if (resultOpenpay && resultOpenpay.chargeOpenpay && resultOpenpay.chargeOpenpay.status === 'completed') {
         chargeOpenpay = resultOpenpay.chargeOpenpay;
@@ -224,12 +230,12 @@ class DeliverysService extends ResolversOperationsService {
           switch (supplier) {
             case 'ct':
               const ordersCt = await this.setOrder(id, delivery, warehouse);
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.ordersCt: \n ${JSON.stringify(ordersCt)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.ordersCt: \n ${JSON.stringify(ordersCt)} \n`);
               const orderCtResponse = await this.EfectuarPedidos(supplier, ordersCt, context)
                 .then(async (result) => {
                   return await result;
                 });
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderCtResponse: \n ${JSON.stringify(orderCtResponse)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderCtResponse: \n ${JSON.stringify(orderCtResponse)} \n`);
               ordersCt.orderCtResponse = orderCtResponse;
               const CONFIRMAR_PEDIDO = process.env.CONFIRMAR_PEDIDO;
               if (CONFIRMAR_PEDIDO === 'true') {
@@ -243,26 +249,36 @@ class DeliverysService extends ResolversOperationsService {
                   messageError = orderCtResponse.errores[0].errorMessage;
                   break;
                 }
-                process.env.PRODUCTION !== 'true' && logger.info(`modify.orderCtConfirm: \n ${JSON.stringify(orderCtConfirm)} \n`);
-                const orderCtConfirmResponse = await this.ConfirmarPedidos(supplier, orderCtConfirm, context);
-                process.env.PRODUCTION !== 'true' && logger.info(`modify.ConfirmarPedidos.orderCtConfirmResponse: \n ${JSON.stringify(orderCtConfirmResponse)} \n`);
-                if (!orderCtConfirmResponse) {
-                  status = 'PEDIDO SIN CONFIRMAR POR EL PROVEEDOR';
+                process.env.PRODUCTION === 'true' && logger.info(`modify.orderCtConfirm: \n ${JSON.stringify(orderCtConfirm)} \n`);
+                if (process.env.PRODUCTION === 'true') {
+                  const orderCtConfirmResponse = await this.ConfirmarPedidos(supplier, orderCtConfirm, context);
+                  logger.info(`modify.ConfirmarPedidos.orderCtConfirmResponse: \n ${JSON.stringify(orderCtConfirmResponse)} \n`);
+                  if (!orderCtConfirmResponse) {
+                    status = 'PEDIDO SIN CONFIRMAR POR EL PROVEEDOR';
+                  }
+                  ordersCt.orderCtConfirmResponse = orderCtConfirmResponse;
+                } else {
+                  status = 'PEDIDO SIN CONFIRMAR POR EL PROVEEDOR. AMBIENTE DEV.';
+                  const ctConfirmResponse: IOrderCtConfirmResponse = {
+                    okCode: 'NA',
+                    okMessage: 'No se confirma el pedido por ser ambiente DEV',
+                    okReference: 'NA'
+                  };
+                  ordersCt.orderCtConfirmResponse = ctConfirmResponse;
                 }
-                ordersCt.orderCtConfirmResponse = orderCtConfirmResponse;
               }
               ordersCts.push(ordersCt);
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.ordersCts: \n ${JSON.stringify(ordersCts)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.ordersCts: \n ${JSON.stringify(ordersCts)} \n`);
               break;
             case 'cva':
               status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
               const ordersCva = await this.setOrder(id, delivery, warehouse);
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.ordersCva: \n ${JSON.stringify(ordersCva)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.ordersCva: \n ${JSON.stringify(ordersCva)} \n`);
               const orderCvaResponse = await this.EfectuarPedidos(supplier, ordersCva, context)
                 .then(async (result) => {
                   return await result;
                 });
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.orderCvaResponse: \n ${JSON.stringify(orderCvaResponse)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderCvaResponse: \n ${JSON.stringify(orderCvaResponse)} \n`);
               ordersCva.orderCvaResponse = orderCvaResponse;
               if (orderCvaResponse.estado === 'ERROR') {
                 status = 'ERROR PEDIDO PROVEEDOR';
@@ -271,7 +287,44 @@ class DeliverysService extends ResolversOperationsService {
               }
               ordersCvas.push(ordersCva);
               break;
+            case 'syscom':
+              status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
+              const orderSyscom = await this.setOrder(id, delivery, warehouse, context);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.orderSyscom: \n ${JSON.stringify(orderSyscom)} \n`);
+              const orderResponseSyscom = await this.EfectuarPedidos(supplier, orderSyscom, context)
+                .then(async (result) => {
+                  return await result;
+                });
+              process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderResponseSyscom: \n ${JSON.stringify(orderResponseSyscom)} \n`);
+              if (!orderResponseSyscom.status) {
+                status = 'ERROR PEDIDO PROVEEDOR';
+                statusError = true;
+                messageError = orderResponseSyscom.message;
+                break;
+              }
+              orderSyscom.orderResponseSyscom = orderResponseSyscom.saveOrderSyscom;
+              process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderSyscom: \n ${JSON.stringify(orderSyscom)} \n`);
+              ordersSyscoms.push(orderSyscom);
+              break;
             case 'ingram':
+              status = 'PEDIDO CONFIRMADO CON PROVEEDOR';
+              const orderIngram: IOrderIngram = await this.setOrder(id, delivery, warehouse, context);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.orderIngram: \n ${JSON.stringify(orderIngram)} \n`);
+              const orderResponseIngram = await this.EfectuarPedidos(supplier, orderIngram, context)
+                .then(async (result) => {
+                  return await result;
+                });
+              process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderResponseIngram: \n ${JSON.stringify(orderResponseIngram)} \n`);
+              if (!orderResponseIngram.status) {
+                status = 'ERROR PEDIDO PROVEEDOR';
+                statusError = true;
+                messageError = orderResponseIngram.message;
+                break;
+              }
+              orderIngram.orderResponseIngram = orderResponseIngram.orderIngramBDI;
+              process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.orderIngram: \n ${JSON.stringify(orderIngram)} \n`);
+              ordersIngram.push(orderIngram);
+              console.log('EfectuarPedidos.ordersIngram: ', ordersIngram);
               break;
           }
         }
@@ -284,22 +337,23 @@ class DeliverysService extends ResolversOperationsService {
         status = 'CARGO PENDIENTE';
       }
       // Actualizar Delivery
-      process.env.PRODUCTION !== 'true' && logger.info(` \n Actualizar Delivery \n`);
+      process.env.PRODUCTION === 'true' && logger.info(` \n Actualizar Delivery \n`);
       const deliveryUpdate: IDelivery = delivery as IDelivery;
       deliveryUpdate.status = status;
       deliveryUpdate.ordersCt = ordersCts;
       deliveryUpdate.ordersCva = ordersCvas;
+      deliveryUpdate.ordersSyscom = ordersSyscoms;
+      deliveryUpdate.ordersIngram = ordersIngram;
       deliveryUpdate.chargeOpenpay = chargeOpenpay;
       deliveryUpdate.lastUpdate = new Date().toISOString();
       deliveryUpdate.status = status;
       deliveryUpdate.messageError = messageError;
       deliveryUpdate.statusError = statusError;
-
-      process.env.PRODUCTION !== 'true' && logger.info(`modify.deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`modify.deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
       const filter = { id: id.toString() };
       const resultUpdate = await this.updateForce(this.collection, filter, deliveryUpdate, 'Pedido');
-      process.env.PRODUCTION !== 'true' && logger.info(`modify.updateForce.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
-      if (resultUpdate && resultUpdate.status) {
+      process.env.PRODUCTION === 'true' && logger.info(`modify.updateForce.resultUpdate: \n ${JSON.stringify(resultUpdate)} \n`);
+      if (resultUpdate && resultUpdate.status && !statusError) {
         // Si se guarda el envio, inactivar el cupon.
         if (delivery && delivery?.user) {
           const collection = COLLECTIONS.WELCOMES;
@@ -307,32 +361,32 @@ class DeliverysService extends ResolversOperationsService {
             email: delivery?.user.email
           }
           const welcome = await this.getByField(collection, filter);
-          process.env.PRODUCTION !== 'true' && logger.info(`modify.getByField.welcome: \n ${JSON.stringify(welcome)} \n`);
+          process.env.PRODUCTION === 'true' && logger.info(`modify.getByField.welcome: \n ${JSON.stringify(welcome)} \n`);
           if (welcome && welcome.item) {
             const id = { id: welcome.item.id };
             const active = { active: false };
             await this.update(collection, id, active, 'welcome');
           }
         }
-        process.env.PRODUCTION !== 'true' && logger.info(`deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
-        process.env.PRODUCTION !== 'true' && logger.info(` \n ${resultUpdate.message} \n`);
+        process.env.PRODUCTION === 'true' && logger.info(`deliveryUpdate: \n ${JSON.stringify(deliveryUpdate)} \n`);
+        process.env.PRODUCTION === 'true' && logger.info(` \n ${resultUpdate.message} \n`);
         return await {
           status: resultUpdate.status,
           message: resultUpdate.message,
           delivery: deliveryUpdate
         }
       }
-      process.env.PRODUCTION !== 'true' && logger.info(` \n Problemas con el cargo, verificar datos. \n`);
+      process.env.PRODUCTION === 'true' && logger.info(` \n Problemas con el Proveedor. ${messageError}`);
       return {
         status: false,
-        mesage: 'Problemas con el cargo, verificar datos.',
+        message: `Problemas con el Proveedor. ${messageError} \n`,
         delivery: null
       };
     }
-    process.env.PRODUCTION !== 'true' && logger.info(` \n Problemas con el cargo, verificar datos. \n`);
+    process.env.PRODUCTION === 'true' && logger.info(` \n Problemas con el cargo, verificar datos. \n`);
     return {
       status: false,
-      mesage: 'Problemas con el cargo, verificar datos.',
+      message: 'Problemas con el cargo, verificar datos.',
       delivery: null
     };
   }
@@ -343,7 +397,7 @@ class DeliverysService extends ResolversOperationsService {
     if (!this.checkData(String(id) || '')) {
       return {
         status: false,
-        message: `El ID del Delivery no se ha especificado correctamente.`,
+        message: `El identificador del pedido no se ha definido correctamente. Favor de verificar.`,
         delivery: null
       };
     }
@@ -360,7 +414,7 @@ class DeliverysService extends ResolversOperationsService {
     if (!this.checkData(String(id) || '')) {
       return {
         status: false,
-        message: `El ID del Delivery no se ha especificado correctamente.`,
+        message: `El identificador del pedido no se ha definido correctamente. Favor de verificar.`,
         delivery: null
       };
     }
@@ -404,9 +458,9 @@ class DeliverysService extends ResolversOperationsService {
 
   //#region Pedidos
 
-  private async setOrder(idDelivery: number, delivery: IDelivery, warehouse: IWarehouse,): Promise<any> {
-    process.env.PRODUCTION !== 'true' && logger.info(` \n Log para setOrder \n`);
-    process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.warehouse: \n ${JSON.stringify(warehouse)} \n`);
+  private async setOrder(idDelivery: number, delivery: IDelivery, warehouse: IWarehouse, context: IContextData = {}): Promise<any> {
+    process.env.PRODUCTION === 'true' && logger.info(` \n Log para setOrder \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.warehouse: \n ${JSON.stringify(warehouse)} \n`);
     const user = delivery.user;
     if (user && user.addresses && user.addresses.length > 0) {
       const dir = user.addresses && user.addresses.length > 0 ? user.addresses[0] : null;
@@ -442,7 +496,7 @@ class DeliverysService extends ResolversOperationsService {
             };
             ProductosCt.push(productCt);
           }
-          process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.ProductosCt: \n ${JSON.stringify(ProductosCt)} \n`);
+          process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.ProductosCt: \n ${JSON.stringify(ProductosCt)} \n`);
           const orderCtSupplier: IOrderCt = {
             idPedido: idDelivery,
             almacen: warehouse.productShipments[0].almacen,
@@ -452,7 +506,7 @@ class DeliverysService extends ResolversOperationsService {
             producto: ProductosCt,
             cfdi: 'G01'
           };
-          process.env.PRODUCTION !== 'true' && logger.info(`modify.setOrder.orderCtSupplier: \n ${JSON.stringify(orderCtSupplier)} \n`);
+          process.env.PRODUCTION === 'true' && logger.info(`modify.setOrder.orderCtSupplier: \n ${JSON.stringify(orderCtSupplier)} \n`);
           return orderCtSupplier;
         case 'cva':
           const enviosCva: IEnvioCVA[] = [];
@@ -515,15 +569,67 @@ class DeliverysService extends ResolversOperationsService {
             Atencion: this.removeAccents(user?.name?.toUpperCase() + ' ' + user?.lastname?.toUpperCase())
           };
           return orderCvaSupplier;
+        case 'syscom':
+          const sCodigoPostal = warehouse.ordersSyscom.direccion.codigo_postal.toString().padStart(5, '0');
+          const paisSyscom = (await (await new ExternalSyscomService({}, {}, context)).getPaisSyscom(warehouse.ordersSyscom.direccion.pais)).paisSyscom;
+          const estadoSyscom = (await (await new ExternalSyscomService({}, {}, context)).getEstadoByCP(sCodigoPostal)).estadoByCP;
+          const coloniaSyscom = (await (await new ExternalSyscomService({}, {}, context)).getColoniaByCP(parseInt(warehouse.ordersSyscom.direccion.codigo_postal), warehouse.ordersSyscom.direccion.colonia)).coloniaByCP;
+          warehouse.ordersSyscom.direccion.pais = paisSyscom;
+          warehouse.ordersSyscom.direccion.estado = estadoSyscom;
+          warehouse.ordersSyscom.direccion.colonia = coloniaSyscom;
+          const CONFIRMAR_PEDIDO = process.env.CONFIRMAR_PEDIDO;
+          const confirmarPedido = CONFIRMAR_PEDIDO === 'true' ? true : false;
+          const orderSyscom: IOrderSyscom = {
+            tipo_entrega: warehouse.ordersSyscom.tipo_entrega,
+            direccion: warehouse.ordersSyscom.direccion,
+            metodo_pago: warehouse.ordersSyscom.metodo_pago,
+            fletera: warehouse.ordersSyscom.fletera,
+            productos: warehouse.ordersSyscom.productos,
+            moneda: warehouse.ordersSyscom.moneda,
+            uso_cfdi: warehouse.ordersSyscom.uso_cfdi,
+            tipo_pago: warehouse.ordersSyscom.tipo_pago,
+            orden_compra: `DARU-${idDelivery.toString().padStart(6, '0')}`,
+            ordenar: confirmarPedido,
+            iva_frontera: false,
+            forzar: false,
+            testmode: false,
+            orderResponseSyscom: null as any
+          };
+          return orderSyscom;
         case 'ingram':
-          return '';
+          const productsIngram: IProductOrderIngram[] = [];
+          for (const idPI in Object.keys(warehouse.productShipments)) {
+            const prod: IProductShipment = warehouse.productShipments[idPI];
+            const productIngram: IProductOrderIngram = {
+              sku: prod.producto || '',
+              qty: prod.cantidad || 0
+            };
+            productsIngram.push(productIngram);
+          }
+          const orderIngram: IOrderIngramInput = {
+            orderNumberClient: 'DARU-' + idDelivery.toString().padStart(6, '0'),
+            company: this.removeAccents(user?.name?.toUpperCase() + ' ' + user?.lastname?.toUpperCase()),
+            note: 'Pedido: DARU-' + idDelivery.toString().padStart(6, '0') + ' - ' + delivery.deliveryId,
+            nameClient: this.removeAccents(user?.name?.toUpperCase() + ' ' + user?.lastname?.toUpperCase()),
+            street: this.removeAccents(dir?.directions || ''),
+            colony: this.removeAccents(dir?.d_asenta || ''),
+            phoneNumber: dir?.phone ? dir?.phone : '',
+            city: this.removeAccents(dir?.d_mnpio || ''),
+            state: this.removeAccents(dir?.d_estado || ''),
+            cp: dir?.d_codigo.padStart(5, '0') || '',
+            email: user.email,
+            branch: warehouse.id,
+            products: productsIngram,
+            carrier: 'E1',
+          }
+          return orderIngram;
       }
       return '';
     }
   }
 
   async EfectuarPedidos(supplierName: string, order: any, context: IContextData): Promise<any> {
-    process.env.PRODUCTION !== 'true' && logger.info(` \n Log para EfectuarPedidos \n`);
+    process.env.PRODUCTION === 'true' && logger.info(` \n Log para EfectuarPedidos \n`);
     switch (supplierName) {
       case 'cva':
         const pedidosCva = await new ExternalCvasService({}, { pedidoCva: order }, context).setOrderCva({ pedidoCva: order })
@@ -548,7 +654,7 @@ class DeliverysService extends ResolversOperationsService {
         const pedidosCt = await new ExternalCtsService({}, order, context).setOrderCt(order)
           .then(async resultPedido => {
             try {
-              process.env.PRODUCTION !== 'true' && logger.info(`modify.EfectuarPedidos.resultPedido: \n ${JSON.stringify(resultPedido)} \n`);
+              process.env.PRODUCTION === 'true' && logger.info(`modify.EfectuarPedidos.resultPedido: \n ${JSON.stringify(resultPedido)} \n`);
               if (!resultPedido.orderCt) {                              // Hay error en el pedido.
                 let errorCT: IErroresCT = {
                   errorCode: '999999',
@@ -594,13 +700,25 @@ class DeliverysService extends ResolversOperationsService {
             }
           });
         return await pedidosCt;
+      case 'syscom':
+        const pedidosSyscom = await new ExternalSyscomService({}, { orderSyscomInput: order }, context).setOrderSyscom()
+          .then(async resultPedido => {
+            return await resultPedido;
+          });
+        return await pedidosSyscom;
+      case 'ingram':
+        const pedidosIngram = await new ExternalBDIService({}, { orderIngramBdi: order }, context).setOrderIngramBDI({ orderIngramBdi: order })
+          .then(async resultPedido => {
+            return await resultPedido;
+          });
+        return await pedidosIngram;
     }
   }
 
   async ConfirmarPedidos(supplierName: string, orderCtConfirm: any, context: IContextData) {
     switch (supplierName) {
       case 'ct':
-        if (orderCtConfirm.folio = 'NA') {
+        if (orderCtConfirm.folio === 'NA') {
           const ctConfirmResponse: IOrderCtConfirmResponse = {
             okCode: '500',
             okMessage: 'Error en pedido',
@@ -608,10 +726,7 @@ class DeliverysService extends ResolversOperationsService {
           };
           return await ctConfirmResponse;
         }
-        const folioCt = {
-          "folio": orderCtConfirm.folio
-        }
-        const confirmpedidoCt = await new ExternalCtsService({}, orderCtConfirm, context).setConfirmOrderCt(folioCt)
+        const confirmpedidoCt = await new ExternalCtsService({}, orderCtConfirm, context).setConfirmOrderCt(orderCtConfirm)
           .then(async resultConfirm => {
             try {
               const ctConfirmResponse: IOrderCtConfirmResponse = {
@@ -619,6 +734,7 @@ class DeliverysService extends ResolversOperationsService {
                 okMessage: resultConfirm.confirmOrderCt?.okMessage,
                 okReference: resultConfirm.confirmOrderCt?.okReference
               };
+              logger.info(`ConfirmarPedidos.ctConfirmResponse: \n ${JSON.stringify(ctConfirmResponse)} \n`);
               return await ctConfirmResponse;
             } catch (error) {
               const ctConfirmResponse: IOrderCtConfirmResponse = {

@@ -1,0 +1,35 @@
+type TokenDaisytek {
+  token: String
+}
+
+type ProductDaisytek {
+  sku: String!
+  manufacturer_sku: String!
+  manufacturer: String!
+  ean: String!
+  title: String!
+  description: String
+  currency: String!
+  price: Float!
+  warehouses: WarehousesDaisytek!
+}
+
+type WarehousesDaisytek {
+  CDMX: WarehouseDaisytek
+  VHM: WarehouseDaisytek
+  MTY: WarehouseDaisytek
+  GDL: WarehouseDaisytek
+  SUR: WarehouseDaisytek
+}
+
+type WarehouseDaisytek {
+  stock: Float!
+  location: String!
+}
+
+type OrderResponseDaisytek {
+  subtotal: Float
+  total: Float
+  currency: String
+  order_number: String
+}

@@ -1,0 +1,14 @@
+type ResultBDI implements Result {
+  status: Boolean!
+  message: String!
+  tokenBDI: TokenBDI
+  brandsBDI: [BrandsBDI]
+  categoriesBDI: [CategoriesBDI]
+  locationsBDI: [LocationsBDI]
+  productsBDI: [ProductBDI]
+  productsPricesBDI: [ProductPriceBDI]
+  listProductsBDI: [Product]
+  existenciaProductoBDI: ResponseSupplierProd
+  shippingIngramRates: ShippingBDI
+  orderIngramBDI: OrderBDI
+}

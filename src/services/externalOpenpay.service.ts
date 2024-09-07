@@ -41,7 +41,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         createCustomerOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`createCustomer: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`createCustomer: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -69,7 +69,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         updateCustomerOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`updateCustomer: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`updateCustomer: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -96,7 +96,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         message: 'Se ha eliminado el Cliente correctamente.',
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`deleteCustomer: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`deleteCustomer: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -132,7 +132,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         customerOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`oneCustomer: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`oneCustomer: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -159,7 +159,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         listCustomersOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`listCustomers: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`listCustomers: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -189,7 +189,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         listCardsOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`listCards: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`listCards: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -217,7 +217,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         createCardOpenpay: token,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`createCard: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`createCard: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -253,7 +253,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         cardOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`oneCard: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`oneCard: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -280,7 +280,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         message: 'La tarjeta se ha eliminado correctamente.',
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`deleteCard: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`deleteCard: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -309,7 +309,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         createChargeOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`createCharge: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`createCharge: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -345,7 +345,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         captureChargeOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`captureCharge: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`captureCharge: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -381,7 +381,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         refundChargeOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`refundCharge: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`refundCharge: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -411,11 +411,11 @@ class ExternalOpenpayService extends ResolversOperationsService {
 
       return {
         status: true,
-        message: 'El cargo se ha localizado correctamente.',
+        message: 'El cargo se ha realizado correctamente.',
         chargeOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`oneCharge: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`oneCharge: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -442,7 +442,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         listChargesOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`listCharges: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`listCharges: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -472,7 +472,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         createPayoutOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`createPayout: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`createPayout: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -505,7 +505,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         payoutOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`onePayout: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`onePayout: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -532,7 +532,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
         listPayoutsOpenpay,
       };
     } catch (error: any) {
-      process.env.PRODUCTION !== 'true' && logger.info(`listPayouts: \n ${JSON.stringify(error)} \n`);
+      process.env.PRODUCTION === 'true' && logger.info(`listPayouts: \n ${JSON.stringify(error)} \n`);
       let description = this.decodeError(error);
       return {
         status: false,
@@ -566,7 +566,7 @@ class ExternalOpenpayService extends ResolversOperationsService {
   }
 
   handleStringError(error: string) {
-    process.env.PRODUCTION !== 'true' && logger.info(`handleStringError.Error string: \n ${JSON.stringify(error)} \n`);
+    process.env.PRODUCTION === 'true' && logger.info(`handleStringError.Error string: \n ${JSON.stringify(error)} \n`);
     // Aquí puedes manejar el error como una cadena directamente
     // Por ejemplo, podrías buscar patrones en la cadena para determinar el tipo de error
     // y devolver un mensaje adecuado en función de eso.
@@ -580,131 +580,131 @@ class ExternalOpenpayService extends ResolversOperationsService {
 
     switch (errorCode) {
       case 1000:
-        return 'Ocurrió un error interno en el servidor de Openpay.';
+        return 'Lo sentimos ocurrió un error interno, estamos trabajando para resolverlo a la brevedad posible.';
       case 1001:
         if (httpCode === 400) {
           if (description.includes('ustomer.email no puede estar vac')) {
-            return 'Es necesario incluir el correo en el Cliente.';
+            return 'Por favor agrega un correo electrónico, ésta acción es necesaria para avanzar. ';
           }
-          return 'No es valida la vigencia del token de pago.';
+          return 'La vigencia del token de pago no es válida, favor de verificarla o revisarlo directo con el banco.';
         }
         if (description.includes('cvv2 length must be 3 digits')) {
-          return 'El código de seguridad de la tarjeta (CVV2) debe ser de 3 digitos.';
+          return 'El código de seguridad de la tarjeta debe ser de 3 digitos.';
         } else if (description.includes('expiration_year')) {
-          return 'El año debe ser de 2 digitos.';
+          return 'El año de vencimiento de la tarjeta debe de ser de dos dígitos: ejemplo (01,02,11,12).';
         } else if (description.includes('expiration_month')) {
-          return 'El mes debe ser de 2 digitos. De 01 a 12';
+          return 'El mes de vencimiento de la tarjeta debe de ser de dos dígitos: ejemplo (01,02,11,12).';
         } else if (description.includes('expiration_month length must be 2 digits')) {
-          return 'El mes debe ser de 2 digitos. De 01 a 12';
+          return 'El mes de vencimiento de la tarjeta debe de ser de dos dígitos: ejemplo (01,02,11,12).';
         } else if (description.includes('equired request body is missin')) {
-          return 'Falta el cuerpo de la solicitud requerida';
+          return 'Lo sentimos no se encuentra toda la informacion requerida, por favor contáctanos a marketplace@daru.mx para brindarte apoyo.';
         }
       case 1002:
-        return 'La llamada no esta autenticada o la autenticación es incorrecta.';
+        return 'Lo sentimos hay un problema con el token de seguridad, por favor contáctanos a marketplace@daru.mx para brindarte apoyo.';
       case 1003:
         if (httpCode === 422) {
           if (errorCode === 1003) {
-            return 'No es valida la vigencia del token de pago.';
+            return 'Lo sentimos hay un problema con el token de seguridad, por favor contáctanos a marketplace@daru.mx para brindarte apoyo.';
           }
-          return 'El cargo a la tarjeta se encuentra en estado final.';
+          return 'Favor de esperar unos minutos, el cargo a la tarjeta se encuentra en estado final. Cualquier duda por favor contáctanos a marketplace@daru.mx para brindarte apoyo.';
         }
-        return 'La operación no se pudo completar por que el valor de uno o más de los parámetros no es correcto.';
+        return 'Lo sentimos, la operación no pudo ser completada debido a que la información proporcionada no es correcta.';
       case 1004:
-        return 'Un servicio necesario para el procesamiento de la transacción no se encuentra disponible.';
+        return 'Lo sentimos ocurrió un error interno, estamos trabajando para resolverlo a la brevedad posible.';
       case 1005:
-        return 'Uno de los recursos requeridos no existe.';
+        return 'Lo sentimos uno de los recursos requeridos no existe, verifique los datos capturados o por favor contáctanos a marketplace@daru.mx para brindarte apoyo.';
       case 1006:
-        return 'Ya existe una transacción con el mismo ID de orden.';
+        return 'Ya existe una transacción con el mismo número de orden, por favor revisa a detalle la información o contáctanos a marketplace@daru.mx para brindarte apoyo.';
       case 1007:
-        return 'La transferencia de fondos entre una cuenta de banco o tarjeta y la cuenta de Openpay no fue aceptada.';
+        return 'La transacción no fue aceptada, favor de ponerse en contacto con el banco.';
       case 1008:
-        return 'Una de las cuentas requeridas en la petición se encuentra desactivada.';
+        return 'Una de las cuentas se encuentra desactivada, por favor revisa a detalle la información o contáctanos a marketplace@daru.mx para brindarte apoyo.';
       case 1009:
-        return 'El cuerpo de la petición es demasiado grande.';
+        return 'Lo sentimos, la informacion enviada no cumple con las especificaciones. Por favor contáctanos a marketplace@daru.mx para brindarte apoyo.';
       case 1010:
-        return 'Se esta utilizando la llave pública para hacer una llamada que requiere la llave privada, o bien, se esta usando la llave privada desde JavaScript.';
+        return 'Lo sentimos, Se esta utilizando la llave pública para hacer una llamada que requiere la llave privada. Por favor contáctanos a marketplace@daru.mx para brindarte apoyo.';
       case 1011:
-        return 'Se solicita un recurso que esta marcado como eliminado.';
+        return 'Es indispensable que revises que la información que solicitamos esté completa, debido a que falta información no podrás seguir avanzando.';
       case 1012:
-        return 'El monto transacción esta fuera de los limites permitidos.';
+        return 'El monto de la transacción se encuentra fuera de los límites permitidos, favor de revisarlo con el banco.';
       case 1013:
-        return 'La operación no esta permitida para el recurso.';
+        return 'Lo sentimos, la operación que estás intentando realizar no está permitida, por favor contáctanos a marketplace@daru.mx para brindarte apoyo.';
       case 1014:
-        return 'La cuenta esta inactiva.';
+        return 'Te informamos que tu cuenta se encuentra inactiva, por favor contáctanos a marketplace@daru.mx para brindarte apoyo.';
       case 1015:
-        return 'No se ha obtenido respuesta de la solicitud realizada al servicio.';
+        return 'Lo sentimos, no se ha obtenido respuesta de la solicitud realizada al servicio. Por favor contáctanos a marketplace@daru.mx para brindarte apoyo.';
       case 1016:
-        return 'El mail del comercio ya ha sido procesada.';
+        return 'Lo sentimos, el mail del comercio ya ha sido configurado previamente, se requiere otro email.';
       case 1017:
-        return 'El gateway no se encuentra disponible en ese momento.';
+        return 'Lo sentimos, el gateway no se encuentra disponible en ese momento, por favor contáctanos a marketplace@daru.mx para brindarte apoyo.';
       case 1018:
-        return 'El número de intentos de cargo es mayor al permitido.';
+        return 'Lo sentimos, el número de intentos de cargos que se han realizado es mayor al permitido, favor de ponerse en contacto con el banco o contáctanos a marketplace@daru.mx para brindarte apoyo.';
       case 1020:
-        return 'El número de dígitos decimales es inválido para esta moneda.';
+        return 'Lo sentimos, el número de dígitos decimales es inválido para éste tipo de moneda, por favor revisa a detalle la información o contáctanos a marketplace@daru.mx.';
       case 1023:
-        return 'Se han terminado las transacciones incluidas en tu paquete. Para contratar otro paquete contacta a soporte@openpay.mx.';
+        return 'Lo sentimos, se han terminado las transacciones incluidas en tu paquete. Para contratar otro paquete contacta a marketplace@daru.mx.';
       case 1024:
-        return 'El monto de la transacción excede su límite de transacciones permitido por TPV.';
+        return 'Lo sentimos, el monto de la transacción excede el límite de transacciones permitidas, por favor contáctanos a marketplace@daru.mx para brindarte apoyo.';
       case 1025:
-        return 'Se han bloqueado las transacciones CoDi contratadas en tu plan.';
+        return 'Lo sentimos, se han bloqueado las transacciones CoDi contratadas en tu plan. Por favor contáctanos a marketplace@daru.mx para brindarte apoyo.';
       case 2001:
-        return 'La cuenta de banco con esta CLABE ya se encuentra registrada en el cliente.';
+        return 'Lo sentimos, la cuenta de banco con esta CLABE ya se encuentra registrada en el cliente. Favor de verificar o ingresar otra CLABE';
       case 2003:
-        return 'El cliente con este identificador externo (External ID) ya existe.';
+        return 'Lo sentimos, el cliente con este identificador ya existe. Favor de verificar o ingresar otra clilente.';
       case 2004:
-        return 'El número de tarjeta no es valido.';
+        return 'El número de tarjeta que estás colocando no es válido, por favor revisa a detalle la información.';
       case 2005:
-        return 'La fecha de expiración de la tarjeta es anterior a la fecha actual.';
+        return 'La fecha de expiración de la tarjeta es anterior a la fecha actual, por favor revisa a detalle la información.';
       case 2006:
-        return 'El código de seguridad de la tarjeta (CVV2) no fue proporcionado.';
+        return 'Por favor agregar el código de seguridad de la tarjeta, ya que sin esta información no podrás completar el pedido.';
       case 2007:
-        return 'El número de tarjeta es de prueba, solamente puede usarse en Sandbox.';
+        return 'El número de tarjeta que intenta utilizar no es permitido.';
       case 2008:
-        return 'La tarjeta no es valida para pago con puntos.';
+        return 'La tarjeta que estás usando no es válida para pago con puntos, favor de ponerse en contacto con el banco.';
       case 2009:
-        return 'El código de seguridad de la tarjeta (CVV2) es inválido.';
+        return 'El código de seguridad de la tarjeta que estás agregando es inválido, por favor revisa a detalle la información o ponte en contacto directo con el banco.';
       case 2010:
-        return 'Autenticación 3D Secure fallida.';
+        return 'Lo sentimos, la autenticación 3D Secure no es correcta, favor de ponerse en contacto con el banco.';
       case 2011:
-        return 'Tipo de tarjeta no soportada.';
+        return 'Lo sentimos, este tipo de tarjeta no es soportada en nuestra pasarela de pagos. Puedes utilizar tarjetas VISA o MasterCard';
       case 3001:
-        return 'La tarjeta fue declinada por el banco.';
+        return 'Lo sentimos la tarjeta que estás utilizando fue declinada por el banco, favor de contactarse directamente al banco.';
       case 3002:
-        return 'La tarjeta ha expirado.';
+        return 'La tarjeta que estás utilizando ha expirado, favor de contactarse directamente con el banco.';
       case 3003:
-        return 'La tarjeta no tiene fondos suficientes.';
+        return 'Lo sentimos, la tarjeta que estás utilizando no tiene fondos suficientes, favor de contactarse directamente con el banco.';
       case 3004:
-        return 'Tarjeta no válida para compra. (3004)'; // La tarjeta ha sido identificada como una tarjeta robada
+        return 'Lo sentimos, La tarjeta intentas usar no es válida para compra, favor de contactarse directamente con el banco. (3004)'; // La tarjeta ha sido identificada como una tarjeta robada
       case 3005:
-        return 'Tarjeta no válida para compra. (3005)'; // La tarjeta ha sido rechazada por el sistema antifraude
+        return 'Lo sentimos, La tarjeta intentas usar no es válida para compra, favor de contactarse directamente con el banco. (3005)'; // La tarjeta ha sido rechazada por el sistema antifraude
       case 3006:
-        return 'La operación no esta permitida para este cliente o esta transacción.';
+        return 'Lo sentimos, esta operación no esta permitida para este cliente, favor de contactarse directamente con el banco.';
       case 3009:
-        return 'Tarjeta no válida para compra. (3009)'; // La tarjeta fue reportada como perdida
+        return 'Lo sentimos, La tarjeta intentas usar no es válida para compra, favor de contactarse directamente con el banco. (3009)'; // La tarjeta fue reportada como perdida
       case 3010:
-        return 'Tarjeta no válida para compra. (3010)'; // El banco ha restringido la tarjeta
+        return 'Lo sentimos, La tarjeta intentas usar no es válida para compra, favor de contactarse directamente con el banco. (3010)'; // El banco ha restringido la tarjeta
       case 3011:
-        return 'Tarjeta no válida para compra. (3011)'; // El banco ha restringido la tarjeta
+        return 'Lo sentimos, La tarjeta intentas usar no es válida para compra, favor de contactarse directamente con el banco. (3011)'; // El banco ha restringido la tarjeta
       case 3012:
-        return 'El banco ha solicitado que la tarjeta sea retenida. Contacte al banco.';
+        return 'Lo sentimos, La tarjeta intentas usar no es válida para compra, favor de contactarse directamente con el banco. (3012)'; // El banco ha restringido la tarjeta
       case 3201:
-        return 'Comercio no autorizado para procesar pago a meses sin intereses.';
+        return 'Lo sentimos este pedido no se puede realizar con pago a meses sin intereses.';
       case 3203:
-        return 'Promoción no valida para este tipo de tarjetas.';
+        return 'Lo sentimos, ésta promoción no es válida para la tarjeta que estás utilizando, por favor intenta con otra.';
       case 3204:
-        return 'El monto de la transacción es menor al mínimo permitido para la promoción.';
+        return 'El monto de la transacción es menor que está permitido para que aplique ésta promoción.';
       case 3205:
-        return 'Promoción no permitida.';
+        return 'Lo sentimos, ésta promoción no es permitida para la tarjeta que estás utilizando, por favor intenta con otra.';
       case 4001:
-        return 'La cuenta de Openpay no tiene fondos suficientes.';
+        return 'Lo sentimos ocurrió un error interno, estamos trabajando para resolverlo a la brevedad posible.. Por favor contacta con marketplace@daru.mx para brindarte apoyo. (4001)';
       case 4002:
-        return 'La operación no puede ser completada hasta que sean pagadas las comisiones pendientes.';
+        return 'Lo sentimos ocurrió un error interno, estamos trabajando para resolverlo a la brevedad posible.. Por favor contacta con marketplace@daru.mx para brindarte apoyo. (4002)';
       case 6001:
-        return 'El webhook ya ha sido procesado.';
+        return 'Lo sentimos ocurrió un error interno, estamos trabajando para resolverlo a la brevedad posible.. Por favor contacta con marketplace@daru.mx para brindarte apoyo. (6001)';
       case 6002:
-        return 'No se ha podido conectar con el servicio de webhook.';
+        return 'Lo sentimos ocurrió un error interno, estamos trabajando para resolverlo a la brevedad posible.. Por favor contacta con marketplace@daru.mx para brindarte apoyo. (6002)';
       case 6003:
-        return 'El servicio respondió con errores.';
+        return 'Lo sentimos ocurrió un error interno, estamos trabajando para resolverlo a la brevedad posible.. Por favor contacta con marketplace@daru.mx para brindarte apoyo. (6003)';
       default:
         return description;
     }

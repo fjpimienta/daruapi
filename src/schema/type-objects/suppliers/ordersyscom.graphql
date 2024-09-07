@@ -1,0 +1,35 @@
+type OrderSyscom {
+  tipo_entrega: String
+  direccion: DireccionSyscom
+  metodo_pago: String
+  fletera: String
+  productos: [ProductoSyscom]
+  moneda: String
+  uso_cfdi: String
+  tipo_pago: String
+  orden_compra: String
+  ordenar: Boolean
+  iva_frontera: Boolean
+  forzar: Boolean
+  testmode: Boolean
+  orderResponseSyscom: OrderResponseSyscom
+}
+
+type DireccionSyscom {
+  atencion_a: String
+  calle: String
+  num_ext: String
+  num_int: String
+  colonia: String
+  codigo_postal: String
+  pais: String
+  estado: String
+  ciudad: String
+  telefono: String
+}
+
+type ProductoSyscom {
+  id: Int
+  cantidad: Int
+  tipo: String
+}

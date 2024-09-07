@@ -1,0 +1,230 @@
+type TokenBDI {
+  user: TokenUserBDI
+  token: String
+  signup: Boolean
+}
+
+type TokenUserBDI {
+  id: String
+  email: String
+  countryCode: String
+  super: Boolean
+  typeApp: String
+  segmentarIngram: Boolean
+  role: String
+}
+
+type BrandsBDI {
+  id: String
+  name: String
+}
+
+type CategorieBDI {
+  id: String
+  name: String
+  nameTemp: String
+  country: [String]
+  parentName: String
+  status: Boolean
+  children: [CategorieBDI]
+  parent: CategorieBDI
+  categories: [CategorieDetail]
+}
+
+type CategorieDetail {
+  categoriesId: String
+  categoriesIngramId: String
+  assignedAt: String
+  customerId: Int
+  status: Boolean
+}
+
+type LocationsBDI {
+  brId: String
+  name: String
+  alias: String
+}
+
+type ProductBDI {
+  active: String
+  sku: String
+  price: Float
+  inventory: Int
+  priceApply: Float
+  currencyCode: String
+  updatedAt: String
+  products: ProductDetailsBDI
+}
+
+type ProductDetailsBDI {
+  description: String
+  productDetailDescription: String
+  vendornumber: String
+  upcnumber: String
+  weight: Int
+  height: Int
+  width: Int
+  length: Int
+  dimensionUnit: String
+  weightUnit: String
+  images: String
+  categoriesIdIngram: String
+  manufacturerIdIngram: String
+  listPrimaryAttribute: [String]
+  manufacturerIngram: ManufacturerBDI
+  categoriesIngram: CategoryBDI
+  sheet: String
+  sheetJson: String
+  technicalSpecifications: [TechnicalSpecificationBDI]
+}
+
+type TechnicalSpecificationBDI {
+  headerName: String
+  attributeName: String
+  attributeDisplay: String
+  attributeValue: String
+}
+
+type ManufacturerBDI {
+  id: Int
+  name: String
+}
+
+type CategoryBDI {
+  id: Int
+  nameTemp: String
+  parent: CategoryParentBDI
+}
+
+type CategoryParentBDI {
+  id: Int
+  name: String
+}
+
+type ProductPriceBDI {
+  status: String
+  price: Float
+  priceApply: Float
+  currencyCode: String
+  priceSpecial: SpecialPriceBDI
+  inventory: Int
+  sku: String
+  updatedAt: String
+  vendorNumber: String
+  description: String
+  upcnumber: String
+  daysOutStock: Int
+  exemptIva: Boolean
+  br10: Int
+  br55: Int
+  br60: Int
+  br80: Int
+  brs: [BranchBDI]
+}
+
+type IngramDetailsBDI {
+  sku: String
+  price: Float
+  currencyCode: String
+  inventory: Int
+  branch: [BranchDetailsBDI]
+  priceSpecial: [SpecialPriceBDI]
+}
+
+type BranchDetailsBDI {
+  quantityAvailable: Int
+  warehouseId: String
+  location: String
+}
+
+type SpecialPriceBDI {
+  specialPriceQty: Int
+  specialPriceEnd: String
+  specialPriceEffective: String
+  specialPriceDiscount: Int
+  specialPriceDaysValidity: Float
+}
+
+type BranchBDI {
+  id: String
+  name: String
+  inventory: Int
+}
+
+
+
+type ManufacturerBDI {
+  id: Int
+  name: String
+}
+
+
+
+
+type CategoriesBDI {
+  id: Int
+  name: String
+  nameTemp: String
+  country: [String]
+  parentName: String
+  status: Boolean
+  children: [CategoriesBDI]
+  parent: CategoriesParentBDI
+  categories: [SubcategoriesBDI]
+}
+
+type SubcategoriesBDI {
+  categoriesId: String
+  categoriesIngramId: String
+  assignedAt: String
+  customerId: Int
+  status: Boolean
+}
+
+type CategoriesParentBDI {
+  id: Int
+  name: String
+  nameTemp: String
+  country: [String]
+  parentName: String
+  status: Boolean
+}
+
+type BrsLocationsBDI {
+  total: Int
+  page: Int
+  locationsBDI: LocationsBDI
+}
+
+type LocationsBDI {
+  brId: String
+  name: String
+  alias: String
+}
+
+type OrderBDI {
+  statuscode: Int
+  orderNumberClient: String
+  ingramNumberOrder: String
+  message: String
+}
+
+type ShippingBDI {
+  currencyCode: String
+  totalFreightAmount: Float
+  totalTaxAmount: Float
+  totalFees: Float
+  totalNetAmount: Float
+  grossAmount: Float
+  freightEstimate: [FreightEstimate]
+}
+
+type FreightEstimate {
+  branch: String
+  branchName: String
+  cost: Float
+  label: String
+  totalWeight: Float
+  transitDays: Int
+  carrierList: [String]
+}

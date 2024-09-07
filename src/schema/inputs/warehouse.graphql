@@ -9,4 +9,5 @@ input WarehouseInput {
   products: [CartItemInput]
   productShipments: [ProductShipmentInput]
   shipments: [ShipmentInput]
+  ordersSyscom: OrderSyscomInput
 }

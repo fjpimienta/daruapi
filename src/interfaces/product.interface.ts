@@ -18,14 +18,15 @@ export interface IProduct {
   partnumber: string;
   sku: string;
   upc: string;
+  ean: string;
   category: ICategorys[];
   subCategory: ICategorys[];
   brand: string;
   brands: IBrands[];
   model: string;
   peso: number;
-  pictures: IPicture[];
-  sm_pictures: IPicture[];
+  pictures?: IPicture[];
+  sm_pictures?: IPicture[];
   variants: IVariant[];
   unidadDeMedida?: IUnidadDeMedida;
   active: boolean;
@@ -33,12 +34,19 @@ export interface IProduct {
   descuentos: IDescuentos;
   promociones: IPromociones;
   registerDate?: String;
-  especificaciones: IEspecificaciones;
+  sheetJson?: String;
+  especificaciones: IEspecificacion[];
+  especificacionesBullet: IEspecificacionBullet[];
 }
 
-export interface IEspecificaciones {
+export interface IEspecificacion {
   tipo: String;
   valor: String;
+}
+
+export interface IEspecificacionBullet {
+  tipo: String;
+  valor: String[];
 }
 
 export interface ICategorys {

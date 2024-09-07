@@ -92,7 +92,7 @@ class StripeChargeService extends StripeApi {
 
       return {
         status: true,
-        message: 'Pago realizado correctamente!',
+        message: 'El pago se ha realizado correctamente. Se enviará el pedido a su correo electrónico.',
         charge: result
       };
     }).catch((error: Error) => this.getError(error));
@@ -111,7 +111,7 @@ class StripeChargeService extends StripeApi {
     ).then((result: { has_more: boolean, data: Array<IStripeCharge> }) => {
       return {
         status: true,
-        message: `Lista cargada correctamente con los pagos del cliente seleccionados`,
+        message: `Se ha generado la información con los pagos del cliente seleccionados`,
         hasMore: result.has_more,
         charges: result.data
       };

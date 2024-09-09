@@ -1496,7 +1496,24 @@ class ProductsService extends ResolversOperationsService {
         client.get(urlJson, options, (response) => {
           let data = '';
           if (response.statusCode !== 200) {
-            reject(new Error(`Error: ${response.statusCode}`));
+            let MessageError = '';
+            switch (response.statusCode) {
+              case 404:
+                MessageError = 'Error 404: Archivo Json no encontrado.';
+                break;
+              case 500:
+                MessageError = 'Error 500: Error interno del servidor.';
+                break;
+              case 403:
+                MessageError = 'Error 403: Acceso prohibido al Archivo Json.';
+                break;
+              case 400:
+                MessageError = 'Error 400: Solicitud incorrecta.';
+                break;
+              default:
+                MessageError = `Error ${response.statusCode}: Ocurrió un problema desconocido.`;
+            }
+            reject(new Error(MessageError));
             return;
           }
           response.on('data', (chunk) => {

@@ -8,7 +8,7 @@ import ResolversOperationsService from './resolvers-operaciones.service';
 import { IPicture, IProduct } from '../interfaces/product.interface';
 import ExternalIcecatsService from './externalIcecat.service';
 import ExternalIngramService from './externalIngram.service';
-import { Picture } from '../models/product.models';
+import { Especificacion, Picture } from '../models/product.models';
 import ExternalBDIService from './externalBDI.service';
 import path from 'path';
 import logger from '../utils/logger';
@@ -1477,13 +1477,13 @@ class ProductsService extends ResolversOperationsService {
   }
 
   // Buscar json por el partnumber
-  async readJson(): Promise<{ status: boolean; message: string; product: any }> {
+  async readJson(): Promise<{ status: boolean; message: string; getJson: [Especificacion] }> {
     const productId = this.getVariables().productId;
     if (productId == null) {
       return {
         status: false,
         message: 'Producto no definido, verificar datos.',
-        product: null
+        getJson: [{ tipo: '', valor: '' }]
       };
     }
     const urlJson = `${env.API_URL}${env.UPLOAD_URL}/jsons/${productId}.json`;
@@ -1491,7 +1491,7 @@ class ProductsService extends ResolversOperationsService {
     try {
       const jsonData: any = await new Promise<any>((resolve, reject) => {
         const options: https.RequestOptions = {
-          rejectUnauthorized: false // Ignorar errores de certificado (solo para desarrollo)
+          rejectUnauthorized: false
         };
         client.get(urlJson, options, (response) => {
           let data = '';
@@ -1514,30 +1514,25 @@ class ProductsService extends ResolversOperationsService {
           reject(error);
         });
       });
-      // Cargar y normalizar el JSON
-      const normalizedData = loadAndNormalizeJson(jsonData);
-      console.log('normalizedData: ', normalizedData);
-      // Buscar el producto por su ID en los datos normalizados
-      const product = normalizedData['productid']?.[productId.toLowerCase()] || null;
-      console.log('product: ', product);
-      if (product) {
+      const getJson = loadAndNormalizeJson(jsonData);
+      if (getJson) {
         return {
           status: true,
-          message: 'Producto encontrado',
-          product: product
+          message: 'Json del producto encontrado',
+          getJson: getJson
         };
       } else {
         return {
           status: false,
-          message: 'Producto no encontrado',
-          product: null
+          message: 'Json del producto no encontrado',
+          getJson: [{ tipo: '', valor: '' }]
         };
       }
     } catch (error) {
       return {
         status: false,
         message: (error as Error).message,
-        product: null
+        getJson: [{ tipo: '', valor: '' }]
       };
     }
   }

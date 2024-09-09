@@ -17,19 +17,19 @@ fileService.get('/:filename', (req: Request, res: Response) => {
   }
 });
 
-// Función para cargar y normalizar el JSON
-export const loadAndNormalizeJson = (jsonData: any) => { // Cambia el parámetro para aceptar datos JSON
-  const normalizedData: Record<string, Record<string, string[]>> = {};
-  jsonData.forEach((item: any) => {
-    const attributeName = item.attributeName.toLowerCase();
-    const attributeValue = item.attributeValue.toLowerCase();
-    if (!normalizedData[attributeName]) {
-      normalizedData[attributeName] = {};
-    }
-    if (!normalizedData[attributeName][attributeValue]) {
-      normalizedData[attributeName][attributeValue] = [];
-    }
-    normalizedData[attributeName][attributeValue].push(item.attributeDisplay);
+// Función para cargar y normalizar el JSON en un array de objetos con clave y valor
+export const loadAndNormalizeJson = (jsonData: any) => {
+  function capitalizeFirstLetter(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  }
+  function capitalizeWords(str: string) {
+    return str.replace(/\b\w/g, char => char.toUpperCase());
+  }
+  const normalizedData = jsonData.map((item: any) => {
+    return {
+      tipo: capitalizeWords(item.attributeName),
+      valor: capitalizeFirstLetter(item.attributeValue)
+    };
   });
   return normalizedData;
 };

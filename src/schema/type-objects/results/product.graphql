@@ -10,4 +10,5 @@ type ResultProduct implements Result{
   productId: String
   productField: Product
   productJson: String
+  getJson: [Especificacion]
 }

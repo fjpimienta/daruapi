@@ -29,6 +29,9 @@ const resolversProductMutation: IResolvers = {
     },
     async searchJsons(_, variables, context) {
       return new ProductsService(_, variables, context).updateJsons(context);
+    },
+    async setJson(_, variables, context) {
+      return new ProductsService(_, variables, context).writeJson();
     }
   }
 };

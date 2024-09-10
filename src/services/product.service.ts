@@ -118,7 +118,6 @@ class ProductsService extends ResolversOperationsService {
     };
   }
 
-
   // // Función para obtener el JSON desde una URL y procesarlo
   // async fetchAndProcessJson(url: string): Promise<any> {
   //   try {
@@ -1269,6 +1268,40 @@ class ProductsService extends ResolversOperationsService {
   }
 
   // Modificar Item
+  async writeJson() {
+    const product = this.getVariables().product;
+    if (product === null) {
+      return {
+        status: false,
+        mesage: 'Producto no definido, verificar datos.',
+        product: null
+      };
+    }
+    if (!this.checkData(product?.name || '')) {
+      return {
+        status: false,
+        message: `El Producto no se ha especificado correctamente`,
+        product: null
+      };
+    }
+    const especificaciones = this.readJson(product?.partnumber);
+    const objectUpdate = {
+      especificaciones: especificaciones,
+      updaterDate: new Date().toISOString()
+    };
+    const filter = { id: product?.id };
+    // Ejecutar actualización
+    console.log('filter: ', filter);
+    console.log('objectUpdate: ', objectUpdate);
+    const result = await this.update(this.collection, filter, objectUpdate, 'productos');
+    return {
+      status: result.status,
+      message: result.message,
+      product: result.item
+    };
+  }
+
+  // Modificar Item
   async modifyImages(product: IProduct) {
     // Comprobar que el producto no sea nulo.
     if (product === null) {
@@ -1477,8 +1510,8 @@ class ProductsService extends ResolversOperationsService {
   }
 
   // Buscar json por el partnumber
-  async readJson(): Promise<{ status: boolean; message: string; getJson: [Especificacion] }> {
-    const productId = this.getVariables().productId;
+  async readJson(idProd: string = ''): Promise<{ status: boolean; message: string; getJson: [Especificacion] }> {
+    const productId = idProd === '' ? this.getVariables().productId : idProd;
     if (productId == null) {
       return {
         status: false,

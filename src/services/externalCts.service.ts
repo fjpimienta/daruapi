@@ -172,10 +172,12 @@ class ExternalCtsService extends ResolversOperationsService {
       }
     };
 
-    const url = 'http://connect.ctonline.mx:3001/pedido/tipoCambio';
+    const url = 'https://connect.ctonline.mx:3001/pedido/tipoCambio';
     const response = await fetch(url, options);
+    logger.info(`url:${url}; \n options: ${JSON.stringify(response)} \n`);
     logger.info(`getTipoCambio.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
+    logger.info(`getTipoCambio.data: \n ${JSON.stringify(data)} \n`);
     process.env.PRODUCTION === 'true' && logger.info(`getTipoCambio.data: \n ${JSON.stringify(data)} \n`);
     if (response.ok) {
       return {

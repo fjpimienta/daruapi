@@ -161,7 +161,7 @@ class ExternalCtsService extends ResolversOperationsService {
       return {
         status: token.status,
         message: token.message,
-        shippingCtRates: null
+        tipoCambioCT: null
       };
     }
     const options = {
@@ -174,22 +174,19 @@ class ExternalCtsService extends ResolversOperationsService {
 
     const url = 'http://connect.ctonline.mx:3001/pedido/tipoCambio';
     const response = await fetch(url, options);
-    logger.info(`url:${url}; \n options: ${JSON.stringify(response)} \n`);
-    logger.info(`getTipoCambio.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
-    logger.info(`getTipoCambio.data: \n ${JSON.stringify(data)} \n`);
     process.env.PRODUCTION === 'true' && logger.info(`getTipoCambio.data: \n ${JSON.stringify(data)} \n`);
     if (response.ok) {
       return {
         status: true,
         message: 'La información que hemos pedido se ha cargado correctamente',
-        tipoCambio: data.tipoCambio
+        tipoCambioCT: data.tipoCambio
       }
     }
     return {
       status: false,
       message: 'Error en el servicio. ' + JSON.stringify(data),
-      tipoCambio: null
+      tipoCambioCT: null
     };
   }
 

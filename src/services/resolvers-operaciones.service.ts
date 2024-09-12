@@ -182,7 +182,7 @@ class ResolversOperationsService {
 
   // Obtener detalles del item
   protected async getByField(collection: string, filter: object = {}) {
-    const { c_pais, vendorPartNumber, upc, brandIcecat, productIcecat, imSKU, partNumber, email, cupon } = this.variables;
+    const { c_pais, vendorPartNumber, upc, brandIcecat, productIcecat, imSKU, partnumber, email, cupon } = this.variables;
     let collectionLabel = '';
     if (c_pais) {
       filter = { c_pais: c_pais };
@@ -202,9 +202,9 @@ class ResolversOperationsService {
     } else if (imSKU) {
       filter = { "imSKU": { $regex: new RegExp(imSKU + '\\s*$') } };
       collectionLabel = `El Producto ${imSKU}`;
-    } else if (partNumber) {
-      filter = { "partnumber": partNumber };
-      collectionLabel = `El Producto ${partNumber}`;
+    } else if (partnumber) {
+      filter = { "partnumber": partnumber };
+      collectionLabel = `El Producto ${partnumber}`;
     } else if (email) {
       filter = { "email": email };
       collectionLabel = `El Email ${email}`;

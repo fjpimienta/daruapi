@@ -154,7 +154,7 @@ export interface IVariables {
   orderIngramBdi?: IOrderIngramInput;
   type?: string;
   // products
-  partNumber?: string;
+  partnumber?: string;
   // icommkt
   icommkContactInput?: IIcommktContact;
   icommkContactInputs?: [IIcommktContact];

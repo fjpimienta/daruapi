@@ -8,7 +8,7 @@ import ResolversOperationsService from './resolvers-operaciones.service';
 import { IPicture, IProduct } from '../interfaces/product.interface';
 import ExternalIcecatsService from './externalIcecat.service';
 import ExternalIngramService from './externalIngram.service';
-import { Picture } from '../models/product.models';
+import { Especificacion, Picture } from '../models/product.models';
 import ExternalBDIService from './externalBDI.service';
 import path from 'path';
 import logger from '../utils/logger';
@@ -117,7 +117,6 @@ class ProductsService extends ResolversOperationsService {
       products: result.items
     };
   }
-
 
   // // Función para obtener el JSON desde una URL y procesarlo
   // async fetchAndProcessJson(url: string): Promise<any> {
@@ -1269,6 +1268,40 @@ class ProductsService extends ResolversOperationsService {
   }
 
   // Modificar Item
+  async writeJson() {
+    const product = this.getVariables().product;
+    if (product === null) {
+      return {
+        status: false,
+        mesage: 'Producto no definido, verificar datos.',
+        product: null
+      };
+    }
+    if (!this.checkData(product?.name || '')) {
+      return {
+        status: false,
+        message: `El Producto no se ha especificado correctamente`,
+        product: null
+      };
+    }
+    const especificaciones = this.readJson(product?.partnumber);
+    const objectUpdate = {
+      especificaciones: especificaciones,
+      updaterDate: new Date().toISOString()
+    };
+    const filter = { id: product?.id };
+    // Ejecutar actualización
+    console.log('filter: ', filter);
+    console.log('objectUpdate: ', objectUpdate);
+    const result = await this.update(this.collection, filter, objectUpdate, 'productos');
+    return {
+      status: result.status,
+      message: result.message,
+      product: result.item
+    };
+  }
+
+  // Modificar Item
   async modifyImages(product: IProduct) {
     // Comprobar que el producto no sea nulo.
     if (product === null) {
@@ -1477,13 +1510,13 @@ class ProductsService extends ResolversOperationsService {
   }
 
   // Buscar json por el partnumber
-  async readJson(): Promise<{ status: boolean; message: string; product: any }> {
-    const productId = this.getVariables().productId;
+  async readJson(idProd: string = ''): Promise<{ status: boolean; message: string; getJson: [Especificacion] }> {
+    const productId = idProd === '' ? this.getVariables().productId : idProd;
     if (productId == null) {
       return {
         status: false,
         message: 'Producto no definido, verificar datos.',
-        product: null
+        getJson: [{ tipo: '', valor: '' }]
       };
     }
     const urlJson = `${env.API_URL}${env.UPLOAD_URL}/jsons/${productId}.json`;
@@ -1491,12 +1524,29 @@ class ProductsService extends ResolversOperationsService {
     try {
       const jsonData: any = await new Promise<any>((resolve, reject) => {
         const options: https.RequestOptions = {
-          rejectUnauthorized: false // Ignorar errores de certificado (solo para desarrollo)
+          rejectUnauthorized: false
         };
         client.get(urlJson, options, (response) => {
           let data = '';
           if (response.statusCode !== 200) {
-            reject(new Error(`Error: ${response.statusCode}`));
+            let MessageError = '';
+            switch (response.statusCode) {
+              case 404:
+                MessageError = 'Error 404: Archivo Json no encontrado.';
+                break;
+              case 500:
+                MessageError = 'Error 500: Error interno del servidor.';
+                break;
+              case 403:
+                MessageError = 'Error 403: Acceso prohibido al Archivo Json.';
+                break;
+              case 400:
+                MessageError = 'Error 400: Solicitud incorrecta.';
+                break;
+              default:
+                MessageError = `Error ${response.statusCode}: Ocurrió un problema desconocido.`;
+            }
+            reject(new Error(MessageError));
             return;
           }
           response.on('data', (chunk) => {
@@ -1514,30 +1564,25 @@ class ProductsService extends ResolversOperationsService {
           reject(error);
         });
       });
-      // Cargar y normalizar el JSON
-      const normalizedData = loadAndNormalizeJson(jsonData);
-      console.log('normalizedData: ', normalizedData);
-      // Buscar el producto por su ID en los datos normalizados
-      const product = normalizedData['productid']?.[productId.toLowerCase()] || null;
-      console.log('product: ', product);
-      if (product) {
+      const getJson = loadAndNormalizeJson(jsonData);
+      if (getJson) {
         return {
           status: true,
-          message: 'Producto encontrado',
-          product: product
+          message: 'Json del producto encontrado',
+          getJson: getJson
         };
       } else {
         return {
           status: false,
-          message: 'Producto no encontrado',
-          product: null
+          message: 'Json del producto no encontrado',
+          getJson: [{ tipo: '', valor: '' }]
         };
       }
     } catch (error) {
       return {
         status: false,
         message: (error as Error).message,
-        product: null
+        getJson: [{ tipo: '', valor: '' }]
       };
     }
   }

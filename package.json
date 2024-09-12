@@ -30,6 +30,7 @@
   "dependencies": {
     "@graphql-tools/load-files": "^6.6.1",
     "@graphql-tools/utils": "^9.2.1",
+    "api-darushop": "file:",
     "apollo-server-express": "^2.21.0",
     "basic-ftp": "^5.0.3",
     "bcrypt": "^5.0.1",

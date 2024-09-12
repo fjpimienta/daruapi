@@ -10,4 +10,5 @@ type Mutation {
    searchImages(supplierId: String): ResultProduct
    addJsons(supplierId: String): ResultProduct
    searchJsons(supplierId: String): ResultProduct
+   setJson(productId: String): ResultProduct
 }

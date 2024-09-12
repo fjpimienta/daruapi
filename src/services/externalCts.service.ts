@@ -28,12 +28,6 @@ class ExternalCtsService extends ResolversOperationsService {
    * @returns TokenCt: Objeto enviado por Ct minutos.
    */
   async getTokenCt() {
-    // return {
-    //   status: true,
-    //   message: '',
-    //   tokenCt: ''
-    // };
-
     const options = {
       method: 'POST',
       headers: {
@@ -45,7 +39,6 @@ class ExternalCtsService extends ResolversOperationsService {
         rfc: 'DIN2206222D3'
       })
     };
-
     const url = 'http://connect.ctonline.mx:3001/cliente/token';
     const response = await fetch(url, options);
     logger.info(`getTokenCt.response: \n ${JSON.stringify(response)} \n`);
@@ -60,7 +53,6 @@ class ExternalCtsService extends ResolversOperationsService {
     }
     const status = response.ok;
     const message = status ? 'El token se ha generado correctamente. data:' : 'Error en el servicio. ' + JSON.stringify(data);
-
     return {
       status,
       message,
@@ -117,7 +109,6 @@ class ExternalCtsService extends ResolversOperationsService {
         shippingCtRates: null
       };
     }
-
     const options = {
       method: 'POST',
       headers: {
@@ -129,7 +120,6 @@ class ExternalCtsService extends ResolversOperationsService {
         productos: productosCt
       })
     };
-
     const url = 'http://connect.ctonline.mx:3001/paqueteria/cotizacion';
     const response = await fetch(url, options);
     logger.info(`setShippingCtRates.response: \n ${JSON.stringify(response)} \n`);
@@ -147,7 +137,6 @@ class ExternalCtsService extends ResolversOperationsService {
         }
       }
     }
-
     return {
       status: false,
       message: 'Error en el servicio. ' + JSON.stringify(data),
@@ -161,7 +150,7 @@ class ExternalCtsService extends ResolversOperationsService {
       return {
         status: token.status,
         message: token.message,
-        shippingCtRates: null
+        tipoCambioCT: null
       };
     }
     const options = {
@@ -171,23 +160,21 @@ class ExternalCtsService extends ResolversOperationsService {
         'Content-Type': 'application/json'
       }
     };
-
     const url = 'http://connect.ctonline.mx:3001/pedido/tipoCambio';
     const response = await fetch(url, options);
-    logger.info(`getTipoCambio.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
     process.env.PRODUCTION === 'true' && logger.info(`getTipoCambio.data: \n ${JSON.stringify(data)} \n`);
     if (response.ok) {
       return {
         status: true,
         message: 'La información que hemos pedido se ha cargado correctamente',
-        tipoCambio: data.tipoCambio
+        tipoCambioCT: data.tipoCambio
       }
     }
     return {
       status: false,
       message: 'Error en el servicio. ' + JSON.stringify(data),
-      tipoCambio: null
+      tipoCambioCT: null
     };
   }
 
@@ -293,7 +280,6 @@ class ExternalCtsService extends ResolversOperationsService {
           'Content-Type': 'application/json',
         },
       };
-
       const url = 'http://connect.ctonline.mx:3001/existencia/promociones';
       const response = await fetch(url, options);
       logger.info(`getStockProductsCt.response: \n ${JSON.stringify(response)} \n`);
@@ -313,7 +299,6 @@ class ExternalCtsService extends ResolversOperationsService {
                     promocionString: JSON.stringify(almacenItem)
                   });
                 }
-                // Puedes manejar el caso de IPromocion si es necesario
               }
             }
             return { almacenPromocion };
@@ -361,9 +346,7 @@ class ExternalCtsService extends ResolversOperationsService {
           'Content-Type': 'application/json',
         },
       };
-
       const listProductsCt = await this.getProductsXml();
-
       if (listProductsCt) {
         const productos: Product[] = [];
         const stockProductsCt = (await this.getStockProductsCt()).stockProductsCt;
@@ -780,16 +763,13 @@ class ExternalCtsService extends ResolversOperationsService {
         folio
       })
     };
-
     const url = `http://connect.ctonline.mx:3001/pedido/confirmar`;
     const response = await fetch(url, options);
     logger.info(`setConfirmOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
     process.env.PRODUCTION === 'true' && logger.info(`setConfirmOrderCt.data: \n ${JSON.stringify(data)} \n`);
-
     const status = response.ok;
     const message = status ? 'La información que hemos enviado se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
-
     return {
       status,
       message,
@@ -817,7 +797,6 @@ class ExternalCtsService extends ResolversOperationsService {
         'Content-Type': 'application/json'
       }
     };
-
     const url = 'http://connect.ctonline.mx:3001/pedido/listar';
     const response = await fetch(url, options);
     logger.info(`getListOrderCt.response: \n ${JSON.stringify(response)} \n`);
@@ -846,7 +825,6 @@ class ExternalCtsService extends ResolversOperationsService {
         listOrdersCt
       };
     }
-
     return {
       status: false,
       message: 'Error en el servicio. ' + JSON.stringify(data),
@@ -871,16 +849,13 @@ class ExternalCtsService extends ResolversOperationsService {
         'Content-Type': 'application/json'
       }
     };
-
     const url = `http://connect.ctonline.mx:3001/pedido/estatus/${folio}`;
     const response = await fetch(url, options);
     logger.info(`getStatusOrderCt.response: \n ${JSON.stringify(response)} \n`);
     const data = await response.json();
     process.env.PRODUCTION === 'true' && logger.info(`getStatusOrderCt.data: \n ${JSON.stringify(data)} \n`);
-
     const status = response.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
-
     return {
       status,
       message,
@@ -910,7 +885,6 @@ class ExternalCtsService extends ResolversOperationsService {
         'Content-Type': 'application/json'
       }
     };
-
     const url = `http://connect.ctonline.mx:3001/pedido/detalle/${folio}`;
     const response = await fetch(url, options);
     logger.info(`getDetailOrderCt.response: \n ${JSON.stringify(response)} \n`);
@@ -918,7 +892,6 @@ class ExternalCtsService extends ResolversOperationsService {
     process.env.PRODUCTION === 'true' && logger.info(`getDetailOrderCt.data: \n ${JSON.stringify(data)} \n`);
     const status = response.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
-
     return {
       status,
       message,
@@ -951,7 +924,6 @@ class ExternalCtsService extends ResolversOperationsService {
         'Content-Type': 'application/json'
       }
     };
-
     const url = `http://connect.ctonline.mx:3001/paqueteria/volumetria/${codigo}`;
     const response = await fetch(url, options);
     logger.info(`getVolProductCt.response: \n ${JSON.stringify(response)} \n`);
@@ -959,7 +931,6 @@ class ExternalCtsService extends ResolversOperationsService {
     process.env.PRODUCTION === 'true' && logger.info(`getVolProductCt.data: \n ${JSON.stringify(data)} \n`);
     const status = response.ok;
     const message = status ? 'La información que hemos pedido se ha cargado correctamente' : `Error en el servicio. ${JSON.stringify(data)}`;
-
     return {
       status,
       message,
@@ -976,7 +947,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
   async downloadFileFromFTP() {
     const client = new Client();
-    client.ftp.verbose = true; // Activa para ver información detallada en la consola
+    client.ftp.verbose = true;
     try {
       const accessOptions: AccessOptions = {
         host: '216.70.82.104',
@@ -988,7 +959,6 @@ class ExternalCtsService extends ResolversOperationsService {
       const remoteFilePath = '/catalogo_xml/productos.xml';
       const localFilePath = './uploads/files/productos.xml';
       await client.downloadTo(localFilePath, remoteFilePath);
-      // Leer y enviar el xml.
       const fileContent = fs.readFileSync(localFilePath, 'utf-8');
       const data = await this.parseXmlToJson(fileContent, 'productos_especiales_VHA2391.xml');
       const products: IResponseCtsJsonProducts[] = [];
@@ -996,30 +966,21 @@ class ExternalCtsService extends ResolversOperationsService {
       for (const prod of data) {
         i += 1;
         const newEspecificaciones: IEspecificacion[] = [];
-        // Verifica si 'especificacion' existe y no es nulo
         if (prod.especificacion && typeof prod.especificacion === 'object') {
           // Convierte las propiedades del objeto en un array de [clave, valor]
           const especificacionArray = Object.entries(prod.especificacion);
-          // Itera sobre el array resultante
           for (const [clave, valor] of especificacionArray) {
-            if (newEspecificaciones.length < 5) {
-              // Comprobación de tipo (type assertion) para 'valor'
+            if (newEspecificaciones.length < 15) {
               const valorEspecifico = valor as { tipo: string; valor: string };
-              // Crea una nueva especificación
               const newEspecificacion: IEspecificacion = {
                 tipo: valorEspecifico.tipo,
                 valor: valorEspecifico.valor
               };
-              // Agrega la nueva especificación al array
               newEspecificaciones.push(newEspecificacion);
             } else {
-              // Si ya hay 5 especificaciones, sal del bucle
               break;
             }
           }
-          // } else {
-          //   console.error("La propiedad 'especificacion' no es un objeto iterable.");
-          //   console.log('prod: ', prod);
         }
         const newProduct: IResponseCtsJsonProducts = {
           idProducto: i,
@@ -1068,7 +1029,7 @@ class ExternalCtsService extends ResolversOperationsService {
 
   async downloadHPFileFromFTP() {
     const client = new Client();
-    client.ftp.verbose = true; // Activa para ver información detallada en la consola
+    client.ftp.verbose = true;
     try {
       const accessOptions: AccessOptions = {
         host: '216.70.82.104',
@@ -1080,7 +1041,6 @@ class ExternalCtsService extends ResolversOperationsService {
       const remoteFilePath = '/catalogo_xml/productos_especiales_VHA2391.xml';
       const localFilePath = './uploads/files/productos_especiales_VHA2391.xml';
       await client.downloadTo(localFilePath, remoteFilePath);
-      // Leer y enviar el xml.
       const fileContent = fs.readFileSync(localFilePath, 'utf-8');
       const data = await this.parseXmlToJson(fileContent, 'productos_especiales_VHA2391.xml');
       const products: IResponseCtsJsonProducts[] = [];
@@ -1088,30 +1048,22 @@ class ExternalCtsService extends ResolversOperationsService {
       for (const prod of data) {
         i += 1;
         const newEspecificaciones: IEspecificacion[] = [];
-        // Verifica si 'especificacion' existe y no es nulo
         if (prod.especificacion && typeof prod.especificacion === 'object') {
           // Convierte las propiedades del objeto en un array de [clave, valor]
           const especificacionArray = Object.entries(prod.especificacion);
-          // Itera sobre el array resultante
           for (const [clave, valor] of especificacionArray) {
-            if (newEspecificaciones.length < 5) {
-              // Comprobación de tipo (type assertion) para 'valor'
+            if (newEspecificaciones.length < 15) {
               const valorEspecifico = valor as { tipo: string; valor: string };
-              // Crea una nueva especificación
               const newEspecificacion: IEspecificacion = {
                 tipo: valorEspecifico.tipo,
                 valor: valorEspecifico.valor
               };
-              // Agrega la nueva especificación al array
               newEspecificaciones.push(newEspecificacion);
             } else {
               // Si ya hay 5 especificaciones, sal del bucle
               break;
             }
           }
-          // } else {
-          //   console.error("La propiedad 'especificacion' no es un objeto iterable.");
-          //   console.log('prod: ', prod);
         }
         const newProduct: IResponseCtsJsonProducts = {
           idProducto: i,

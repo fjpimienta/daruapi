@@ -21,7 +21,7 @@ type Query {
   product(id: ID!): ResultProduct
   productId: ResultProduct
   productField(
-    partNumber: String
+    partnumber: String
   ): ResultProduct
   getJson(productId: String): ResultProduct
 }

@@ -1269,35 +1269,40 @@ class ProductsService extends ResolversOperationsService {
 
   // Modificar Item
   async writeJson() {
-    const product = this.getVariables().product;
-    if (product === null) {
+    const productId = this.getVariables().productId;
+    if (productId === null) {
       return {
         status: false,
-        mesage: 'Producto no definido, verificar datos.',
+        mesage: 'Numero de parte no definido, verificar datos.',
         product: null
       };
     }
-    if (!this.checkData(product?.name || '')) {
+    const resultEspec = await this.readJson(productId);
+    if (!resultEspec.status) {
       return {
-        status: false,
-        message: `El Producto no se ha especificado correctamente`,
+        status: resultEspec.status,
+        message: `No se puede actualizar el producto ${productId} (${resultEspec.message})`,
         product: null
       };
     }
-    const especificaciones = this.readJson(product?.partnumber);
-    const objectUpdate = {
-      especificaciones: especificaciones,
-      updaterDate: new Date().toISOString()
-    };
-    const filter = { id: product?.id };
-    // Ejecutar actualización
-    console.log('filter: ', filter);
-    console.log('objectUpdate: ', objectUpdate);
-    const result = await this.update(this.collection, filter, objectUpdate, 'productos');
+    const especificaciones = resultEspec.getJson;
+    const filterProd = {
+      partnumber: productId
+    }
+    const resultProd = await this.getByField(this.collection, filterProd);
+    if (!resultProd.status) {
+      return {
+        status: resultProd.status,
+        message: `No se puede actualizar el producto ${productId} (${resultProd.message})`,
+        product: null
+      };
+    }
+    const product = resultProd.item;
+    product.especificaciones = especificaciones;
     return {
-      status: result.status,
-      message: result.message,
-      product: result.item
+      status: true,
+      message: `Se han actualizados las especificaciones del producto.`,
+      product
     };
   }
 
@@ -1375,12 +1380,12 @@ class ProductsService extends ResolversOperationsService {
     return partnumber.replace(/[\/ #]/g, '_');
   }
 
-  generateFilename(partNumber: string, index: number): string {
-    return `${partNumber}_${index}.jpg`;
+  generateFilename(partnumber: string, index: number): string {
+    return `${partnumber}_${index}.jpg`;
   }
 
-  generateFilenameJson(partNumber: string): string {
-    return `${partNumber}.json`;
+  generateFilenameJson(partnumber: string): string {
+    return `${partnumber}.json`;
   }
 
   // Modificar Item

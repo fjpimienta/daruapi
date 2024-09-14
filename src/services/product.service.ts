@@ -601,6 +601,12 @@ class ProductsService extends ResolversOperationsService {
         }
         const idP = parseInt(product.id || nextId.toString());
         const productC = await this.categorizarProductos(product, idP, firstsProducts); // Use product.id instead of nextId
+        const sanitizedPartnumber = this.sanitizePartnumber(product.partnumber);
+        const resultEspec = await this.readJson(sanitizedPartnumber);
+        if (resultEspec.status) {
+          const especificaciones = resultEspec.getJson;
+          productC.especificaciones = especificaciones
+        }
         productC.sheetJson = product.sheetJson;
         productsAdd.push(productC);
         // Combinamos los updates en un solo objeto
@@ -1268,45 +1274,6 @@ class ProductsService extends ResolversOperationsService {
   }
 
   // Modificar Item
-  async writeJson() {
-    const productId = this.getVariables().productId;
-    if (productId === null) {
-      return {
-        status: false,
-        mesage: 'Numero de parte no definido, verificar datos.',
-        product: null
-      };
-    }
-    const resultEspec = await this.readJson(productId);
-    if (!resultEspec.status) {
-      return {
-        status: resultEspec.status,
-        message: `No se puede actualizar el producto ${productId} (${resultEspec.message})`,
-        product: null
-      };
-    }
-    const especificaciones = resultEspec.getJson;
-    const filterProd = {
-      partnumber: productId
-    }
-    const resultProd = await this.getByField(this.collection, filterProd);
-    if (!resultProd.status) {
-      return {
-        status: resultProd.status,
-        message: `No se puede actualizar el producto ${productId} (${resultProd.message})`,
-        product: null
-      };
-    }
-    const product = resultProd.item;
-    product.especificaciones = especificaciones;
-    return {
-      status: true,
-      message: `Se han actualizados las especificaciones del producto.`,
-      product
-    };
-  }
-
-  // Modificar Item
   async modifyImages(product: IProduct) {
     // Comprobar que el producto no sea nulo.
     if (product === null) {
@@ -1591,5 +1558,45 @@ class ProductsService extends ResolversOperationsService {
       };
     }
   }
+
+  // Set Json
+  async writeJson(idProd: string = '') {
+    const productId = this.getVariables().productId;
+    if (productId === null) {
+      return {
+        status: false,
+        mesage: 'Numero de parte no definido, verificar datos.',
+        product: null
+      };
+    }
+    const resultEspec = await this.readJson(productId);
+    if (!resultEspec.status) {
+      return {
+        status: resultEspec.status,
+        message: `No se puede actualizar el producto ${productId} (${resultEspec.message})`,
+        product: null
+      };
+    }
+    const especificaciones = resultEspec.getJson;
+    const filterProd = {
+      partnumber: productId
+    }
+    const resultProd = await this.getByField(this.collection, filterProd);
+    if (!resultProd.status) {
+      return {
+        status: resultProd.status,
+        message: `No se puede actualizar el producto ${productId} (${resultProd.message})`,
+        product: null
+      };
+    }
+    const product = resultProd.item;
+    product.especificaciones = especificaciones;
+    return {
+      status: true,
+      message: `Se han actualizados las especificaciones del producto.`,
+      product
+    };
+  }
+
 }
 export default ProductsService;

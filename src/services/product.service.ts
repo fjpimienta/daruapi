@@ -604,8 +604,15 @@ class ProductsService extends ResolversOperationsService {
         const sanitizedPartnumber = this.sanitizePartnumber(product.partnumber);
         const resultEspec = await this.readJson(sanitizedPartnumber);
         if (resultEspec.status) {
-          const especificaciones = resultEspec.getJson;
-          productC.especificaciones = especificaciones
+          const especificaciones: Especificacion[] = resultEspec.getJson;
+          especificaciones.forEach(nuevaEspecificacion => {
+            const index = productC.especificaciones.findIndex(especificacion => especificacion.tipo === nuevaEspecificacion.tipo);
+            if (index !== -1) {
+              productC.especificaciones[index] = nuevaEspecificacion;
+            } else {
+              productC.especificaciones.push(nuevaEspecificacion);
+            }
+          });
         }
         productC.sheetJson = product.sheetJson;
         productsAdd.push(productC);

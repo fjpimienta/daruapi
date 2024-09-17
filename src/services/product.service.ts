@@ -536,11 +536,14 @@ class ProductsService extends ResolversOperationsService {
       let allExistingProducts = [];
       if (idProveedor !== 'ingram') {
         const responseBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
+        logger.info(`insertMany->responseBDI. ${responseBDI.status}; ${responseBDI.message}.`);
         if (!responseBDI || !responseBDI.productsBDI || responseBDI.productsBDI.length === 0) {
           const filter = { 'suppliersProd.idProveedor': idProveedor };
           const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
+          logger.info(`insertMany->listAll. ${result.status}; ${result.message}.`);
           if (result && result.items && result.items.length > 0) {
             allExistingProducts = result.items;
+            logger.info(`insertMany->allExistingProducts.length: ${allExistingProducts.length}.`);
             existingProductsMap = new Map(result.items.map(item => [item.partnumber, item]));
           } else {
             let j = id;
@@ -553,6 +556,7 @@ class ProductsService extends ResolversOperationsService {
         } else {
           const productsBDI = responseBDI.productsBDI;
           allExistingProducts = productsBDI.map((productBDI: IProductBDI) => productBDI.products);
+          logger.info(`insertMany->allExistingProducts.length: ${allExistingProducts.length}.`);
           existingProductsMap = new Map(productsBDI.map((productBDI: IProductBDI) => [productBDI.products.vendornumber, productBDI]));
         }
       }
@@ -603,7 +607,10 @@ class ProductsService extends ResolversOperationsService {
         const productC = await this.categorizarProductos(product, idP, firstsProducts); // Use product.id instead of nextId
         const sanitizedPartnumber = this.sanitizePartnumber(product.partnumber);
         const resultEspec = await this.readJson(sanitizedPartnumber);
+        productC.sheetJson = product.sheetJson;
         if (resultEspec.status) {
+          const urlJson = `${env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
+          productC.sheetJson = urlJson;
           const especificaciones: Especificacion[] = resultEspec.getJson;
           especificaciones.forEach(nuevaEspecificacion => {
             const index = productC.especificaciones.findIndex(especificacion => especificacion.tipo === nuevaEspecificacion.tipo);
@@ -614,7 +621,6 @@ class ProductsService extends ResolversOperationsService {
             }
           });
         }
-        productC.sheetJson = product.sheetJson;
         productsAdd.push(productC);
         // Combinamos los updates en un solo objeto
         const updateData = {

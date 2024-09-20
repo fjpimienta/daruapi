@@ -11,4 +11,5 @@ type ResultProduct implements Result{
   productField: Product
   productJson: String
   getJson: [Especificacion]
+  getImages: [Picture]
 }

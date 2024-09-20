@@ -24,4 +24,5 @@ type Query {
     partnumber: String
   ): ResultProduct
   getJson(productId: String): ResultProduct
+  getImages(productId: String): ResultProduct
 }

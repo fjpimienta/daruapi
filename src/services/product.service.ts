@@ -133,14 +133,10 @@ class ProductsService extends ResolversOperationsService {
       const urlImage = `${process.env.API_URL}${product.sheetJson}`;
       console.log('urlImage: ', urlImage);
       // Crear una instancia de TraslateService
-      // const translateService = new TraslateService(this.root, this.variables, this.context);
       const translateService = new TraslateService(this.getRoot(), this.getVariables(), this.getContext());
       console.log('translateService: ', translateService);
-
-
       // Usar la instancia para llamar a fetchAndProcessJson
       const jsonProduct = await translateService.fetchAndProcessJson(urlImage);
-
       // const jsonProduct = await TraslateService.fetchAndProcessJson(urlImage);
       console.log('jsonProduct: ', jsonProduct);
     } else {
@@ -148,9 +144,7 @@ class ProductsService extends ResolversOperationsService {
         brandIcecat: product.brands[0].slug,
         productIcecat: product.partnumber
       }
-
       const icecatExt = await new ExternalIcecatsService({}, variableLocal, context).getIcecatProductLocal();
-
       if (icecatExt.status && product.suppliersProd.idProveedor !== 'syscom') {
         if (icecatExt.icecatProductLocal) {
           const generalInfo: any = {};
@@ -491,7 +485,6 @@ class ProductsService extends ResolversOperationsService {
       let productsAdd: IProduct[] = [];
       // Validar que existan productos para integrar.
       if (!products || products.length === 0) {
-        logger.error(`insertMany->No existen elementos para integrar`);
         return {
           status: false,
           message: 'No existen elementos para integrar',
@@ -637,7 +630,6 @@ class ProductsService extends ResolversOperationsService {
         products: []
       };
     } catch (error) {
-      logger.error(`insertMany->Hubo un error al generar los productos. ${error}`);
       return {
         status: false,
         message: error,
@@ -713,10 +705,9 @@ class ProductsService extends ResolversOperationsService {
       // Recuperar los productos de un proveedor
       const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
       if (!result || !result.items || result.items.length === 0) {
-        logger.error(`saveImages->listAll.products:: No existen elementos para integrar de ${supplierId}.\n`);
         return {
           status: false,
-          message: 'No existen elementos para recuperar las imagenes',
+          message: `No existen elementos para recuperar las imagenes de ${supplierId}.`,
           products: []
         };
       }
@@ -749,18 +740,10 @@ class ProductsService extends ResolversOperationsService {
               imageCache.set(url, filename);
               if (product.pictures[index]) {
                 product.pictures[index].url = path.join(urlImageSave, filename);
-                // } else {
-                // logger.error(`saveImages->error: product.pictures[${index}] is undefined`);
-                // Establecer una URL de imagen de reemplazo o un valor predeterminado
-                // product.pictures[index] = { url: `${urlImageSave}${dafaultImage}` };
               }
             }
           } catch (error) {
             logger.error(`saveImages-> error.downloadImages: ${error}`);
-            // Establecer una URL de imagen de reemplazo o un valor predeterminado
-            // if (product.pictures[index]) {
-            //   product.pictures[index].url = `${urlImageSave}${dafaultImage}`;
-            // }
           }
         }));
       };
@@ -769,7 +752,6 @@ class ProductsService extends ResolversOperationsService {
         logger.info(`saveImages->cargar imagenes de : ${idProveedor} \n`);
         const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         if (!resultBDI || !resultBDI.productsBDI) {
-          logger.error(`saveImages->resultBDI: ${resultBDI.message} \n`);
           return {
             status: resultBDI.status,
             message: resultBDI.message,
@@ -777,7 +759,6 @@ class ProductsService extends ResolversOperationsService {
           };
         }
         if (!resultBDI.status || resultBDI.productsBDI.length <= 0) {
-          logger.error(`saveImages->resultBDI: ${resultBDI.message} \n`);
           return {
             status: resultBDI.status,
             message: resultBDI.message,
@@ -793,8 +774,6 @@ class ProductsService extends ResolversOperationsService {
         for (const productBDI of productsBDI) {
           if (productBDI.products && productBDI.products.vendornumber) {
             productsBDIMap.set(productBDI.products.vendornumber, productBDI);
-          } else {
-            // logger.error(`saveImages->Producto ${productBDI.products.vendornumber} no localizado.\n`);
           }
         }
 
@@ -866,7 +845,6 @@ class ProductsService extends ResolversOperationsService {
         products: []
       };
     } catch (error) {
-      // logger.error(`saveImages->error: ${error} \n`);
       return {
         status: false,
         message: error,
@@ -903,10 +881,9 @@ class ProductsService extends ResolversOperationsService {
       // Recuperar los productos de un proveedor
       const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
       if (!result || !result.items || result.items.length === 0) {
-        logger.error(`saveImages->listAll.products:: No existen elementos para integrar de ${supplierId}.\n`);
         return {
           status: false,
-          message: 'No existen elementos para recuperar las imagenes',
+          message: `No existen elementos para recuperar las imagenes de ${supplierId}.`,
           products: []
         };
       }
@@ -969,10 +946,9 @@ class ProductsService extends ResolversOperationsService {
 
       // Si no hay productos para buscar entonces salir.
       if (productsWithoutPictures.length <= 0) {
-        logger.error(`saveImages->products: No se encontraron productos sin imagenes de ${idProveedor}\n`);
         return {
           status: false,
-          message: 'No se encontraron productos sin imagenes.',
+          message: `No se encontraron productos sin imagenes de ${idProveedor}.`,
           products: []
         };
       }
@@ -985,7 +961,6 @@ class ProductsService extends ResolversOperationsService {
       };
 
     } catch (error) {
-      // logger.error(`saveImages->error: ${error} \n`);
       return {
         status: false,
         message: error,
@@ -1019,7 +994,6 @@ class ProductsService extends ResolversOperationsService {
       // Recuperar los productos de un proveedor
       const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
       if (!result || !result.items || result.items.length === 0) {
-        logger.error(`saveJsons->listAll.products:: No existen elementos para integrar de ${supplierId}.\n`);
         return {
           status: false,
           message: 'No existen elementos para recuperar los json',
@@ -1037,11 +1011,6 @@ class ProductsService extends ResolversOperationsService {
         const filePath = path.join(destFolder, filename);
 
         try {
-          // if (imageCache.has(imageUrl)) {
-          //   if (product.saveJsons) {
-          //     product.saveJsons = path.join(urlJsonSave, imageCache.get(imageUrl)!);
-          //   }
-          // } else {
           const downloadPromise = downloadJson(imageUrl, destFolder, filename);
           downloadQueue.push(downloadPromise);
           if (downloadQueue.length > MAX_CONCURRENT_DOWNLOADS) {
@@ -1052,10 +1021,7 @@ class ProductsService extends ResolversOperationsService {
           imageCache.set(imageUrl, filename);
           if (product.sheetJson) {
             product.sheetJson = path.join(urlJsonSave, filename);
-            // } else {
-            //   logger.error(`saveJsons->error: product.sheetJson is undefined`);
           }
-          // }
         } catch (error) {
           logger.error(`saveJsons->error.downloadJsons: ${error}`);
         }
@@ -1065,7 +1031,6 @@ class ProductsService extends ResolversOperationsService {
         logger.info(`saveJsons->cargar jsons de : ${idProveedor} \n`);
         const resultBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         if (!resultBDI || !resultBDI.productsBDI) {
-          logger.error(`saveJsons->resultBDI: Error en la recuperacion de los productos de ${idProveedor}\n`);
           return {
             status: false,
             message: `Error en la recuperacion de los productos de ${idProveedor}\n`,
@@ -1073,7 +1038,6 @@ class ProductsService extends ResolversOperationsService {
           };
         }
         if (!resultBDI.status || resultBDI.productsBDI.length <= 0) {
-          logger.error(`saveJsons->resultBDI: ${resultBDI.message} \n`);
           return {
             status: resultBDI.status,
             message: resultBDI.message,
@@ -1089,8 +1053,6 @@ class ProductsService extends ResolversOperationsService {
         for (const productBDI of productsBDI) {
           if (productBDI.products && productBDI.products.vendornumber) {
             productsBDIMap.set(productBDI.products.vendornumber, productBDI);
-          } else {
-            logger.error(`saveJsons->Producto ${productBDI.products.vendornumber} no localizado.\n`);
           }
         }
 
@@ -1158,7 +1120,6 @@ class ProductsService extends ResolversOperationsService {
         products: []
       };
     } catch (error) {
-      // logger.error(`saveJsons->error: ${error} \n`);
       return {
         status: false,
         message: error,
@@ -1192,10 +1153,9 @@ class ProductsService extends ResolversOperationsService {
       // Recuperar los productos de un proveedor
       const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
       if (!result || !result.items || result.items.length === 0) {
-        logger.error(`saveJsons->listAll.products:: No existen elementos para integrar de ${supplierId}.\n`);
         return {
           status: false,
-          message: 'No existen elementos para recuperar los json',
+          message: `No existen elementos para recuperar los json de ${supplierId}.`,
           products: []
         };
       }
@@ -1245,10 +1205,9 @@ class ProductsService extends ResolversOperationsService {
 
       // Si no hay productos para buscar entonces salir.
       if (productsWithoutJsons.length <= 0) {
-        logger.error(`saveJsons->products: No se encontraron productos sin jsons de ${idProveedor}\n`);
         return {
           status: false,
-          message: 'No se encontraron productos sin jsons.',
+          message: `No se encontraron productos sin jsons de ${idProveedor}.`,
           products: []
         };
       }
@@ -1263,7 +1222,6 @@ class ProductsService extends ResolversOperationsService {
       };
 
     } catch (error) {
-      // logger.error(`saveJsons->error: ${error} \n`);
       return {
         status: false,
         message: error,

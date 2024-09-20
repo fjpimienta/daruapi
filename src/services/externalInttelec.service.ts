@@ -91,7 +91,7 @@ class ExternalInttelecService extends ResolversOperationsService {
             }
           }
         }
-        console.log('productos: ', productos);
+        // console.log('productos: ', productos);
         return await {
           status: true,
           message: `Productos listos para agregar.`,
@@ -117,7 +117,7 @@ class ExternalInttelecService extends ResolversOperationsService {
   async setOrderInttelec() {
     try {
       const orderInttelec = this.getVariables().orderInttelec;
-      console.log('orderInttelec: ', orderInttelec);
+      // console.log('orderInttelec: ', orderInttelec);
       if (!orderInttelec) {
         return {
           status: false,
@@ -146,7 +146,7 @@ class ExternalInttelecService extends ResolversOperationsService {
         redirect: 'follow' as RequestRedirect
       };
       const url = 'https://www.inttelec.com.mx/api/products/full-catalog';
-      console.log('options: ', options);
+      // console.log('options: ', options);
       const response = await fetch(url, options);
       if (response.status < 200 || response.status >= 300) {
         return {
@@ -272,18 +272,18 @@ class ExternalInttelecService extends ResolversOperationsService {
     let price = 0;
     let salePrice = 0;
     itemData.id = undefined;
-    console.log('item.warehouses: ', item.warehouses);
+    // console.log('item.warehouses: ', item.warehouses);
 
     if (item && item.warehouses) {
       console.log('item.price: ', item.price);
-      console.log('item.price.price_unit: ', item.price.price_unit);
-      if (item.price && item.price.length > 0 && item.price[0].price_unit > 0) {
+      if (item.price && item.price.length > 0 && item.price[0].price_unit && item.price[0].price_unit > 0) {
+        const priceUnit = item.price[0].price_unit;
         const branchOfficesInttelec: BranchOffices[] = [];
         const existenciaProductoInttelec: IWarehousesInttelec = item.warehouses;
-        console.log('existenciaProductoInttelec: ', existenciaProductoInttelec);
+        // console.log('existenciaProductoInttelec: ', existenciaProductoInttelec);
         // const almacenesConExistencia: IWarehousesInttelec = {};
         for (const [key, almacen] of Object.entries(existenciaProductoInttelec)) {
-          console.log('almacen: ', almacen);
+          // console.log('almacen: ', almacen);
           if (almacen && almacen.available_quantity >= stockMinimo) {
             disponible += almacen.available_quantity;
             almacen.id = key;
@@ -299,8 +299,8 @@ class ExternalInttelecService extends ResolversOperationsService {
           itemData.name = item.title;
           itemData.slug = slugify(item.title, { lower: true });
           itemData.short_desc = item.title;
-          price = parseFloat((parseFloat(item.price) * utilidad * iva).toFixed(2));
-          salePrice = parseFloat((parseFloat(item.price) * utilidad * iva).toFixed(2));
+          price = parseFloat((parseFloat(priceUnit) * utilidad * iva).toFixed(2));
+          salePrice = parseFloat((parseFloat(priceUnit) * utilidad * iva).toFixed(2));
           if (price > salePrice) {
             featured = true;
           }
@@ -353,7 +353,7 @@ class ExternalInttelecService extends ResolversOperationsService {
           s.idProveedor = proveedor;
           s.codigo = item.sku;
           s.cantidad = stockMinimo;
-          s.price = parseFloat(item.price);
+          s.price = parseFloat(priceUnit);
           s.sale_price = 0;
           s.moneda = 'MXN';
           s.category = new Categorys();

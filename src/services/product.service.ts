@@ -117,7 +117,7 @@ class ProductsService extends ResolversOperationsService {
       products: result.items
     };
   }
-  
+
   // Obtener detalles del item
   async details(variables: IVariables, context: IContextData) {
     const result = await this.get(this.collection);
@@ -581,8 +581,10 @@ class ProductsService extends ResolversOperationsService {
           nextId += 1; // Incrementamos el nextId para el siguiente nuevo producto
         }
         const idP = parseInt(product.id || nextId.toString());
-        const productC = await this.categorizarProductos(product, idP, firstsProducts); // Use product.id instead of nextId
+        const productC = await this.categorizarProductos(product, idP, firstsProducts);
         const sanitizedPartnumber = this.sanitizePartnumber(product.partnumber);
+
+        // Verificar archivos json
         const resultEspec = await this.readJson(sanitizedPartnumber);
         productC.sheetJson = product.sheetJson;
         if (resultEspec.status) {
@@ -598,6 +600,13 @@ class ProductsService extends ResolversOperationsService {
             }
           });
         }
+        // Verificar imagenes
+        const resultImages = await this.readImages(sanitizedPartnumber);
+        if (resultEspec.status) {
+          productC.pictures = resultImages.getImages;
+          productC.sm_pictures = resultImages.getImages;
+        }
+
         productsAdd.push(productC);
         // Combinamos los updates en un solo objeto
         const updateData = {
@@ -1586,6 +1595,82 @@ class ProductsService extends ResolversOperationsService {
       message: `Se han actualizados las especificaciones del producto.`,
       product
     };
+  }
+
+  // Buscar json por el partnumber
+  async readImages(idProd: string = ''): Promise<{ status: boolean; message: string; getImages: Picture[] }> {
+    const productId = idProd === '' ? this.getVariables().productId : idProd;
+    let existOnePicture = false;
+    const createPicture = (width: string, height: string, url: string) => {
+      const picture = new Picture();
+      picture.width = width;
+      picture.height = height;
+      picture.url = url;
+      return picture;
+    };
+    if (productId == null) {
+      return {
+        status: false,
+        message: 'Producto no definido, verificar datos.',
+        getImages: [{
+          width: '',
+          height: '',
+          url: '',
+          pivot: { related_id: '', upload_file_id: '' }
+        }]
+      };
+    }
+    const urlJson = `${env.API_URL}${env.UPLOAD_URL}/jsons/${productId}.json`;
+    const client = urlJson.startsWith('https') ? https : http;
+    const urlImageSave = `${process.env.UPLOAD_URL}images/`;
+    try {
+      let pictures: Picture[] = [];
+      let sm_pictures: Picture[] = [];
+      for (let j = 0; j <= 15; j++) {
+        const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${productId}_${j}.jpg`;
+        logger.info(`saveImages->producto: ${productId}; imagen: ${urlImage}`);
+        let existFile = await checkImageExists(urlImage);
+        if (existFile) {
+          existOnePicture = true;
+          pictures.push(createPicture('600', '600', path.join(urlImageSave, `${productId}_${j}.jpg`)));
+          sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, `${productId}_${j}.jpg`)));
+          logger.info(`  ------->  producto: ${productId}; imagen guardada: ${urlImage}`);
+        } else {
+          break;
+        }
+      }
+      console.log('pictures: ', pictures);
+
+      if (pictures.length >= 0) {
+        return {
+          status: true,
+          message: 'Imagenes del producto encontradas',
+          getImages: pictures
+        };
+      } else {
+        return {
+          status: false,
+          message: 'Imagenes del producto no encontradas',
+          getImages: [{
+            width: '',
+            height: '',
+            url: '',
+            pivot: { related_id: '', upload_file_id: '' }
+          }]
+        };
+      }
+    } catch (error) {
+      return {
+        status: false,
+        message: (error as Error).message,
+        getImages: [{
+          width: '',
+          height: '',
+          url: '',
+          pivot: { related_id: '', upload_file_id: '' }
+        }]
+      };
+    }
   }
 
 }

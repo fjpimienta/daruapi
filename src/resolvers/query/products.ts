@@ -17,6 +17,9 @@ const resolversProductsQuery: IResolvers = {
     },
     async getJson(_, variables, context) {
       return new ProductsService(_, variables, context).readJson();
+    },
+    async getImages(_, variables, context) {
+      return new ProductsService(_, variables, context).readImages();
     }
   },
 };

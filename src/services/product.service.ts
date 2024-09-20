@@ -1639,8 +1639,6 @@ class ProductsService extends ResolversOperationsService {
           break;
         }
       }
-      console.log('pictures: ', pictures);
-
       if (pictures.length >= 0) {
         return {
           status: true,

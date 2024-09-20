@@ -117,30 +117,7 @@ class ProductsService extends ResolversOperationsService {
       products: result.items
     };
   }
-
-  // // Función para obtener el JSON desde una URL y procesarlo
-  // async fetchAndProcessJson(url: string): Promise<any> {
-  //   try {
-  //     const response = await fetch(url);
-  //     if (!response.ok) {
-  //       throw new Error(`Error al obtener el JSON: ${response.statusText}`);
-  //     }
-  //     const data: Attribute[] = await response.json();
-  //     return await this.generateOutput(data);
-  //   } catch (error) {
-  //     console.error('Error al procesar el JSON:', error);
-  //   }
-  // }
-
-  // // Función para generar la salida con los datos obtenidos
-  // async generateOutput(data: Attribute[]): Promise<Especificacion[]> {
-  //   const especificaciones: Especificacion[] = [];
-  //   data.forEach(item => {
-  //     especificaciones.push({ tipo: item.attributeName, valor: item.attributeValue });
-  //   });
-  //   return await especificaciones;
-  // }
-
+  
   // Obtener detalles del item
   async details(variables: IVariables, context: IContextData) {
     const result = await this.get(this.collection);

@@ -31,7 +31,7 @@ const downloadJson = async (url: string, destFolder: string, filename: string, m
         });
 
         request.setTimeout(30000, () => {
-          // logger.error(`Request timed out after 30 seconds: ${url}`);
+          logger.error(`Request timed out after 30 seconds: ${url}`);
           request.abort();
         });
       });
@@ -61,12 +61,10 @@ const downloadJson = async (url: string, destFolder: string, filename: string, m
       return;
     } catch (error) {
       retries++;
-      // logger.error(`Error downloading JSON from ${url}. Retrying (${retries}/${maxRetries})...`);
-      // logger.error(error);
+      logger.error(`Error downloading JSON from ${url}. Retrying (${retries}/${maxRetries})... ${error}`);
       await new Promise((resolve) => setTimeout(resolve, retryDelay));
     }
   }
-  // logger.error(`Maximum number of retries reached for ${url}`);
 };
 
 const checkFileExistsJson = async (url: string): Promise<boolean> => {

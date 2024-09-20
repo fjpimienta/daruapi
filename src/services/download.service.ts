@@ -73,12 +73,10 @@ const downloadImage = async (url: string, destFolder: string, filename: string, 
       return;
     } catch (error) {
       retries++;
-      logger.error(`Error downloading image from ${url}. Retrying (${retries}/${maxRetries})...`);
-      logger.error(error);
+      logger.error(`Error downloading image from ${url}. Retrying (${retries}/${maxRetries})... ${error}`);
       await new Promise((resolve) => setTimeout(resolve, retryDelay));
     }
   }
-  logger.error(`Maximum number of retries reached for ${url}`);
 };
 
 const checkImageExists = async (url: string): Promise<boolean> => {

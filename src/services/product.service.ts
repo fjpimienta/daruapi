@@ -903,17 +903,39 @@ class ProductsService extends ResolversOperationsService {
           const partnumber = product.partnumber;
           const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
           let existOnePicture = false; // Mueve la variable aquí para reiniciarla por producto
+          const maxImagesToSearch = 15; // Máximo de imágenes a buscar
+          const maxConsecutiveMissesAfterFound = 3; // Máximo de imágenes consecutivas faltantes después de encontrar alguna
 
-          // Intentamos buscar hasta 15 imágenes
-          for (let j = 0; j <= 15; j++) {
+          let consecutiveMisses = 0; // Contador de imágenes no encontradas consecutivas
+          let foundAtLeastOneImage = false; // Indicador de si ya se encontró al menos una imagen
+
+          // Intentamos buscar hasta 15 imágenes o hasta encontrar 3 faltantes consecutivas después de la primera imagen
+          for (let j = 0; j <= maxImagesToSearch; j++) {
             const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${sanitizedPartnumber}_${j}.jpg`;
             let existFile = await checkImageExists(urlImage);
 
             if (existFile) {
               existOnePicture = true;
+              foundAtLeastOneImage = true; // Ya se encontró al menos una imagen
+              consecutiveMisses = 0; // Reseteamos el contador de fallos consecutivos si encontramos una imagen
+
+              // Guardar la imagen encontrada
               pictures.push(createPicture('600', '600', `${urlImageSave}${sanitizedPartnumber}_${j}.jpg`));
               sm_pictures.push(createPicture('300', '300', `${urlImageSave}${sanitizedPartnumber}_${j}.jpg`));
+
               logger.info(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
+            } else {
+              if (foundAtLeastOneImage) {
+                consecutiveMisses++; // Solo contar fallos consecutivos si ya se encontró una imagen
+              }
+
+              logger.info(`  ------->  producto: ${product.partnumber}; imagen NO encontrada: ${urlImage}`);
+            }
+
+            // Si alcanzamos el máximo de fallos consecutivos después de encontrar al menos una imagen, detenemos la búsqueda
+            if (consecutiveMisses >= maxConsecutiveMissesAfterFound) {
+              logger.info(`Deteniendo la búsqueda de imágenes para ${product.partnumber} después de ${consecutiveMisses} imágenes faltantes consecutivas.`);
+              break;
             }
           }
 

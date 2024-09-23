@@ -1580,7 +1580,7 @@ class ProductsService extends ResolversOperationsService {
     };
   }
 
-  // Buscar json por el partnumber
+  // Buscar imagenes por el partnumber
   async readImages(idProd: string = ''): Promise<{ status: boolean; message: string; getImages: Picture[] }> {
     const productId = idProd === '' ? this.getVariables().productId : idProd;
     let existOnePicture = false;
@@ -1591,6 +1591,7 @@ class ProductsService extends ResolversOperationsService {
       picture.url = url;
       return picture;
     };
+
     if (productId == null) {
       return {
         status: false,
@@ -1603,35 +1604,55 @@ class ProductsService extends ResolversOperationsService {
         }]
       };
     }
-    const urlJson = `${env.API_URL}${env.UPLOAD_URL}/jsons/${productId}.json`;
-    const client = urlJson.startsWith('https') ? https : http;
+
     const urlImageSave = `${process.env.UPLOAD_URL}images/`;
+    const maxImagesToSearch = 15; // Máximo de imágenes a buscar
+    const maxConsecutiveMisses = 3; // Máximo de imágenes faltantes consecutivas
+
     try {
       let pictures: Picture[] = [];
       let sm_pictures: Picture[] = [];
-      for (let j = 0; j <= 15; j++) {
+      let consecutiveMisses = 0;
+      let foundAtLeastOneImage = false; // Para verificar si al menos se encontró una imagen
+
+      for (let j = 0; j <= maxImagesToSearch; j++) {
         const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${productId}_${j}.jpg`;
-        logger.info(`saveImages->producto: ${productId}; imagen: ${urlImage}`);
+        logger.info(`readImages->producto: ${productId}; imagen: ${urlImage}`);
+
         let existFile = await checkImageExists(urlImage);
+
         if (existFile) {
           existOnePicture = true;
+          foundAtLeastOneImage = true;
+          consecutiveMisses = 0; // Resetea el contador si se encuentra una imagen
+
           pictures.push(createPicture('600', '600', path.join(urlImageSave, `${productId}_${j}.jpg`)));
           sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, `${productId}_${j}.jpg`)));
           logger.info(`  ------->  producto: ${productId}; imagen guardada: ${urlImage}`);
         } else {
+          if (foundAtLeastOneImage) {
+            consecutiveMisses++; // Aumenta el contador solo si ya se ha encontrado una imagen previamente
+          }
+          logger.info(`  ------->  producto: ${productId}; imagen NO encontrada: ${urlImage}`);
+        }
+
+        // Si alcanzamos el máximo de fallos consecutivos, detenemos la búsqueda
+        if (consecutiveMisses >= maxConsecutiveMisses) {
+          logger.info(`Deteniendo la búsqueda de imágenes para ${productId} después de ${consecutiveMisses} imágenes faltantes consecutivas.`);
           break;
         }
       }
-      if (pictures.length >= 0) {
+
+      if (pictures.length > 0) {
         return {
           status: true,
-          message: 'Imagenes del producto encontradas',
+          message: 'Imágenes del producto encontradas.',
           getImages: pictures
         };
       } else {
         return {
           status: false,
-          message: 'Imagenes del producto no encontradas',
+          message: 'Imágenes del producto no encontradas.',
           getImages: [{
             width: '',
             height: '',
@@ -1653,6 +1674,7 @@ class ProductsService extends ResolversOperationsService {
       };
     }
   }
+
 
 }
 export default ProductsService;

@@ -887,40 +887,42 @@ class ProductsService extends ResolversOperationsService {
           products: []
         };
       }
-      let existOnePicture = false;
+
       let products = result.items as IProduct[];
-      // const filteredProducts = products.filter(product => product.pictures && product.pictures.length > 0);
       const idProveedor = supplierId;
       logger.info(`saveImages->productos de ${supplierId}: ${products.length} \n`);
 
       // ============================== Temporal
       // Identificar los productos que ya tengan imagenes
       for (let i = 0; i < products.length; i++) {
-        existOnePicture = false;
         let product = products[i];
         let pictures: Picture[] = [];
         let sm_pictures: Picture[] = [];
+
         if (product.partnumber !== '') {
           const partnumber = product.partnumber;
           const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
+          let existOnePicture = false; // Mueve la variable aquí para reiniciarla por producto
+
+          // Intentamos buscar hasta 15 imágenes
           for (let j = 0; j <= 15; j++) {
             const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${sanitizedPartnumber}_${j}.jpg`;
-            // logger.info(`saveImages->producto: ${product.partnumber}; imagen: ${urlImage}`);
             let existFile = await checkImageExists(urlImage);
+
             if (existFile) {
               existOnePicture = true;
-              pictures.push(createPicture('600', '600', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
-              sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, `${sanitizedPartnumber}_${j}.jpg`)));
+              pictures.push(createPicture('600', '600', `${urlImageSave}${sanitizedPartnumber}_${j}.jpg`));
+              sm_pictures.push(createPicture('300', '300', `${urlImageSave}${sanitizedPartnumber}_${j}.jpg`));
               logger.info(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
-            } else {
-              break;
             }
           }
-          // Si no hay fotos del producto.
+
+          // Si se encontró al menos una imagen, guardamos las imágenes del producto
           if (existOnePicture) {
             product.pictures = pictures;
             product.sm_pictures = sm_pictures;
             const updateImage = await this.modifyImages(product);
+
             if (!updateImage.status) {
               logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber}.\n`);
             }
@@ -929,8 +931,7 @@ class ProductsService extends ResolversOperationsService {
         }
       }
 
-      // Si hubo productos que se encontraron las imagenes en el server daru.
-      // logger.info(`Productos con imagenes actualizadas / productsPictures.length: ${productsPictures.length}`);
+      // Si hubo productos que se encontraron las imágenes en el server daru.
       if (productsPictures.length > 0) {
         logger.info(`saveImages->productsPictures DARU de ${supplierId}: ${productsPictures.length} \n`);
         const productIdsWithImages = new Set(productsPictures.map(picture => picture.id));
@@ -942,6 +943,7 @@ class ProductsService extends ResolversOperationsService {
       } else {
         productsWithoutPictures = products;
       }
+
       logger.info(`Productos con imagenes pendientes de actualizar / productsWithoutPictures.length: ${productsWithoutPictures.length}`);
 
       // Si no hay productos para buscar entonces salir.
@@ -952,6 +954,7 @@ class ProductsService extends ResolversOperationsService {
           products: []
         };
       }
+
       logger.info(`saveImages->productos a buscar imagenes de ${supplierId}: ${products.length} \n`);
       // Out
       return {

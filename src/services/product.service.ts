@@ -1583,7 +1583,6 @@ class ProductsService extends ResolversOperationsService {
   // Buscar imagenes por el partnumber
   async readImages(idProd: string = ''): Promise<{ status: boolean; message: string; getImages: Picture[] }> {
     const productId = idProd === '' ? this.getVariables().productId : idProd;
-    let existOnePicture = false;
     const createPicture = (width: string, height: string, url: string) => {
       const picture = new Picture();
       picture.width = width;
@@ -1592,7 +1591,7 @@ class ProductsService extends ResolversOperationsService {
       return picture;
     };
 
-    if (productId == null) {
+    if (!productId) {
       return {
         status: false,
         message: 'Producto no definido, verificar datos.',
@@ -1613,33 +1612,46 @@ class ProductsService extends ResolversOperationsService {
       let pictures: Picture[] = [];
       let sm_pictures: Picture[] = [];
       let consecutiveMisses = 0;
-      let foundAtLeastOneImage = false; // Para verificar si al menos se encontró una imagen
+      let foundAtLeastOneImage = false;
 
-      for (let j = 0; j <= maxImagesToSearch; j++) {
-        const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${productId}_${j}.jpg`;
-        logger.info(`readImages->producto: ${productId}; imagen: ${urlImage}`);
+      // Función que genera la promesa para verificar la existencia de una imagen
+      const checkImage = async (index: number) => {
+        const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${productId}_${index}.jpg`;
+        const existFile = await checkImageExists(urlImage);
+        return { existFile, urlImage, index };
+      };
 
-        let existFile = await checkImageExists(urlImage);
+      // Crear las promesas de verificación de todas las imágenes
+      const promises = Array.from({ length: maxImagesToSearch + 1 }, (_, index) => checkImage(index));
 
-        if (existFile) {
-          existOnePicture = true;
-          foundAtLeastOneImage = true;
-          consecutiveMisses = 0; // Resetea el contador si se encuentra una imagen
+      // Esperar a que todas las promesas se resuelvan o rechacen
+      const results = await Promise.allSettled(promises);
 
-          pictures.push(createPicture('600', '600', path.join(urlImageSave, `${productId}_${j}.jpg`)));
-          sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, `${productId}_${j}.jpg`)));
-          logger.info(`  ------->  producto: ${productId}; imagen guardada: ${urlImage}`);
-        } else {
-          if (foundAtLeastOneImage) {
-            consecutiveMisses++; // Aumenta el contador solo si ya se ha encontrado una imagen previamente
+      // Procesar los resultados
+      for (const result of results) {
+        if (result.status === 'fulfilled') {
+          const { existFile, urlImage, index } = result.value;
+
+          if (existFile) {
+            foundAtLeastOneImage = true;
+            consecutiveMisses = 0; // Resetear el contador de imágenes faltantes consecutivas
+
+            // Agregar las imágenes al arreglo
+            pictures.push(createPicture('600', '600', path.join(urlImageSave, `${productId}_${index}.jpg`)));
+            sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, `${productId}_${index}.jpg`)));
+            logger.info(`Imagen encontrada y guardada: ${urlImage}`);
+          } else {
+            if (foundAtLeastOneImage) {
+              consecutiveMisses++; // Aumentar el contador de imágenes faltantes consecutivas
+            }
+            logger.info(`Imagen NO encontrada: ${urlImage}`);
           }
-          logger.info(`  ------->  producto: ${productId}; imagen NO encontrada: ${urlImage}`);
-        }
 
-        // Si alcanzamos el máximo de fallos consecutivos, detenemos la búsqueda
-        if (consecutiveMisses >= maxConsecutiveMisses) {
-          logger.info(`Deteniendo la búsqueda de imágenes para ${productId} después de ${consecutiveMisses} imágenes faltantes consecutivas.`);
-          break;
+          // Si alcanzamos el máximo de imágenes faltantes consecutivas, detenemos el proceso
+          if (consecutiveMisses >= maxConsecutiveMisses) {
+            logger.info(`Deteniendo la búsqueda después de ${consecutiveMisses} imágenes faltantes consecutivas.`);
+            break;
+          }
         }
       }
 
@@ -1674,7 +1686,6 @@ class ProductsService extends ResolversOperationsService {
       };
     }
   }
-
 
 }
 export default ProductsService;

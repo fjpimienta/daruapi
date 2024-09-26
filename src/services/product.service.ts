@@ -903,13 +903,13 @@ class ProductsService extends ResolversOperationsService {
           const partnumber = product.partnumber;
           const sanitizedPartnumber = this.sanitizePartnumber(partnumber);
           let existOnePicture = false; // Mueve la variable aquí para reiniciarla por producto
-          const maxImagesToSearch = 15; // Máximo de imágenes a buscar
+          const maxImagesToSearch = 6; // Máximo de imágenes a buscar
           const maxConsecutiveMissesAfterFound = 3; // Máximo de imágenes consecutivas faltantes después de encontrar alguna
 
           let consecutiveMisses = 0; // Contador de imágenes no encontradas consecutivas
           let foundAtLeastOneImage = false; // Indicador de si ya se encontró al menos una imagen
 
-          // Intentamos buscar hasta 15 imágenes o hasta encontrar 3 faltantes consecutivas después de la primera imagen
+          // Intentamos buscar hasta 6 imágenes o hasta encontrar 3 faltantes consecutivas después de la primera imagen
           for (let j = 0; j <= maxImagesToSearch; j++) {
             const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${sanitizedPartnumber}_${j}.jpg`;
             let existFile = await checkImageExists(urlImage);
@@ -1595,17 +1595,12 @@ class ProductsService extends ResolversOperationsService {
       return {
         status: false,
         message: 'Producto no definido, verificar datos.',
-        getImages: [{
-          width: '',
-          height: '',
-          url: '',
-          pivot: { related_id: '', upload_file_id: '' }
-        }]
+        getImages: [createPicture('', '', '')]
       };
     }
 
     const urlImageSave = `${process.env.UPLOAD_URL}images/`;
-    const maxImagesToSearch = 15; // Máximo de imágenes a buscar
+    const maxImagesToSearch = 6; // Máximo de imágenes a buscar
     const maxConsecutiveMisses = 3; // Máximo de imágenes faltantes consecutivas
 
     try {
@@ -1665,24 +1660,14 @@ class ProductsService extends ResolversOperationsService {
         return {
           status: false,
           message: 'Imágenes del producto no encontradas.',
-          getImages: [{
-            width: '',
-            height: '',
-            url: '',
-            pivot: { related_id: '', upload_file_id: '' }
-          }]
+          getImages: [createPicture('', '', '')]
         };
       }
     } catch (error) {
       return {
         status: false,
         message: (error as Error).message,
-        getImages: [{
-          width: '',
-          height: '',
-          url: '',
-          pivot: { related_id: '', upload_file_id: '' }
-        }]
+        getImages: [createPicture('', '', '')]
       };
     }
   }

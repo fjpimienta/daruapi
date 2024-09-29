@@ -131,10 +131,8 @@ class ProductsService extends ResolversOperationsService {
     }
     if (product.sheetJson) {
       const urlImage = `${process.env.API_URL}${product.sheetJson}`;
-      console.log('urlImage: ', urlImage);
       // Crear una instancia de TraslateService
       const translateService = new TraslateService(this.getRoot(), this.getVariables(), this.getContext());
-      console.log('translateService: ', translateService);
       // Usar la instancia para llamar a fetchAndProcessJson
       const jsonProduct = await translateService.fetchAndProcessJson(urlImage);
       // const jsonProduct = await TraslateService.fetchAndProcessJson(urlImage);
@@ -480,42 +478,51 @@ class ProductsService extends ResolversOperationsService {
 
   async insertMany(context: IContextData) {
     try {
-      let firstsProducts: boolean = true;
+      let firstsProducts = true;
       const products = this.getVariables().products;
       let productsAdd: IProduct[] = [];
-      // Validar que existan productos para integrar.
+
       if (!products || products.length === 0) {
         return {
           status: false,
           message: 'No existen elementos para integrar',
-          products: null
+          products: null,
         };
       }
-      // Recupera el siguiente elemento de la tabla.
-      let id = parseInt(await asignDocumentIdInt(this.getDB(), this.collection));
-      id = id ? id : 1;
 
-      if (isNaN(id)) {
-        throw new Error('ID is not a number');
-      }
-      if (id > 1) {
-        firstsProducts = false;
-      }
+      // Recuperar el siguiente ID disponible
+      let id = parseInt(await asignDocumentIdInt(this.getDB(), this.collection));
+      id = isNaN(id) ? 1 : id;
+      firstsProducts = id > 1 ? false : true;
+
       const idProveedor = products[0].suppliersProd.idProveedor;
-      let existingProductsMap = new Map();
+      let existingProductsMap = new Map<string, any>();
+      let existingProductsBDIMap = new Map<string, any>();
       let allExistingProducts = [];
+      let allExistingProductsBDI = [];
+
+      const filter = { 'suppliersProd.idProveedor': idProveedor };
+      const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
+      logger.info(`insertMany->listAll. ${result.status}; ${result.message}.`);
+      if (result && result.items && result.items.length > 0) {
+        allExistingProducts = result.items;
+        logger.info(`insertMany->allExistingProducts.length: ${allExistingProducts.length}.`);
+        existingProductsMap = new Map(result.items.map(item => [item.partnumber, item]));
+      }
+
+      // Recuperar productos existentes del proveedor
       if (idProveedor !== 'ingram') {
         const responseBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         logger.info(`insertMany->responseBDI. ${responseBDI.status}; ${responseBDI.message}.`);
+
+        // Manejo de productos existentes si no se obtienen de la fuente externa
         if (!responseBDI || !responseBDI.productsBDI || responseBDI.productsBDI.length === 0) {
           const filter = { 'suppliersProd.idProveedor': idProveedor };
           const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
           logger.info(`insertMany->listAll. ${result.status}; ${result.message}.`);
-          if (result && result.items && result.items.length > 0) {
-            allExistingProducts = result.items;
-            logger.info(`insertMany->allExistingProducts.length: ${allExistingProducts.length}.`);
-            existingProductsMap = new Map(result.items.map(item => [item.partnumber, item]));
-          } else {
+
+          if (!result || !result.items || result.items.length === 0) {
+            // Asignar nuevos ids para productos nuevos si no hay productos existentes
             let j = id;
             for (const product of products) {
               const productC = await this.categorizarProductos(product, j, firstsProducts);
@@ -524,116 +531,129 @@ class ProductsService extends ResolversOperationsService {
             }
           }
         } else {
+          // Manejar productos obtenidos de la fuente externa
           const productsBDI = responseBDI.productsBDI;
-          allExistingProducts = productsBDI.map((productBDI: IProductBDI) => productBDI.products);
-          logger.info(`insertMany->allExistingProducts.length: ${allExistingProducts.length}.`);
-          existingProductsMap = new Map(productsBDI.map((productBDI: IProductBDI) => [productBDI.products.vendornumber, productBDI]));
+          allExistingProductsBDI = productsBDI.map((productBDI: IProductBDI) => productBDI.products);
+          logger.info(`insertMany->allExistingProductsBDI.length: ${allExistingProductsBDI.length}.`);
+          existingProductsBDIMap = new Map(productsBDI.map((productBDI: IProductBDI) => [productBDI.products.vendornumber, productBDI]));
         }
       }
+
       let bulkOperations = [];
-      let nextId = id; // Inicializamos nextId con el id recuperado
+      let nextId = id;
       const newProductPartNumbers = new Set(products.map(product => product.partnumber));
-      // Inactivar productos existentes que no están en la nueva lista de productos
-      const productsToInactivate = allExistingProducts.filter((existingProduct: any) => !newProductPartNumbers.has(existingProduct.partnumber));
+
+      // Inactivar productos que no están en la nueva lista
+      const productsToInactivate = allExistingProducts.filter(
+        (existingProduct: any) => !newProductPartNumbers.has(existingProduct.partnumber)
+      );
+
       for (const productToInactivate of productsToInactivate) {
         bulkOperations.push({
           updateOne: {
             filter: { partnumber: productToInactivate.partnumber, 'suppliersProd.idProveedor': idProveedor },
-            update: { $set: { active: false } }
-          }
+            update: { $set: { active: false } },
+          },
         });
       }
+
+      // Procesar productos para actualización o inserción
       for (const product of products) {
-        const productBDI = existingProductsMap.get(product.partnumber);
-        if (productBDI) {
-          if (!product.category || (product.category.length > 0 && product.category[0].name === '')) {
-            if (productBDI.products && productBDI.products.categoriesIdIngram) {
-              const partes = productBDI.products.categoriesIdIngram.split("->");
-              product.category = partes.length > 0 ? [{ name: partes[0], slug: slugify(partes[0], { lower: true }), pivot: { product_id: '', product_category_id: '' } }] : [];
-              product.subCategory = partes.length > 1 ? [{ name: partes[1], slug: slugify(partes[1], { lower: true }), pivot: { product_id: '', product_category_id: '' } }] : [];
-            }
-          }
+        const existingProduct = existingProductsMap.get(product.partnumber);
 
-          if (!product.pictures || (product.pictures.length > 0 && product.pictures[0].url === '')) {
-            if (productBDI.products.images) {
-              const urlsDeImagenes = productBDI.products.images.split(',');
-              product.pictures = urlsDeImagenes.map((urlImage: string) => ({ width: '600', height: '600', url: urlImage }));
-              product.sm_pictures = urlsDeImagenes.map((urlImage: string) => ({ width: '300', height: '300', url: urlImage }));
-            }
-          }
-
-          // No modificar el id para productos existentes
-          const existingProduct = existingProductsMap.get(product.partnumber);
-          if (existingProduct) {
-            product.id = existingProduct.id;
-          }
-        }
-        // Asignar un nuevo id solo si el producto es nuevo
-        if (!existingProductsMap.has(product.partnumber)) {
+        // Si el producto existe, conservar el ID y evitar modificaciones no deseadas
+        if (existingProduct) {
+          product.id = existingProduct.id;
+          // logger.info(`Producto existente: conservando id=${product.id} para partnumber=${product.partnumber}`);
+        } else {
+          // Si es un nuevo producto, asignar un nuevo ID
           product.id = nextId.toString();
-          nextId += 1; // Incrementamos el nextId para el siguiente nuevo producto
-        }
-        const idP = parseInt(product.id || nextId.toString());
-        const productC = await this.categorizarProductos(product, idP, firstsProducts);
-        const sanitizedPartnumber = this.sanitizePartnumber(product.partnumber);
-
-        // Verificar archivos json
-        const resultEspec = await this.readJson(sanitizedPartnumber);
-        productC.sheetJson = product.sheetJson;
-        if (resultEspec.status) {
-          const urlJson = `${env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
-          productC.sheetJson = urlJson;
-          const especificaciones: Especificacion[] = resultEspec.getJson;
-          especificaciones.forEach(nuevaEspecificacion => {
-            const index = productC.especificaciones.findIndex(especificacion => especificacion.tipo === nuevaEspecificacion.tipo);
-            if (index !== -1) {
-              productC.especificaciones[index] = nuevaEspecificacion;
-            } else {
-              productC.especificaciones.push(nuevaEspecificacion);
-            }
-          });
-        }
-        // Verificar imagenes
-        const resultImages = await this.readImages(sanitizedPartnumber);
-        if (resultEspec.status) {
-          productC.pictures = resultImages.getImages;
-          productC.sm_pictures = resultImages.getImages;
+          logger.info(`Producto nuevo: asignando nuevo id=${product.id} para partnumber=${product.partnumber}`);
+          nextId += 1;
         }
 
-        productsAdd.push(productC);
-        // Combinamos los updates en un solo objeto
-        const updateData = {
-          ...productC,
-          active: true
-        };
-        bulkOperations.push({
-          updateOne: {
-            filter: { partnumber: product.partnumber, 'suppliersProd.idProveedor': idProveedor },
-            update: { $set: updateData },
-            upsert: true
+        // Verificar el id antes de continuar
+        if (!existingProduct || (existingProduct && product.id === existingProduct.id)) {
+          // Procesar el producto antes de agregarlo
+          const idP = parseInt(product.id || nextId.toString());
+          const productC = await this.categorizarProductos(product, idP, firstsProducts);
+          const sanitizedPartnumber = this.sanitizePartnumber(product.partnumber);
+
+          // Verificar archivos JSON
+          const resultEspec = await this.readJson(sanitizedPartnumber);
+          if (resultEspec.status) {
+            const urlJson = `${env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
+            productC.sheetJson = urlJson;
+            const especificaciones: Especificacion[] = resultEspec.getJson;
+            especificaciones.forEach(nuevaEspecificacion => {
+              const index = productC.especificaciones.findIndex(
+                especificacion => especificacion.tipo === nuevaEspecificacion.tipo
+              );
+              if (index !== -1) {
+                productC.especificaciones[index] = nuevaEspecificacion;
+              } else {
+                productC.especificaciones.push(nuevaEspecificacion);
+              }
+            });
           }
-        });
+
+          // Verificar imágenes
+          const resultImages = await this.readImages(sanitizedPartnumber);
+          if (resultImages.status) {
+            productC.pictures = resultImages.getImages;
+            productC.sm_pictures = resultImages.getImages;
+          }
+
+          productsAdd.push(productC);
+
+          // Preparar los datos para la operación de actualización o inserción
+          const updateData = {
+            ...productC,
+            active: true,
+          };
+
+          bulkOperations.push({
+            updateOne: {
+              filter: { partnumber: product.partnumber, 'suppliersProd.idProveedor': idProveedor },
+              update: { $set: updateData },
+              upsert: true,
+            },
+          });
+        } else {
+          // Log para identificar si se detectó un conflicto de IDs
+          logger.warn(`Conflicto detectado: se intentó cambiar el id del producto existente. Partnumber: ${product.partnumber}, id esperado: ${existingProduct?.id}, id asignado: ${product.id}`);
+        }
       }
+
+      // Verificar antes de ejecutar bulkWrite
+      logger.info(`Preparando para bulkWrite. Operaciones a ejecutar: ${bulkOperations.length}`);
+
+      // bulkOperations.forEach(op => logger.debug(`Operación: ${JSON.stringify(op)}`));
+
+      // Ejecutar operaciones bulk
       if (bulkOperations.length > 0) {
         const bulkResult = await this.getDB().collection(this.collection).bulkWrite(bulkOperations);
-        // Verifica si se realizaron actualizaciones o inserciones
+        logger.info(`bulkResult.matchedCount: ${bulkResult.upsertedCount}`);
+        logger.info(`bulkResult.upsertedCount: ${bulkResult.matchedCount}`);
         const isSuccess = (bulkResult.matchedCount || 0) > 0 || (bulkResult.upsertedCount || 0) > 0;
         return {
           status: isSuccess,
           message: isSuccess ? 'Se han actualizado los productos.' : 'No se han actualizado los productos.',
-          products: []
+          products: [],
         };
       }
+
       return {
         status: false,
         message: 'No se realizaron operaciones de actualización/inserción',
-        products: []
+        products: [],
       };
     } catch (error) {
+      logger.error(`Error en insertMany: ${error}`);
       return {
         status: false,
-        message: error,
-        products: []
+        message: `Error: ${error}`,
+        products: [],
       };
     }
   }
@@ -1314,8 +1334,6 @@ class ProductsService extends ResolversOperationsService {
     // Conocer el id de la marcar
     const filter = { id: product?.id };
     // Ejecutar actualización
-    // console.log('filter: ', filter);
-    // console.log('objectUpdate: ', objectUpdate);
     const result = await this.update(this.collection, filter, objectUpdate, 'productos');
     return {
       status: result.status,
@@ -1639,7 +1657,7 @@ class ProductsService extends ResolversOperationsService {
             if (foundAtLeastOneImage) {
               consecutiveMisses++; // Aumentar el contador de imágenes faltantes consecutivas
             }
-            logger.info(`Imagen NO encontrada: ${urlImage}`);
+            // logger.info(`Imagen NO encontrada: ${urlImage}`);
           }
 
           // Si alcanzamos el máximo de imágenes faltantes consecutivas, detenemos el proceso

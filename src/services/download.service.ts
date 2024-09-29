@@ -87,11 +87,11 @@ const checkImageExists = async (url: string): Promise<boolean> => {
   return new Promise((resolve) => {
     const request = protocol.get(url, options, (res) => {
       const imageExists = res.statusCode === 200;
-      if (imageExists) {
-        // logger.info(`La imagen existe en la URL: ${url} (Status Code: ${res.statusCode})`);
-      } else {
-        logger.warn(`La imagen NO existe en la URL: ${url} (Status Code: ${res.statusCode})`);
-      }
+      // if (imageExists) {
+      //   // logger.info(`La imagen existe en la URL: ${url} (Status Code: ${res.statusCode})`);
+      // } else {
+      //   logger.warn(`La imagen NO existe en la URL: ${url} (Status Code: ${res.statusCode})`);
+      // }
       resolve(imageExists);
     });
     request.on('error', (err) => {

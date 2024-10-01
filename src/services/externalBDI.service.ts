@@ -44,7 +44,7 @@ class ExternalBDIService extends ResolversOperationsService {
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
         const tokenBDI = await response.json();
-        if (!tokenBDI || !tokenBDI.access_token) {
+        if (!tokenBDI || !tokenBDI.token) {
           throw new Error('Error en la obtención del token.');
         }
         const status = tokenBDI.token !== '' ? true : false;

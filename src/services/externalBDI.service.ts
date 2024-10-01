@@ -26,7 +26,7 @@ class ExternalBDIService extends ResolversOperationsService {
     const optionsBDI = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         email: username,
@@ -34,21 +34,39 @@ class ExternalBDIService extends ResolversOperationsService {
       }),
       redirect: 'follow' as RequestRedirect
     };
-    const tokenBDI = await fetch('https://admin.bdicentralapi.net/signin', optionsBDI)
-      .then(response => response.json())
-      .then(async response => {
-        return await response;
-      })
-      .catch(err => console.error(err));
-    const status = tokenBDI.token !== '' ? true : false;
-    const message = tokenBDI.access_token !== '' ? 'El token se ha generado correctamente. data:' : 'Error en el servicio. ' + JSON.stringify(tokenBDI);
-    return {
-      status,
-      message,
-      tokenBDI
-    };
+      try {
+      const response = await fetch('https://admin.bdicentralapi.net/signin', optionsBDI);
+      if (!response.ok) {
+        // Si el código de estado no es 2xx, lanza un error
+        throw new Error(`En el servicio BDI: ${response.status} - ${response.statusText}`);
+      }
+      // Verificar si la respuesta es JSON
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const tokenBDI = await response.json();
+        if (!tokenBDI || !tokenBDI.access_token) {
+          throw new Error('Error en la obtención del token.');
+        }
+        const status = tokenBDI.token !== '' ? true : false;
+        const message = tokenBDI.access_token !== '' ? 'El token se ha generado correctamente.' : 'Error en el servicio. ' + JSON.stringify(tokenBDI);
+        return {
+          status,
+          message,
+          tokenBDI
+        };
+      } else {
+        // Si el contenido no es JSON, lanza un error
+        throw new Error('Respuesta no es JSON.');
+      }
+    } catch (error) {
+      return {
+        status: false,
+        message: `${error}`,
+        tokenBDI: null
+      };
+    }
   }
-
+  
   async getBrandsBDI() {
     const token = await this.getTokenBDI();
     if (!token || !token.status) {

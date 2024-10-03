@@ -139,3 +139,18 @@ export interface IPromociones {
   disponible_en_promocion: number;
   porciento: number;
 }
+
+
+export interface IPaginationData {
+  page: number;
+  itemsPage: number;
+  total: number;
+  pages: number;
+}
+
+export interface IProductResponse {
+  info: IPaginationData | null;
+  status: boolean;
+  message: string;
+  products: any[];
+}

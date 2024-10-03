@@ -5,7 +5,7 @@ import { IVariables } from '../interfaces/variable.interface';
 import { asignDocumentIdInt, findOneElement, findSubcategoryProduct } from '../lib/db-operations';
 import { asignDocumentId } from '../lib/db-operations';
 import ResolversOperationsService from './resolvers-operaciones.service';
-import { IPicture, IProduct } from '../interfaces/product.interface';
+import { IPicture, IProduct, IProductResponse } from '../interfaces/product.interface';
 import ExternalIcecatsService from './externalIcecat.service';
 import ExternalIngramService from './externalIngram.service';
 import { Especificacion, Picture } from '../models/product.models';
@@ -20,6 +20,7 @@ import { loadAndNormalizeJson } from './fileService'; // Ajusta la ruta según t
 import { env } from 'process';
 import http from 'http';
 import https from 'https';
+import { ICatalog } from '../interfaces/catalog.interface';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
@@ -31,91 +32,97 @@ class ProductsService extends ResolversOperationsService {
   }
 
   // Listar informacion
-  async items(variables: IVariables) {
-    const active = variables.active;
-    const filterName = variables.filterName;
-    const offer = variables.offer;
-    const brands = variables.brands;
-    const categories = variables.categories;
-    const subCategories = variables.subCategories;
-    const supplierId = variables.supplierId;
-    const withImages = variables.withImages;
-    let filter: object;
-    const regExp = new RegExp('.*' + filterName + '.*', 'i');
-    if (filterName === '' || filterName === undefined) {
-      filter = { active: { $ne: false } };
-      if (active === ACTIVE_VALUES_FILTER.ALL) {
-        filter = {};
-      } else if (active === ACTIVE_VALUES_FILTER.INACTIVE) {
-        filter = { active: { $eq: false } };
-      }
-    } else {
-      filter = {
-        active: { $ne: false }, $or: [
-          { 'name': regExp },
-          { 'sku': regExp },
-          { 'partnumber': regExp }
-        ]
-      };
-      if (active === ACTIVE_VALUES_FILTER.ALL) {
-        filter = {
-          $or: [
-            { 'name': regExp },
-            { 'sku': regExp },
-            { 'partnumber': regExp }
-          ]
-        };
-      } else if (active === ACTIVE_VALUES_FILTER.INACTIVE) {
-        filter = {
-          active: { $eq: false },
-          $or: [
-            { 'name': regExp },
-            { 'sku': regExp },
-            { 'partnumber': regExp }
-          ]
-        };
-      }
-    }
-    if (offer) {
-      filter = { ...filter, ...{ featured: { $eq: offer } } };
-    }
-    if (brands) {
-      filter = { ...filter, ...{ 'brands.slug': { $in: brands } } };
-    }
-    if (categories) {
-      filter = { ...filter, ...{ 'category.slug': { $in: categories } } };
-    }
-    if (subCategories) {
-      filter = { ...filter, ...{ 'subCategory.slug': { $in: subCategories } } };
-    }
-    if (supplierId) {
-      filter = { ...filter, ...{ 'suppliersProd.idProveedor': supplierId } };
-    }
-    // Filtrar solo productos que tengan imagenes.
-    if (withImages) {
-      filter = {
-        ...filter, ...{
-          pictures: {
-            $exists: true,
-            $not: {
-              $size: 0
-            }
-          },
-          "pictures.url": {
-            $regex: "^uploads"
-          }
-        }
-      }
-    }
-    const page = this.getVariables().pagination?.page;
-    const itemsPage = this.getVariables().pagination?.itemsPage;
+  async items(variables: IVariables): Promise<IProductResponse> {
+    const {
+      active,
+      filterName = '',
+      offer,
+      brands,
+      categories,
+      subCategories,
+      supplierId,
+      withImages
+    } = variables;
+
+    const regExp = new RegExp(filterName, 'i');
+
+    // Construir el filtro inicial basado en el estado activo
+    let filter = this.buildActiveFilter(active || ACTIVE_VALUES_FILTER.ALL);
+
+    // Agregar filtros adicionales
+    filter = this.addTextFilters(filter, regExp, filterName);
+    filter = this.addOfferFilter(filter, offer);
+    filter = this.addArrayFilters(filter, 'brands.slug', brands);
+    filter = this.addArrayFilters(filter, 'category.slug', categories);
+    filter = this.addArrayFilters(filter, 'subCategory.slug', subCategories);
+    filter = this.addSupplierFilter(filter, supplierId);
+    filter = this.addImageFilter(filter, withImages);
+
+    const { page = 1, itemsPage = 10 } = this.getVariables().pagination || {};
+    // console.log('filter: ', filter);
     const result = await this.listProducts(this.collection, this.catalogName, page, itemsPage, filter);
+
     return {
       info: result.info,
       status: result.status,
       message: result.message,
-      products: result.items
+      products: result.products
     };
+  }
+
+  private buildActiveFilter(active: string): object {
+    if (active === ACTIVE_VALUES_FILTER.ALL) {
+      return {}; // Sin filtro
+    }
+
+    return { active: active === ACTIVE_VALUES_FILTER.INACTIVE ? { $eq: false } : { $ne: false } };
+  }
+
+  private addTextFilters(filter: object, regExp: RegExp, filterName: string): object {
+    if (!filterName) return filter;
+    return {
+      ...filter,
+      $or: [
+        { name: regExp },
+        { sku: regExp },
+        { partnumber: regExp }
+      ]
+    };
+  }
+
+  private addOfferFilter(filter: object, offer?: boolean): object {
+    if (offer) {
+      return { ...filter, featured: { $eq: offer } };
+    }
+    return filter;
+  }
+
+  private addArrayFilters(filter: object, fieldPath: string, values?: ICatalog[]): object {
+    if (values && values.length > 0) {
+      return { ...filter, [fieldPath]: { $in: values } };
+    }
+    return filter;
+  }
+
+  private addSupplierFilter(filter: object, supplierId?: string): object {
+    if (supplierId) {
+      return { ...filter, 'suppliersProd.idProveedor': supplierId };
+    }
+    return filter;
+  }
+
+  private addImageFilter(filter: object, withImages?: boolean): object {
+    if (withImages) {
+      return {
+        ...filter,
+        pictures: {
+          $exists: true,
+          $not: { $size: 0 },
+        },
+        "pictures.url": { $regex: "^uploads" }
+      };
+    }
+    return filter;
   }
 
   // Obtener detalles del item

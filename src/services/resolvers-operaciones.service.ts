@@ -9,6 +9,7 @@ import {
 import { IApisupplier } from '../interfaces/suppliers/supplier.interface';
 import slugify from 'slugify';
 import logger from '../utils/logger';
+import { IProductResponse } from '../interfaces/product.interface';
 
 class ResolversOperationsService {
   private root: object;
@@ -25,7 +26,7 @@ class ResolversOperationsService {
   protected getRoot() {
     return this.root;
   }
-  
+
   protected getContext(): IContextData {
     return this.context;
   }
@@ -110,28 +111,25 @@ class ResolversOperationsService {
     page: number = 1,
     itemsPage: number = 10,
     filter: object = { active: { $ne: false } },
-  ) {
+  ): Promise<IProductResponse> {
+
     try {
       const paginationData = await paginationProducts(this.getDB(), collection, page, itemsPage, filter);
-      // Agregamos la etapa de agregación para encontrar el registro con el menor "sale_price" por "partnumber"
+
       const aggregate = [
-        {
-          $match: {
-            price: { $gt: 0 },
-            ...filter
-          }
-        },
-        { $sort: { partnumber: 1, sale_price: 1 }, },
+        { $match: { price: { $gt: 0 }, ...filter } },
+        { $sort: { partnumber: 1, sale_price: 1 } },
         {
           $group: {
             _id: '$partnumber',
             doc: { $first: '$$ROOT' },
           },
         },
-        { $replaceRoot: { newRoot: '$doc' }, },
+        { $replaceRoot: { newRoot: '$doc' } },
         { $skip: (paginationData.page - 1) * paginationData.itemsPage },
         { $limit: paginationData.itemsPage },
       ];
+      const items = await findElementsProducts(this.getDB(), collection, aggregate);
       return {
         info: {
           page: paginationData.page,
@@ -141,14 +139,14 @@ class ResolversOperationsService {
         },
         status: true,
         message: `Lista de ${listElement} cargada correctamente`,
-        items: await findElementsProducts(this.getDB(), collection, aggregate),
+        products: items
       };
     } catch (error) {
       return {
         info: null,
         status: false,
-        message: `Lista de ${listElement} no cargada correctamente: ${error}`,
-        items: [],
+        message: `Lista de ${listElement} no cargada correctamente`,
+        products: [],
       };
     }
   }

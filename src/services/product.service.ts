@@ -1669,7 +1669,7 @@ class ProductsService extends ResolversOperationsService {
 
           // Si alcanzamos el máximo de imágenes faltantes consecutivas, detenemos el proceso
           if (consecutiveMisses >= maxConsecutiveMisses) {
-            logger.info(`Deteniendo la búsqueda después de ${consecutiveMisses} imágenes faltantes consecutivas.`);
+            // logger.info(`Deteniendo la búsqueda después de ${consecutiveMisses} imágenes faltantes consecutivas.`);
             break;
           }
         }

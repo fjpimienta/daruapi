@@ -575,7 +575,7 @@ class ProductsService extends ResolversOperationsService {
         } else {
           // Si es un nuevo producto, asignar un nuevo ID
           product.id = nextId.toString();
-          logger.info(`Producto nuevo: asignando nuevo id=${product.id} para partnumber=${product.partnumber}`);
+          // logger.info(`Producto nuevo: asignando nuevo id=${product.id} para partnumber=${product.partnumber}`);
           nextId += 1;
         }
 
@@ -822,7 +822,7 @@ class ProductsService extends ResolversOperationsService {
               productsAdd.push(product);
               // logger.info(`saveImages->producto actualizado: ${product.partnumber}; imagenes guardadas: ${product.pictures?.length}`);
             } else {
-              logger.error(`saveImages->No se pudo reiniciar las imagenes de ${product.partnumber}.\n`);
+              logger.error(`saveImages->No se pudieron reiniciar las imagenes de ${product.partnumber}.\n`);
             }
           } else {
             logger.error(`saveImages->No existen imagenes del producto ${product.partnumber} en Ingram.\n`);
@@ -950,13 +950,13 @@ class ProductsService extends ResolversOperationsService {
               pictures.push(createPicture('600', '600', `${urlImageSave}${sanitizedPartnumber}_${j}.jpg`));
               sm_pictures.push(createPicture('300', '300', `${urlImageSave}${sanitizedPartnumber}_${j}.jpg`));
 
-              logger.info(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
+              // logger.info(`  ------->  producto: ${product.partnumber}; imagen guardada: ${urlImage}`);
             } else {
               if (foundAtLeastOneImage) {
                 consecutiveMisses++; // Solo contar fallos consecutivos si ya se encontró una imagen
               }
 
-              logger.info(`  ------->  producto: ${product.partnumber}; imagen NO encontrada: ${urlImage}`);
+              // logger.info(`  ------->  producto: ${product.partnumber}; imagen NO encontrada: ${urlImage}`);
             }
 
             // Si alcanzamos el máximo de fallos consecutivos después de encontrar al menos una imagen, detenemos la búsqueda
@@ -1659,7 +1659,7 @@ class ProductsService extends ResolversOperationsService {
             // Agregar las imágenes al arreglo
             pictures.push(createPicture('600', '600', path.join(urlImageSave, `${productId}_${index}.jpg`)));
             sm_pictures.push(createPicture('300', '300', path.join(urlImageSave, `${productId}_${index}.jpg`)));
-            logger.info(`Imagen encontrada y guardada: ${urlImage}`);
+            // logger.info(`Imagen encontrada y guardada: ${urlImage}`);
           } else {
             if (foundAtLeastOneImage) {
               consecutiveMisses++; // Aumentar el contador de imágenes faltantes consecutivas

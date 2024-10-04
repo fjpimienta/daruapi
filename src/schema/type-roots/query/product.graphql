@@ -16,6 +16,7 @@ type Query {
       categories: [String]
       subCategories: [String]
       withImages: Boolean=true
+      isAdmin: Boolean=false
   ): ResultProduct
   "Item del producto seleccionado"
   product(id: ID!): ResultProduct

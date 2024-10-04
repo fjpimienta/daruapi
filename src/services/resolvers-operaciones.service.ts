@@ -104,31 +104,59 @@ class ResolversOperationsService {
     }
   }
 
-  // Listar informacion de Productos
+  // Listar información de Productos
   protected async listProducts(
     collection: string,
     listElement: string,
     page: number = 1,
     itemsPage: number = 10,
     filter: object = { active: { $ne: false } },
+    isAdmin: boolean = false
   ): Promise<IProductResponse> {
 
     try {
       const paginationData = await paginationProducts(this.getDB(), collection, page, itemsPage, filter);
 
+      // Inicializar el arreglo de agregación
       const aggregate = [
+        // Filtrar documentos primero
         { $match: { price: { $gt: 0 }, ...filter } },
+        // Proyectar solo los campos necesarios si isAdmin es verdadero
+        ...(isAdmin ? [{
+          $project: {
+            id: 1,
+            partnumber: 1,
+            suppliersProd: 1,
+            brand: 1,
+            sku: 1,
+            name: 1,
+            featured: 1,
+            top: 1,
+            price: 1,
+            sale_price: 1,
+            exchangeRate: 1,
+            stock: 1,
+            sheetJson: 1,
+            pictures: 1,
+            model: 1,
+          }
+        }] : []),
+        // Ordenar documentos filtrados
         { $sort: { partnumber: 1, sale_price: 1 } },
+        // Agrupar por 'partnumber'
         {
           $group: {
             _id: '$partnumber',
-            doc: { $first: '$$ROOT' },
+            doc: { $first: '$$ROOT' }, // Mantener el primer documento encontrado
           },
         },
+        // Reemplazar root para obtener el documento original
         { $replaceRoot: { newRoot: '$doc' } },
+        // Paginación (skip y limit)
         { $skip: (paginationData.page - 1) * paginationData.itemsPage },
         { $limit: paginationData.itemsPage },
       ];
+
       const items = await findElementsProducts(this.getDB(), collection, aggregate);
       return {
         info: {
@@ -141,6 +169,7 @@ class ResolversOperationsService {
         message: `Lista de ${listElement} cargada correctamente`,
         products: items
       };
+
     } catch (error) {
       return {
         info: null,

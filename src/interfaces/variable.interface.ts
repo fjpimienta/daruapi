@@ -32,6 +32,7 @@ export interface IVariables {
   filterName?: string;
   offer?: boolean;
   withImages?: boolean;
+  isAdmin?: boolean;
   filterBranch?: string;
   slug?: string;
   pagination?: IPaginationOptions;

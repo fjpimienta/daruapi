@@ -41,7 +41,8 @@ class ProductsService extends ResolversOperationsService {
       categories,
       subCategories,
       supplierId,
-      withImages
+      withImages,
+      isAdmin
     } = variables;
 
     const regExp = new RegExp(filterName, 'i');
@@ -60,7 +61,7 @@ class ProductsService extends ResolversOperationsService {
 
     const { page = 1, itemsPage = 10 } = this.getVariables().pagination || {};
     // console.log('filter: ', filter);
-    const result = await this.listProducts(this.collection, this.catalogName, page, itemsPage, filter);
+    const result = await this.listProducts(this.collection, this.catalogName, page, itemsPage, filter, isAdmin);
 
     return {
       info: result.info,

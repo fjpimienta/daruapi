@@ -489,7 +489,6 @@ class ProductsService extends ResolversOperationsService {
       let firstsProducts = true;
       const products = this.getVariables().products;
       let productsAdd: IProduct[] = [];
-
       if (!products || products.length === 0) {
         return {
           status: false,
@@ -497,7 +496,7 @@ class ProductsService extends ResolversOperationsService {
           products: null,
         };
       }
-
+      logger.info(`insertMany->products.length: ${products.length}.`);
       // Recuperar el siguiente ID disponible
       let id = parseInt(await asignDocumentIdInt(this.getDB(), this.collection));
       id = isNaN(id) ? 1 : id;
@@ -550,12 +549,10 @@ class ProductsService extends ResolversOperationsService {
       let bulkOperations = [];
       let nextId = id;
       const newProductPartNumbers = new Set(products.map(product => product.partnumber));
-
       // Inactivar productos que no están en la nueva lista
       const productsToInactivate = allExistingProducts.filter(
         (existingProduct: any) => !newProductPartNumbers.has(existingProduct.partnumber)
       );
-
       for (const productToInactivate of productsToInactivate) {
         bulkOperations.push({
           updateOne: {
@@ -564,29 +561,23 @@ class ProductsService extends ResolversOperationsService {
           },
         });
       }
-
       // Procesar productos para actualización o inserción
       for (const product of products) {
         const existingProduct = existingProductsMap.get(product.partnumber);
-
         // Si el producto existe, conservar el ID y evitar modificaciones no deseadas
         if (existingProduct) {
           product.id = existingProduct.id;
-          // logger.info(`Producto existente: conservando id=${product.id} para partnumber=${product.partnumber}`);
         } else {
           // Si es un nuevo producto, asignar un nuevo ID
           product.id = nextId.toString();
-          // logger.info(`Producto nuevo: asignando nuevo id=${product.id} para partnumber=${product.partnumber}`);
           nextId += 1;
         }
-
         // Verificar el id antes de continuar
         if (!existingProduct || (existingProduct && product.id === existingProduct.id)) {
           // Procesar el producto antes de agregarlo
           const idP = parseInt(product.id || nextId.toString());
           const productC = await this.categorizarProductos(product, idP, firstsProducts);
           const sanitizedPartnumber = this.sanitizePartnumber(product.partnumber);
-
           // Verificar archivos JSON
           const resultEspec = await this.readJson(sanitizedPartnumber);
           if (resultEspec.status) {
@@ -604,22 +595,18 @@ class ProductsService extends ResolversOperationsService {
               }
             });
           }
-
           // Verificar imágenes
           const resultImages = await this.readImages(sanitizedPartnumber);
           if (resultImages.status) {
             productC.pictures = resultImages.getImages;
             productC.sm_pictures = resultImages.getImages;
           }
-
           productsAdd.push(productC);
-
           // Preparar los datos para la operación de actualización o inserción
           const updateData = {
             ...productC,
             active: true,
           };
-
           bulkOperations.push({
             updateOne: {
               filter: { partnumber: product.partnumber, 'suppliersProd.idProveedor': idProveedor },
@@ -632,12 +619,9 @@ class ProductsService extends ResolversOperationsService {
           logger.warn(`Conflicto detectado: se intentó cambiar el id del producto existente. Partnumber: ${product.partnumber}, id esperado: ${existingProduct?.id}, id asignado: ${product.id}`);
         }
       }
-
       // Verificar antes de ejecutar bulkWrite
       logger.info(`Preparando para bulkWrite. Operaciones a ejecutar: ${bulkOperations.length}`);
-
       // bulkOperations.forEach(op => logger.debug(`Operación: ${JSON.stringify(op)}`));
-
       // Ejecutar operaciones bulk
       if (bulkOperations.length > 0) {
         const bulkResult = await this.getDB().collection(this.collection).bulkWrite(bulkOperations);
@@ -650,7 +634,6 @@ class ProductsService extends ResolversOperationsService {
           products: [],
         };
       }
-
       return {
         status: false,
         message: 'No se realizaron operaciones de actualización/inserción',

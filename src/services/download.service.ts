@@ -36,7 +36,7 @@ const downloadImage = async (
           if (res.statusCode === 301 || res.statusCode === 302) {
             const redirectUrl = res.headers.location;
             if (redirectUrl) {
-              logger.info(`Redirigiendo a: ${redirectUrl}`);
+              // logger.info(`Redirigiendo a: ${redirectUrl}`);
               // Hacer la solicitud a la URL de redirección
               const redirectProtocol = redirectUrl.startsWith('https') ? https : http;
               const redirectRequest = redirectProtocol.get(redirectUrl, resolve);

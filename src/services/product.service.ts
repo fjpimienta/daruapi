@@ -596,8 +596,11 @@ class ProductsService extends ResolversOperationsService {
             });
           }
           // Verificar imágenes
+          productC.pictures = product.pictures;
+          // console.log('product.pictures: ', product.pictures);
+          productC.sm_pictures = product.sm_pictures;
           const resultImages = await this.readImages(sanitizedPartnumber);
-          if (resultImages.status) {
+          if (resultImages && resultImages.status) {
             productC.pictures = resultImages.getImages;
             productC.sm_pictures = resultImages.getImages;
           }
@@ -657,10 +660,10 @@ class ProductsService extends ResolversOperationsService {
 
     // Clasificar Categorias y Subcategorias
     if (product.subCategory && product.subCategory.length > 0) {
-      if (!firstsProducts) {
-        delete product.pictures;
-        delete product.sm_pictures;
-      }
+      // if (!firstsProducts) {
+      //   delete product.pictures;
+      //   delete product.sm_pictures;
+      // }
       if (product.price === null) {
         product.price = 0;
         product.sale_price = 0;
@@ -812,7 +815,7 @@ class ProductsService extends ResolversOperationsService {
           }
         }
       } else {
-        if (idProveedor === 'syscom') {
+        if (idProveedor === 'syscom' || idProveedor === 'ct') {
           logger.info(`saveImages->cargar imágenes de : ${idProveedor} \n`);
           const filter = { 'suppliersProd.idProveedor': idProveedor };
           const resultSyscom = await this.listAll(this.collection, this.catalogName, 1, -1, filter);

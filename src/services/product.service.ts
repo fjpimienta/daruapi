@@ -801,8 +801,8 @@ class ProductsService extends ResolversOperationsService {
           const productIngram = productsBDIMap.get(product.partnumber);
           if (productIngram && productIngram.products && productIngram.products.images !== '') {
             let imageUrls = productIngram.products.images.split(',');
-            product.pictures = [];
-            product.sm_pictures = [];
+            // product.pictures = [];
+            // product.sm_pictures = [];
             await downloadImages(imageUrls.map((url: string) => url.trim()), product.partnumber, product);
             const updateImage = await this.modifyImages(product);
             if (updateImage.status) {

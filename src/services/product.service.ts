@@ -1354,9 +1354,9 @@ class ProductsService extends ResolversOperationsService {
     };
   }
 
-  // Función para reemplazar caracteres no permitidos en los nombres de archivo
+  // Función para caracteres especiales (incluyendo tabulaciones, saltos de línea, etc.) por "_"
   sanitizePartnumber(partnumber: string): string {
-    return partnumber.replace(/[\/ #]/g, '_');
+    return partnumber.replace(/[\/ #\t\n\r:*?<>\|]/g, '_').trim();
   }
 
   generateFilename(partnumber: string, index: number): string {

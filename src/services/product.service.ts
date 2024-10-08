@@ -1638,11 +1638,11 @@ class ProductsService extends ResolversOperationsService {
       let sm_pictures: Picture[] = [];
       let consecutiveMisses = 0;
       let foundAtLeastOneImage = false;
-
+      const sanitizedPartnumber = this.sanitizePartnumber(productId);
       // Función que genera la promesa para verificar la existencia de una imagen
       const checkImage = async (index: number) => {
         // Modificar el URL para que incluya la carpeta basada en el productId (partnumber)
-        const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${productId}/${productId}_${index}.jpg`;
+        const urlImage = `${process.env.API_URL}${process.env.UPLOAD_URL}images/${sanitizedPartnumber}/${sanitizedPartnumber}_${index}.jpg`;
         const existFile = await checkImageExists(urlImage);
         return { existFile, urlImage, index };
       };
@@ -1663,8 +1663,9 @@ class ProductsService extends ResolversOperationsService {
             consecutiveMisses = 0; // Resetear el contador de imágenes faltantes consecutivas
 
             // Guardar las imágenes dentro de la carpeta basada en productId
-            pictures.push(createPicture('600', '600', path.join(urlImageSaveBase, productId, `${productId}_${index}.jpg`)));
-            sm_pictures.push(createPicture('300', '300', path.join(urlImageSaveBase, productId, `${productId}_${index}.jpg`)));
+            const sanitizedPartnumber = this.sanitizePartnumber(productId);
+            pictures.push(createPicture('600', '600', path.join(urlImageSaveBase, sanitizedPartnumber, `${sanitizedPartnumber}_${index}.jpg`)));
+            sm_pictures.push(createPicture('300', '300', path.join(urlImageSaveBase, sanitizedPartnumber, `${sanitizedPartnumber}_${index}.jpg`)));
 
             // logger.info(`Imagen encontrada y guardada: ${urlImage}`);
           } else {

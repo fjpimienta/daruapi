@@ -280,7 +280,7 @@ class ExternalSyscomService extends ResolversOperationsService {
       }
       let allProducts = data.productos;
       const totalPages = data.paginas;
-      for (let page = 2; page <= totalPages; page++) {
+      for (let page = 1; page <= totalPages; page++) {
         const pageUrl = `${url}&pagina=${page}`;
         const nextPageResponse = await fetch(pageUrl, options);
         const nextPageData = await nextPageResponse.json();

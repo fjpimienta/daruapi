@@ -839,27 +839,32 @@ class ProductsService extends ResolversOperationsService {
           for (let k = 0; k < products.length; k++) {
             let product = products[k];
             const productIngram = productsSyscomMap.get(product.partnumber);
+          
             // Verificamos si el producto tiene imágenes en el campo "pictures"
             if (productIngram && productIngram.pictures && productIngram.pictures.length > 0) {
-              // Extraemos las URLs de las imágenes desde el array de objetos "pictures"
               let imageUrls = productIngram.pictures.map((picture: any) => picture.url);
-              // // Inicializamos los arrays de imágenes
-              // product.pictures = [];
-              // product.sm_pictures = [];
-              // Usamos la función reutilizada para descargar las imágenes
-              await downloadImages(imageUrls, product.partnumber, product);
-              // Modificamos las imágenes en el producto
-              const updateImage = await this.modifyImages(product);
-              if (updateImage.status) {
-                productsAdd.push(product);
-              } else {
-                logger.error(`saveImages->No se pudieron reiniciar las imágenes de ${product.partnumber}.\n`);
+          
+              try {
+                // Intentamos descargar las imágenes
+                await downloadImages(imageUrls, product.partnumber, product);
+              } catch (error) {
+                logger.error(`Error al descargar imágenes para el producto ${product.partnumber}: ${error}`);
+                continue;  // Continúa con el siguiente producto
               }
-            } else {
-              // logger.error(`saveImages->No existen imágenes del producto ${product.partnumber}.\n`);
+          
+              try {
+                // Modificamos las imágenes en el producto
+                const updateImage = await this.modifyImages(product);
+                if (updateImage.status) {
+                  productsAdd.push(product);
+                } else {
+                  logger.error(`No se pudieron reiniciar las imágenes de ${product.partnumber}.`);
+                }
+              } catch (error) {
+                logger.error(`Error al modificar imágenes para el producto ${product.partnumber}: ${error}`);
+              }
             }
           }
-
         }
       }
 

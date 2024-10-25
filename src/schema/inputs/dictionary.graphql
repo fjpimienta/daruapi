@@ -1,0 +1,10 @@
+input DictionaryInput {
+  id: ID
+  orderHeader: Int!
+  headerName: String!
+  headerDisplay: String!
+  orderAttribute: Int!
+  attributeName: String!
+  attributeDisplay: String!
+  active: Boolean
+}

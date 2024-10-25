@@ -1,0 +1,8 @@
+type ResultDictionary implements Result{
+  info: ResultInfo
+  status: Boolean!
+  message: String!
+  dictionary: Dictionary
+  dictionarys: [Dictionary!]!
+  dictionaryId: String
+}

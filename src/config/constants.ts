@@ -42,7 +42,8 @@ export enum COLLECTIONS {
   DISCOUNTS = 'discounts',
   ICECAT_PRODUCTS = 'icecat_products',
   INVOICE_CONFIG = 'invoice_config',
-  INGRAM_PRODUCTS = 'ingram_products'
+  INGRAM_PRODUCTS = 'ingram_products',
+  DICTIONARY = 'dictinonary'
 }
 
 export enum MESSAGES {

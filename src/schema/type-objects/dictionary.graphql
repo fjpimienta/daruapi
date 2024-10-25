@@ -1,0 +1,11 @@
+type Dictionary {
+  id: ID!
+  orderHeader: Int!
+  headerName: String!
+  headerDisplay: String!
+  orderAttribute: Int!
+  attributeName: String!
+  attributeDisplay: String!
+  active: Boolean
+  registerDate: String
+}

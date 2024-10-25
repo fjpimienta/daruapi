@@ -597,7 +597,6 @@ class ProductsService extends ResolversOperationsService {
           }
           // Verificar imágenes
           productC.pictures = product.pictures;
-          // console.log('product.pictures: ', product.pictures);
           productC.sm_pictures = product.sm_pictures;
           const resultImages = await this.readImages(sanitizedPartnumber);
           if (resultImages && resultImages.status) {
@@ -801,13 +800,12 @@ class ProductsService extends ResolversOperationsService {
           const productIngram = productsBDIMap.get(product.partnumber);
           if (productIngram && productIngram.products && productIngram.products.images !== '') {
             let imageUrls = productIngram.products.images.split(',');
-            // product.pictures = [];
-            // product.sm_pictures = [];
             await downloadImages(imageUrls.map((url: string) => url.trim()), product.partnumber, product);
             const updateImage = await this.modifyImages(product);
             if (updateImage.status) {
               productsAdd.push(product);
             } else {
+              // Buscar imagenes en icecat
               logger.error(`saveImages->No se pudieron reiniciar las imágenes de ${product.partnumber}.\n`);
             }
           } else {
@@ -815,7 +813,8 @@ class ProductsService extends ResolversOperationsService {
           }
         }
       } else {
-        if (idProveedor === 'syscom' || idProveedor === 'ct') {
+        if (idProveedor === 'syscom' || idProveedor === 'ct' || idProveedor === 'cva' || idProveedor === 'daisytek'
+          || idProveedor === 'inttelec') {
           logger.info(`saveImages->cargar imágenes de : ${idProveedor} \n`);
           const filter = { 'suppliersProd.idProveedor': idProveedor };
           const resultSyscom = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
@@ -841,25 +840,65 @@ class ProductsService extends ResolversOperationsService {
             const productIngram = productsSyscomMap.get(product.partnumber);
             // Verificamos si el producto tiene imágenes en el campo "pictures"
             if (productIngram && productIngram.pictures && productIngram.pictures.length > 0) {
-              // Extraemos las URLs de las imágenes desde el array de objetos "pictures"
               let imageUrls = productIngram.pictures.map((picture: any) => picture.url);
-              // // Inicializamos los arrays de imágenes
-              // product.pictures = [];
-              // product.sm_pictures = [];
-              // Usamos la función reutilizada para descargar las imágenes
-              await downloadImages(imageUrls, product.partnumber, product);
-              // Modificamos las imágenes en el producto
-              const updateImage = await this.modifyImages(product);
-              if (updateImage.status) {
-                productsAdd.push(product);
-              } else {
-                logger.error(`saveImages->No se pudieron reiniciar las imágenes de ${product.partnumber}.\n`);
+              try {
+                // Intentamos descargar las imágenes
+                await downloadImages(imageUrls, product.partnumber, product);
+              } catch (error) {
+                logger.error(`Error al descargar imágenes para el producto ${product.partnumber}: ${error}`);
+                continue;  // Continúa con el siguiente producto
+              }
+              try {
+                // Modificamos las imágenes en el producto
+                const updateImage = await this.modifyImages(product);
+                if (updateImage.status) {
+                  productsAdd.push(product);
+                } else {
+                  logger.error(`No se pudieron reiniciar las imágenes de ${product.partnumber}.`);
+                }
+              } catch (error) {
+                logger.error(`Error al modificar imágenes para el producto ${product.partnumber}: ${error}`);
               }
             } else {
-              // logger.error(`saveImages->No existen imágenes del producto ${product.partnumber}.\n`);
+              // Buscar imagenes en icecat
+              const variableLocal = {
+                brandIcecat: product.brands[0].slug,
+                productIcecat: product.partnumber
+              }
+              const resultIcecat = await new ExternalIcecatsService({}, variableLocal, context).getICecatProduct(variableLocal);
+              if (resultIcecat && resultIcecat.status && resultIcecat.icecatProduct && resultIcecat.icecatProduct.Gallery
+                && resultIcecat.icecatProduct.Gallery.length > 0) {
+                // Asignar valor
+                let imageUrls = resultIcecat.icecatProduct.Gallery
+                  .filter((picture: any) => picture.Pic500x500) // Filtra solo las que tienen imagen
+                  .map((picture: any) => picture.Pic500x500);
+                try {
+                  // Intentamos descargar las imágenes
+                  await downloadImages(imageUrls, product.partnumber, product);
+                  const updateImage = await this.modifyImages(product);
+                  if (updateImage.status) {
+                    productsAdd.push(product);
+                  } else {
+                    logger.error(`No se pudieron reiniciar las imágenes de ${product.partnumber}.`);
+                  }
+                } catch (error) {
+                  logger.error(`Error al descargar imágenes para el producto ${product.partnumber}: ${error}`);
+                  continue;  // Continúa con el siguiente producto
+                }
+                try {
+                  // Modificamos las imágenes en el producto
+                  const updateImage = await this.modifyImages(product);
+                  if (updateImage.status) {
+                    productsAdd.push(product);
+                  } else {
+                    logger.error(`No se pudieron reiniciar las imágenes de ${product.partnumber}.`);
+                  }
+                } catch (error) {
+                  logger.error(`Error al modificar imágenes para el producto ${product.partnumber}: ${error}`);
+                }
+              }
             }
           }
-
         }
       }
 

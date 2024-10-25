@@ -25,6 +25,7 @@ import { IOrderDaisytek } from './suppliers/_Daisyteks.interface';
 import { IOrderIngramInput, IShippingBDIInput } from './suppliers/_BDIShipments.interface';
 import { ISliders } from './sliders.interface';
 import { IOrderInttelec } from './suppliers/_Inttelecs.interface';
+import { IDictionary } from './dictionary.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -40,6 +41,8 @@ export interface IVariables {
   admin?: boolean;
   brand?: ICatalog;
   brands?: ICatalog[];
+  dictionary?: IDictionary;
+  dictionarys?: IDictionary[];
   model?: ICatalog;
   categorie?: ICatalog;
   categories?: ICatalog[];

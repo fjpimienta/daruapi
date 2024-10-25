@@ -1,0 +1,7 @@
+type Mutation {
+   addDictionary(dictionary: DictionaryInput!): ResultDictionary
+   addDictionarys(dictionarys: [DictionaryInput!]!, supplier: SupplierInput): ResultDictionary
+   updateDictionary(dictionary: DictionaryInput!): ResultDictionary
+   deleteDictionary(id: ID!): ResultDictionary
+   blockDictionary(id: ID!, unblock: Boolean = false, admin: Boolean = false): ResultDictionary
+}

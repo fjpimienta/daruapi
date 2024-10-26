@@ -35,7 +35,7 @@ class DictionarysService extends ResolversOperationsService {
     }
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
-    const sort = { order: 1 };
+    const sort = { headerName: 1, orderAttribute: 1 };
     const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter, sort);
     return {
       info: result.info,

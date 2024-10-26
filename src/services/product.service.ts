@@ -691,8 +691,6 @@ class ProductsService extends ResolversOperationsService {
   async addNewImages(context: IContextData) {
     try {
       let productsAdd: IProduct[] = [];
-      let productsPictures: IProduct[] = [];
-      let productsWithoutPictures: IProduct[] = [];
       const supplierId = this.getVariables().supplierId;
       const uploadBaseFolder = `./${process.env.UPLOAD_URL}images/`;
       const urlImageSaveBase = `${process.env.UPLOAD_URL}images/`;
@@ -729,7 +727,6 @@ class ProductsService extends ResolversOperationsService {
         };
       }
 
-      let existOnePicture = false;
       let products = result.items as IProduct[];
       const idProveedor = supplierId;
       logger.info(`saveImages->productos de ${supplierId}: ${products.length} \n`);
@@ -745,8 +742,6 @@ class ProductsService extends ResolversOperationsService {
 
         await Promise.all(imageUrls.map(async (url: string, index) => {
           const filename = this.generateFilename(this.sanitizePartnumber(partnumber), index);
-          const filePath = path.join(destFolder, filename);
-
           try {
             if (imageCache.has(url)) {
               if (product.pictures[index]) {

@@ -55,6 +55,11 @@ const downloadImage = async (
         });
       });
 
+      // Manejo del código de estado 429
+      if (response.statusCode === 429) {
+        throw new Error(`Demasiadas solicitudes para ${url}. Código de estado: ${response.statusCode}`);
+      }
+
       if (response.statusCode !== 200) {
         throw new Error(`Failed to get '${url}' (${response.statusCode})`);
       }
@@ -99,12 +104,13 @@ const downloadImage = async (
         fs.unlinkSync(tempFilePath);
       }
 
-      await new Promise((resolve) => setTimeout(resolve, retryDelay));
-
+      // Si se alcanza el límite de reintentos, se sale del proceso
       if (retries >= maxRetries) {
         logger.error(`No se pudo descargar la imagen de ${url} después de ${maxRetries} intentos. Continuando con las siguientes imágenes.`);
-        return;  // Continuar con las siguientes descargas
+        return; // Continuar con las siguientes descargas
       }
+
+      await new Promise((resolve) => setTimeout(resolve, retryDelay));
     }
   }
 };

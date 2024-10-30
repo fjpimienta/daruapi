@@ -4,6 +4,7 @@ import { Especificacion } from '../models/product.models';
 
 // Define la interfaz Attribute si no está definida
 interface Attribute {
+  headerName: string;
   attributeName: string;
   attributeValue: string;
 }
@@ -57,6 +58,7 @@ class TraslateService extends ResolversOperationsService {
   public homologarTipos(listaProductos: Especificacion[][]): Especificacion[][] {
     return listaProductos.map(producto =>
       producto.map(especificacion => ({
+        agrupadoPor: especificacion.agrupadoPor,
         tipo: this.homologarTipo(especificacion.tipo),
         valor: especificacion.valor
       }))
@@ -81,6 +83,7 @@ class TraslateService extends ResolversOperationsService {
   // Función para generar la salida con los datos obtenidos
   private generateOutput(data: Attribute[]): Especificacion[] {
     return data.map(item => ({
+      agrupadoPor: item.headerName,
       tipo: item.attributeName,
       valor: item.attributeValue
     }));

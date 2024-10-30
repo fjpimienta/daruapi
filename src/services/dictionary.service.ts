@@ -33,8 +33,8 @@ class DictionarysService extends ResolversOperationsService {
         filter = { active: { $eq: false }, 'headerName': regExp };
       }
     }
-    const page = this.getVariables().pagination?.page;
-    const itemsPage = this.getVariables().pagination?.itemsPage;
+    const page = this.getVariables().info?.page;
+    const itemsPage = this.getVariables().info?.itemsPage;
     const sort = { headerName: 1, orderAttribute: 1 };
     const result = await this.list(this.collection, this.catalogName, page, itemsPage, filter, sort);
     return {

@@ -42,6 +42,7 @@ export class Product implements IProduct {
 }
 
 export class Especificacion {
+  agrupadoPor: string = '';
   tipo: string = '';
   valor: string = '';
 }

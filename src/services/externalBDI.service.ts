@@ -496,22 +496,22 @@ class ExternalBDIService extends ResolversOperationsService {
 
       const especificaciones: Especificacion[] = [];
       if (item.products.weight) {
-        itemData.especificaciones.push({ tipo: 'Peso', valor: item.products.weight });
+        itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Peso', valor: item.products.weight });
       }
       if (item.products.height) {
-        itemData.especificaciones.push({ tipo: 'Altura', valor: item.products.height });
+        itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Altura', valor: item.products.height });
       }
       if (item.products.width) {
-        itemData.especificaciones.push({ tipo: 'Ancho', valor: item.products.width });
+        itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Ancho', valor: item.products.width });
       }
       if (item.products.length) {
-        itemData.especificaciones.push({ tipo: 'Longitud', valor: item.products.length });
+        itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Longitud', valor: item.products.length });
       }
       if (item.products.dimensionUnit) {
-        itemData.especificaciones.push({ tipo: 'Unidad de Dimensiones', valor: item.products.dimensionUnit });
+        itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Unidad de Dimensiones', valor: item.products.dimensionUnit });
       }
       if (item.products.weightUnit) {
-        itemData.especificaciones.push({ tipo: 'Unidad de Peso', valor: item.products.weightUnit });
+        itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Unidad de Peso', valor: item.products.weightUnit });
       }
 
       itemData.especificaciones.push(...especificaciones);
@@ -519,7 +519,7 @@ class ExternalBDIService extends ResolversOperationsService {
       if (atributosPrincipales && atributosPrincipales.length > 0) {
         for (let i = 0; i < atributosPrincipales.length; i++) {
           const atributo = atributosPrincipales[i];
-          itemData.especificaciones.push({ tipo: 'Característica', valor: atributo });
+          itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Característica', valor: atributo });
         }
       }
 

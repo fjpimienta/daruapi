@@ -622,6 +622,7 @@ class ExternalCtsService extends ResolversOperationsService {
       if (productJson.especificaciones && productJson.especificaciones.length > 0) {
         for (const e of productJson.especificaciones) {
           const espec: Especificacion = new Especificacion();
+          espec.agrupadoPor = e.agrupadoPor;
           espec.tipo = e.tipo;
           espec.valor = e.valor;
           itemData.especificaciones.push(espec);

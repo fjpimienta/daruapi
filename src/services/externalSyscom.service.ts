@@ -1140,12 +1140,12 @@ class ExternalSyscomService extends ResolversOperationsService {
       if (item.especificaciones && item.especificaciones.length > 0) {
         itemData.especificaciones = item.especificaciones;
       }
-      itemData.especificaciones.push({ tipo: 'Peso', valor: item.peso });
-      itemData.especificaciones.push({ tipo: 'Altura', valor: item.alto });
-      itemData.especificaciones.push({ tipo: 'Longitud', valor: item.largo });
-      itemData.especificaciones.push({ tipo: 'Ancho', valor: item.ancho });
-      itemData.especificaciones.push({ tipo: 'Link', valor: item.link });
-      itemData.especificaciones.push({ tipo: 'Link_privado', valor: item.link_privado });
+      itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Peso', valor: item.peso });
+      itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Altura', valor: item.alto });
+      itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Longitud', valor: item.largo });
+      itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Ancho', valor: item.ancho });
+      itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Link', valor: item.link });
+      itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Link_privado', valor: item.link_privado });
       itemData.especificacionesBullet = item.especificacionesBullet;
       itemData.sheetJson = '';
     }

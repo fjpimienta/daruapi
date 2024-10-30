@@ -1144,8 +1144,8 @@ class ExternalSyscomService extends ResolversOperationsService {
       itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Altura', valor: item.alto });
       itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Longitud', valor: item.largo });
       itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Ancho', valor: item.ancho });
-      itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Link', valor: item.link });
-      itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Link_privado', valor: item.link_privado });
+      itemData.especificaciones.push({ agrupadoPor: 'Basic', tipo: 'Link', valor: item.link });
+      itemData.especificaciones.push({ agrupadoPor: 'Basic', tipo: 'Link_privado', valor: item.link_privado });
       itemData.especificacionesBullet = item.especificacionesBullet;
       itemData.sheetJson = '';
     }

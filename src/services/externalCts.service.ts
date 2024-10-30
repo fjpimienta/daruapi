@@ -974,6 +974,7 @@ class ExternalCtsService extends ResolversOperationsService {
             if (newEspecificaciones.length < 15) {
               const valorEspecifico = valor as { tipo: string; valor: string };
               const newEspecificacion: IEspecificacion = {
+                agrupadoPor: 'Basic',
                 tipo: valorEspecifico.tipo,
                 valor: valorEspecifico.valor
               };
@@ -1056,6 +1057,7 @@ class ExternalCtsService extends ResolversOperationsService {
             if (newEspecificaciones.length < 15) {
               const valorEspecifico = valor as { tipo: string; valor: string };
               const newEspecificacion: IEspecificacion = {
+                agrupadoPor: 'Basic',
                 tipo: valorEspecifico.tipo,
                 valor: valorEspecifico.valor
               };

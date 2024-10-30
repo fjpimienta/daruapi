@@ -195,6 +195,7 @@ export interface IExistencia {
 }
 
 export interface IEspecificacion {
+  agrupadoPor: String;
   tipo: string;
   valor: string;
 }

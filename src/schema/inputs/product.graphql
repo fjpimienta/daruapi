@@ -39,6 +39,7 @@ input ProductInput {
 }
 
 input EspecificacionInput {
+  agrupadoPor: String
   tipo: String
   valor: String
 }

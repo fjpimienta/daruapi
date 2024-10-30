@@ -870,6 +870,7 @@ class ExternalCvasService extends ResolversOperationsService {
         }
         if (item.peso) {
           const especP: Especificacion = new Especificacion();
+          especP.agrupadoPor = 'Dimensiones';
           especP.tipo = 'Peso';
           especP.valor = item.peso;
           itemData.especificaciones.push(especP);

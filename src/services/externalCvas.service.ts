@@ -863,13 +863,14 @@ class ExternalCvasService extends ResolversOperationsService {
           const dimensionesArray = item.dimensiones.split(',').map(Number);
           if (dimensionesArray.length === 3) {
             const [longitud, ancho, altura] = dimensionesArray;
-            itemData.especificaciones.push({ tipo: 'Longitud', valor: longitud });
-            itemData.especificaciones.push({ tipo: 'Ancho', valor: ancho });
-            itemData.especificaciones.push({ tipo: 'Altura', valor: altura });
+            itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Longitud', valor: longitud });
+            itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Ancho', valor: ancho });
+            itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Altura', valor: altura });
           }
         }
         if (item.peso) {
           const especP: Especificacion = new Especificacion();
+          especP.agrupadoPor = 'Dimensiones';
           especP.tipo = 'Peso';
           especP.valor = item.peso;
           itemData.especificaciones.push(especP);

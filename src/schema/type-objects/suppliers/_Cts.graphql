@@ -234,6 +234,7 @@ type Existencia {
 }
 
 type Especificacion {
+  agrupadoPor: String
   tipo: String
   valor: String
 }

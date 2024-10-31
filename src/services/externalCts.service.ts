@@ -622,6 +622,7 @@ class ExternalCtsService extends ResolversOperationsService {
       if (productJson.especificaciones && productJson.especificaciones.length > 0) {
         for (const e of productJson.especificaciones) {
           const espec: Especificacion = new Especificacion();
+          espec.agrupadoPor = e.agrupadoPor;
           espec.tipo = e.tipo;
           espec.valor = e.valor;
           itemData.especificaciones.push(espec);
@@ -973,6 +974,7 @@ class ExternalCtsService extends ResolversOperationsService {
             if (newEspecificaciones.length < 15) {
               const valorEspecifico = valor as { tipo: string; valor: string };
               const newEspecificacion: IEspecificacion = {
+                agrupadoPor: 'Basic',
                 tipo: valorEspecifico.tipo,
                 valor: valorEspecifico.valor
               };
@@ -1055,6 +1057,7 @@ class ExternalCtsService extends ResolversOperationsService {
             if (newEspecificaciones.length < 15) {
               const valorEspecifico = valor as { tipo: string; valor: string };
               const newEspecificacion: IEspecificacion = {
+                agrupadoPor: 'Basic',
                 tipo: valorEspecifico.tipo,
                 valor: valorEspecifico.valor
               };

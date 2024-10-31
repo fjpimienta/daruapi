@@ -147,6 +147,7 @@ type Promociones {
 }
 
 type Especificacion {
+  agrupadoPor: String
   tipo: String
   valor: String
 }

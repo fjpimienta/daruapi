@@ -179,4 +179,5 @@ export interface IVariables {
   // inttelec
   partNumberInttelec?: string;
   orderInttelec?: IOrderInttelec;
+  info?: IPaginationOptions;
 }

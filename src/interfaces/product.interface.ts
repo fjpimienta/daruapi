@@ -40,6 +40,7 @@ export interface IProduct {
 }
 
 export interface IEspecificacion {
+  agrupadoPor: String;
   tipo: String;
   valor: String;
 }

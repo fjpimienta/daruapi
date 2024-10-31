@@ -41,6 +41,7 @@ type Product {
 }
 
 type Especificacion {
+  agrupadoPor: String
   tipo: String
   valor: String
 }

@@ -292,10 +292,10 @@ class ExternalSyscomService extends ResolversOperationsService {
           const productTmp = productInfo.oneProductSyscomById
           product.especificaciones = [];
           product.especificacionesBullet = [];
-          product.especificacionesBullet.push({ tipo: 'Caracteristicas', valor: productTmp.caracteristicas });
+          product.especificacionesBullet.push({ agrupadoPor: 'Basic', tipo: 'Caracteristicas', valor: productTmp.caracteristicas });
           if (productTmp && productTmp.recursos && productTmp.recursos.length > 0) {
             for (const recurso of productTmp.recursos) {
-              product.especificaciones.push({ tipo: 'Recurso(' + recurso.recurso + ')', valor: recurso.path });
+              product.especificaciones.push({ agrupadoPor: 'Basic', tipo: 'Recurso(' + recurso.recurso + ')', valor: recurso.path });
             }
           }
           // Imagenes
@@ -1140,12 +1140,12 @@ class ExternalSyscomService extends ResolversOperationsService {
       if (item.especificaciones && item.especificaciones.length > 0) {
         itemData.especificaciones = item.especificaciones;
       }
-      itemData.especificaciones.push({ tipo: 'Peso', valor: item.peso });
-      itemData.especificaciones.push({ tipo: 'Altura', valor: item.alto });
-      itemData.especificaciones.push({ tipo: 'Longitud', valor: item.largo });
-      itemData.especificaciones.push({ tipo: 'Ancho', valor: item.ancho });
-      itemData.especificaciones.push({ tipo: 'Link', valor: item.link });
-      itemData.especificaciones.push({ tipo: 'Link_privado', valor: item.link_privado });
+      itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Peso', valor: item.peso });
+      itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Altura', valor: item.alto });
+      itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Longitud', valor: item.largo });
+      itemData.especificaciones.push({ agrupadoPor: 'Dimensiones', tipo: 'Ancho', valor: item.ancho });
+      itemData.especificaciones.push({ agrupadoPor: 'Basic', tipo: 'Link', valor: item.link });
+      itemData.especificaciones.push({ agrupadoPor: 'Basic', tipo: 'Link_privado', valor: item.link_privado });
       itemData.especificacionesBullet = item.especificacionesBullet;
       itemData.sheetJson = '';
     }

@@ -22,6 +22,8 @@ import https from 'https';
 import { ICatalog } from '../interfaces/catalog.interface';
 import * as fs from 'fs';
 import * as path from 'path';
+import DictionarysService from './dictionary.service';
+import { IDictionary } from '../interfaces/dictionary.interface';
 
 class ProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.PRODUCTS;
@@ -517,6 +519,21 @@ class ProductsService extends ResolversOperationsService {
         existingProductsMap = new Map(result.items.map(item => [item.partnumber, item]));
       }
 
+      // Recuperar Diccionario de datos.
+      const variableLocal = { info: { page: 1, pages: 1, itemsPage: -1, skip: 0, total: 1 } };
+      const dictionaryResponse: { status: boolean; dictionarys: IDictionary[] | Promise<IDictionary[]> } =
+        await new DictionarysService({}, variableLocal, context).items(variableLocal);
+
+      console.log('dictionary: ', dictionaryResponse);
+
+      let dictionary: IDictionary[] = [];
+
+      // Verificar si la respuesta contiene los datos correctos y resolver la promesa si es necesario
+      if (dictionaryResponse.status) {
+        dictionary = await Promise.resolve(dictionaryResponse.dictionarys);
+      }
+
+
       // Recuperar productos existentes del proveedor
       if (idProveedor !== 'ingram') {
         const responseBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
@@ -580,29 +597,57 @@ class ProductsService extends ResolversOperationsService {
           const sanitizedPartnumber = this.sanitizePartnumber(product.partnumber);
           // Verificar archivos JSON
           const resultEspec = await this.readJson(sanitizedPartnumber);
+          console.log('resultEspec.status: ', resultEspec.status);
+
           if (resultEspec.status) {
+            // Recuperar Diccionario de Datos
+
+            // Asignar json
             const urlJson = `${env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
             productC.sheetJson = urlJson;
             const especificaciones: Especificacion[] = resultEspec.getJson;
             especificaciones.forEach(nuevaEspecificacion => {
               const index = productC.especificaciones.findIndex(
-                especificacion => especificacion.tipo === nuevaEspecificacion.tipo
-              );
+                especificacion => especificacion.tipo === nuevaEspecificacion.tipo);
+
               if (index !== -1) {
                 productC.especificaciones[index] = nuevaEspecificacion;
               } else {
                 productC.especificaciones.push(nuevaEspecificacion);
               }
+
+              // Crear una lista para las especificaciones con valores del diccionario
+              const especificacionesFinales: Especificacion[] = [];
+
+              // Buscar coincidencias en el diccionario y construir el objeto con los valores requeridos
+              for (const dictItem of dictionary) {
+                // Comparar headerName y attributeName
+                if (nuevaEspecificacion.agrupadoPor === dictItem.headerName &&
+                  nuevaEspecificacion.tipo === dictItem.attributeName) {
+
+                  // Crear una nueva especificación con los valores de display y el valor correspondiente
+                  const especificacionConDisplay: Especificacion = {
+                    agrupadoPor: dictItem.headerDisplay,
+                    tipo: dictItem.attributeDisplay,
+                    valor: nuevaEspecificacion.valor || "", // Aquí se asigna `attributeValue`
+                  };
+
+                  especificacionesFinales.push(especificacionConDisplay);
+                }
+              }
+
+              // Reemplazar las especificaciones del producto con las especificaciones finales
+              productC.especificaciones = especificacionesFinales;
             });
           }
-          // Verificar imágenes
-          productC.pictures = product.pictures;
-          productC.sm_pictures = product.sm_pictures;
-          const resultImages = await this.readImages(sanitizedPartnumber);
-          if (resultImages && resultImages.status) {
-            productC.pictures = resultImages.getImages;
-            productC.sm_pictures = resultImages.getImages;
-          }
+          // // Verificar imágenes
+          // productC.pictures = product.pictures;
+          // productC.sm_pictures = product.sm_pictures;
+          // const resultImages = await this.readImages(sanitizedPartnumber);
+          // if (resultImages && resultImages.status) {
+          //   productC.pictures = resultImages.getImages;
+          //   productC.sm_pictures = resultImages.getImages;
+          // }
           productsAdd.push(productC);
           // Preparar los datos para la operación de actualización o inserción
           const updateData = {
@@ -1534,7 +1579,7 @@ class ProductsService extends ResolversOperationsService {
       return {
         status: false,
         message: 'Producto no definido, verificar datos.',
-        getJson: [{ tipo: '', valor: '' }]
+        getJson: [{ agrupadoPor: '', tipo: '', valor: '' }]
       };
     }
     const urlJson = `${env.API_URL}${env.UPLOAD_URL}/jsons/${productId}.json`;
@@ -1593,14 +1638,14 @@ class ProductsService extends ResolversOperationsService {
         return {
           status: false,
           message: 'Json del producto no encontrado',
-          getJson: [{ tipo: '', valor: '' }]
+          getJson: [{ agrupadoPor: '', tipo: '', valor: '' }]
         };
       }
     } catch (error) {
       return {
         status: false,
         message: (error as Error).message,
-        getJson: [{ tipo: '', valor: '' }]
+        getJson: [{ agrupadoPor: '', tipo: '', valor: '' }]
       };
     }
   }

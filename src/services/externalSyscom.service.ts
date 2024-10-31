@@ -292,10 +292,10 @@ class ExternalSyscomService extends ResolversOperationsService {
           const productTmp = productInfo.oneProductSyscomById
           product.especificaciones = [];
           product.especificacionesBullet = [];
-          product.especificacionesBullet.push({ tipo: 'Caracteristicas', valor: productTmp.caracteristicas });
+          product.especificacionesBullet.push({ agrupadoPor: 'Basic', tipo: 'Caracteristicas', valor: productTmp.caracteristicas });
           if (productTmp && productTmp.recursos && productTmp.recursos.length > 0) {
             for (const recurso of productTmp.recursos) {
-              product.especificaciones.push({ tipo: 'Recurso(' + recurso.recurso + ')', valor: recurso.path });
+              product.especificaciones.push({ agrupadoPor: 'Basic', tipo: 'Recurso(' + recurso.recurso + ')', valor: recurso.path });
             }
           }
           // Imagenes

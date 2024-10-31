@@ -640,14 +640,14 @@ class ProductsService extends ResolversOperationsService {
               productC.especificaciones = especificacionesFinales;
             });
           }
-          // // Verificar imágenes
-          // productC.pictures = product.pictures;
-          // productC.sm_pictures = product.sm_pictures;
-          // const resultImages = await this.readImages(sanitizedPartnumber);
-          // if (resultImages && resultImages.status) {
-          //   productC.pictures = resultImages.getImages;
-          //   productC.sm_pictures = resultImages.getImages;
-          // }
+          // Verificar imágenes
+          productC.pictures = product.pictures;
+          productC.sm_pictures = product.sm_pictures;
+          const resultImages = await this.readImages(sanitizedPartnumber);
+          if (resultImages && resultImages.status) {
+            productC.pictures = resultImages.getImages;
+            productC.sm_pictures = resultImages.getImages;
+          }
           productsAdd.push(productC);
           // Preparar los datos para la operación de actualización o inserción
           const updateData = {

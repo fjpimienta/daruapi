@@ -579,7 +579,6 @@ class ProductsService extends ResolversOperationsService {
           if (resultEspec.status) {
             // Asignar json
             const urlJson = `${env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
-            productC.sheetJson = urlJson;
             const especificaciones: Especificacion[] = resultEspec.getJson;
             especificaciones.forEach(nuevaEspecificacion => {
               const index = productC.especificaciones.findIndex(especificacion => especificacion.tipo === nuevaEspecificacion.tipo);
@@ -1193,7 +1192,6 @@ class ProductsService extends ResolversOperationsService {
           let product = products[l];
           let imageUrls = product.sheetJson as string;
           await downloadJsons(imageUrls, uploadFolder, product.partnumber, product);
-          product.sheetJson = product.sheetJson;
           productsAdd.push(product);
         }
       }

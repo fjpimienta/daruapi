@@ -145,8 +145,6 @@ class ProductsService extends ResolversOperationsService {
       const translateService = new TraslateService(this.getRoot(), this.getVariables(), this.getContext());
       // Usar la instancia para llamar a fetchAndProcessJson
       const jsonProduct = await translateService.fetchAndProcessJson(urlImage);
-      // const jsonProduct = await TraslateService.fetchAndProcessJson(urlImage);
-      console.log('jsonProduct: ', jsonProduct);
     } else {
       const variableLocal = {
         brandIcecat: product.brands[0].slug,
@@ -486,17 +484,13 @@ class ProductsService extends ResolversOperationsService {
 
   }
 
-  async insertMany(context: IContextData) {
+  async insertMany(context: IContextData): Promise<{ status: boolean; message: string; products: IProduct[] | null }> {
     try {
       let firstsProducts = true;
       const products = this.getVariables().products;
       let productsAdd: IProduct[] = [];
       if (!products || products.length === 0) {
-        return {
-          status: false,
-          message: 'No existen elementos para integrar',
-          products: null,
-        };
+        return { status: false, message: 'No existen elementos para integrar', products: [] };
       }
       logger.info(`insertMany->products.length: ${products.length}.`);
       // Recuperar el siguiente ID disponible
@@ -505,10 +499,10 @@ class ProductsService extends ResolversOperationsService {
       firstsProducts = id > 1 ? false : true;
 
       const idProveedor = products[0].suppliersProd.idProveedor;
-      let existingProductsMap = new Map<string, any>();
-      let existingProductsBDIMap = new Map<string, any>();
-      let allExistingProducts = [];
-      let allExistingProductsBDI = [];
+      let existingProductsMap = new Map<string, IProduct>();
+      let existingProductsBDIMap = new Map<string, IProductBDI>();
+      let allExistingProducts: IProduct[] = [];
+      let allExistingProductsBDI: IProductBDI[] = [];
 
       const filter = { 'suppliersProd.idProveedor': idProveedor };
       const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
@@ -518,33 +512,21 @@ class ProductsService extends ResolversOperationsService {
         logger.info(`insertMany->allExistingProducts.length: ${allExistingProducts.length}.`);
         existingProductsMap = new Map(result.items.map(item => [item.partnumber, item]));
       }
-
-      // Recuperar Diccionario de datos.
+      // Recuperar Diccionario de datos
       const variableLocal = { info: { page: 1, pages: 1, itemsPage: -1, skip: 0, total: 1 } };
-      const dictionaryResponse: { status: boolean; dictionarys: IDictionary[] | Promise<IDictionary[]> } =
-        await new DictionarysService({}, variableLocal, context).items(variableLocal);
-
-      console.log('dictionary: ', dictionaryResponse);
-
+      const dictionaryResponse = await new DictionarysService({}, variableLocal, context).items(variableLocal);
       let dictionary: IDictionary[] = [];
-
-      // Verificar si la respuesta contiene los datos correctos y resolver la promesa si es necesario
       if (dictionaryResponse.status) {
         dictionary = await Promise.resolve(dictionaryResponse.dictionarys);
       }
-
-
       // Recuperar productos existentes del proveedor
       if (idProveedor !== 'ingram') {
         const responseBDI = await new ExternalBDIService({}, {}, context).getProductsBDI();
         logger.info(`insertMany->responseBDI. ${responseBDI.status}; ${responseBDI.message}.`);
-
-        // Manejo de productos existentes si no se obtienen de la fuente externa
         if (!responseBDI || !responseBDI.productsBDI || responseBDI.productsBDI.length === 0) {
           const filter = { 'suppliersProd.idProveedor': idProveedor };
           const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
           logger.info(`insertMany->listAll. ${result.status}; ${result.message}.`);
-
           if (!result || !result.items || result.items.length === 0) {
             // Asignar nuevos ids para productos nuevos si no hay productos existentes
             let j = id;
@@ -562,14 +544,11 @@ class ProductsService extends ResolversOperationsService {
           existingProductsBDIMap = new Map(productsBDI.map((productBDI: IProductBDI) => [productBDI.products.vendornumber, productBDI]));
         }
       }
-
-      let bulkOperations = [];
+      let bulkOperations: any[] = [];
       let nextId = id;
       const newProductPartNumbers = new Set(products.map(product => product.partnumber));
       // Inactivar productos que no están en la nueva lista
-      const productsToInactivate = allExistingProducts.filter(
-        (existingProduct: any) => !newProductPartNumbers.has(existingProduct.partnumber)
-      );
+      const productsToInactivate = allExistingProducts.filter(existingProduct => !newProductPartNumbers.has(existingProduct.partnumber));
       for (const productToInactivate of productsToInactivate) {
         bulkOperations.push({
           updateOne: {
@@ -597,47 +576,34 @@ class ProductsService extends ResolversOperationsService {
           const sanitizedPartnumber = this.sanitizePartnumber(product.partnumber);
           // Verificar archivos JSON
           const resultEspec = await this.readJson(sanitizedPartnumber);
-          console.log('resultEspec.status: ', resultEspec.status);
-
           if (resultEspec.status) {
-            // Recuperar Diccionario de Datos
-
             // Asignar json
             const urlJson = `${env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
             productC.sheetJson = urlJson;
             const especificaciones: Especificacion[] = resultEspec.getJson;
             especificaciones.forEach(nuevaEspecificacion => {
-              const index = productC.especificaciones.findIndex(
-                especificacion => especificacion.tipo === nuevaEspecificacion.tipo);
-
+              const index = productC.especificaciones.findIndex(especificacion => especificacion.tipo === nuevaEspecificacion.tipo);
               if (index !== -1) {
                 productC.especificaciones[index] = nuevaEspecificacion;
               } else {
                 productC.especificaciones.push(nuevaEspecificacion);
               }
-
               // Crear una lista para las especificaciones con valores del diccionario
               const especificacionesFinales: Especificacion[] = [];
-
-              // Buscar coincidencias en el diccionario y construir el objeto con los valores requeridos
               for (const dictItem of dictionary) {
                 // Comparar headerName y attributeName
-                if (nuevaEspecificacion.agrupadoPor === dictItem.headerName &&
-                  nuevaEspecificacion.tipo === dictItem.attributeName) {
-
+                if (nuevaEspecificacion.agrupadoPor === dictItem.headerName && nuevaEspecificacion.tipo === dictItem.attributeName) {
                   // Crear una nueva especificación con los valores de display y el valor correspondiente
                   const especificacionConDisplay: Especificacion = {
                     agrupadoPor: dictItem.headerDisplay,
                     tipo: dictItem.attributeDisplay,
-                    valor: nuevaEspecificacion.valor || "", // Aquí se asigna `attributeValue`
+                    valor: nuevaEspecificacion.valor || "",
                   };
-
                   especificacionesFinales.push(especificacionConDisplay);
                 }
               }
-
               // Reemplazar las especificaciones del producto con las especificaciones finales
-              productC.especificaciones = especificacionesFinales;
+              productC.especificaciones.push(...especificacionesFinales);
             });
           }
           // Verificar imágenes
@@ -650,10 +616,7 @@ class ProductsService extends ResolversOperationsService {
           }
           productsAdd.push(productC);
           // Preparar los datos para la operación de actualización o inserción
-          const updateData = {
-            ...productC,
-            active: true,
-          };
+          const updateData = { ...productC, active: true };
           bulkOperations.push({
             updateOne: {
               filter: { partnumber: product.partnumber, 'suppliersProd.idProveedor': idProveedor },
@@ -662,37 +625,22 @@ class ProductsService extends ResolversOperationsService {
             },
           });
         } else {
-          // Log para identificar si se detectó un conflicto de IDs
           logger.warn(`Conflicto detectado: se intentó cambiar el id del producto existente. Partnumber: ${product.partnumber}, id esperado: ${existingProduct?.id}, id asignado: ${product.id}`);
         }
       }
-      // Verificar antes de ejecutar bulkWrite
       logger.info(`Preparando para bulkWrite. Operaciones a ejecutar: ${bulkOperations.length}`);
-      // bulkOperations.forEach(op => logger.debug(`Operación: ${JSON.stringify(op)}`));
       // Ejecutar operaciones bulk
       if (bulkOperations.length > 0) {
         const bulkResult = await this.getDB().collection(this.collection).bulkWrite(bulkOperations);
-        logger.info(`bulkResult.matchedCount: ${bulkResult.upsertedCount}`);
-        logger.info(`bulkResult.upsertedCount: ${bulkResult.matchedCount}`);
+        logger.info(`bulkResult.matchedCount: ${bulkResult.matchedCount}`);
+        logger.info(`bulkResult.upsertedCount: ${bulkResult.upsertedCount}`);
         const isSuccess = (bulkResult.matchedCount || 0) > 0 || (bulkResult.upsertedCount || 0) > 0;
-        return {
-          status: isSuccess,
-          message: isSuccess ? 'Se han actualizado los productos.' : 'No se han actualizado los productos.',
-          products: [],
-        };
+        return { status: isSuccess, message: isSuccess ? 'Se han actualizado los productos.' : 'No se han actualizado los productos.', products: [] };
       }
-      return {
-        status: false,
-        message: 'No se realizaron operaciones de actualización/inserción',
-        products: [],
-      };
+      return { status: false, message: 'No se realizaron operaciones de actualización/inserción', products: [] };
     } catch (error) {
       logger.error(`Error en insertMany: ${error}`);
-      return {
-        status: false,
-        message: `Error: ${error}`,
-        products: [],
-      };
+      return { status: false, message: `Error: ${error}`, products: [] };
     }
   }
 

@@ -116,31 +116,39 @@ const downloadImage = async (
 };
 
 const checkImageExists = async (url: string): Promise<boolean> => {
-  const protocol = url.startsWith('https') ? https : http;
+  const isHttps = url.startsWith('https');
+  const protocol = isHttps ? https : http;
+  const agent = isHttps ? new https.Agent({ keepAlive: false }) : new http.Agent({ keepAlive: false });
+  
   const options = {
-    rejectUnauthorized: false, // Ignorar problemas de certificado SSL
+    method: 'HEAD', // Cambiar a HEAD para verificar existencia sin descargar
+    rejectUnauthorized: false, // Ignorar problemas SSL
+    agent,
     headers: {
-      'Connection': 'close' // Cierra la conexión después de cada solicitud
+      'Connection': 'close',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36'
     }
   };
+
   return new Promise((resolve) => {
-    const request = protocol.get(url, options, (res) => {
+    const request = protocol.request(url, options, (res) => {
       const imageExists = res.statusCode === 200;
-      // logger.info(`Status Code: ${res.statusCode}, Status Message: ${res.statusMessage}`);
       resolve(imageExists);
     });
+
     request.on('error', (err) => {
       logger.error(`Error al verificar la URL: ${url} - Error: ${err.message}`);
       resolve(false);
     });
-    request.setTimeout(90000, () => {  // Aumentar el tiempo de espera a 90 segundos
+
+    request.setTimeout(90000, () => {
       logger.error(`La solicitud a la URL: ${url} ha superado el tiempo de espera y ha sido abortada.`);
       request.abort();
       resolve(false);
     });
+
+    request.end(); // Finalizar la solicitud
   });
 };
-
-
 
 export { downloadImage, checkImageExists, imageCache, downloadQueue, MAX_CONCURRENT_DOWNLOADS };

@@ -134,7 +134,7 @@ const checkImageExists = async (url: string): Promise<boolean> => {
       logger.error(`Error al verificar la URL: ${url} - Error: ${err.message}`);
       resolve(false);
     });
-    request.setTimeout(60000, () => {
+    request.setTimeout(30000, () => {
       logger.error(`La solicitud a la URL: ${url} ha superado el tiempo de espera y ha sido abortada.`);
       request.abort();
       resolve(false);

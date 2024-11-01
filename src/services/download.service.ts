@@ -49,7 +49,7 @@ const downloadImage = async (
           }
         });
         request.on('error', reject);
-        request.setTimeout(30000, () => {
+        request.setTimeout(90000, () => {
           request.abort();
           reject(new Error(`Timeout al intentar acceder a ${url}`));
         });
@@ -126,14 +126,14 @@ const checkImageExists = async (url: string): Promise<boolean> => {
   return new Promise((resolve) => {
     const request = protocol.get(url, options, (res) => {
       const imageExists = res.statusCode === 200;
-      logger.info(`Status Code: ${res.statusCode}, Status Message: ${res.statusMessage}`);
+      // logger.info(`Status Code: ${res.statusCode}, Status Message: ${res.statusMessage}`);
       resolve(imageExists);
     });
     request.on('error', (err) => {
       logger.error(`Error al verificar la URL: ${url} - Error: ${err.message}`);
       resolve(false);
     });
-    request.setTimeout(60000, () => {  // Aumentar el tiempo de espera a 60 segundos
+    request.setTimeout(90000, () => {  // Aumentar el tiempo de espera a 90 segundos
       logger.error(`La solicitud a la URL: ${url} ha superado el tiempo de espera y ha sido abortada.`);
       request.abort();
       resolve(false);

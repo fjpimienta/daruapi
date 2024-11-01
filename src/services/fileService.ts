@@ -27,6 +27,7 @@ export const loadAndNormalizeJson = (jsonData: any) => {
   }
   const normalizedData = jsonData.map((item: any) => {
     return {
+      agrupadoPor: capitalizeWords(item.headerName),
       tipo: capitalizeWords(item.attributeName),
       valor: capitalizeFirstLetter(item.attributeValue)
     };

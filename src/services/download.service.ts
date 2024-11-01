@@ -118,29 +118,29 @@ const downloadImage = async (
 const checkImageExists = async (url: string): Promise<boolean> => {
   const protocol = url.startsWith('https') ? https : http;
   const options = {
-    rejectUnauthorized: false  // Ignorar problemas de certificado SSL
+    rejectUnauthorized: false, // Ignorar problemas de certificado SSL
+    headers: {
+      'Connection': 'close' // Cierra la conexión después de cada solicitud
+    }
   };
   return new Promise((resolve) => {
     const request = protocol.get(url, options, (res) => {
       const imageExists = res.statusCode === 200;
-      // if (imageExists) {
-      //   // logger.info(`La imagen existe en la URL: ${url} (Status Code: ${res.statusCode})`);
-      // } else {
-      //   logger.warn(`La imagen NO existe en la URL: ${url} (Status Code: ${res.statusCode})`);
-      // }
+      logger.info(`Status Code: ${res.statusCode}, Status Message: ${res.statusMessage}`);
       resolve(imageExists);
     });
     request.on('error', (err) => {
       logger.error(`Error al verificar la URL: ${url} - Error: ${err.message}`);
       resolve(false);
     });
-    request.setTimeout(30000, () => {
+    request.setTimeout(60000, () => {  // Aumentar el tiempo de espera a 60 segundos
       logger.error(`La solicitud a la URL: ${url} ha superado el tiempo de espera y ha sido abortada.`);
       request.abort();
       resolve(false);
     });
   });
 };
+
 
 
 export { downloadImage, checkImageExists, imageCache, downloadQueue, MAX_CONCURRENT_DOWNLOADS };

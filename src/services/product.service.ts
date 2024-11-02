@@ -500,9 +500,9 @@ class ProductsService extends ResolversOperationsService {
 
       const idProveedor = products[0].suppliersProd.idProveedor;
       let existingProductsMap = new Map<string, IProduct>();
-      let existingProductsBDIMap = new Map<string, IProductBDI>();
       let allExistingProducts: IProduct[] = [];
-      let allExistingProductsBDI: IProductBDI[] = [];
+      // let existingProductsBDIMap = new Map<string, IProductBDI>();
+      // let allExistingProductsBDI: IProductBDI[] = [];
 
       const filter = { 'suppliersProd.idProveedor': idProveedor };
       const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
@@ -536,12 +536,12 @@ class ProductsService extends ResolversOperationsService {
               j += 1;
             }
           }
-        } else {
-          // Manejar productos obtenidos de la fuente externa
-          const productsBDI = responseBDI.productsBDI;
-          allExistingProductsBDI = productsBDI.map((productBDI: IProductBDI) => productBDI.products);
-          logger.info(`insertMany->allExistingProductsBDI.length: ${allExistingProductsBDI.length}.`);
-          existingProductsBDIMap = new Map(productsBDI.map((productBDI: IProductBDI) => [productBDI.products.vendornumber, productBDI]));
+          // } else {
+          // // Manejar productos obtenidos de la fuente externa
+          // const productsBDI = responseBDI.productsBDI;
+          // allExistingProductsBDI = productsBDI.map((productBDI: IProductBDI) => productBDI.products);
+          // logger.info(`insertMany->allExistingProductsBDI.length: ${allExistingProductsBDI.length}.`);
+          // existingProductsBDIMap = new Map(productsBDI.map((productBDI: IProductBDI) => [productBDI.products.vendornumber, productBDI]));
         }
       }
       let bulkOperations: any[] = [];
@@ -577,7 +577,6 @@ class ProductsService extends ResolversOperationsService {
           // Verificar archivos JSON
           const resultEspec = await this.readJson(sanitizedPartnumber);
           if (resultEspec.status) {
-            logger.info(`resultEspec.getJson: ${resultEspec.getJson}`);
             // Asignar json
             const urlJson = `${env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
             productC.sheetJson = urlJson;

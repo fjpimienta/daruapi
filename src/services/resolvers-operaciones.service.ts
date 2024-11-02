@@ -157,7 +157,8 @@ class ResolversOperationsService {
         { $limit: paginationData.itemsPage },
       ];
 
-      const items = await findElementsProducts(this.getDB(), collection, aggregate);
+      // Pasar { allowDiskUse: true } como una opción en la llamada a aggregate
+      const items = await findElementsProducts(this.getDB(), collection, aggregate, { allowDiskUse: true });
       return {
         info: {
           page: paginationData.page,
@@ -179,6 +180,7 @@ class ResolversOperationsService {
       };
     }
   }
+
 
   // Obtener detalles del item
   protected async get(collection: string) {

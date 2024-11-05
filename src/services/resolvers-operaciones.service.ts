@@ -172,6 +172,7 @@ class ResolversOperationsService {
       };
 
     } catch (error) {
+      console.error(`Error al cargar la lista de ${listElement}:`, error);
       return {
         info: null,
         status: false,
@@ -180,7 +181,6 @@ class ResolversOperationsService {
       };
     }
   }
-
 
   // Obtener detalles del item
   protected async get(collection: string) {

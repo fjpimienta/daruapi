@@ -116,14 +116,14 @@ export const findElements = async (
 export const findElementsProducts = async (
   database: Db,
   collection: string,
-  aggregate: Array<object> = [],  // Cambio el tipo de 'object' a 'Array<object>' // Mantener el tipo 'Array<object>'
+  aggregate: Array<object> = [],  // Mantener el tipo 'Array<object>'
   options: object = {} // Añadir un parámetro para las opciones de agregación
 ): Promise<Array<object>> => {
   return new Promise(async (resolve) => {
     const pipeline = [
       ...aggregate,
     ];
-    resolve(await database.collection(collection, options).aggregate(pipeline).toArray());
+    resolve(await database.collection(collection).aggregate(pipeline, options).toArray());
   });
 };
 

@@ -578,6 +578,7 @@ class ProductsService extends ResolversOperationsService {
           const resultEspec = await this.readJson(sanitizedPartnumber);
           if (resultEspec.status) {
             // Asignar json
+            productC.especificaciones = [];
             const urlJson = `${env.UPLOAD_URL}jsons/${sanitizedPartnumber}.json`;
             productC.sheetJson = urlJson;
             const especificaciones: Especificacion[] = resultEspec.getJson;

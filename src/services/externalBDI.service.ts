@@ -1,7 +1,7 @@
 import { IContextData } from '../interfaces/context-data.interface';
 import ResolversOperationsService from './resolvers-operaciones.service';
 
-import fetch from 'node-fetch';
+import fetch, { RequestInit } from 'node-fetch';
 import { COLLECTIONS } from '../config/constants';
 import { Db } from 'mongodb';
 import logger from '../utils/logger';
@@ -20,42 +20,45 @@ class ExternalBDIService extends ResolversOperationsService {
     this.db = context.db!;
   }
 
-  async getTokenBDI() {
-    const username = 'admin@daru.im';
-    const password = 'daru.01.02';
-    const optionsBDI = {
+  async getTokenBDI(): Promise<{ status: boolean; message: string; tokenBDI: any }> {
+    const usuario = 'daru';
+    const password = 'gtnRlfpfN';
+    const api_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvIjoiZGFydSIsIm1vZG9Qcm95ZWN0byI6InNhbmRib3giLCJSb2xEZWxVc3VhcmlvIjoiY2xpZW50IiwiaWF0IjoxNzMyNTYyNjc1LCJleHAiOjE3NjQxMjAyNzV9.Iyhgo7bZrGOMrfzHpRRc1nhST__6lG9E_O90dlRVh9s';
+
+    const optionsBDI: RequestInit = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email: username,
-        password: password
+        usuario,
+        password,
+        api_key
       }),
       redirect: 'follow' as RequestRedirect
     };
-      try {
-      const response = await fetch('https://admin.bdicentralapi.net/signin', optionsBDI);
+
+    try {
+      const response = await fetch('https://nexus.bluediamondinnovation.com/api/pna/v3/accesstoken', optionsBDI);
+
+      const textResponse = await response.text();
       if (!response.ok) {
-        // Si el código de estado no es 2xx, lanza un error
         throw new Error(`En el servicio BDI: ${response.status} - ${response.statusText}`);
       }
-      // Verificar si la respuesta es JSON
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
-        const tokenBDI = await response.json();
-        if (!tokenBDI || !tokenBDI.token) {
+        const tokenBDIR = JSON.parse(textResponse); // Intenta convertir a JSON
+        if (!tokenBDIR || !tokenBDIR.data || !tokenBDIR.data.tempToken) {
+          logger.error(`Error en la obtención del token. \n`);
           throw new Error('Error en la obtención del token.');
         }
-        const status = tokenBDI.token !== '' ? true : false;
-        const message = tokenBDI.access_token !== '' ? 'El token se ha generado correctamente.' : 'Error en el servicio. ' + JSON.stringify(tokenBDI);
         return {
-          status,
-          message,
-          tokenBDI
+          status: true,
+          message: 'El token se ha generado correctamente.',
+          tokenBDI: { token: tokenBDIR.data.tempToken, user: {}, signup: tokenBDIR.data.expires_in }
         };
       } else {
-        // Si el contenido no es JSON, lanza un error
+        logger.error(`Respuesta no es JSON: \n ${textResponse} \n`);
         throw new Error('Respuesta no es JSON.');
       }
     } catch (error) {
@@ -66,7 +69,7 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
   }
-  
+
   async getBrandsBDI() {
     const token = await this.getTokenBDI();
     if (!token || !token.status) {

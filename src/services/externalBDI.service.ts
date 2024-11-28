@@ -80,13 +80,13 @@ class ExternalBDIService extends ResolversOperationsService {
       };
     }
     const options = {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token.tokenBDI.token
       }
     };
-    const url = 'https://admin.bdicentralapi.net/api/manufacturer';
+    const url = 'https://nexus.bluediamondinnovation.com/api/pna/v3/sandbox/marcas?pagina=1&totalMarcas=100&limite=10';
     const response = await fetch(url, options);
     if (response.status < 200 || response.status >= 300) {
       return {
@@ -97,7 +97,7 @@ class ExternalBDIService extends ResolversOperationsService {
     }
     const data = await response.json();
     // process.env.PRODUCTION === 'true' && logger.info(`getBrandsBDI.data: \n ${JSON.stringify(data)} \n`);
-    const brands = data.manufacturer;
+    const brands = data.marcas;
     return {
       status: true,
       message: 'Esta es la lista de Marcas de BDI',
@@ -121,7 +121,7 @@ class ExternalBDIService extends ResolversOperationsService {
         'Authorization': 'Bearer ' + token.tokenBDI.token
       }
     };
-    const url = 'https://admin.bdicentralapi.net/api/categories';
+    const url = 'https://nexus.bluediamondinnovation.com/api/pna/v3/sandbox/categorias';
     const response = await fetch(url, options);
     if (response.status < 200 || response.status >= 300) {
       return {
@@ -132,11 +132,11 @@ class ExternalBDIService extends ResolversOperationsService {
     }
     const data = await response.json();
     // process.env.PRODUCTION === 'true' && logger.info(`getCategoriesBDI.data: \n ${JSON.stringify(data)} \n`);
-    const brands = data.categories;
+    const categories = data.categories;
     return {
       status: true,
       message: 'Esta es la lista de Marcas de BDI',
-      categoriesBDI: brands,
+      categoriesBDI: categories,
     };
   }
 

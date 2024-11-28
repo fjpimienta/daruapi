@@ -16,7 +16,7 @@ type TokenUserBDI {
 
 type BrandsBDI {
   id: String
-  name: String
+  marca: String
 }
 
 type CategorieBDI {

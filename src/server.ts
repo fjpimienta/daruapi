@@ -16,6 +16,7 @@ import fs from 'fs';
 import multer from 'multer';
 import * as path from 'path';
 import fileService from './services/fileService';
+import { execSync } from 'child_process';
 
 // Configuración de las variables de entorno (lectura)
 if (process.env.NODE_ENV !== 'production') {
@@ -23,9 +24,24 @@ if (process.env.NODE_ENV !== 'production') {
   console.log(env);
 }
 
+// Check if the certificate and key files exist
+const keyPath = 'src/_.daru.mx_private_key.key';
+const certPath = 'src/daru.mx_ssl_certificate.cer';
+
+if (!fs.existsSync(keyPath) || !fs.existsSync(certPath)) {
+  console.log('Generating self-signed certificate...');
+  try {
+    execSync('npm run generate-ssl', { stdio: 'inherit' });
+    console.log('Self-signed certificate generated successfully.');
+  } catch (error) {
+    console.error('Failed to generate self-signed certificate:', error);
+    process.exit(1);
+  }
+}
+
 const httpsOptions = {
-  key: fs.readFileSync('src/_.daru.mx_private_key.key'),
-  cert: fs.readFileSync('src/daru.mx_ssl_certificate.cer'),
+  key: fs.readFileSync(keyPath),
+  cert: fs.readFileSync(certPath),
 };
 
 // Ruta donde se guardarán los archivos

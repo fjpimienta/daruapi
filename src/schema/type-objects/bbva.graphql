@@ -1,0 +1,25 @@
+type Payment {
+  id: ID!
+  status: String!
+  amount: Float!
+  currency: String!
+  description: String
+  creationDate: String
+}
+
+enum PaymentStatus {
+  CREATED
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+type Query {
+  payment(id: ID!): Payment
+}
+
+type Mutation {
+  createPayment(input: CreatePaymentInput!): Payment
+  cancelPayment(id: ID!): Payment
+}

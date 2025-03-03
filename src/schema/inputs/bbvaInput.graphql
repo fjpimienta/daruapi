@@ -1,0 +1,6 @@
+input CreatePaymentInput {
+  amount: Float!
+  currency: String!
+  description: String
+  recipientAccount: String!
+}

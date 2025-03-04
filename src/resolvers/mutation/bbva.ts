@@ -1,11 +1,6 @@
-import BBVAService from '../services/bbva.service';
+import BBVAService from "../../services/bbva.service";
 
 const bbvaResolvers = {
-  Query: {
-    payment: async (_source: any, { id }: { id: string }, { dataSources }: { dataSources: { bbvaService: BBVAService } }) => {
-      return await dataSources.bbvaService.getPayment(id);
-    },
-  },
   Mutation: {
     createPayment: async (_source: any, { input }: { input: any }, { dataSources }: { dataSources: { bbvaService: BBVAService } }) => {
       return await dataSources.bbvaService.createPayment(input);

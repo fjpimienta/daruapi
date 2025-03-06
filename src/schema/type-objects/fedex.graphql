@@ -1,0 +1,11 @@
+type TokenFedex {
+  access_token: String
+  expires_in: Int
+  token_type: String
+}
+
+type ResultFedex {
+  status: Boolean
+  message: String
+  tokenFedex: TokenFedex
+}

@@ -5,3 +5,99 @@ type TokenFedex {
   expires_in: Int
   scope: String
 }
+
+type Address {
+  city: String!
+  stateOrProvinceCode: String!
+  postalCode: String!
+  countryCode: String!
+  residential: Boolean
+}
+
+type Payor {
+  responsibleParty: ResponsibleParty!
+}
+
+type ResponsibleParty {
+  address: Address!
+  accountNumber: String!
+}
+
+type ShippingChargesPayment {
+  paymentType: String!
+  payor: Payor!
+}
+
+type Weight {
+  units: String!
+  value: Float!
+}
+
+type Dimensions {
+  length: Int!
+  width: Int!
+  height: Int!
+  units: String!
+}
+
+type DeclaredValue {
+  amount: Float!
+  currency: String!
+}
+
+type DangerousGoodsDetail {
+  accessibility: String!
+  options: [String!]!
+}
+
+type PackageSpecialServices {
+  specialServiceTypes: [String!]!
+  dangerousGoodsDetail: DangerousGoodsDetail
+}
+
+type RequestedPackageLineItem {
+  declaredValue: DeclaredValue
+  weight: Weight!
+  dimensions: Dimensions!
+  packageSpecialServices: PackageSpecialServices
+}
+
+type Commodity {
+  description: String!
+  quantity: Int!
+  unitPrice: DeclaredValue!
+  weight: Weight!
+  customsValue: DeclaredValue!
+  numberOfPieces: Int!
+  countryOfManufacture: String!
+  quantityUnits: String!
+  name: String!
+  harmonizedCode: String!
+}
+
+type CustomsClearanceDetail {
+  commodities: [Commodity!]!
+}
+
+type ShipmentSpecialServices {
+  specialServiceTypes: [String!]!
+}
+
+type RequestedShipment {
+  shipper: Address!
+  recipients: [Address!]!
+  serviceType: String!
+  packagingType: String!
+  shipDatestamp: String!
+  pickupType: String!
+  shippingChargesPayment: ShippingChargesPayment!
+  requestedPackageLineItems: [RequestedPackageLineItem!]!
+  shipmentSpecialServices: ShipmentSpecialServices
+  customsClearanceDetail: CustomsClearanceDetail!
+}
+
+type ShipmentResponse {
+  success: Boolean!
+  trackingNumber: String
+  estimatedDelivery: String
+}

@@ -26,6 +26,7 @@ import { IOrderIngramInput, IShippingBDIInput } from './suppliers/_BDIShipments.
 import { ISliders } from './sliders.interface';
 import { IOrderInttelec } from './suppliers/_Inttelecs.interface';
 import { IDictionary } from './dictionary.interface';
+import { IShipmentFedex } from './fedex.interface';
 
 export interface IVariables {
   id?: string | number;
@@ -180,4 +181,6 @@ export interface IVariables {
   partNumberInttelec?: string;
   orderInttelec?: IOrderInttelec;
   info?: IPaginationOptions;
+  // fedex
+  shipmentFedex?: IShipmentFedex;
 }

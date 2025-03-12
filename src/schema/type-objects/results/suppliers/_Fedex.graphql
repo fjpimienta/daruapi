@@ -2,4 +2,5 @@ type ResultFedex implements Result {
   status: Boolean!
   message: String!
   tokenFedex: TokenFedex
+  transitTimesFedex: TransitTimeResponse
 }

@@ -1,3 +1,4 @@
 type Query {
   tokenFedex: ResultFedex
+  transitTimesFedex(shipmentFedex: ShipmentFedexInput!): ResultFedex
 }

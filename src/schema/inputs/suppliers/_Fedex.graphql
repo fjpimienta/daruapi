@@ -1,0 +1,101 @@
+input ShipmentFedexInput {
+  origin: AddressFedexInput!
+  destination: AddressFedexInput!
+  shipDate: String!
+  packageDetails: PackageFedexInput!
+}
+
+input AddressFedexInput {
+  streetLines: [String!]!
+  city: String!
+  stateOrProvinceCode: String!
+  postalCode: String!
+  countryCode: String!
+  residential: Boolean
+}
+
+input PackageFedexInput {
+  weight: Float!
+  dimensions: DimensionsFedexInput!
+}
+
+input DimensionsFedexInput {
+  length: Float!
+  width: Float!
+  height: Float!
+}
+
+input PayorFedexInput {
+  responsibleParty: ResponsiblePartyFedexInput!
+}
+
+input ResponsiblePartyFedexInput {
+  address: AddressFedexInput!
+  accountNumber: String!
+}
+
+input ShippingChargesPaymentFedexInput {
+  paymentType: String!
+  payor: PayorFedexInput!
+}
+
+input WeightFedexInput {
+  units: String!
+  value: Float!
+}
+
+input DeclaredValueFedexInput {
+  amount: Float!
+  currency: String!
+}
+
+input DangerousGoodsDetailFedexInput {
+  accessibility: String!
+  options: [String!]!
+}
+
+input PackageSpecialServicesFedexInput {
+  specialServiceTypes: [String!]!
+  dangerousGoodsDetail: DangerousGoodsDetailFedexInput
+}
+
+input RequestedPackageLineItemFedexInput {
+  declaredValue: DeclaredValueFedexInput
+  weight: WeightFedexInput!
+  dimensions: DimensionsFedexInput!
+  packageSpecialServices: PackageSpecialServicesFedexInput
+}
+
+input CommodityFedexInput {
+  description: String!
+  quantity: Int!
+  unitPrice: DeclaredValueFedexInput!
+  weight: WeightFedexInput!
+  customsValue: DeclaredValueFedexInput!
+  numberOfPieces: Int!
+  countryOfManufacture: String!
+  quantityUnits: String!
+  name: String!
+  harmonizedCode: String!
+}
+
+input CustomsClearanceDetailFedexInput {
+  commodities: [CommodityFedexInput!]!
+}
+
+input ShipmentSpecialServicesFedexInput {
+  specialServiceTypes: [String!]!
+}
+
+input RequestedShipmentFedexInput {
+  shipper: AddressFedexInput!
+  recipients: [AddressFedexInput!]!
+  serviceType: String!
+  packagingType: String!
+  shipDatestamp: String!
+  pickupType: String!
+  shippingChargesPayment: ShippingChargesPaymentFedexInput!
+  requestedPackageLineItems: [RequestedPackageLineItemFedexInput!]!
+  shipmentSpecialServices: ShipmentSpecialServicesFedexInput
+  customsClearanceDetail: CustomsClearanceDetailFedexInput!
+}

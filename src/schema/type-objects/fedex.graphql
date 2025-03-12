@@ -4,8 +4,12 @@ type TokenFedex {
   token_type: String
 }
 
-type ResultFedex {
-  status: Boolean
-  message: String
-  tokenFedex: TokenFedex
+type TransitTimeResponse {
+  services: [ServiceOption!]!
+}
+
+type ServiceOption {
+  serviceType: String!
+  deliveryDate: String!
+  transitTime: String!
 }

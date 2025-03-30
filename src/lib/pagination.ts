@@ -1,4 +1,4 @@
-import { Db } from 'mongodb';
+import { Db, Sort } from 'mongodb';
 import { countElements, countElementsProducts } from './db-operations';
 
 export async function pagination(
@@ -6,7 +6,8 @@ export async function pagination(
   collection: string,
   page: number = 1,
   itemsPage: number = 20,
-  filter: object = {}
+  filter: object = {},
+  sort: Sort = { id: 1 } // Cambia el tipo de 'sort' a 'Sort'
 ) {
   // Comprobar el numero de items por pagina
   if (itemsPage < 1 || itemsPage > 20) {

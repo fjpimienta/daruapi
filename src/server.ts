@@ -1,9 +1,12 @@
+import dotenv from 'dotenv';
+dotenv.config(); // Cargar variables de entorno desde .env
+
 import express, { Express } from 'express';
 import cors from 'cors';
 import compression from 'compression';
 import { createServer, Server } from 'http';
-import environments from './config/environments';
-import { ApolloServer } from 'apollo-server-express';
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
 import schema from './schema';
 import expressPlayground from 'graphql-playground-middleware-express';
 import Database from './lib/database';
@@ -17,12 +20,6 @@ import multer from 'multer';
 import * as path from 'path';
 import fileService from './services/fileService';
 import { execSync } from 'child_process';
-
-// Configuración de las variables de entorno (lectura)
-if (process.env.NODE_ENV !== 'production') {
-  const env = environments;
-  console.log(env);
-}
 
 // Check if the certificate and key files exist
 const keyPath = 'src/_.daru.mx_private_key.key';
@@ -84,23 +81,33 @@ async function init(): Promise<void> {
 
   const db = await database.init();
 
-  const server: ApolloServer = new ApolloServer({
+  const server: ApolloServer<IContext> = new ApolloServer<IContext>({
     schema,
     introspection: true,
-    context: async ({ req, connection }: IContext) => {
-      const token = (req) ? req.headers.authorization : connection.authorization;
-      return { db, token };
-    },
   });
+
+  await server.start();
+
+  app.use(
+    '/graphql',
+    expressMiddleware(server, {
+      context: async ({ req, res }) => ({
+        req: {
+          headers: {
+            authorization: req.headers.authorization, // Puede ser 'string | undefined'
+          },
+        },
+        res,
+        db, // asignamos la conexión a la propiedad db
+      }),
+    })
+  );
 
   // Agrega el servicio de archivos a la aplicación
   app.use('/files', fileService);
 
   // Configurar el directorio estático
   app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-
-  await server.start();
-  server.applyMiddleware({ app });
 
   app.get('/graphiql', cors(), expressPlayground({
     endpoint: '/graphql',

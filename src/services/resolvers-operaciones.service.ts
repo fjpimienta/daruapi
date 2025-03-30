@@ -1,4 +1,4 @@
-import { Db } from 'mongodb';
+import { Db, Sort } from 'mongodb';
 import { IContextData } from '../interfaces/context-data.interface';
 import { IVariables } from '../interfaces/variable.interface';
 import { pagination, paginationProducts } from '../lib/pagination';
@@ -32,8 +32,12 @@ class ResolversOperationsService {
   }
 
   protected getDB(): Db {
-    return this.context.db!;
+    if (!this.context.db) {
+      throw new Error('Conexión a la base de datos no establecida en el contexto.');
+    }
+    return this.context.db;
   }
+
   protected getVariables(): IVariables {
     return this.variables;
   }
@@ -59,7 +63,7 @@ class ResolversOperationsService {
         },
         status: true,
         message: `Lista de ${listElement} cargada correctamente`,
-        items: findElements(this.getDB(), collection, filter, paginationData, sort)
+        items: findElements(this.getDB(), collection, filter, paginationData, sort as Sort)
       };
     } catch (error) {
       return {
@@ -92,7 +96,7 @@ class ResolversOperationsService {
         },
         status: true,
         message: `Lista de ${listElement} cargada correctamente`,
-        items: await findElements(this.getDB(), collection, filter, paginationData, sort)
+        items: await findElements(this.getDB(), collection, filter, paginationData, sort as Sort)
       };
     } catch (error) {
       return {
@@ -393,7 +397,7 @@ class ResolversOperationsService {
       return await insertOneElement(this.getDB(), collection, document).then(
         res => {
           process.env.PRODUCTION === 'true' && logger.info(`add.insertOneElement: \n ${JSON.stringify(res)} \n`);
-          if (res.result.ok === 1) {
+          if (res.acknowledged) {
             return {
               status: true,
               message: `Se ha agregado el registro de ${item}.`,
@@ -422,7 +426,7 @@ class ResolversOperationsService {
       return await insertManyElements(this.getDB(), collection, documents).then(
         res => {
           process.env.PRODUCTION === 'true' && logger.info(`addList.insertManyElements: \n ${JSON.stringify(res)} \n`);
-          if (res.result.ok === 1) {
+          if (res.acknowledged) {
             return {
               status: true,
               message: `Se ha agregado correctamente la lista de ${item}.`,
@@ -456,7 +460,7 @@ class ResolversOperationsService {
       ).then(
         res => {
           process.env.PRODUCTION === 'true' && logger.info(`update.updateOneElement: \n ${JSON.stringify(res)} \n`);
-          if (res.result.nModified === 1 && res.result.ok) {
+          if (res.modifiedCount === 1) {
             return {
               status: true,
               message: `El registro de ${item} se ha actualizado.`,

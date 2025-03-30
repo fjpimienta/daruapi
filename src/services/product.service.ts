@@ -508,16 +508,16 @@ class ProductsService extends ResolversOperationsService {
       const result = await this.listAll(this.collection, this.catalogName, 1, -1, filter);
       logger.info(`insertMany->listAll. ${result.status}; ${result.message}.`);
       if (result && result.items && result.items.length > 0) {
-        allExistingProducts = result.items;
+        allExistingProducts = result.items as IProduct[];
         logger.info(`insertMany->allExistingProducts.length: ${allExistingProducts.length}.`);
-        existingProductsMap = new Map(result.items.map(item => [item.partnumber, item]));
+        existingProductsMap = new Map((result.items as IProduct[]).map(item => [item.partnumber, item]));
       }
       // Recuperar Diccionario de datos
       const variableLocal = { info: { page: 1, pages: 1, itemsPage: -1, skip: 0, total: 1 } };
       const dictionaryResponse = await new DictionarysService({}, variableLocal, context).items(variableLocal);
       let dictionary: IDictionary[] = [];
       if (dictionaryResponse.status) {
-        dictionary = await Promise.resolve(dictionaryResponse.dictionarys);
+        dictionary = await Promise.resolve(dictionaryResponse.dictionarys as IDictionary[]);
       }
       // Recuperar productos existentes del proveedor
       if (idProveedor !== 'ingram') {
@@ -777,8 +777,8 @@ class ProductsService extends ResolversOperationsService {
 
         // Crear un mapa para buscar productos por número de parte
         for (const productBDI of productsBDI) {
-          if (productBDI.products && productBDI.products.vendornumber) {
-            productsBDIMap.set(productBDI.products.vendornumber, productBDI);
+          if ((productBDI as any).products && (productBDI as any).products.vendornumber) {
+            productsBDIMap.set((productBDI as any).products.vendornumber, productBDI);
           }
         }
 
@@ -819,8 +819,8 @@ class ProductsService extends ResolversOperationsService {
           logger.info(`saveImages->productsSyscom ${idProveedor}: ${productsSyscom.length}.\n`);
           // Crear un mapa para buscar productos por número de parte
           for (const productSyscom of productsSyscom) {
-            if (productSyscom && productSyscom.partnumber) {
-              productsSyscomMap.set(productSyscom.partnumber, productSyscom);
+            if (productSyscom && ((productSyscom as unknown) as IProduct).partnumber) {
+              productsSyscomMap.set(((productSyscom as unknown) as IProduct).partnumber, productSyscom);
             }
           }
           logger.info(`saveImages->products ${idProveedor}: ${products.length}.\n`);
@@ -1137,7 +1137,7 @@ class ProductsService extends ResolversOperationsService {
         // Crear un mapa para buscar productos por número de parte
         for (const productBDI of productsBDI) {
           if (productBDI.products && productBDI.products.vendornumber) {
-            productsBDIMap.set(productBDI.products.vendornumber, productBDI);
+            productsBDIMap.set((productBDI as any).products.vendornumber, productBDI);
           }
         }
 
@@ -1171,8 +1171,8 @@ class ProductsService extends ResolversOperationsService {
         if (productsBDI && productsBDI.length > 0) {
           const productsBDIMap = new Map<string, any>();
           for (const productBDI of productsBDI) {
-            if (productBDI && productBDI.partnumber) {
-              productsBDIMap.set(productBDI.partnumber, productBDI);
+            if (productBDI && (productBDI as any).partnumber) {
+              productsBDIMap.set((productBDI as any).products.vendornumber, productBDI);
             }
           }
           // Procesa la carga de jsons.
@@ -1629,6 +1629,13 @@ class ProductsService extends ResolversOperationsService {
       };
     }
     const product = resultProd.item;
+    if (!product) {
+      return {
+        status: false,
+        message: `El producto ${productId} no fue encontrado.`,
+        product: null
+      };
+    }
     product.especificaciones = especificaciones;
     return {
       status: true,

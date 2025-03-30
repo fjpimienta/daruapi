@@ -95,7 +95,7 @@ class StripeCustomerService extends StripeApi {
          }
       ).then(async (result: IStripeCustomer) => {
          // Actualizar en nuestra base de datos con la nueva propiedad que es el id del cliente
-         const user: IUser = await findOneElement(db, COLLECTIONS.USERS, { email });
+         const user: IUser | null = await findOneElement(db, COLLECTIONS.USERS, { email }) as IUser | null;
          if (user) {
             user.stripeCustomer = result.id;
             const resultUserOperation = await new UsersService({}, { user }, { db }).modify();

@@ -605,8 +605,8 @@ class ExternalCvasService extends ResolversOperationsService {
     const products: Product[] = [];
     const productos: Product[] = [];
     const config = await new ConfigsService({}, { id: '1' }, { db }).details();
-    const stockMinimo = config.config.minimum_offer;
-    const exchangeRate = config.config.exchange_rate;
+    const stockMinimo = config.config?.minimum_offer ?? 0;
+    const exchangeRate = config.config?.exchange_rate ?? 1;
     const groups = (await this.getListGroupsCva()).listGroupsCva;
     const almacenes = (await this.getListSucursalesCva()).listSucursalesCva;
     function excludeGroups(groupsToExclude: string[], allGroups: { grupo: string }[]): { grupo: string }[] {

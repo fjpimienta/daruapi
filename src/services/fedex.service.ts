@@ -1,7 +1,6 @@
 import fetch from 'node-fetch';
 import ResolversOperationsService from './resolvers-operaciones.service';
 import { IContextData } from '../interfaces/context-data.interface';
-import { getEnvironment } from '../config/environments';
 import { IFedExRequest, IFedExTransitTimeResponse, ITransitTime, ITransitTimeDetail, IShipmentFedex, IFedExService } from '../interfaces/fedex.interface';
 
 class FedExService extends ResolversOperationsService {
@@ -64,9 +63,8 @@ class FedExService extends ResolversOperationsService {
   }
 
   async getTokenFedex() {
-    const environment = getEnvironment();
-    const clientId = environment.fedex.client_id;
-    const clientSecret = environment.fedex.client_secret;
+    const clientId = ''; // environment.fedex.client_id;
+    const clientSecret = ''; // environment.fedex.client_secret;
 
     const options = {
       method: 'POST',
@@ -129,8 +127,8 @@ class FedExService extends ResolversOperationsService {
           };
         }
 
-        const environment = getEnvironment();
-        const fedex_account = environment.fedex.fedex_account;
+        const environment = ''; // getEnvironment();
+        const fedex_account = ''; // environment.fedex.fedex_account;
 
         // Convertir códigos de estado al formato correcto
         const originState = this.getStateCode(shipmentFedex.origin.stateOrProvinceCode);

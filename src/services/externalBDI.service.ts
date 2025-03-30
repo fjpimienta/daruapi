@@ -303,7 +303,7 @@ class ExternalBDIService extends ResolversOperationsService {
     if (listProductsBDI?.length > 0 && listProductsPricesBDI?.length > 0) {
       const db = this.db;
       const config = await new ConfigsService({}, { id: '1' }, { db }).details();
-      const { minimum_offer: stockMinimo, exchange_rate: exchangeRate } = config.config;
+      const { minimum_offer: stockMinimo, exchange_rate: exchangeRate } = config.config || { minimum_offer: 0, exchange_rate: 1 };
       const productos: Product[] = [];
       const productMap = new Map(listProductsPricesBDI.map((p: any) => [p.sku, p]));
       for (const product of listProductsBDI) {

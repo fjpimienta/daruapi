@@ -80,8 +80,8 @@ class ExternalInttelecService extends ResolversOperationsService {
         if (listProductsInttelec && listProductsInttelec.length > 0) {
           const db = this.db;
           const config = await new ConfigsService({}, { id: '1' }, { db }).details();
-          const stockMinimo = config.config.minimum_offer;
-          const exchangeRate = config.config.exchange_rate;
+          const stockMinimo = config.config?.minimum_offer ?? 0;
+          const exchangeRate = config.config?.exchange_rate ?? 1;
           for (const product of listProductsInttelec) {
             if (product.sku !== '') {
               const itemData: Product = await this.setProduct('inttelec', product, null, stockMinimo, exchangeRate);

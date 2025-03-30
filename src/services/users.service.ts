@@ -7,6 +7,7 @@ import bcrypt from 'bcrypt';
 import JWT from '../lib/jwt';
 import { IVariables } from '../interfaces/variable.interface';
 import MailService from './mail.service';
+import { IUser } from '../interfaces/user.interface';
 
 class UsersService extends ResolversOperationsService {
   collection = COLLECTIONS.USERS;
@@ -78,7 +79,7 @@ class UsersService extends ResolversOperationsService {
         message: !passwordCheck
           ? 'Lo sentimos el Usuario o Password son incorrectos, sesión no iniciada.'
           : 'El Usuario ha sido verificado, puedes continuar.',
-        token: !passwordCheck ? null : new JWT().sign({ user }, EXPIRETIME.H24),
+        token: !passwordCheck ? null : new JWT().sign({ user: user as unknown as IUser }, EXPIRETIME.H24),
         user: !passwordCheck ? null : user
       };
     } catch (error) {

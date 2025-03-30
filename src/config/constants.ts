@@ -1,9 +1,3 @@
-import enviroment from './environments';
-
-if (process.env.NODE_ENV !== 'production') {
-  const env = enviroment;
-}
-
 export const SECRET_KEY =
   process.env.SECRET || 'hosting3m-ecommerce-09Fj1973';
 

@@ -8,7 +8,7 @@ export interface IUserBasic {
   id?: string;
   name?: string;
   lastname?: string;
-  email: string;
+  email?: string;
   phone?: string;
   stripeCustomer?: string;
   addresses?: IAddress[];

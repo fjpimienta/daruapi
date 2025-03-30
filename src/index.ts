@@ -1,20 +1,21 @@
-import { ApolloServer } from 'apollo-server-express';
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import express, { Request } from 'express';
 import schema from './schema';
-import BBVAService from './services/bbva.service';
 
-// ...existing code...
+// Inicializa la aplicación Express
+const app = express();
 
 const server = new ApolloServer({
   schema,
-  dataSources: () => {
-    return {
-      bbvaService: new BBVAService(),
-      // ...other data sources...
-    };
-  },
-  context: async ({ req }) => {
-    // ...existing context...
-  }
+  introspection: true,
 });
 
-// ...existing code...
+app.use(
+  '/graphql',
+  expressMiddleware(server, {
+    context: async ({ req }: { req: Request }) => {
+      return { req }; // Ahora 'req' tiene un tipo explícito
+    },
+  })
+);

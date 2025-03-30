@@ -14,7 +14,7 @@ class InvoiceConfigService extends ResolversOperationsService {
     return {
       status: result.status,
       message: result.message,
-      invoiceconfig: result.item.invoice_config
+      invoiceconfig: result.item ? result.item.invoice_config : null
     };
   }
 }

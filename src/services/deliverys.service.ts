@@ -617,7 +617,7 @@ class DeliverysService extends ResolversOperationsService {
             city: this.removeAccents(dir?.d_mnpio || ''),
             state: this.removeAccents(dir?.d_estado || ''),
             cp: dir?.d_codigo.padStart(5, '0') || '',
-            email: user.email,
+            email: user.email? user.email : '',
             branch: warehouse.id,
             products: productsIngram,
             carrier: 'E1',

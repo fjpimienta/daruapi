@@ -64,7 +64,7 @@ class ExternalIngramService extends ResolversOperationsService {
 
       if (ingramPartNumber === undefined) {
         const result = await this.getByField(this.collection);
-        ingramPartNumber = result.item.imSKU.trim();
+        ingramPartNumber = result.item ? result.item.imSKU.trim() : '';
       }
 
       if (!ingramPartNumber) {
@@ -121,8 +121,8 @@ class ExternalIngramService extends ResolversOperationsService {
     const allRecords = { allRecords: true };
     const productos: Product[] = [];
     const config = await new ConfigsService({}, { id: '1' }, { db }).details();
-    const stockMinimo = config.config.minimum_offer;
-    const exchangeRate = config.config.exchange_rate;
+    const stockMinimo = config.config?.minimum_offer ?? 0;
+    const exchangeRate = config.config?.exchange_rate ?? 1;
     // const productosIngram = await (await this.getPricesIngram(allRecords)).pricesIngram;
     // const productosIngram = await (await this.getPricesIngram(allRecords)).pricesIngram;
 
@@ -175,7 +175,7 @@ class ExternalIngramService extends ResolversOperationsService {
                 quantityBackordered: warehouse.quantityBackordered,
                 backOrderInfo: Array.isArray(warehouse.backOrderInfo) ? warehouse.backOrderInfo : []
               }));
-              const catalogIngram = catalogIngrams.find(cat => cat.imSKU.trim() === prodIngram.ingramPartNumber.trim());
+              const catalogIngram = (catalogIngrams as any[]).find(cat => cat.imSKU.trim() === prodIngram.ingramPartNumber.trim());
               if (catalogIngram && availability.availabilityByWarehouse && availability.availabilityByWarehouse.length > 0) {
                 const itemData: Product = await this.setProduct('ingram', prodIngram, catalogIngram, null, stockMinimo, exchangeRate);
                 if (itemData.id !== undefined && itemData.partnumber !== '') {

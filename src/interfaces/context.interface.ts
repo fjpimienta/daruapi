@@ -1,11 +1,14 @@
+import express from 'express'; // Importar express para usarlo en el tipo 'res'
+
 export interface IContext {
   req: IRequest;
-  connection: IConnection;
+  res: express.Response; // Asegúrate de incluir 'res' en el contexto
+  connection?: IConnection; // Hacer que 'connection' sea opcional
 }
 
 interface IRequest {
   headers: {
-    authorization: string;
+    authorization?: string; // Hacer que 'authorization' sea opcional
   };
 }
 

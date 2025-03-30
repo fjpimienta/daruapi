@@ -1,5 +1,6 @@
-import { Db } from 'mongodb';
+import { Db, Sort, WithId } from 'mongodb';
 import { IPaginationOptions } from '../interfaces/pagination-options.interface';
+import { ICatalog } from '../interfaces/catalog.interface';
 
 /**
  * Obtener el ID que vamos a utilizar en el nuevo usuario
@@ -13,13 +14,13 @@ import { IPaginationOptions } from '../interfaces/pagination-options.interface';
 export const asignDocumentId = async (
   database: Db,
   collection: string,
-  sort: object = { registerDate: -1 }
+  sort: Sort = { registerDate: -1 } // Cambia el tipo de 'sort' a 'Sort'
 ) => {
   const lastElement = await database
     .collection(collection)
     .find()
     .limit(1)
-    .sort(sort)
+    .sort(sort) // Ahora 'sort' es del tipo correcto
     .toArray();
 
   if (lastElement.length === 0) {
@@ -75,7 +76,7 @@ export const findOneElement = async (
  * @param sort Como queremos ordenarlo { <propiedad>: -1 }
  * @returns Lista de Objetos de la colección encontrados
  */
-export const findElements = async (
+export const findElements = async <T = WithId<Document>>(
   database: Db,
   collection: string,
   filter: object = {},
@@ -86,31 +87,21 @@ export const findElements = async (
     skip: 0,
     total: -1
   },
-  sort: object = {}
-) => {
+  sort: Sort = { id: 1 }
+): Promise<T[]> => {
   if (paginationOptions.total === -1) {
     return await database
       .collection(collection)
-      .find(filter).toArray();
-  }
-  if (collection === 'view_shop_products' || collection === 'view_budgets_products') {
-    return await database
-      .collection(collection)
       .find(filter)
-      .limit(paginationOptions.itemsPage)
-      .skip(paginationOptions.skip)
-      .sort(sort)
-      .toArray();
-  } else {
-    return await database
-      .collection(collection)
-      .find(filter)
-      .limit(paginationOptions.itemsPage)
-      .skip(paginationOptions.skip)
-      .sort(sort)
-      .collation({ locale: 'en_US', numericOrdering: true })
-      .toArray();
+      .toArray() as T[];
   }
+  return await database
+    .collection(collection)
+    .find(filter)
+    .limit(paginationOptions.itemsPage)
+    .skip(paginationOptions.skip)
+    .sort(sort)
+    .toArray() as T[];
 };
 
 export const findElementsProducts = async (
@@ -316,11 +307,11 @@ export const manageStockUpdate = async (
   database: Db,
   collection: string,
   filter: object,
-  updateObject: object
+  updateObject: Record<string, number | undefined> // Cambia el tipo de 'updateObject'
 ) => {
   return await database.collection(collection).updateOne(
     filter,
-    { $inc: updateObject }
+    { $inc: updateObject } // Ahora cumple con el tipo requerido
   );
 };
 

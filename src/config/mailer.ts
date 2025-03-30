@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import nodemailer from 'nodemailer';
+import logger from '../utils/logger';
 
 const transporter = nodemailer.createTransport({
   pool: true,
@@ -18,12 +19,12 @@ const transporter = nodemailer.createTransport({
 export default transporter;
 
 transporter.verify().then(() => {
-  console.log('=================NODE MAILER CONFIG=====================');
-  console.log(`STATUS: ${chalk.greenBright('ONLINE')}`);
-  console.log(`MESSAGE: ${chalk.greenBright('MAILER CONNECT!!!')}`);
+  logger.info('=================NODE MAILER CONFIG=====================');
+  logger.info(`STATUS: ${chalk.greenBright('ONLINE')}`);
+  logger.info(`MESSAGE: ${chalk.greenBright('MAILER CONNECT!!!')}`);
 }).catch(error => {
-  console.log('=================NODE MAILER CONFIG=====================');
-  console.log(`STATUS: ${chalk.redBright('OFFLINE')}`);
-  console.log(`MESSAGE: ${chalk.redBright('MAILER CONNECT!!!')}`);
-  console.log(`ERROR: ${chalk.redBright(error.message)}`);
+  logger.info('=================NODE MAILER CONFIG=====================');
+  logger.info(`STATUS: ${chalk.redBright('OFFLINE')}`);
+  logger.info(`MESSAGE: ${chalk.redBright('MAILER CONNECT!!!')}`);
+  logger.info(`ERROR: ${chalk.redBright(error.message)}`);
 });

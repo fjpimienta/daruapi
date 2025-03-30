@@ -1,9 +1,10 @@
-import { PubSub } from 'apollo-server-express';
+import { PubSub } from 'graphql-subscriptions';
 import { ACTIVE_VALUES_FILTER, COLLECTIONS, SUBSCRIPTIONS_EVENT } from '../config/constants';
 import { IContextData } from '../interfaces/context-data.interface';
 import { IStock } from '../interfaces/stock.interface';
 import { asignDocumentId, findOneElement, manageStockUpdate, randomItems } from './../lib/db-operations';
 import ResolversOperationsService from './resolvers-operaciones.service';
+import logger from '../utils/logger';
 
 class ShopProductsService extends ResolversOperationsService {
   collection = COLLECTIONS.SHOP_PRODUCTS;
@@ -138,6 +139,10 @@ class ShopProductsService extends ResolversOperationsService {
           COLLECTIONS.SHOP_PRODUCTS,
           { id: item.id }
         );
+        if (!itemDetails) {
+          logger.error(`Item with id ${item.id} not found`);
+          return;
+        }
         if (item.increment < 0 && ((item.increment + itemDetails.stock) < 0)) {
           item.increment = -itemDetails.stock;
         }

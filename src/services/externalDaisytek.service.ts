@@ -80,8 +80,8 @@ class ExternalDaisytekService extends ResolversOperationsService {
         if (listProductsDaisytek && listProductsDaisytek.length > 0) {
           const db = this.db;
           const config = await new ConfigsService({}, { id: '1' }, { db }).details();
-          const stockMinimo = config.config.minimum_offer;
-          const exchangeRate = config.config.exchange_rate;
+          const stockMinimo = config.config?.minimum_offer ?? 0;
+          const exchangeRate = config.config?.exchange_rate ?? 1;
           for (const product of listProductsDaisytek) {
             if (product.sku !== '') {
               const itemData: Product = await this.setProduct('daisytek', product, null, stockMinimo, exchangeRate);

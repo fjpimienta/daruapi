@@ -5,7 +5,7 @@
   "main": "build/server.js",
   "scripts": {
     "start": "node build/server.js",
-    "build": "tsc -p . && ncp src/schema build/schema",
+    "build": "tsc -p . && ncp src/schema build/schema && mkdir -p build/schema && cp src/schema/*.graphql build/schema/ 2>/dev/null || true && echo 'Build completado'",
     "dev": "nodemon --watch src --exec \"ts-node src/server.ts\"",
     "generate-ssl": "sh generate-ssl-cert.sh"
   },
@@ -46,8 +46,10 @@
     "graphql-merge-resolvers": "^1.1.16",
     "graphql-playground-middleware-express": "^1.7.22",
     "graphql-subscriptions": "^3.0.0",
+    "graphql-tag": "^2.12.6",
     "graphql-tools": "^8.3.18",
     "he": "^1.2.0",
+    "helmet": "^7.2.0",
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^6.15.0",
     "multer": "^1.4.5-lts.1",
@@ -70,6 +72,7 @@
     "@types/cors": "^2.8.10",
     "@types/express": "^4.17.11",
     "@types/graphql": "^14.5.0",
+    "@types/helmet": "^4.0.0",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/mongodb": "^3.6.8",
     "@types/multer": "^1.4.11",
